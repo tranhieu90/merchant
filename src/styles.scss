@@ -1,0 +1,83 @@
+@use "@angular/material" as mat;
+@include mat.core();
+@import "scss/icons";
+@import "primeicons/primeicons.css";
+@import "scss/variables";
+@import "scss/mixins";
+@import 'scss/fonts.scss';
+@import 'scss/typo';
+@import 'scss/minput';
+@import 'scss/mbutton';
+@import 'scss/mdropdown';
+@import 'scss/mtoast';
+@import 'scss/mcaption';
+@import 'scss/mtab';
+@import 'material-icons/iconfont/material-icons.css';
+@font-face {
+  font-family: "webmerchant";
+  src: url("./assets/fonts/webmerchant.eot");
+  src: url("./assets/fonts/webmerchant.eot") format("embedded-opentype"),
+    url("./assets/fonts/webmerchant.ttf") format("truetype"),
+    url("./assets/fonts/webmerchant.woff") format("woff"),
+    url("./assets/fonts/webmerchant.svg") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+// Define the theme object.
+$merchantx-theme: mat.define-theme((color: (theme-type: light,
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      density: (scale: 0,
+      ),
+    ));
+
+:root {
+  @include mat.all-component-themes($merchantx-theme);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "AvertaStdCY-Regular";
+  color: $color-text-neutral-main;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.color-040d1f {
+  color: $color-text-neutral-main;
+}
+
+
+.mat-row,
+.mat-cell,
+.mat-header-cell {
+  border: none !important;
+  /* Xóa toàn bộ border */
+}
+
+.icon-close_large,
+.icon-more,
+.icon-edit{
+  @include base-icon;
+  color: $color-global-neutral-neutral-9;
+}
+
+.icon-close_small {
+  @include base-icon;
+  color: $color-icon-neutral-sub;
+}
+
+.icon-warning_solid {
+  @include base-icon;
+  color: $color-surface-semantic-warning;
+}

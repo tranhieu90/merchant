@@ -1,0 +1,157 @@
+<div class="d-flex justify-content-between modal-header">
+  <h4 class="modal-title title-m-bold color-040d1f" [innerHTML]="data?.title"></h4>
+  <span class="icon-close_large cursor-pointer" (click)="onClose()"></span>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="formUser" *ngIf="isUserInfo">
+    <div class="row mb-4">
+      <div class="col-6">
+        <label class="form-label title-m-semibold">Tên đăng nhập</label>
+        <div class="p-inputgroup">
+          <input type="text" pInputText class="merchant-input" formControlName="userName"
+            placeholder="Nhập tên đăng nhập" />
+        </div>
+        @if (formUser.controls['userName'].touched && formUser.controls['userName'].invalid) {
+        <div class="m-caption error">
+          <div class="icon-caption">
+            <span class="icon-error_solid"></span>
+          </div>
+          @if (formUser.controls['userName'].hasError('required')) {
+          <span class="text-caption paragraph-m-regular">Vui lòng nhập tên đăng nhập</span>
+          }
+        </div>
+        }
+      </div>
+      <div class="col-6">
+        <label class="form-label title-m-semibold">Họ và tên</label>
+        <div class="p-inputgroup">
+          <input appShowClearOnFocus=".clear-icon" appInputSanitize type="text" pInputText class="merchant-input" formControlName="fullName"
+            placeholder="Nhập họ và tên" />
+          @if (this.formUser.get('fullName')?.value) {
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('fullName')">
+            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+          </span>
+          }
+        </div>
+        @if (formUser.controls['fullName'].dirty && formUser.controls['fullName'].invalid) {
+        <div class="m-caption error">
+          <div class="icon-caption">
+            <span class="icon-error_solid"></span>
+          </div>
+          @if (formUser.controls['fullName'].hasError('required')) {
+          <span class="text-caption paragraph-m-regular">Vui lòng nhập họ và tên</span>
+          }
+          @if (formUser.controls['fullName'].hasError('maxlength')) {
+          <span class="text-caption paragraph-m-regular">Vui lòng không nhập quá 50 kí tự</span>
+          }
+          @if (formUser.controls['fullName'].hasError('pattern')) {
+          <span class="text-caption paragraph-m-regular">Họ và tên không đúng định dạng</span>
+          }
+        </div>
+        }
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-6">
+        <label class="form-label title-m-semibold">Ngày sinh</label>
+        <div class="p-inputgroup">
+          <p-calendar formControlName="dateOfBirth" [iconDisplay]="'input'" [showIcon]="true" [appendTo]="'body'"
+            [dateFormat]="'dd/mm/yy'"  placeholder="DD/MM/YYYY" [maxDate]="maxDate">
+            <ng-template pTemplate="inputicon" let-clickCallBack="clickCallBack">
+              <span class="calendar-icon-wrapper" (click)="clickCallBack($event)">
+                <i class="icon-calendar pointer-events-none"></i>
+              </span>
+            </ng-template>
+          </p-calendar>
+          @if (this.formUser.get('dateOfBirth')?.value) {
+          <span class="p-input-icon-right clear-icon r-25" (click)="clearValue('dateOfBirth')">
+            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+          </span>
+          }
+        </div>
+        @if (formUser.controls['dateOfBirth'].touched && formUser.controls['dateOfBirth'].invalid) {
+        <div class="m-caption error">
+          <div class="icon-caption">
+            <span class="icon-error_solid"></span>
+          </div>
+          @if (formUser.controls['dateOfBirth'].hasError('required')) {
+          <span class="text-caption paragraph-m-regular">Vui lòng chọn ngày sinh</span>
+          }
+        </div>
+        }
+      </div>
+      <div class="col-6">
+        <label class="form-label title-m-semibold">Số điện thoại</label>
+        <div class="p-inputgroup">
+          <input appShowClearOnFocus=".clear-icon" type="text" pInputText class="merchant-input" formControlName="phoneNumber"
+            placeholder="Nhập số điện thoại" (input)="sanitizePhoneNumber()" />
+          @if (this.formUser.get('phoneNumber')?.value) {
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('phoneNumber')">
+            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+          </span>
+          }
+        </div>
+        @if (formUser.controls['phoneNumber'].touched && formUser.controls['phoneNumber'].invalid) {
+        <div class="m-caption error">
+          <div class="icon-caption">
+            <span class="icon-error_solid"></span>
+          </div>
+          @if (formUser.controls['phoneNumber'].hasError('required')) {
+          <span class="text-caption paragraph-m-regular">Vui lòng nhập số điện thoại</span>
+          }
+          @if (formUser.controls['phoneNumber'].hasError('pattern')) {
+          <span class="text-caption paragraph-m-regular">Số điện thoại không đúng định dạng</span>
+          }
+          @if (formUser.controls['phoneNumber'].hasError('isPhoneNumberUsed')) {
+          <span class="text-caption paragraph-m-regular">Số điện thoại đã được sử dụng bởi tài khoản khác</span>
+          }
+        </div>
+        }
+      </div>
+    </div>
+  </form>
+
+  <form [formGroup]="formEmail" *ngIf="isEmailInfo">
+    <div class="row">
+      <div class="col-12">
+        <label class="form-label title-m-semibold">Email</label>
+        <div class="p-inputgroup">
+          <input appShowClearOnFocus=".clear-icon" type="text" pInputText class="merchant-input" formControlName="email" placeholder="name@company.com" />
+          @if (this.formEmail.get('email')?.value) {
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('email')">
+            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+          </span>
+          }
+        </div>
+        @if (formEmail.controls['email'].touched && formEmail.controls['email'].invalid) {
+        <div class="m-caption error">
+          <div class="icon-caption">
+            <span class="icon-error_solid"></span>
+          </div>
+          @if (formEmail.controls['email'].hasError('required')) {
+          <span class="text-caption paragraph-s-regular">Vui lòng nhập email</span>
+          }
+          @if (formEmail.controls['email'].hasError('maxlength')) {
+          <span class="text-caption paragraph-s-regular">Vui lòng không nhập quá 50 kí tự</span>
+          }
+          @if (formEmail.controls['email'].hasError('pattern')) {
+          <span class="text-caption paragraph-s-regular">Email không đúng định dạng (Ví dụ:
+            'name&#64;company.com')</span>
+          }
+          @if (formEmail.controls['email'].hasError('isEmailUsed')) {
+          <span class="text-caption paragraph-s-regular">Email đã được sử dụng bởi tài khoản khác</span>
+          }
+        </div>
+        }
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <p-button label="Hủy" class="merchant-button-tertiary" (click)="onClose()" />
+  <p-button label="Cập nhật" class="merchant-button" [disabled]="(formUser.invalid && isDisable)"
+    (click)="onUpdate(data?.type)" />
+</div>

@@ -1,0 +1,45 @@
+<div class="nav-bar-custom" id="nav-bar-custom">
+    <mat-nav-list>
+        <ng-container *ngFor="let group of menuItems(); trackBy: trackMenu">
+            <ng-container *ngIf="group.menuName">
+                <a mat-list-item>
+                    <div class="title">
+                        {{ group.menuName }}
+                    </div>
+                </a>
+            </ng-container>
+            <ng-container *ngIf="group.subMenus && group.subMenus.length > 0">
+                <mat-accordion class="mat-accordion">
+                    <ng-container
+                        *ngTemplateOutlet="recursiveMenu; context: { $implicit: group.subMenus }"></ng-container>
+                </mat-accordion>
+            </ng-container>
+        </ng-container>
+    </mat-nav-list>
+</div>
+<ng-template #recursiveMenu let-items>
+    <ng-container *ngFor="let item of items">
+        <ng-container *ngIf="item.subMenus && item.subMenus.length > 0; else leafMenu">
+            <mat-expansion-panel class="menuSub">
+                <mat-expansion-panel-header>
+                    <span class="icon-header" [ngClass]="item.menuIcon"></span>
+                    <span class="paragraph-s-semibold-capital">{{ item.menuName }}</span>
+                </mat-expansion-panel-header>
+                <mat-nav-list>
+                    <ng-container
+                        *ngTemplateOutlet="recursiveMenu; context: { $implicit: item.subMenus }"></ng-container>
+                </mat-nav-list>
+            </mat-expansion-panel>
+        </ng-container>
+        <ng-template #leafMenu class="menuSub ">
+            <a mat-list-item [routerLink]="item.menuPathUrl" routerLinkActive="selected-item"
+                class="custom-list-item mt-1">
+                <div class="d-flex align-items-center menuNoSub">
+                    <span *ngIf="item.level" class="icon-header" [ngClass]="item.menuIcon"></span>
+                    <span *ngIf="item.level == 2" class="paragraph-s-semibold-capital">{{ item.menuName }}</span>
+                    <span *ngIf="item.level == 3" class="item-nav">{{ item.menuName }}</span>
+                </div>
+            </a>
+        </ng-template>
+    </ng-container>
+</ng-template>

@@ -1,0 +1,77 @@
+<div class="d-flex justify-content-between modal-header">
+    <h4 class="modal-title title-m-bold">Tùy chỉnh cột hiển thị</h4>
+    <span class="icon-close_large cursor-pointer" (click)="onClose()"></span>
+</div>
+
+<div class="modal-body">
+    <div class="default mb-3 cursor-pointer title-s-semibold" (click)="onDefault()">Đặt về mặc định</div>
+    <div class="d-flex justify-content-between">
+        <div class="content">
+            <div>
+                <p-checkbox [(ngModel)]="checked" [binary]="true" disabled="true" class="m-checkbox me-2" />
+                <label>Ngày giao dịch</label>
+            </div>
+            <div>
+                <p-checkbox [(ngModel)]="checked" [binary]="true" disabled="true" class="m-checkbox me-2"/>
+                <label>Điểm kinh doanh</label>
+            </div>
+            <div>
+                <p-checkbox [(ngModel)]="checked" [binary]="true" disabled="true" class="m-checkbox me-2"/>
+                <label>Tài khoản/thẻ thanh toán</label>
+            </div>
+            <div>
+                <p-checkbox [(ngModel)]="checked" [binary]="true" disabled="true" class="m-checkbox me-2"/>
+                <label>Trạng thái</label>
+            </div>
+            <div>
+                <p-checkbox [(ngModel)]="checked" [binary]="true" disabled="true" class="m-checkbox me-2"/>
+                <label>Mã định danh</label>
+            </div>
+            <div>
+                <p-checkbox [(ngModel)]="lstChecked" class="m-checkbox me-2" value="orderCode"/>
+                <label>Mã đơn hàng</label>
+            </div>
+            <div>
+                <p-checkbox [(ngModel)]="lstChecked" class="m-checkbox me-2" value="keyCode"/>
+                <label>Mã key giao dịch</label>
+            </div>
+            <div>
+                <p-checkbox [(ngModel)]="lstChecked" class="m-checkbox me-2" value="vat"/>
+                <label>VAT</label>
+            </div>
+        </div>
+        <div class="content">
+            <div>
+                <p-checkbox [(ngModel)]="lstChecked" class="m-checkbox me-2" value="transactionCode"/>
+                <label>Mã giao dịch</label>
+            </div>
+            <div>
+                <p-checkbox [(ngModel)]="checked" [binary]="true" disabled="true" class="m-checkbox me-2"/>
+                <label>Số tiền</label>
+            </div>
+            <div>
+                <p-checkbox [(ngModel)]="checked" [binary]="true" disabled="true" class="m-checkbox me-2" />
+                <label>Nội dung thanh toán</label>
+            </div>
+            <div>
+                <p-checkbox [(ngModel)]="checked" [binary]="true" disabled="true" class="m-checkbox me-2" />
+                <label>Phương thức thanh toán</label>
+            </div>
+            <div>
+                <p-checkbox [(ngModel)]="checked" [binary]="true" disabled="true" class="m-checkbox me-2" />
+                <label>Mã FT giao dịch</label>
+            </div>
+            <div>
+                <p-checkbox [(ngModel)]="lstChecked" class="m-checkbox me-2" value="businessAccount"/>
+                <label>Tài khoản doanh nghiệp</label>
+            </div>
+            <div>
+                <p-checkbox [(ngModel)]="lstChecked" class="m-checkbox me-2" value="expense"/>
+                <label>Phí giao dịch</label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="onClose()" />
+    <p-button label="Áp dụng" class="merchant-button" (click)="doAction()" />

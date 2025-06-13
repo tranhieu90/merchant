@@ -1,0 +1,147 @@
+@import "../../../scss/mixins";
+@import "../../../scss/variables";
+@import "../../../scss/mbutton";
+
+body {
+  background-color: #ececec;
+}
+
+.container-profile {
+  width: 100%;
+  background: $color-surface-neutral-main;
+  padding: $spacing-l;
+  border-radius: $border-radius-l;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.alert {
+  border-radius: 8px;
+}
+
+.rounded-circle {
+  width: 58px;
+  height: 58px;
+  object-fit: cover;
+}
+
+.btn-light {
+  border: 1px solid #dee2e6;
+}
+
+.color-4f5562 {
+  color: $color-text-neutral-sub;
+}
+
+.bg-email {
+  padding: 16px;
+  border-radius: $border-radius-s;
+  border: 1px solid #f7b26a;
+  background-color: #fff5e6;
+}
+
+.icon-edit {
+  margin-right: 4px;
+}
+
+.color-df7202 {
+  color: $color-text-semantic-warning;
+}
+
+.color-0058f0 {
+  color: $color-text-action-main;
+}
+
+.icon-check_circle_solid {
+  @include base-icon;
+  color: $color-icon-semantic-success;
+}
+
+.border-profile {
+  border: 1px solid $color-border-neutral-main;
+  margin-bottom: 32px;
+}
+
+.container-history {
+  width: 30%;
+  background: $color-surface-neutral-main;
+  padding: $spacing-l;
+  border-radius: $border-radius-s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ic-step {
+  width: 16px;
+  height: 16px;
+}
+
+.ic-line {
+  width: 2px;
+  height: 22px;
+}
+
+.mb-12 {
+  margin-bottom: 12px;
+}
+
+.mh-500 {
+  max-height: 500px;
+}
+
+::ng-deep .menu-button .p-button {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.p-menu {
+  transform: translateY(8px) !important;
+}
+
+::ng-deep.p-menu.p-menu-overlay {
+  margin-top: $spacing-xs !important;
+
+  ul, li {
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  .p-menuitem-link {
+    display: flex;
+    max-width: 180px;
+    padding: 12px;
+    gap: 4px;
+  }
+
+  .p-menuitem-icon{
+    @include base-icon;
+    font-size: 24px;
+    color: $color-global-red-red-6;
+    margin: 0 !important;
+  }
+
+  .p-menuitem-text{
+    color: $color-global-red-red-6;
+    font-size: 16px;
+    line-height: $typo-line-heights-l;
+  }
+
+  .p-menuitem-content{
+    background-color: $color-global-primary-primary-1;
+    border-radius: $border-radius-xs;
+  }
+}
+
+::ng-deep .p-menu {
+  width: auto !important;
+  min-width: 0 !important;
+  border-radius: $border-radius-s !important;
+}
+
+.gap-12{
+  gap: 12px;
+}

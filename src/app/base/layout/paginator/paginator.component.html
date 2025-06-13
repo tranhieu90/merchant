@@ -1,0 +1,24 @@
+<div class="paginator-container">
+    <div class="content-left">
+        <span class="paragraph-l-regular color-text">Hiển thị</span>
+        <p-dropdown class="mx-2" [(ngModel)]="pageSize" (onChange)="changePageSize($event.value)"
+            [options]="pageSizeOptions" optionLabel="label" optionValue="value" />
+        <span class="paragraph-l-regular color-text">bản ghi trên trang</span>
+    </div>
+
+    <div class="pagination">
+        <span class="item-page" (click)="goToPage(currentPage - 1)" [class.disabled]="currentPage==1">
+            <span class="icon-page icon-angle_left"></span>
+        </span>
+        <ng-container *ngFor="let page of pages">
+            <span class="item-page" *ngIf="page !== '...'; else ellipsis" [class.active]="page === currentPage"
+                (click)="goToPage(page)">
+                {{ page }}
+            </span>
+            <ng-template #ellipsis><span class="ellipsis">...</span></ng-template>
+        </ng-container>
+        <span class="item-page" (click)="goToPage(currentPage + 1)" [class.disabled]="currentPage===totalPages">
+            <span class="icon-page icon-angle_right"></span>
+        </span>
+    </div>
+</div>

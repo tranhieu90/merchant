@@ -1,0 +1,69 @@
+@import "../../../../scss/variables";
+@import "../../../../scss/mixins";
+
+.level {
+    margin: 8px 0px;
+    
+    .content-group {
+        border-radius: $border-radius-s;
+        background: $color-surface-neutral-sub;
+        color: $color-text-neutral-main;
+        padding: 8px 12px;
+        //title-s-regular
+        @include typo-style($typo-font-sizes-m, $typo-font-weights-regular, none, none);
+        .box-button {
+            color: $color-icon-action-main;
+            cursor: pointer;
+        }
+
+        .count {
+            //typo-title-xs-regular
+            @include typo-style($typo-font-sizes-s, $typo-font-weights-regular, none, none);
+            background: $color-surface-neutral-sub-2;
+            border-radius: 6px;
+            padding: 2px 8px;
+        }
+        
+
+        .icon-circle_uncheck, .icon-circle_checked{
+            color: $color-icon-action-main;
+            font-size: 18px;
+        }
+
+        .icon-circle_checked{
+            font-size: 20px;
+        }
+
+        &.area-active{
+            background: $color-surface-action-sub-pressed;
+            cursor: pointer;
+        }
+    }
+
+    &.active .content-group{
+        background: $color-surface-action-sub-pressed;
+        padding: 7px 12px;
+    }
+
+}
+
+.level-2 {
+    margin-left: 20px;
+}
+
+.level-3 {
+    margin-left: 40px;
+}
+
+.level-4 {
+    margin-left: 60px;
+}
+
+.level-5 {
+    margin-left: 80px;
+}
+
+
+.icon-plus_small{
+   color: $color-icon-action-main;
+}

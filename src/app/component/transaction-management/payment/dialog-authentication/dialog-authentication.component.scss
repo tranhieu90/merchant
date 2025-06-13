@@ -1,0 +1,75 @@
+@import "../../../../../scss/mixins";
+@import "../../../../../scss/variables";
+@import "../../../../../scss/mbutton";
+
+::ng-deep .dialog-authen .mdc-dialog__surface {
+  border-radius: 4px !important;
+}
+
+.modal-header {
+  background-color: $color-surface-highlight-main;
+  color: $color-text-neutral-main;
+  padding: $spacing-l;
+}
+
+.modal-footer {
+  gap: $spacing-m;
+  padding: $spacing-l;
+}
+
+.modal-body {
+  padding: $spacing-l;
+}
+
+.text-value {
+  font-weight: $typo-font-weights-semibold;
+  font-size: $typo-font-sizes-m;
+  line-height: $typo-line-heights-m;
+  vertical-align: middle;
+  color: $color-text-action-main;
+}
+
+.color-error {
+  color: $color-text-semantic-error;
+}
+
+.border-color-error {
+  border-color: $color-text-semantic-error;
+}
+
+.otp-container {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.otp-container input {
+  width: 44px;
+  height: 44px;
+  font-size: $typo-font-sizes-m;
+  text-align: center;
+  border: 1px solid $color-border-neutral-main;
+  border-radius: 4px;
+}
+
+.otp-container.error input {
+  border-color: $color-text-semantic-error;
+}
+
+.otp-container.locked input {
+  background-color: #eee;
+  cursor: not-allowed;
+}
+.qr-overlay {
+  position: absolute;
+  top: 0;
+  left: 28%;
+  width: 200px;
+  height: 200px;
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 2;
+}
+
+.opacity-10-percent {
+  opacity: 0.1;
+}

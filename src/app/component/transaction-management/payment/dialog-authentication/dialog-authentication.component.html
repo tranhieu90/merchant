@@ -1,0 +1,84 @@
+<div class="d-flex justify-content-between modal-header">
+  <h4 class="modal-title title-m-bold color-040d1f">Xác thực tài khoản</h4>
+  <span class="icon-close_large cursor-pointer" (click)="onclose()"></span>
+</div>
+
+<div class="modal-body">
+  <div class="title-m-semibold">Hướng dẫn xác thực giao dịch</div>
+  <div class="paragraph-m-regular">1. Sử dụng App MB MerchantX trên thiết bị đã đăng ký mã D-OTP</div>
+  <div class="paragraph-m-regular">2. Chọn Xác thực D-DOTP tại màn hình Đăng nhập</div>
+  <div class="paragraph-m-regular">3. Scan mã QR Code để nhận mã OTP</div>
+  <div class="paragraph-m-regular">4. Nhập mã OTP vào ô dưới đây để xác thực giao dịch</div>
+  <div class="text-center mt-3 mb-3 d-flex flex-column gap-3" #qrContainer>
+    <div class="position-relative">
+      <qrcode
+        [qrdata]="textQrCode"
+        [width]="200"
+        [errorCorrectionLevel]="'M'"
+        class="position-relative"
+        [ngClass]="qrStatus === 'expired' ? 'opacity-10-percent' : ''"
+      >
+      </qrcode>
+
+      <div
+        *ngIf="qrStatus === 'expired'"
+        class="qr-overlay">
+      </div>
+      <div
+        *ngIf="qrStatus === 'expired'"
+        class="paragraph-m-regular color-error position-absolute"
+        style="top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3;">
+        Mã QR đã hết hiệu lực
+      </div>
+    </div>
+    <div *ngIf="qrStatus == 'idle'" class="paragraph-m-regular">
+      Mã QR sẽ hết hiệu lực sau <span class="paragraph-m-semibold">{{ countdown }}</span> giây
+    </div>
+    <div *ngIf="qrStatus == 'expired'" class="paragraph-m-regular color-error">
+      Mã QR đã hết hiệu lực
+    </div>
+  </div>
+  <div
+    class="otp-container"
+    [ngClass]="{
+    error: otpStatus === 'error' || otpStatus === 'expired',
+    locked: otpStatus === 'locked'
+  }"
+  >
+    <input
+      *ngFor="let control of otpControls; let i = index"
+      [formControl]="control"
+      id="otp-{{ i }}"
+      maxlength="1"
+      type="text"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      (input)="onInput($event, i)"
+      (keydown)="onKeyDown($event, i)"
+      [disabled]="otpStatus === 'locked'"
+    />
+  </div>
+
+  <div class="text-center text-sm mb-4">
+    <ng-container [ngSwitch]="otpStatus">
+      <div *ngSwitchCase="'error'" class="paragraph-m-regular color-error">
+        Mã OTP không hợp lệ. Vui lòng thử lại.
+      </div>
+      <div *ngSwitchCase="'locked'" class="paragraph-m-regular color-error">
+        Mã OTP không hợp lệ. Để đảm bảo bảo mật, vui lòng thực hiện lại giao dịch hoàn tiền
+      </div>
+      <div *ngSwitchCase="'expired'" class="paragraph-m-regular color-error">
+        Mã OTP đã hết hiệu lực. Vui lòng thực hiện lại.
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<div class="modal-footer">
+  <p-button label="Hủy" class="merchant-button-tertiary" (click)="onclose()"/>
+  @if (otpStatus === 'expired' || otpStatus === 'locked') {
+    <p-button label="Thực hiện lại" class="merchant-button" [disabled]="false" (click)="doAction(true)"/>
+  } @else {
+    <p-button label="Xác thực" class="merchant-button" [disabled]="false" (click)="doAction(false)"/>
+  }
+</div>

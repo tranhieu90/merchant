@@ -1,0 +1,216 @@
+@import "../../../../scss/variables";
+@import "../../../../scss/mixins";
+
+.mat-row,
+.mat-mdc-cell,
+.mat-mdc-header-cell {
+  border: none !important;
+}
+
+.mdc-data-table__cell {
+  font-family: "AvertaStdCY-Regular", serif;
+  line-height: 13px;
+}
+
+.custom-header {
+  background-color: $color-surface-neutral-sub;
+  color: $color-text-neutral-sub-2;
+  height: 42px;
+  //typo-paragraph-s-regularCapital
+  @include typo-style($typo-font-sizes-s, $typo-font-weights-regular, uppercase, none);
+}
+
+.even-row {
+  background-color: $color-surface-neutral-main;
+}
+
+.odd-row {
+  background-color: $color-surface-action-sub-2-hover;
+}
+
+.mat-mdc-row:hover{
+  background-color: $color-surface-action-sub;
+}
+
+.mat-mdc-paginator {
+  background-color: #fff !important;
+}
+
+.grid-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  .content{
+    margin-top: 104px;
+  }
+
+  p {
+    color: $color-text-neutral-main;
+    @include typo-style($typo-font-sizes-l, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+  }
+
+  span {
+    color: $color-text-neutral-sub;
+    @include typo-style($typo-font-sizes-m, $typo-font-weights-regular, none, none, $font-family-regular);
+  }
+
+
+}
+
+.table-action {
+  margin: 0 !important;
+  padding: 0;
+
+  li {
+    display: inline-block;
+    padding: 15px 0 15px 16px;
+    color: $color-icon-neutral-sub;
+
+    span {
+      font-size: 23px;
+    }
+  }
+
+  :hover {
+    cursor: pointer !important;
+  }
+
+  .active {
+    color: #ffffff !important;
+  }
+
+  .active:hover {
+    color: $color-icon-neutral-sub;
+  }
+}
+
+.title-no-data {
+  color: $color-text-neutral-main;
+}
+
+.summary-no-data {
+  color: $color-text-neutral-sub;
+}
+
+::ng-deep.mat-mdc-table {
+  .status {
+    position: relative;
+    padding-left: 15px;
+    padding: $spacing-2xs $spacing-xs $spacing-2xs $spacing-m;
+    text-transform: uppercase;
+    border-radius: 15px;
+    //typo/paragraph-xs-semibold-Capital
+    @include typo-style($typo-font-sizes-xs, $typo-font-weights-semibold, uppercase, none, $font-family-semiBold);
+
+    &::before {
+      content: '•';
+      position: absolute;
+      left: 5px;
+      font-size: 20px;
+      top: 2px;
+    }
+
+    &.lock {
+      background: $color-surface-semantic-normal-sub;
+      color: $color-text-semantic-normal;
+    }
+
+    &.success {
+      background: $color-surface-semantic-information-sub;
+      color: $color-text-semantic-information;
+    }
+  }
+}
+
+::ng-deep.mat-mdc-paginator-container {
+  //typo/paragraph-l-regular
+  @include typo-style($typo-font-sizes-l, $typo-font-weights-regular, none, none);
+  margin-top: 20px;
+}
+
+::ng-deep.mat-mdc-paginator .mat-mdc-select-value {
+  font-family: "AvertaStdCY-Regular";
+  font-size: 14px !important;
+}
+
+.paginator-table{
+  float: left;
+  width: 100%;
+  padding-top: $spacing-l;
+}
+
+// ============================Radio=========================
+.m-radio {
+  ::ng-deep.p-radiobutton .p-radiobutton-box {
+    border-color: $color-icon-action-main;
+  }
+  ::ng-deep.p-radiobutton .p-radiobutton-box.p-highlight {
+    background: $color-icon-action-main;
+  }
+  ::ng-deep.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
+    width: 8px;
+    height: 8px;
+  }
+}
+.m-radio-check{
+  ::ng-deep.p-radiobutton .p-radiobutton-box.p-highlight {
+    background: $color-icon-action-main;
+    background-image: url("../../../../assets/images/icon-check.svg");
+    background-size: cover;
+  }
+  ::ng-deep.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
+    width: 0px;
+    height: 0px;
+  }
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  height: 520px;
+}
+
+.mat-cell {
+  overflow: visible;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.icon-edit {
+  width: 23px;
+  height: 23px;
+}
+
+.mw-100 {
+  max-width: 100px;
+}
+
+.mw-120 {
+  max-width: 120px;
+}
+
+.mw-140 {
+  max-width: 140px;
+}
+
+.mw-160 {
+  max-width: 160px;
+}
+
+.mw-180 {
+  max-width: 180px;
+}
+
+.tooltip-anchor {
+  display: block;              
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+}
+.text-content {
+  display: inline;             
+}

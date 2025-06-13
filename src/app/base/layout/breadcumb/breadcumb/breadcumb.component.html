@@ -1,0 +1,23 @@
+<!-- <div class="breadcumb">
+    <span class="paragraph-s-regular color-inactive">Tổng quan</span>
+    <span class="paragraph-m-regular separator">/</span>
+    <span class="paragraph-s-regular color-active">Hồ sơ người dùng</span>
+</div> -->
+
+<div class="breadcumb" *ngIf="breadcrumbs | async as breadcrumbList">
+    <ng-container *ngFor="let breadcrumb of breadcrumbList; let last = last">
+        <ng-container *ngIf="!last">
+            <a [routerLink]="breadcrumb.url" class="paragraph-s-regular color-inactive">{{ breadcrumb.label }}</a>
+            &#47;
+        </ng-container>
+        <ng-container *ngIf="last">
+            <span class="paragraph-s-regular color-active">{{ breadcrumb.label }}</span>
+        </ng-container>
+    </ng-container>
+
+    <!-- <div class="title-breadcumb" *ngIf="breadcrumbList.length > 1">
+        <span class="header-m-semibold">
+            {{ breadcrumbList[breadcrumbList.length - 1].label }}
+        </span>
+    </div> -->
+</div>

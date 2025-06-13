@@ -1,0 +1,72 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <span class="header-m-semibold">Quản lý điểm kinh doanh</span>
+  <p-button label="+ Thêm mới điểm kinh doanh" class="merchant-button ms-auto title-s-semibold"
+    (click)="doOpenPage()" />
+</div>
+<div class="wrapper">
+  <div class="d-flex justify-content-between align-items-center">
+    <span class="header-s-semibold">{{this.totalItem}} điểm kinh doanh</span>
+    <div class="d-flex">
+      <p-button class="merchant-button-icon button-l button-light mr-3" icon="icon-search" (onClick)="changeSearch()" />
+      <p-button class="merchant-button-icon button-l button-light" icon="icon-filter" (onClick)="changeFilter()" />
+    </div>
+  </div>
+  <div *ngIf="isFilter || isFilter1">
+    <form *ngIf="isFilter" [formGroup]="formDropdown" (ngSubmit)="onEnterSearch()" class="row mb-4">
+      <div class="row" *ngIf="isFilter">
+        <div class="col-md-4 mt-4">
+          <label class="form-label title-s-semibold">Trạng thái</label>
+          <p-dropdown class="merchant-dropdown" formControlName="status" [options]="statusOptions" optionValue="code"
+            optionLabel="name" placeholder="Select a country" />
+        </div>
+        <div class="col-md-4 mt-4">
+          <label class="form-label title-s-semibold">Phương thức thanh toán</label>
+          <p-multiSelect class="merchant-multiSelect multiselect-all" formControlName="paymentMethod"
+            [options]="lstPaymentMethod" optionValue="paymentMethodId" optionLabel="paymentMethodName" [filter]="false"
+            placeholder="Tất cả">
+          </p-multiSelect>
+        </div>
+        <div *ngIf="isConfig != 0" class="col-md-4 mt-4 ">
+          <label class="form-label title-s-semibold">Tên nhóm</label>
+          <p-treeSelect [options]="groupNameOptions" formControlName="groupName" optionLabel="label" optionValue="key"
+            selectionMode="checkbox" display="comma" [metaKeySelection]="false" [filter]="true" placeholder="Tất cả"
+            class="merchant-treeSelect" (onNodeSelect)="onGroupClick($event)" (onNodeUnselect)="onGroupClick($event)">
+          </p-treeSelect>
+        </div>
+      </div>
+    </form>
+
+    <div class="row mb-4" *ngIf="isFilter1">
+      <div class="col-md-6 mt-4">
+        <label class="form-label title-s-semibold">Mã dịch vụ</label>
+        <input type="text" pInputText class="merchant-input" [(ngModel)]="serviceCode" placeholder="Nhập mã dịch vụ"
+          (blur)="onEnterSearch()" (keydown.enter)="onEnterSearch()" />
+      </div>
+      <div class="col-md-6 mt-4">
+        <label class="form-label title-s-semibold">Tên, địa chỉ điểm kinh doanh</label>
+        <input type="text" pInputText class="merchant-input" [(ngModel)]="keyWord"
+          placeholder="Tìm theo tên, địa chỉ điểm kinh doanh..." (blur)="onEnterSearch()"
+          (keydown.enter)="onEnterSearch()" />
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end mt-3">
+      <p-button label="Xóa bộ lọc" class="merchant-button-tertiary me-2" (onClick)="doReset()" />
+      <p-button label="Áp dụng" class="merchant-button" (onClick)="onEnterSearch()" />
+    </div>
+  </div>
+  <div class="col-12 d-flex justify-content-end mt-4">
+    <grid-view [columns]="columns" [dataSource]="dataList" (doChangePage)="doSearch($event)" [total]="totalItem"
+      [isOrder]="true" [action]="action" [search]="isSearch" style="float: left;width: 100%;"></grid-view>
+  </div>
+
+  @if(dataList.length == 0 && !isSearch)
+  {
+  <div class="col-12 text-center">
+    <div class="mt-4 title-l-semibold title-no-data">Doanh nghiệp chưa tồn tại điểm kinh doanh</div>
+    <div class="title-s-regular summary-no-data mb-3">Tạo điểm kinh doanh giúp bạn dễ dàng theo dõi doanh số & quản
+      lý hoạt động kinh doanh</div>
+    <p-button label="Tạo mới điểm kinh doanh" class="merchant-button" icon="icon-store" (click)="doOpenPage()" />
+  </div>
+  }
+</div>

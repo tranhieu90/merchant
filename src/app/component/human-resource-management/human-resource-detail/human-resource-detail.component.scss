@@ -1,0 +1,356 @@
+@import "../../../../scss/variables";
+@import "../../../../scss/mixins";
+
+.wrapper {
+  background: $color-global-neutral-white;
+  min-height: calc(100vh - 160px);
+  padding: $spacing-l;
+  border-radius: $border-radius-xs;
+
+  .content {
+    background: $color-global-neutral-white;
+    padding: $spacing-l;
+    border-radius: $border-radius-xs;
+    color: $color-text-neutral-main;
+
+    .no-data {
+      width: 314px;
+      margin: auto;
+      text-align: center;
+      margin-top: 7rem;
+    }
+  }
+}
+
+.status {
+  position: relative;
+  padding: $spacing-2xs $spacing-xs $spacing-2xs $spacing-m;
+  text-transform: uppercase;
+  border-radius: 15px;
+  //typo/paragraph-xs-semibold-Capital
+  @include typo-style($typo-font-sizes-xs, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+  ;
+
+  &::before {
+    content: '•';
+    position: absolute;
+    left: 5px;
+    font-size: 20px;
+    top: 2px;
+  }
+
+  &.lock {
+    background: $color-surface-semantic-normal-sub;
+    color: $color-text-semantic-normal;
+  }
+
+  &.success {
+    background: $color-surface-semantic-information-sub;
+    color: $color-text-semantic-information;
+  }
+}
+
+.me-spacing-l {
+  margin-right: $spacing-l;
+}
+
+.mb-spacing-l {
+  margin-bottom: $spacing-l;
+}
+
+.mb-spacing-xs {
+  margin-bottom: $spacing-xs;
+}
+
+.horizon-border {
+  height: $border-radius-l;
+  border: 1px solid $color-global-neutral-neutral-2
+}
+
+.font-sizes-s {
+  font-size: $typo-font-sizes-s;
+}
+
+.sub-info {
+  &-title {
+    color: $color-global-neutral-neutral-9;
+  }
+
+  &-value {
+    font-weight: $typo-font-weights-semibold;
+  }
+}
+
+.bg-button-primary-2 {
+  ::ng-deep.p-button {
+    background: $color-global-primary-primary-2;
+    color: $color-global-primary-primary-8;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+.bg-button-neutral-1 {
+  ::ng-deep.p-button {
+    color: $color-global-neutral-neutral-12;
+    background: $color-global-neutral-neutral-1;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+.detail-container {
+  background: $color-global-neutral-neutral-1;
+  border-radius: $border-radius-s;
+
+  .detail-info {
+    font-size: $typo-font-sizes-s;
+
+    &-title {
+      color: $color-global-neutral-neutral-9;
+    }
+
+    &-value {
+      font-weight: $typo-font-weights-semibold;
+      font-size: $typo-font-sizes-m;
+    }
+  }
+
+}
+
+.content-feature {
+  .item {
+    background: $color-surface-action-sub-2;
+    padding: $spacing-l;
+    border-radius: 8px;
+    color: $color-text-neutral-main;
+    height: 100%;
+
+    ::ng-deep.mdc-checkbox__background {
+      border-color: $color-icon-neutral-sub-2;
+    }
+
+        ::ng-deep.mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
+        ::ng-deep.mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
+      border-color: $color-surface-action-main;
+      background: $color-surface-action-main;
+    }
+
+        ::ng-deep.mat-internal-form-field > label {
+      padding-left: 0px;
+    }
+
+    ::ng-deep.mdc-checkbox--disabled .mdc-checkbox__background {
+      border-color: $color-surface-neutral-sub-4;
+      background: $color-surface-neutral-sub-3;
+    }
+
+        ::ng-deep.mdc-checkbox__native-control:disabled:checked ~ .mdc-checkbox__background {
+      border-color: $color-surface-neutral-sub-3;
+      svg {
+        display: none;
+      }
+      &::before {
+        content: "\e91e";
+        font-family: "webmerchant" !important;
+        color: $color-icon-neutral-sub-3;
+        font-size: 24px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: normal;
+      }
+    }
+
+        ::ng-deep.mdc-checkbox__native-control:disabled:indeterminate ~ .mdc-checkbox__background {
+      border-color: $color-surface-neutral-sub-3;
+      .mdc-checkbox__mixedmark {
+        width: 70%;
+        border-color: $color-icon-neutral-sub-3;
+      }
+    }
+
+    .level-0 {
+      //border-bottom: 1px dotted $color-border-neutral-main;
+      background: url('/merchantx/assets/images/border_dash.svg') repeat-x bottom;
+    }
+
+    .level-2 {
+      margin-left: 29px;
+    }
+
+    .title {
+      color: $color-text-neutral-main;
+    }
+  }
+}
+
+.sub-title {
+  padding: $spacing-2xs $spacing-xs;
+  height: 26px;
+  margin-top: 6px;
+  margin-left: 10px;
+  border-radius: 2px;
+
+  &.config {
+    color: $color-text-decoration-color-3;
+    background-color: $color-surface-decoration-color-3-sub;
+  }
+
+  &.admin {
+    color: $color-text-decoration-color-4;
+    background-color: $color-surface-decoration-color-4-sub;
+  }
+
+  &.user {
+    color: $color-text-decoration-color-5;
+    background-color: $color-surface-decoration-color-5-sub;
+  }
+}
+
+.organization {
+  border-radius: 1px;
+  border: 1px solid $color-global-neutral-neutral-2
+}
+
+.mat-stepper-horizontal {
+  margin-top: 8px;
+}
+
+.mat-mdc-form-field {
+  margin-top: 16px;
+}
+
+.step-role {
+  background: none;
+
+  ::ng-deep.mat-horizontal-stepper-header-container {
+    padding: $spacing-l;
+    background: $color-surface-neutral-main;
+    border-radius: $border-radius-s;
+    justify-content: center;
+
+  }
+
+  ::ng-deep.mat-horizontal-stepper-header {
+    height: auto;
+  }
+
+  ::ng-deep.mat-step-header,
+  ::ng-deep.mat-step-header-ripple {
+    background: none !important;
+  }
+
+  ::ng-deep.mat-step-text-label {
+    //typo/title-s/semibold
+    @include typo-style($typo-font-sizes-m, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+  }
+
+  ::ng-deep.mat-stepper-horizontal-line {
+    width: 84px;
+    height: 3px;
+    border-radius: $border-radius-round;
+    background: $color-surface-action-main;
+    flex: none;
+  }
+
+  ::ng-deep.mat-step-icon {
+    width: 40px;
+    height: 40px;
+    border: 1px solid $color-border-neutral-main;
+    border-radius: $border-radius-round;
+    background: $color-surface-neutral-main;
+    padding: $spacing-xs;
+    color: $color-text-neutral-sub;
+    //typo/paragraph-l/semibold
+    @include typo-style($typo-font-sizes-l, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+  }
+
+  ::ng-deep.mat-step-icon-selected {
+    background: $color-surface-action-main;
+    color: $color-text-text-on-on-action-main;
+  }
+
+  ::ng-deep.mat-horizontal-content-container {
+    border-radius: $border-radius-s;
+    background: $color-surface-neutral-main;
+    padding: $spacing-l;
+    margin-top: 15px;
+    min-height: calc(100vh - 280px);
+    position: relative;
+  }
+
+  .content-first {
+    width: 870px;
+    margin: auto;
+  }
+
+  .div-button {
+    margin-top: 50px;
+    text-align: right;
+  }
+
+  ::ng-deep .mat-step-icon.mat-step-icon-state-done {
+    background: $color-surface-action-main;
+    color: $color-text-text-on-on-action-main;
+  }
+
+  ::ng-deep .mat-step-header {
+    pointer-events: none;
+    cursor: default;
+  }
+
+  ::ng-deep.mat-step-icon-state-edit {
+    background: $color-surface-action-main;
+
+    .mat-step-icon-content {
+      .mat-icon {
+        display: none;
+      }
+
+      &::before {
+        content: "\e91d";
+        font-family: 'webmerchant' !important;
+        color: $color-global-neutral-white;
+        font-size: 24px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: normal;
+      }
+
+    }
+  }
+
+}
+
+.table-container {
+  height: 90%;
+  width: 100%;
+  overflow: auto;
+  position: relative;
+}
+
+.spinner {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+
+.sub-title{
+  margin-top: unset !important;
+}

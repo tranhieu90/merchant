@@ -1,0 +1,35 @@
+@import "../scss/mixins";
+@import "../scss/variables";
+.app-default{
+    display: flex;
+}
+.container-body {
+    position: relative;
+    top: 80px;
+    min-height: calc(100vh - 80px);
+    background: $color-background-main;
+    border-radius: 8px;
+    padding: 24px;
+    transition: all 500ms ease-in-out;
+}
+
+.nav-bar {
+    background: $color-surface-neutral-main;
+    padding: $spacing-s $spacing-xs;
+    position: fixed;
+    top: 80px;
+    bottom: 0;
+    z-index: 999;
+    transition: all 500ms ease-in-out;
+}
+.padding-collap{
+    padding: $spacing-s $spacing-2xs !important;
+}
+
+.wrapper{
+    background: $color-global-neutral-white;
+    min-height: calc(100vh - 125px);
+    padding: $spacing-l;
+    border-radius: $border-radius-xs;
+}
+

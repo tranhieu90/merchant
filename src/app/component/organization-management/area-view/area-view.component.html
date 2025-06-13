@@ -1,0 +1,29 @@
+
+<div *ngIf ="area.groupName" [ngClass]="['level', 'level-' + (area.level - subtractLevel)]" >
+    <div [ngClass]="['content-group d-flex justify-content-between align-items-center', (area.id == areaIdMove) ? 'area-active': '', (isSelectArea && area.children.length == 0)?'cursor-pointer':'']" (click)="doActiveArea(area)">
+        <div class="d-flex align-items-center gap-2">
+            <span [ngClass]="['cursor-pointer', area.children.length > 0 ? (isShowChildren? 'icon-angle_down':'icon-angle_right') : 'icon-arrow_right']" (click)="onOpenChildren()"></span>
+            <span style="white-space: pre;">{{ area.groupName }}</span>
+        </div>
+        @if(!isSelectArea || area.children.length > 0)
+        {
+            <div class="count">{{ area.children.length }} nhóm</div>
+        }
+        @else{
+            @if(area.id == areaIdMove)
+            {
+                <span class="icon-circle_checked"></span>
+            }
+            @else{
+                <span class="icon-circle_uncheck"></span>
+            }
+        }
+    </div>
+</div>
+
+<div *ngIf ="area.children && area.children.length > 0 && isShowChildren">
+    <div *ngFor="let child of area.children">
+        <app-area-view [area]="child" [subtractLevel] = "subtractLevel" [isSelectArea] = "isSelectArea" [isShowChildren] = "isShowChildren" [areaIdMove]="areaIdMove" (doChangeAreaIdMove)="doActiveArea($event)">
+        </app-area-view>
+    </div>
+</div>

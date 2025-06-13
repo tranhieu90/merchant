@@ -1,0 +1,265 @@
+@import "../../../scss/mixins";
+@import "../../../scss/variables";
+
+.container-login {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 100vh;
+  justify-content: center;
+
+  @media (max-width: 992px) {
+    flex-direction: column;
+    height: auto;
+  }
+}
+
+.left-section {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 50%;
+  min-width: 320px;
+  min-height: 100vh;
+  flex: 1;
+  // padding: 0 $spacing-5xl;
+
+  @media (max-width: 992px) {
+    width: 100%;
+    min-height: auto;
+    padding: $spacing-m;
+  }
+
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: $spacing-4xl 128px $spacing-l;
+  }
+}
+
+.logo {
+  margin-bottom: 128px;
+
+  img {
+    width: 167px;
+    height: 40px;
+  }
+}
+
+h1 {
+  color: $color-text-neutral-main;
+}
+
+.title {
+  gap: $spacing-none;
+  margin-bottom: $spacing-5xl;
+
+  p {
+    color: $color-text-neutral-sub-2;
+    margin: 0;
+  }
+}
+
+.form-group {
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+
+  label {
+    color: $color-text-neutral-main;
+  }
+
+  // input {
+  //   display: block;
+  //   padding: $spacing-m;
+  //   border: 1px solid $color-border-neutral-main;
+  //   border-radius: $border-radius-s;
+  //   color: $color-text-neutral-main;
+  // }
+}
+
+.password-group {
+  position: relative;
+}
+
+.eye-icon {
+  color: $color-icon-neutral-sub-3;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 32px;
+
+  input {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+  }
+
+  label {
+    color: $color-text-neutral-sub;
+  }
+}
+
+.login-btn {
+  width: 100%;
+  margin-bottom: $spacing-2xl;
+  gap: $spacing-none;
+  padding: $spacing-s $spacing-none;
+  border-radius: $border-radius-s;
+  background-color: $color-surface-action-main;
+  color: $color-text-text-on-on-action-main;
+  border: none;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background-color: #003d99;
+}
+
+:host ::ng-deep.merchant-button .p-button {
+  width: 100%;
+  margin-bottom: $spacing-2xl;
+}
+
+a {
+  display: block;
+  text-align: center;
+  color: $color-text-action-main;
+}
+
+.footer {
+  width: 100%;
+  text-align: center;
+  color: $color-text-neutral-sub;
+  padding: 24px;
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+}
+
+.right-section {
+  flex: 1;
+  width: 50%;
+  padding: $spacing-l;
+  height: 100vh;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: $border-radius-m;
+  }
+
+  @media (max-width: 992px) {
+    display: none; // Ẩn ảnh khi màn hình nhỏ để tập trung vào nội dung
+  }
+}
+
+.chat-bubble {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.chat-bubble p {
+  font-size: 16px;
+  color: #333;
+  margin: 0;
+}
+
+.track-btn {
+  background-color: #0052CC;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.track-btn:hover {
+  background-color: #003d99;
+}
+
+.logo-pw {
+  margin-bottom: 64px;
+
+  img {
+    width: 167px;
+    height: 40px;
+  }
+}
+
+.back-text {
+  display: flex;
+
+  img {
+    width: 24px;
+    height: 24px;
+    margin-right: 4px;
+  }
+}
+
+.m-b-48 {
+  margin-bottom: $spacing-4xl;
+}
+
+.m-b-24 {
+  margin-bottom: $spacing-l !important;
+}
+
+.condition {
+  display: flex;
+  align-items: center;
+  transition: color 0.3s;
+  margin-bottom: 4px;
+
+  img {
+    width: 24px;
+    height: 24px;
+    margin-right: 4px;
+    transition: filter 0.3s;
+  }
+
+  label {
+    transition: color 0.3s;
+    color: $color-text-neutral-sub-2;
+  }
+}
+
+.condition.valid label {
+  color: $color-text-neutral-main;
+}
+
+.icon-check {
+  padding: 4px;
+  color: $color-icon-neutral-sub-2;
+}
+
+.condition.valid span {
+  color: $color-icon-semantic-success !important;
+}
+
+.color-040D1F {
+  color: $color-text-neutral-main;
+}
+
+.m-b-32 {
+  margin-bottom: 32px !important;
+}
+
+[type=submit],
+button {
+  width: 100% !important;
+  -webkit-appearance: button;
+}

@@ -1,0 +1,70 @@
+<div class="d-flex justify-content-between modal-header">
+  <h4 class="modal-title title-m-bold color-040d1f">Hoàn tiền</h4>
+  <span class="icon-close_large cursor-pointer" (click)="onclose()"></span>
+</div>
+
+<div class="modal-body">
+  <form [formGroup]="formCashback">
+    <div class="row">
+      <div class="d-flex gap-1 mb-2">
+        <div class="title-m-semibold">Số tiền tối đa có thể hoàn trả: </div>
+        <div class="text-value">11,000,000đ</div>
+      </div>
+      <div class="d-flex gap-1 mb-4">
+        <div class="title-m-semibold">MÃ FT giao dịch: </div>
+        <div class="text-value">FT28590</div>
+      </div>
+      <div class="col-12 mb-4">
+        <label class="form-label title-m-semibold">Số tiền hoàn trả (đ)</label>
+        <div class="p-inputgroup">
+          <input type="number" pInputText class="merchant-input" formControlName="money"
+            placeholder="Số tiền hoàn trả phải lớn hơn 2,000đ" />
+          @if (this.formCashback.get('money')?.value) {
+          <span class="p-input-icon-right" (click)="clearValue('money')">
+            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+          </span>
+          }
+        </div>
+        @if (formCashback.controls['money'].touched && formCashback.controls['money'].invalid) {
+        <div class="m-caption error">
+          <div class="icon-caption">
+            <span class="icon-error_solid"></span>
+          </div>
+          @if (formCashback.controls['money'].hasError('required')) {
+          <span class="text-caption paragraph-s-regular">Vui lòng nhập số tiền</span>
+          }
+        </div>
+        }
+      </div>
+      <div class="col-12">
+        <label class="form-label title-m-semibold">Nội dung hoàn trả</label>
+        <div class="p-inputgroup p-textaregroup">
+          <textarea appInputSanitize rows="2" pInputTextarea formControlName="content" class="merchant-input"
+            placeholder="Nhập lý do hoàn tiền không dấu & không ký tự đặc biệt">
+                   </textarea>
+          <span class="count-length">{{ this.formCashback.get("content")?.value?.length }}/500</span>
+          @if (this.formCashback.get('content')?.value) {
+          <span class="p-input-icon-right" (click)="clearValue('content')">
+            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+          </span>
+          }
+        </div>
+        @if (formCashback.controls['content'].touched && formCashback.controls['content'].invalid) {
+        <div class="m-caption error">
+          <div class="icon-caption">
+            <span class="icon-error_solid"></span>
+          </div>
+          @if (formCashback.controls['content'].hasError('maxlength')) {
+          <span class="text-caption paragraph-s-regular">Vui lòng không nhập quá 500 kí tự</span>
+          }
+        </div>
+        }
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="modal-footer">
+  <p-button label="Hủy" class="merchant-button-tertiary" (click)="doAction(false)" />
+  <p-button label="Cập nhật" class="merchant-button" [disabled]="formCashback.invalid" (click)="doAction(true)" />
+</div>

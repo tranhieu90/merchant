@@ -1,0 +1,135 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="header-m-semibold">Cơ cấu tổ chức</div>
+    <div class="d-flex">
+        <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="doCancel()" />
+        <p-button label="Lưu thiết lập" class="merchant-button" [disabled]="checkValidCreate()"
+            (click)="doCreateOrg()" />
+    </div>
+</div>
+<div class="wrapper row">
+    <div class="col-3" style="max-height: 80vh; overflow-y: auto;">
+        <div class="content">
+            <h1 class="title-m-semibold mb-3"><span class="icon-building"></span> {{this.merchantName}}
+                ({{lstMerchantRemain.length}})</h1>
+            <p-button *ngIf="isPermission" label="Tạo nhóm" class="merchant-button-tertiary merchant-button-m"
+                icon="icon-Folder-plus" (click)="addArea(1, null)" />
+            <div *ngIf="lstAreas.length > 0" class="mt-3">
+                <div *ngFor="let area of lstAreaByOrder">
+                    <app-area-item [lstAreas]="lstAreas" [area]="area" [areaActive]="areaActive"
+                        (activeArea)="doActiveArea($event)" (deleteArea)="deleteArea($event)"
+                        (addArea)="addArea($event.level, $event.parentId)"
+                        (blurAreaName)="onBlurCreateArea($event.event, $event.areaId, $event.isFormCreateInvalid)"
+                        [isShowButton]="isPermission">
+                    </app-area-item>
+                </div>
+            </div>
+            <div *ngIf="lstAreas.length == 0" class="box-guide d-flex mt-3">
+                <span class="icon-information_solid "></span>
+                <div class="content-guide align-self-start">
+                    <div class="title-s-semibold">Hướng dẫn</div>
+                    <div class="list-item">
+                        <div class="title">1. Tạo nhóm chứa điểm kinh doanh</div>
+                        <div class="item">Chọn nút "Tạo nhóm" và nhập thông tin nhóm</div>
+                        <div class="title">2. Chuyển điểm bán vào nhóm</div>
+                        <div class="item">Chọn các điểm kinh doanh cần chuyển sau đó chọn nhóm đích để chuyển điểm kinh
+                            doanh vào </div>
+                        <div class="item">Vui lòng gán toàn bộ điểm kinh doanh vào các nhóm để lưu tiến trình thiết lập
+                        </div>
+                        <div class="title">3. Lưu thiết lập</div>
+                        <div class="item">Kiểm tra lại thông tin đã chọn</div>
+                        <div class="item">Nhấn "Lưu thiết lập" để hoàn tất việc thiết lập tổ chức</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-9" style="max-height: 80vh; overflow-y: auto;">
+        <div class="content">
+            <div>
+                <div *ngIf="areaActive.id">
+                    <form *ngIf="isEditArea" [formGroup]="formEditArea">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="p-inputgroup">
+                                <input appShowClearOnFocus=".clear-icon" appInputSanitize type="text" pInputText class="merchant-input me-2" id="id" formControlName="areaName"
+                                    placeholder="Nhập tên nhóm" (blur)="checkDuplicateAreaName($event)"
+                                    (keydown.enter)="checkDuplicateAreaName($event)" #areaNameInput/>
+                                @if(this.formEditArea.get('areaName')?.value){
+                                <span class="p-input-icon-right clear-icon" (click)="clearValue('areaName')">
+                                    <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                                </span>
+                                }
+                            </div>
+                            <p-button class="merchant-button button-l btn-edit-1" icon="icon-edit" label="Cập nhật"
+                                [disabled]="formEditArea.invalid" (click)="updateAreaName()" />
+                        </div>
+                        @if (formEditArea.controls['areaName'].touched && formEditArea.controls['areaName'].invalid) {
+                        <div class="m-caption error">
+                            <div class="icon-caption">
+                                <span class="icon-error_solid"></span>
+                            </div>
+                            @if (formEditArea.controls['areaName'].hasError('required')) {
+                            <span class="text-caption paragraph-m-regular">Vui lòng nhập thông tin</span>
+                            }
+                            @else if(formEditArea.controls['areaName'].hasError('areaExists')){
+                            <span class="text-caption paragraph-m-regular">Tên nhóm đã tồn tại</span>
+                            }
+                            @else if(formEditArea.controls['areaName'].hasError('maxlength')){
+                            <span class="text-caption paragraph-m-regular">Tối đa 50 ký tự</span>
+                            }
+                        </div>
+                        }
+                    </form>
+
+                    <div *ngIf="!isEditArea" class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <span class="header-m-semibold me-3">{{areaActive.groupName}}</span>
+                            <p-button class="merchant-button-icon button-l button-light btn-edit" icon="icon-edit"
+                                (click)="doEditArea()" />
+                        </div>
+                        <div>
+                            <p-button *ngIf="areaActive.level < 5 && areaActive.lstMerchant.length == 0"
+                                label="Thêm nhóm mới" class="merchant-button-secondary me-2" icon="icon-Folder-plus"
+                                (click)="addArea(areaActive.level + 1, areaActive.id)" />
+                            <p-button class="merchant-button-icon button-l button-light button-trash" icon="icon-trash"
+                                (click)="deleteArea(areaActive.id)" />
+                        </div>
+                    </div>
+
+                    <div *ngIf="areaActive.children.length > 0" class="mt-4">
+                        <div class="title-m-semibold mb-3">Danh sách nhóm</div>
+                        <div *ngFor="let area of areaActive.children">
+                            <app-area-view [area]="area" [subtractLevel]="area.level - 1"> </app-area-view>
+                        </div>
+                    </div>
+
+                    <div *ngIf="lstMerchantsAll.length > 0 && areaActive.children.length === 0">
+                        <div *ngIf="areaActive.lstMerchant.length > 0" class="mt-4">
+                            <app-table-merchant [dataSource]="lstMerchantActive" [isShowCheckbox]="true"
+                                [isShowMoveMerchant]="true" (doMoveMerchant)="doMoveMerchant($event)">
+                            </app-table-merchant>
+                        </div>
+                        <div *ngIf="areaActive.lstMerchant.length === 0" class="no-data">
+                            <img [src]="assetPath + '/assets/images/grid-search-empty.png'">
+                            <div class="mt-4 title-l-semibold title-no-data">Nhóm chưa có điểm kinh doanh</div>
+                            <div class="title-s-regular summary-no-data mb-3">Vui lòng thêm các điểm kinh doanh vào nhóm
+                                để quản lý các điểm kinh doanh của bạn hiệu quả hơn</div>
+                            <p-button label="Gán điểm kinh doanh" class="merchant-button" icon="icon-Folder"
+                                (click)="doAssignSubmerchant()" />
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="lstMerchantsAll.length > 0 && !areaActive.id">
+                    <app-table-merchant [dataSource]="lstMerchantsAll"></app-table-merchant>
+                </div>
+            </div>
+            <div *ngIf="lstMerchantsAll.length == 0">
+                <div class="no-data">
+                    <img [src]="assetPath + '/assets/images/grid-search-empty.png'">
+                    <div class="mt-4 title-l-semibold title-no-data">Doanh nghiệp chưa tồn tại nhóm</div>
+                    <div class="title-s-regular summary-no-data mb-3">Vui lòng tạo nhóm và thiết lập để quản lý các điểm kinh doanh của bạn hiệu quả hơn</div>
+                    <!-- <p-button label="Quản lý điểm kinh doanh" class="merchant-button" icon="icon-setting" /> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

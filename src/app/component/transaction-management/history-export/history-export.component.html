@@ -1,0 +1,16 @@
+<div class="subject-page mb-4">Lịch sử xuất file excel</div>
+<div class="wrapper">
+    <div class="mt-3">
+        @if(dataList?.length) {
+        <grid-view [columns]="columns" [dataSource]="dataList" [isShowPage]="false" [isOrder]=true [action]="action"
+            style="float: left;width: 100%;">
+        </grid-view>
+        }
+        @else {
+        <div class="col-12 text-center mt-5 p-5">
+            <img [src]="assetPath + '/assets/images/grid-empty.png'">
+            <div class="mt-4 title-l-semibold title-no-data">Chưa có yêu cầu xuất file</div>
+        </div>
+        }
+    </div>
+</div>

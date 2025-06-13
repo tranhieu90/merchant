@@ -1,0 +1,111 @@
+#!/usr/bin/env groovy
+library('cicd-shared-lib-dev@tanzu') _
+
+import java.text.SimpleDateFormat
+
+// node("${NODE_INTEGRATION_TEAM}") {
+node("${NODE_INTEGRATION_TEAM_RHEL8}") {
+    // =================================================================================
+    /**
+     * TODO: Chi thay doi 2 thong tin tren tuong ung voi project
+     *
+     * project_name: Name of project
+     * kubernetes_namespace: namespace of K8S
+     */
+    def project_name = "mb-merchantx-web"
+    def kubernetes_namespace = "paygate-fe"
+
+    // ===================================================================================
+    def image_version = "1.0.1"
+    def chart_version = "0.1.${BUILD_NUMBER}"
+    def environment = "L01"
+    //def harbor_host = "${harbor_uat}"
+    def harbor_host = vault path: 'cicd/harbor', key: 'harbor_tanzu_dev', credentialsId: 'vault-token-dev', engineVersion: "2"
+    def helm_template = vault path: 'cicd/helm', key: 'helm_template_common', credentialsId: 'vault-token-dev', engineVersion: "2"
+    def helm_host_argocd = "argocd-helm-tanzu-dev-L01"
+    def docker_prefix = "${harbor_host}/dev-paygate-fe"
+    def secret_key = "${project_name}"
+    def secret_value =  sh(script: "echo -n '${secret_key}' | sha1sum | head -c 40", returnStdout: true)
+    //def helm_template ="helm-template-mbbank-argocd-prod"
+    // ===================================================================================
+
+    /**
+     * TODO: Chon luong deploy
+     * Deploy theo luong argocd : CICD-ARGOCD
+     * Deploy theo luong helm : CICD-HELM
+     */
+    def Options = "CICD-HELM"
+    def sub_path = "tanzu-uat"
+    //def capslock = ""
+    //def LowerCaseChannel = "${capslock}".toLowerCase()
+    //def ChanNel = "${LowerCaseChannel}"
+
+    // ===================================================================================
+
+    ci_common(project_name, docker_prefix, image_version, harbor_host, sub_path)
+    try {
+        def arrProject = environment.split(' ')
+        def stages = [failFast: true]
+        if(arrProject.length > 0 ){
+            for (int i = 0; i < arrProject.length; i++) {
+                def env = arrProject[i];
+                switch(env) {
+                    case "L01":
+                        helm_host = "${helm_host_argocd}"
+                        /*
+                        * TODO : Truy thong tin cum
+                        **** dev <=> dev-tanzu01
+                        **** uat <=> uat-tanzu01
+                        **** uddn <=> tanzu-mb-dev-uddn-cluster
+                        **** paygate <=> tanzu-dev-paygate-cluster-01
+                        **** mlops <=> tanzu-mb-dev-mlops-cluster
+                        */
+                        env_argocd = "paygate"
+                        break
+                    }
+                stage("Start ${arrProject[i]} Environment"){
+                    script {
+                        service_account_common(project_name, env, secret_key, secret_value, sub_path)
+                        helm_pack_common(project_name, env, helm_host, helm_template, docker_prefix, image_version, Options, chart_version, sub_path)
+                        cd_common(project_name, helm_host, arrProject, stages, docker_prefix, image_version, env, Options, kubernetes_namespace, env_argocd, chart_version) }
+                }
+            }
+        }
+        //parallel stages
+    } catch (Exception ex) {
+        currentBuild.result = "Failed"
+        throw ex
+    }
+}
+def ci_common(def project_name, def docker_prefix, def image_version,def harbor_host, def sub_path) {
+    def project = "merchantx"
+
+    stage(' Git Clone ') {
+        script {
+            ci_common_java()
+        }
+    }
+
+    stage(' Angular build ') {
+        env.PATH = "/sharedata/node/node-v22.12.0-linux-x64/bin:${env.PATH}"
+        sh "rm -rf node_modules || true"
+    //  sh "/sharedata/node/node-v22.12.0-linux-x64/bin/npx nx reset"
+        sh "/sharedata/node/node-v22.12.0-linux-x64/bin/npm cache clean --force && npm cache verify"
+        sh "/sharedata/node/node-v22.12.0-linux-x64/bin/npm install"
+    //     // sh "/sharedata/node/node-v22.12.0-linux-x64/bin/node ./node_modules/.bin/nx build ${project} --base-href=/${project}/ --deploy-url=/${project}/ --aot --configuration production --parallel"
+    //     // sh "npm install -g @angular/cli@9.0.2"
+    //     // sh "npm build --configuration production"
+    //     // sh "npm run prod"
+    //     // sh "npm cache clean --force && npm cache verify"
+    //     // sh "npm install"
+    //     // sh "/sharedata/node/node-v22.12.0-linux-x64/bin/ng build --configuration production"
+        sh "/sharedata/node/node-v22.12.0-linux-x64/bin/npm run build -- --base-href=/merchantx/ --deploy-url=/merchantx/"
+    }
+
+    stage(' Docker Build ') {
+        script {
+            docker_build_push(project_name, docker_prefix, image_version, harbor_host, sub_path)
+        }
+    }
+
+}

@@ -1,0 +1,51 @@
+@import "../../../../scss/mixins";
+@import "../../../../scss/variables";
+@import "../../../../scss/mbutton";
+
+::ng-deep .dialog-update-user .mdc-dialog__surface {
+  border-radius: 4px !important;
+}
+
+.modal-header {
+  background-color: $color-surface-highlight-main;
+  color: $color-text-neutral-main;
+  padding: $spacing-l;
+}
+
+.modal-footer {
+  gap: $spacing-m;
+  padding: $spacing-l;
+}
+
+.modal-body {
+  padding: $spacing-l;
+}
+
+.icon-calendar {
+  @include base-icon;
+  color: $color-icon-neutral-main;
+  cursor: pointer;
+}
+
+.r-25 {
+  right: 25px;
+}
+
+::ng-deep p-calendar input::placeholder {
+  color: $color-text-neutral-sub-3 !important;
+  opacity: 1;
+}
+
+.calendar-icon-wrapper {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 12px;
+  top: 0;
+  bottom: 0;
+  pointer-events: auto;
+}
+
+

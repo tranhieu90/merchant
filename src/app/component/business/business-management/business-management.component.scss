@@ -1,0 +1,38 @@
+@import "../../../../scss/variables";
+@import "../../../../scss/mixins";
+
+.wrapper {
+    background: $color-global-neutral-white;
+    min-height: calc(100vh - 160px);
+    padding: $spacing-l;
+    border-radius: $border-radius-xs;
+}
+
+.search-role {
+    width: 540px;
+}
+
+.title-no-data {
+    color: $color-text-neutral-main;
+}
+
+.summary-no-data {
+    color: $color-text-neutral-sub;
+}
+
+.merchant-treeSelect {
+    width: 100%;
+
+    ::ng-deep .p-treeselect {
+        width: 100%;
+    }
+
+    ::ng-deep .p-treeselect .p-treeselect-label {
+        padding: $spacing-s $spacing-m;
+        font-size: $typo-font-sizes-m;
+    }
+}
+
+.container-btn-cf {
+    margin: 0 $spacing-s $spacing-s;
+}

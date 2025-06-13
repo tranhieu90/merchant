@@ -1,0 +1,15 @@
+<app-loading></app-loading>
+<p-toast class="merchant-toast" [baseZIndex]="9999" />
+@if(showLayout){
+<nav-header (NavCollapse)="NavCollapse($event)"></nav-header>
+<nav-bar class="nav-bar" [class.padding-collap]="navCollapsed" [isCollapsed]="navCollapsed"
+    [style.width]="navCollapsed?'64px':'253px'"></nav-bar>
+<div class="container-body" [style.margin-left]="navCollapsed?'64px':'253px'">
+    <!-- <div class="wrapper"> -->
+        <breadcumb></breadcumb>
+        <router-outlet></router-outlet>
+    <!-- </div> -->
+</div>
+}@else{
+    <router-outlet></router-outlet>
+}

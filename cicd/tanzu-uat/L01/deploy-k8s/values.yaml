@@ -1,0 +1,218 @@
+#ignore: -service
+#ignoreDeployment: -deployment
+# Helm Release
+helmRelease:
+  releaseNamespace: Release_Namespace
+#Chi sua gia tri, khong thay doi key
+# So luong pod duoc tao
+replicaCount: 1
+
+# Khai bao service
+# Type = NodePort cap nhat cac truong (nodePort,port,targetPort)
+# Type = LoadBalancer cap nhat cac truong (port,targetPort,loadBalancerIP)
+# Type = ClusterIP cap nhat cac truong (port,targetPort)
+service:
+  type: ClusterIP
+  # nodePort: 8881
+  port: 8080
+  targetPort: 8080
+  # loadBalancerIP: 10.215.254.78
+
+# Khai bao service su dung callDns
+callDns: false
+dnsService:
+  nodePortdns: 80
+
+# Khai bao hostnames
+hostAliases:
+  10.1.18.193: esbinternal.mbbank.com.vn
+  10.1.12.164: esbinternet.mbbank.com.vn
+  10.1.18.195: esbinternal.mbbank.com.vn
+   
+# Khai bao su dung configmap
+configMaps:
+  - nginx.conf
+
+# Khai bao su dung PVC
+pvc: false
+namePVC: 
+  - pvc-cmv
+  - pvc-crm-next-gen
+   
+# Khai bao volumeMount
+volumeMountsMap:
+  mountPathcommon: /deployment/common
+  mountPathconfig: /deployment/config
+  mountPathpodinfo: /deployment/podinfo   
+  mountPathPVC:
+    pvc-cmv: /data
+    pvc-crm-next-gen: /crmdata
+  
+#Khai bao tai nguyen su dung cho pod
+resources:
+  limits:
+  requests:
+    memory: 1Gi
+
+# Khai bao promethus de gia tri promethus true,nguoc lai de false
+promethus: false
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/path: /actuator/prometheus
+  prometheus.io/port: "8080"
+  ## Tham so tuy bien istio (Dieu kien su dung sidecar.istio.io/inject: "true" )
+  sidecar.istio.io/proxyCPU: 10m
+  sidecar.istio.io/proxyCPULimit: "2"
+  sidecar.istio.io/proxyMemory: 128Mi
+  sidecar.istio.io/proxyMemoryLimit: 2Gi
+  proxy.istio.io/config: |-
+    drainDuration: '45s'
+    terminationDrainDuration: '5s'
+    parentShutdownDuration: '60s'
+# Khai bao label cho istio
+labels: false
+templateLabels:
+  version: old
+  sidecar.istio.io/inject: "true"
+
+# Khai bao HealthCheck de gia tri healthCheck true,nguoc lai de false
+healthCheck: false
+startupProbe:
+  failureThreshold: 30
+  httpGet:
+    path: /actuator/health
+    port: 8080
+    scheme: HTTP
+  periodSeconds: 5
+  successThreshold: 1
+  timeoutSeconds: 2
+livenessProbe:
+  failureThreshold: 30
+  httpGet:
+    path: /actuator/health
+    port: 8080
+    scheme: HTTP
+  periodSeconds: 5
+  successThreshold: 1
+  timeoutSeconds: 2
+readinessProbe:
+  failureThreshold: 30
+  httpGet:
+    path: /actuator/health
+    port: 8080
+    scheme: HTTP
+  periodSeconds: 5
+  successThreshold: 1
+  timeoutSeconds: 2
+
+# Command.option-(Bat buoc): [java, golang, dotnet, python-uvicorn, python-gunicorn, python, angular, manual, native, RunDocker]
+# Command.binaryfile-(Bat buoc voi cac option: java, golang, dotnet, python-uvicorn, python):
+# file nhi phan cua app: file.jar-java, file.dll-dotnet, file-golang, main.app-python-uvicorn, main.py-python
+# Command.manual-(Bat buoc neu option la "manual"): command cli entrypoint
+# Bien moi truong tuong ung cho tung option: java-JVM_OPTS, golang-GO_OPTS, dotnet-DOTNET_OPTS, python*-PYTHON_OPTS
+Command:
+  # -- Options: [java, golang, dotnet, python-uvicorn, python-gunicorn, python, angular, manual, native, RunDocker]
+  option: angular
+  # Xms: -Xms1024m
+  # Xmx: -Xmx3072m
+  # binaryfile: app.jar
+  # manual: java $JVM_OPTS -jar partner-mic.jar
+
+
+# Khai bao bien moi truong 
+ENV_PROFILE: uat
+JVM_OPTS: -Xms1024m -Xmx2048m -Djava.security.egd=file:/dev/./urandom -Dspring.config.location=file:/deployment/config/application-dev.properties,file:/deployment/config/application.properties #-Dlogging.config=file:/deployment/config/log4j2-dev.xml
+# JAVA_TOOL_OPTIONS: -Xms512m -Xmx2048m -Dsun.net.http.retryPost=false -Dhttp.retryPost=false -Dspring.config.location=/deployment/config/application.properties -Dlogging.config=/deployment/config/log4j2.xml
+# GO_OPTS: golang
+#DOTNET_OPTS: donet
+#PYTHON_OPTS: python
+  
+# Chi dinh pod chay tren node co dinh(chi dung tren live: default hoac ecm)
+NodeSelectorEnable: false
+nodeName: default
+
+
+##################Khong duoc chinh ben duoi#########################
+# So lan deploy Helm
+numberHelm: H1
+
+# Thong tin image
+image:
+  repository: image_version
+  pullPolicy: Always
+  tag: "image_tag"
+
+# Khai bao secret-registry harbor
+imagePullSecrets:
+ - name: harbor-secret-registry
+
+########### Dung thi coppy vao ##########
+# Khai bao gRPC service
+gRPCEnable: false
+gRPCService:
+  nodePortgrpc: 10780
+  portgrpc: 10780
+# Khai bao hpa thi de gia tri hpa true,,nguoc lai de false
+autoscaling:
+  enabled: false
+  minPodsHPA: 2
+  maxPodsHPA: 4
+  cpuHPA: 80
+  memoryHPA: 80
+  ExternalMetricName: logstash_kafka_consumergroup_lag
+  #ExternalMetricAvgValue: 11
+  #ExternalMetricValue: 10
+
+## Tao Service Account
+serviceAccount:
+  create: false
+  # name: k8s_sa
+
+#Ten project thuc hien canary va role opa luu tren keycloak
+canary: false
+projectName: ms-card-partner-new
+
+# OpaEnvoy
+### Dung thi copy noi dung duoi vao file values
+# opaEnvoy:
+#   enabled: true
+#   OPA_ENV: prod ### images base opa to env
+#   label: default 
+#   opalServer: http://opal-server-service.opa-istio.svc.cluster.local:8003
+
+### Cau hinh dung vault tap chung
+VaultInject: false
+
+# Khai bao su dung configmap tap chung
+# ConfigMapsCommonName: Ten Configmap-Common.
+# ConfigMapsCommonData: Doi voi Configmap-Common co nhieu files,  ConfigMapsCommonData chi ra se su dung file nao trong Confimap-Common tren.
+ConfigCommon: false
+ConfigMapsCommonName: esb-common-config
+ConfigMapsCommonData:
+  - application-common.properties
+# Trong Dockerfile se khai bao them CONFIGMAP_COMMON trong ENTRYPOINT de su dung configmap-common.
+# Vi Du: ENTRYPOINT exec java $JVM_OPTS -jar -Doracle.jdbc.timezoneAsRegion=false interest-fee-management.jar --spring.config.location=$CONFIGMAP_COMMON,file:/deployment/config/application.properties 
+CONFIGMAP_COMMON: file:/deployment/common/application-common.properties
+
+# Khai bao user
+## User appadmin, ID 10000
+## User nginx, ID 101
+### Configure Pods Security Context
+podSecurityContext:
+  enabled: true
+  fsGroup: 101
+
+## Configure Container Security Context
+containerSecurityContext:
+  enabled: true
+  runAsUser: 101
+  runAsNonRoot: true
+
+
+### Configure kind
+#statefulset: true
+#canary: true
+TerminationGracePeriodSeconds:
+  enabled: false
+  graceperiodseconds: 1800
+

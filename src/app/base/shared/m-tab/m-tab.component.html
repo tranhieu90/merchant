@@ -1,0 +1,73 @@
+<div class="wrapper">
+    <h3 class="col-12 mb-3">Tab</h3>
+    <h5 class="col-12 mb-3">1. Size S</h5>
+    <p-tabView styleClass="merchant-tab size-s">
+        <p-tabPanel header="Tab 1">
+            <div>
+                Nội dung tab 1...
+            </div>
+        </p-tabPanel>
+        <p-tabPanel header="Tab 2">
+            <ng-template pTemplate="header">
+                <div class="flex align-items-center gap-2">
+                    <span class="font-bold white-space-nowrap m-0">
+                        Tab 2
+                    </span>
+                    <p-badge value="2" />
+                </div>
+            </ng-template>
+            <div>
+                Nội dung tab 2...
+            </div>
+        </p-tabPanel>
+        <p-tabPanel header="Tab 3" [disabled]="true">
+            <ng-template pTemplate="header">
+                <div class="flex align-items-center gap-2">
+                    <span class="font-bold white-space-nowrap m-0">
+                        Tab 3
+                    </span>
+                    <p-badge value="18" />
+                </div>
+            </ng-template>
+            <div>
+                Nội dung tab 3...
+            </div>
+        </p-tabPanel>
+    </p-tabView>
+
+    <h5 class="col-12 mt-5">2. Size M</h5>
+    <p-tabView styleClass="merchant-tab">
+        <p-tabPanel header="Tab 1">
+            <div>
+                Nội dung tab 1...
+            </div>
+        </p-tabPanel>
+        <p-tabPanel header="Tab 2">
+            <ng-template pTemplate="header">
+                <div class="flex align-items-center gap-2">
+                    <span class="font-bold white-space-nowrap m-0">
+                        Tab 2
+                    </span>
+                    <p-badge value="2" />
+                </div>
+            </ng-template>
+            <div>
+                Nội dung tab 2...
+            </div>
+        </p-tabPanel>
+        <p-tabPanel header="Tab 3" [disabled]="true">
+            <ng-template pTemplate="header">
+                <div class="flex align-items-center gap-2">
+                    <span class="font-bold white-space-nowrap m-0">
+                        Tab 3
+                    </span>
+                    <p-badge value="18" />
+                </div>
+            </ng-template>
+            <div>
+                Nội dung tab 3...
+            </div>
+        </p-tabPanel>
+    </p-tabView>
+</div>
+

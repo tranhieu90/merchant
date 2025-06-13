@@ -1,0 +1,304 @@
+@import "../../../../scss/variables";
+@import "../../../../scss/mixins";
+
+.mat-stepper-horizontal {
+  margin-top: 8px;
+}
+
+.mat-mdc-form-field {
+  margin-top: 16px;
+}
+
+.step-role {
+  background: none;
+
+  ::ng-deep.mat-horizontal-stepper-header-container {
+    padding: $spacing-l;
+    background: $color-surface-neutral-main;
+    border-radius: $border-radius-s;
+    justify-content: center;
+
+  }
+
+  ::ng-deep.mat-horizontal-stepper-header {
+    height: auto;
+  }
+
+  ::ng-deep.mat-step-header,
+  ::ng-deep.mat-step-header-ripple {
+    background: none !important;
+  }
+
+  ::ng-deep.mat-step-text-label {
+    //typo/title-s/semibold
+    @include typo-style($typo-font-sizes-m, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+  }
+
+  ::ng-deep.mat-stepper-horizontal-line {
+    width: 84px;
+    height: 3px;
+    border-radius: $border-radius-round;
+    background: $color-surface-action-main;
+    flex: none;
+  }
+
+  ::ng-deep.mat-step-icon {
+    width: 40px;
+    height: 40px;
+    border: 1px solid $color-border-neutral-main;
+    border-radius: $border-radius-round;
+    background: $color-surface-neutral-main;
+    padding: $spacing-xs;
+    color: $color-text-neutral-sub;
+    //typo/paragraph-l/semibold
+    @include typo-style($typo-font-sizes-l, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+  }
+
+  ::ng-deep.mat-step-icon-selected {
+    background: $color-surface-action-main;
+    color: $color-text-text-on-on-action-main;
+  }
+
+  ::ng-deep.mat-horizontal-content-container {
+    border-radius: $border-radius-s;
+    background: $color-surface-neutral-main;
+    padding: $spacing-l;
+    margin-top: 15px;
+    min-height: calc(100vh - 280px);
+    position: relative;
+  }
+
+  .content-first {
+    width: 870px;
+    margin: auto;
+  }
+
+  .div-button {
+    margin-top: 50px;
+    text-align: right;
+  }
+
+  ::ng-deep .mat-step-icon.mat-step-icon-state-done {
+    background: $color-surface-action-main;
+    color: $color-text-text-on-on-action-main;
+  }
+
+  ::ng-deep .mat-step-header {
+    pointer-events: none;
+    cursor: default;
+  }
+
+  ::ng-deep.mat-step-icon-state-edit {
+    background: $color-surface-action-main;
+
+    .mat-step-icon-content {
+      .mat-icon {
+        display: none;
+      }
+
+      &::before {
+        content: "\e91d";
+        font-family: 'webmerchant' !important;
+        color: $color-global-neutral-white;
+        font-size: 24px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: normal;
+      }
+
+    }
+  }
+
+}
+
+.content-feature {
+  .item {
+    background: $color-surface-action-sub-2;
+    padding: $spacing-l;
+    border-radius: 8px;
+    color: $color-text-neutral-main;
+    height: 100%;
+
+    ::ng-deep.mdc-checkbox__background {
+      border-color: $color-icon-neutral-sub-2;
+
+    }
+
+    ::ng-deep.mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
+    ::ng-deep.mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
+      border-color: $color-surface-action-main;
+      background: $color-surface-action-main;
+    }
+
+    ::ng-deep.mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background {
+      svg {
+        display: none;
+      }
+
+      &::before {
+        content: "\e91d";
+        font-family: 'webmerchant' !important;
+        color: $color-global-neutral-white;
+        font-size: 24px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: normal;
+      }
+    }
+
+    ::ng-deep.mdc-checkbox__native-control:indeterminate ~ .mdc-checkbox__background .mdc-checkbox__mixedmark {
+      width: 70%;
+    }
+
+    ::ng-deep.mat-internal-form-field > label {
+      padding-left: 0px;
+    }
+
+    .level-0 {
+      border-bottom: 1px dotted $color-border-neutral-main;
+    }
+
+    .level-2 {
+      margin-left: 29px;
+    }
+
+    .title {
+      color: $color-text-neutral-main;
+    }
+  }
+}
+
+.content-thirdForm {
+
+  .merchant-button,
+  .merchant-button-tertiary {
+    ::ng-deep.p-button {
+      width: 220px;
+    }
+  }
+
+  .merchant-button-material.mdc-button {
+    width: 220px;
+  }
+
+  .text {
+    color: $color-text-neutral-sub;
+  }
+}
+
+.mat-step-header {
+  pointer-events: none;
+}
+
+// -------- TAO MAT KHAU TU DONG ----------
+.create-pass {
+  color: $color-text-action-main;
+  font-size: $typo-font-sizes-m;
+  white-space: nowrap;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  cursor: pointer;
+}
+
+.col-34 {
+  flex: 0 0 34%;
+  max-width: 34%;
+}
+
+.col-16 {
+  flex: 0 0 16%;
+  max-width: 16%;
+}
+
+// -------- CALENDAR ----------
+
+.icon-calendar {
+  @include base-icon;
+  color: $color-icon-neutral-sub-3;
+  cursor: pointer;
+}
+
+::ng-deep p-calendar input::placeholder {
+  color: $color-text-neutral-sub-3 !important;
+  opacity: 1;
+}
+
+.calendar-icon-wrapper {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 12px;
+  top: 0;
+  bottom: 0;
+  pointer-events: auto;
+  color: $color-icon-neutral-sub-3;
+}
+
+.r-25 {
+  right: 25px;
+}
+
+:host ::ng-deep .p-calendar .p-inputtext {
+  height: 48px;
+  width: 423px;
+}
+.text-center{
+  text-align: center;
+}
+.text-radio{
+  margin-left: 5px;
+  font-family: typo/font-family/Averta Std CY;
+  font-weight: typo/font-weight/semibold;
+  font-size: typo/font-size/m;
+  line-height: typo/line-height/m;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  color: #040D1F;
+}
+.border-custom {
+ border: 1px solid #e3eefd;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 16px;
+  min-height: 55vh;
+  box-sizing: border-box;
+}
+.m-radio {
+  ::ng-deep.p-radiobutton .p-radiobutton-box {
+    border-color: $color-icon-action-main;
+  }
+  ::ng-deep.p-radiobutton .p-radiobutton-box.p-highlight {
+    background: $color-icon-action-main;
+  }
+  ::ng-deep.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
+    width: 8px;
+    height: 8px;
+  }
+}
+.m-radio-check{
+  ::ng-deep.p-radiobutton .p-radiobutton-box.p-highlight {
+    background: $color-icon-action-main;
+    background-image: url("../../../../assets/images/icon-check.svg");
+    background-size: cover;
+  }
+  ::ng-deep.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
+    width: 0px;
+    height: 0px;
+  }
+}

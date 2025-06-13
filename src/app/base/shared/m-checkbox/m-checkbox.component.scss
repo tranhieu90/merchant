@@ -1,0 +1,108 @@
+@import "../../../../scss/mixins";
+@import "../../../../scss/variables";
+
+// ==============================Checkbox=======================
+.m-checkbox {
+  //   ::ng-deep.p-checkbox .p-checkbox-box {
+  //     border-color: $color-icon-neutral-sub-2;
+  //   }
+
+  ::ng-deep.p-checkbox .p-checkbox-box.p-highlight {
+    border: $color-surface-action-main;
+    background: $color-surface-action-main;
+  }
+  ::ng-deep.p-disabled {
+    border-color: $color-surface-action-main;
+  }
+}
+// ============================Radio=========================
+.m-radio {
+  ::ng-deep.p-radiobutton .p-radiobutton-box {
+    border-color: $color-icon-action-main;
+  }
+  ::ng-deep.p-radiobutton .p-radiobutton-box.p-highlight {
+    background: $color-icon-action-main;
+  }
+  ::ng-deep.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+.m-radio-check{
+  ::ng-deep.p-radiobutton .p-radiobutton-box.p-highlight {
+    background: $color-icon-action-main;
+    background-image: url("../../../../assets/images/icon-check.svg");
+    background-size: cover;
+  }
+  ::ng-deep.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
+    width: 0px;
+    height: 0px;
+  }
+}
+
+// ::ng-deep.p-radiobutton-checked .p-radiobutton-box::after {
+//   content: "";
+//   background-image: url("../../../../assets/images/icon-check.svg");
+//   background-size: cover;
+//   display: block;
+//   width: 16px;
+//   height: 16px;
+//   }
+
+// =============================m-toggle-switch============================
+::ng-deep.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+  background: $color-surface-action-main;
+}
+
+// ::ng-deep.p-inputswitch.p-focus .p-inputswitch-slider {
+//   background: $color-surface-action-main-pressed;
+// }
+
+//==============================m-chip=====================================
+.m-chip {
+  display: flex;
+  align-items: center;
+  border-radius: $border-radius-xs;
+  gap: $spacing-none;
+  padding: $spacing-xs;
+  width: fit-content;
+  cursor: pointer;
+  .text-chip {
+    vertical-align: middle;
+    letter-spacing: 0;
+    text-align: center;
+    @include typo-style($typo-font-sizes-l);
+    padding: 0px $spacing-3xs 0px $spacing-2xs;
+  }
+  .badge {
+    @include typo-style($typo-font-sizes-xs);
+    border-radius: $border-radius-l;
+    padding: 0px $spacing-4xs;
+    background-color: $color-surface-highlight-sub;
+    color: $color-text-action-main;
+    width: 16px;
+    height: 14px;
+  }
+}
+
+.m-chip-default {
+  border: 1px solid $color-border-neutral-main;
+  background-color: $color-surface-neutral-main;
+  color: $color-text-neutral-main;
+}
+
+.m-chip-active {
+  border: 1px solid $color-border-action-main;
+  background-color: $color-surface-neutral-sub;
+  color: $color-text-action-main;
+}
+.m-chip-l {
+  height: 40px;
+}
+.m-chip-m {
+  height: 30px;
+}
+.m-chip-s {
+  height: 24px;
+}

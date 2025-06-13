@@ -1,0 +1,180 @@
+<div class="d-flex w-100">
+  <!-- Profile -->
+  <div class="container-profile bg-white p-4 me-4 rounded shadow-sm">
+    <!-- Thông báo xác thực email -->
+    <div *ngIf="((dataInfo?.isVerify != 1) || (isPendingEmailVerification && isExpire)) && isShow && dataInfo"
+      class="bg-email d-flex align-items-center mb-4 gap-1" role="alert">
+      <span class="icon-warning_solid me-1 align-self-start"></span>
+      <div class="flex-fill w-75">
+        <!-- Title -->
+        <strong *ngIf="(isUnverifiedEmail || isPendingEmailVerification) && dataInfo?.isExpire==1" class="title-s-semibold color-040d1f">
+          Tài khoản chưa được xác thực
+        </strong>
+        <strong *ngIf="dataInfo?.isVerify==0 && dataInfo?.isExpire==0" class="title-s-semibold color-040d1f">
+          Bổ sung thông tin email
+        </strong><br>
+
+        <!-- Content -->
+        <small *ngIf="isUnverifiedEmail && dataInfo?.isExpire==1" class="title-xs-regular color-4f5562">
+          Vui lòng xác thực email để sử dụng đầy đủ các tính năng.
+        </small>
+        <small *ngIf="isPendingEmailVerification && isExpire" class="title-xs-regular color-4f5562">
+          Chúng tôi đã gửi email đến <span class="title-xs-semibold">{{ dataInfo?.emailChange }}</span>
+          và sẽ tiếp tục dùng <span>{{ dataInfo?.email }}</span> cho đến khi bạn xác nhận địa chỉ mới.
+        </small>
+        <small *ngIf="dataInfo?.isVerify==0 && dataInfo?.isExpire==0" class="title-xs-regular color-4f5562">
+          Để đảm bảo tài khoản của bạn được bảo mật tối ưu và sử dụng đầy đủ tính năng, hãy cập nhật email ngay.
+        </small>
+      </div>
+      <div class="d-flex align-items-center">
+        <p-button *ngIf="((isUnverifiedEmail) || (isPendingEmailVerification && isExpire))"
+          class="merchant-button-tertiary merchant-button-m me-3" label="Xác thực ngay" (click)="verifyEmail()" />
+        <p-button *ngIf="!dataInfo?.emailChange && !dataInfo?.isVerify" label="Cập nhật ngay"
+          class="merchant-button-tertiary merchant-button-m me-3" (click)="updateEmail()" />
+        <span class="icon-close_small align-self-start cursor-pointer" (click)="isShow =!isShow"></span>
+      </div>
+    </div>
+
+    <!-- Ảnh đại diện -->
+    <div class="d-flex align-items-center gap-3 mb-4">
+
+      <img [src]=" assetPath + '/assets/images/avatar_trang.jfif'" alt="Avatar" class="rounded-circle border"
+        *ngIf="!dataInfo?.avatar">
+      <img [src]="'data:image/png;base64,' + dataInfo.avatar" alt="Avatar" class="rounded-circle border"
+        *ngIf="dataInfo?.avatar">
+      <div class="d-flex flex-fill flex-column align-items-start align-self-start gap-12">
+        <p-button label="Cập nhật ảnh đại diện" class="merchant-button-tertiary merchant-button-s"
+          (click)="updateAvatar()" />
+        <small class="title-xs-regular color-4f5562">
+          Chấp nhận tải lên ảnh .PNG, .JPG, .JPEG với dung lượng tối đa 2MB.
+        </small>
+      </div>
+      <div class="d-flex flex-column">
+        <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
+        <div class="menu-button">
+          <p-button (click)="menu.toggle($event)" class="icon-more cursor-pointer mb-2 align-self-end" />
+        </div>
+      </div>
+    </div>
+
+    <div class="border-profile"></div>
+
+    <!-- Thông tin cá nhân -->
+    <div class="mb-4">
+      <div class="d-flex justify-content-between mb-4">
+        <h5 class="header-s-semibold color-040d1f">Thông tin cá nhân</h5>
+        <p-button label="Chỉnh sửa thông tin" class="merchant-button-tertiary merchant-button-m" icon="icon-edit"
+          (click)="updateUser()" />
+      </div>
+      <div class="row mb-4 w-100">
+        <div class="col-md-4 d-flex flex-column gap-1">
+          <span class="title-xs-regular color-4f5562">Mã nhân sự</span>
+          <strong class="paragraph-l-semibold color-040d1f">#{{ dataInfo?.userId }}</strong>
+        </div>
+        <div class="col-md-4 d-flex flex-column gap-1">
+          <span class="title-xs-regular color-4f5562">Tên đăng nhập</span>
+          <strong class="paragraph-l-semibold color-040d1f">{{ dataInfo?.userName }}</strong>
+        </div>
+        <div class="col-md-4 d-flex flex-column gap-1">
+          <span class="title-xs-regular color-4f5562">Họ và tên</span>
+          <strong class="paragraph-l-semibold color-040d1f">{{ dataInfo?.fullName }}</strong>
+        </div>
+      </div>
+      <div class="row w-100">
+         <div class="col-md-4 d-flex flex-column gap-1">
+          <span class="title-xs-regular color-4f5562">Ngày sinh</span>
+          <strong class="paragraph-l-semibold color-040d1f">{{ formatDate(dataInfo?.dateOfBirth) }}</strong>
+        </div>
+        <div class="col-md-4 d-flex flex-column gap-1">
+          <span class="title-xs-regular color-4f5562">Số điện thoại</span>
+          <strong class="paragraph-l-semibold color-040d1f">{{ dataInfo?.phoneNumber }}</strong>
+        </div>
+        <div class="col-md-4 d-flex flex-column gap-1">
+          <span class="title-xs-regular color-4f5562">Email</span>
+          <div class="d-flex align-items-center">
+            <strong *ngIf="isPendingEmailVerification" class="paragraph-l-semibold color-040d1f me-1">
+              {{ dataInfo?.email }}
+            </strong>
+            <strong *ngIf="isUnverifiedEmail &&dataInfo.isExpire==1" class="paragraph-l-semibold color-040d1f me-1">
+              {{ dataInfo?.emailChange }}
+            </strong>
+            <strong *ngIf="dataInfo?.email && !dataInfo?.emailChange" class="paragraph-l-semibold color-040d1f me-1">
+              {{ dataInfo?.email }}
+            </strong>
+            <span *ngIf="(isVerifiedEmail && !dataInfo.emailChange) || (isPendingEmailVerification && isExpire)"
+              class="icon-check_circle_solid" [pTooltip]="tooltipTemplate" tooltipPosition="top"
+                tooltipStyleClass="merchant-tooltip">
+              <ng-template #tooltipTemplate>
+                <div class="tooltip-content">&nbsp;
+                  <span  class="icon-check_circle_solid"></span>
+                  Email đã được xác thực 
+                </div>
+              </ng-template>
+            </span>
+          </div>
+          <div *ngIf="dataInfo?.isVerify==1">
+            <span class="title-xs-semibold color-0058f0 cursor-pointer" (click)="updateEmail()">Thay đổi email</span>
+          </div>
+          <div *ngIf="this.dataInfo?.emailChange && dataInfo?.isVerify==0 && dataInfo.isExpire==1">
+            <small class="paragraph-m-regular color-df7202">Email chưa được xác thực.</small>
+            <span class="title-xs-semibold color-0058f0 cursor-pointer" (click)="updateEmail()">Thay đổi email</span>
+          </div>
+          <div *ngIf="dataInfo?.isVerify==0 && dataInfo?.isExpire==0">
+            <small class="paragraph-m-regular color-df7202">Bạn chưa có email.</small>
+            <span class="title-xs-semibold color-0058f0 cursor-pointer" (click)="updateEmail()"> Cập nhật ngay</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="border-profile"></div>
+
+    Thông tin Merchant
+    <div class="w-100">
+      <h5 class="header-m-semibold color-040d1f mb-4">Thông tin Merchant</h5>
+      <div class="row mb-4 w-100">
+        <div class="col-md-4 d-flex flex-column gap-1">
+          <span class="title-s-regular color-4f5562">Tên Merchant</span>
+          <strong class="paragraph-l-semibold color-040d1f">Công ty TNHH Dịch vụ EB</strong>
+        </div>
+        <div class="col-md-4 d-flex flex-column gap-1">
+          <span class="title-s-regular color-4f5562">Merchant ID:</span>
+          <strong class="paragraph-l-semibold color-040d1f">#848489</strong>
+        </div>
+        <div class="col-md-4 d-flex flex-column gap-1">
+          <span class="title-s-regular color-4f5562">Điểm kinh doanh:</span>
+          <strong class="paragraph-l-semibold color-040d1f">0936392920</strong>
+        </div>
+      </div>
+      <div class="row mb-4 w-100">
+        <div class="col-md-4 d-flex flex-column gap-1">
+          <span class="title-s-regular color-4f5562">Ca làm việc:</span>
+          <strong class="paragraph-l-semibold color-040d1f">Buổi sáng</strong>
+        </div>
+      </div>
+    </div> -->
+  </div>
+
+  <!-- History -->
+  <!-- <div class="container-history">
+    <h1 class="header-s-semibold color-040d1f mb-4">Lịch sử hoạt động</h1>
+    <div *ngFor="let group of historyLst" class="mb-3">
+      <h5 class="title-xs-semibold color-4f5562 mb-12">{{ group.date }}</h5>
+      <div class="mh-500 overflow-y-auto">
+        <div *ngFor="let history of group.activities" class="d-flex align-items-center">
+          <div class="d-flex flex-column align-items-center">
+            <img class="ic-step mb-2" alt="" src="assets/images/icon-step.svg" />
+            <img class="ic-line" alt="" src="assets/images/line.svg" />
+          </div>
+          <div class="ms-3 mb-2">
+            <div class="mb-1">
+              <span class="paragraph-m-bold">{{ history?.name }} </span>
+              <span class="paragraph-l-regular">{{ history?.action }}</span>
+            </div>
+            <small class="paragraph-s-regular color-4f5562">{{ history?.time }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+</div>

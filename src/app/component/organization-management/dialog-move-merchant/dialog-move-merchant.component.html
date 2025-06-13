@@ -1,0 +1,26 @@
+<div class="d-flex justify-content-between modal-header">
+    <h4 class="modal-title title-m-bold">Chuyển điểm kinh doanh</h4>
+    <span class="icon-close_large cursor-pointer" (click)="onClose()"></span>
+</div>
+
+<div class="modal-body">
+    <div class="infor-warn d-flex align-items-center">
+        <span class="icon-warning_solid me-1"></span>
+        <span class="title-s-semibold">Các điểm kinh doanh sẽ bị xóa khỏi nhóm hiện tại và không thể hoàn tác.</span>
+    </div>
+    <div class="box-area mt-4">
+        <div *ngIf="data.lstAreaByOrder.length > 0">
+            <div *ngFor="let area of data.lstAreaByOrder">
+                <app-area-view [area]="area" [isSelectArea]="true" [isShowChildren]="true" [areaIdMove]="areaIdMove"
+                    (doChangeAreaIdMove)="doChangeAreaIdMove($event)">
+                </app-area-view>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="onClose()" />
+    <p-button label="Xác nhận chuyển" class="merchant-button" [disabled]="areaIdMove == data.areaIdActive"
+        (click)="doAction()" />
+</div>

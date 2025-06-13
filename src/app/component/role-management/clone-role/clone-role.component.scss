@@ -1,0 +1,142 @@
+@import "../../../../scss/variables";
+@import "../../../../scss/mixins";
+
+.mat-stepper-horizontal {
+  margin-top: 8px;
+}
+
+.mat-mdc-form-field {
+  margin-top: 16px;
+}
+
+.step-role {
+  background: none;
+
+  ::ng-deep.mat-horizontal-stepper-header-container {
+    padding: $spacing-l;
+    background: $color-surface-neutral-main;
+    border-radius: $border-radius-s;
+    justify-content: center;
+
+  }
+
+  ::ng-deep.mat-horizontal-stepper-header {
+    height: auto;
+  }
+
+  ::ng-deep.mat-step-header,
+  ::ng-deep.mat-step-header-ripple {
+    background: none !important;
+  }
+
+  ::ng-deep.mat-step-text-label {
+    //typo/title-s/semibold
+    @include typo-style($typo-font-sizes-m, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+  }
+
+  ::ng-deep.mat-stepper-horizontal-line {
+    width: 84px;
+    height: 3px;
+    border-radius: $border-radius-round;
+    background: $color-surface-action-main;
+    flex: none;
+  }
+
+  ::ng-deep.mat-step-icon {
+    width: 40px;
+    height: 40px;
+    border: 1px solid $color-border-neutral-main;
+    border-radius: $border-radius-round;
+    background: $color-surface-neutral-main;
+    padding: $spacing-xs;
+    color: $color-text-neutral-sub;
+    //typo/paragraph-l/semibold
+    @include typo-style($typo-font-sizes-l, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+  }
+
+  ::ng-deep.mat-step-icon-selected {
+    background: $color-surface-action-main;
+    color: $color-text-text-on-on-action-main;
+  }
+
+  ::ng-deep.mat-horizontal-content-container {
+    border-radius: $border-radius-s;
+    background: $color-surface-neutral-main;
+    padding: $spacing-l;
+    margin-top: 15px;
+    min-height: calc(100vh - 280px);
+    position: relative;
+  }
+
+  .content-first {
+    width: 870px;
+    margin: auto;
+  }
+
+  .div-button {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 100%;
+    text-align: right;
+  }
+}
+
+.content-feature {
+  .item {
+    background: $color-surface-action-sub-2;
+    padding: $spacing-l;
+    border-radius: 8px;
+    color: $color-text-neutral-main;
+    height: 100%;
+
+    ::ng-deep.mdc-checkbox__background {
+      border-color: $color-icon-neutral-sub-2;
+    }
+
+    ::ng-deep.mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background,
+    ::ng-deep.mdc-checkbox__native-control:enabled:indeterminate~.mdc-checkbox__background {
+      border-color: $color-surface-action-main;
+      background: $color-surface-action-main;
+    }
+
+    ::ng-deep.mat-internal-form-field>label {
+      padding-left: 0px;
+    }
+
+    .level-0 {
+      border-bottom: 1px dotted $color-border-neutral-main;
+    }
+
+    .level-2 {
+      margin-left: 29px;
+    }
+
+    .title {
+      color: $color-text-neutral-main;
+    }
+  }
+}
+
+.content-thirdForm {
+
+  .merchant-button,
+  .merchant-button-tertiary {
+    ::ng-deep.p-button {
+      width: 220px;
+    }
+  }
+
+  .merchant-button-material.mdc-button {
+    width: 220px;
+  }
+
+  .text {
+    color: $color-text-neutral-sub;
+  }
+}
+
+
+.mat-step-header {
+  pointer-events: none;
+}

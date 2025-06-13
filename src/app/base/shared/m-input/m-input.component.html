@@ -1,0 +1,18 @@
+<div class="p-inputgroup show-icon-infomation">
+  <label class="form-label">Default, Hover, Focus</label>
+  <span class="p-input-icon-right clear-icon" pTooltip="Information" tooltipPosition="right">
+    <i class="icon-information_solid input-icon"></i>
+  </span>
+</div>
+<div class="p-inputgroup">
+  <input type="text" pInputText class="merchant-input" [value]="value" [disabled]="disabled"
+    (input)="handleInput($event)" (blur)="onTouched()" required />
+  @if(value){
+  <span class="p-input-icon-right clear-icon" (click)="clearValue()">
+    <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+  </span>
+  }
+</div>
+<div class="input-erorr">
+  <span class="icon-error_solid"></span>
+  Vui lòng nhập thông tin</div>

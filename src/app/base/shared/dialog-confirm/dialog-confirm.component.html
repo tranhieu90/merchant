@@ -1,0 +1,33 @@
+<div class="container">
+  <div class="content">
+    <div class="header">
+      <span
+        [ngClass]="['icon',dataConfirm.icon ? dataConfirm.icon  : '', dataConfirm.iconColor ? dataConfirm.iconColor : '']"></span>
+      <div class="info">
+        <h1 class="title-m-bold">{{ dataConfirm.title }}</h1>
+        <p class="paragraph-m-regular" [innerHTML]="dataConfirm.message"></p>
+      </div>
+      <span class="icon-close_large" (click)="onclose()"></span>
+    </div>
+    <div class="button">
+      @if(dataConfirm.viewCancel){
+      <button class="title-s-semibold btn-cancel mr-16 cursor-pointer" (click)="doAction(false)">
+        @if (dataConfirm.cancelTitle) {
+        {{ dataConfirm.cancelTitle }}
+        } @else {
+        Hủy
+        }
+      </button>
+      }
+      <button
+        [ngClass]="['title-s-semibold btn-confirm cursor-pointer',dataConfirm.buttonColor ? dataConfirm.buttonColor  : '']"
+        (click)="doAction(true)">
+        @if (dataConfirm.buttonLabel) {
+        {{ dataConfirm.buttonLabel }}
+        } @else {
+        Xác nhận
+        }
+      </button>
+    </div>
+  </div>
+</div>

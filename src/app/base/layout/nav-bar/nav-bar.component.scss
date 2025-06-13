@@ -1,0 +1,320 @@
+@import "../../../../scss/mixins";
+@import "../../../../scss/variables";
+
+#nav-bar-custom {
+    height: 100vh;
+
+    div.mat-accordion {
+        border: none;
+        background: red;
+    }
+
+    .mat-expansion-panel {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+        margin-bottom: 0;
+    }
+
+    .mat-expansion-panel-body {
+        padding: 0 24px !important;
+        background: red;
+    }
+
+    .mat-expansion-panel-header {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 24px 0 24px;
+        min-height: 44px;
+        height: 10px;
+        font-weight: 600;
+        font-size: 16px;
+        color: #222;
+        border-radius: 8px;
+        transition: background 0.2s;
+        cursor: pointer;
+
+        .mat-expansion-indicator {
+            margin-left: auto;
+        }
+
+        &:hover {
+            background: #f0f4ff !important;
+        }
+    }
+
+    div.mat-expansion-panel-spacing {
+        margin: 0;
+    }
+
+    .mat-expansion-panel-content {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0;
+        background: red !important;
+    }
+
+    .mat-nav-list,
+    .mat-list {
+        background: transparent !important;
+        padding: 0;
+    }
+
+    .mat-list-item {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        font-size: 15px;
+        color: #222;
+        border-radius: 8px;
+        margin: 2px 0;
+        padding: 0 24px;
+        font-weight: 500;
+        min-height: 40px;
+        transition: background 0.2s, color 0.2s;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+
+        .icon-header {
+            margin-right: 12px;
+            font-size: 20px;
+            color: #222;
+        }
+
+        &:hover,
+        &.active-menu {
+            background: #e6f0ff !important;
+            color: #1976d2 !important;
+
+            .icon-header {
+                color: #1976d2 !important;
+            }
+        }
+    }
+
+    .mat-list .mat-list-item {
+        color: #8c98a4;
+        font-weight: 400;
+        padding-left: 56px;
+        background: transparent !important;
+
+        .icon-header {
+            color: #000000;
+        }
+
+        &.active-menu {
+            background: #e6f0ff !important;
+            color: #1976d2 !important;
+
+            .icon-header {
+                color: #1976d2 !important;
+            }
+        }
+    }
+
+    .group-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #b0b8c4;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 24px 0 8px 24px;
+        padding: 0;
+    }
+}
+
+.title {
+    color: #b0b8c4;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    *.mat-expansion-toggle-indicator-after {
+        display: none;
+    }
+}
+
+.active-menu {
+    // background: #e6f0ff !important;
+    color: #1976d2 !important;
+
+    .icon-header {
+        color: #1976d2 !important;
+    }
+}
+
+.chidren-matlist {
+    padding: 0 24px;
+}
+
+.chidren-matlist,
+.mat-expansion-panel .mat-list-item,
+.mat-expansion-panel .mat-expansion-panel-header {
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: 15px;
+    color: #8c98a4;
+    font-weight: 500;
+    background: transparent !important;
+    border-radius: 6px;
+    padding-left: 32px;
+}
+
+.mat-expansion-panel .mat-expansion-panel-header {
+    font-size: 15px;
+    color: #222;
+    font-weight: 600;
+    padding-left: 24px;
+}
+
+.mat-expansion-panel .mat-list-item.active-menu {
+    color: #1976d2 !important;
+    font-weight: 600;
+}
+
+.mat-expansion-panel .icon-header {
+    color: #8c98a4;
+    font-size: 18px;
+    margin-right: 8px;
+}
+
+.mat-mdc-nav-list .mat-mdc-list-item {
+    height: 42px;
+    border-radius: 5px;
+
+    &:hover,
+    &:focus {
+        background: $color-global-blue-blue-2 !important;
+
+        .icon-header,
+        .item-nav {
+            color: $color-global-blue-blue-6 !important;
+            font-weight: 550 !important;
+        }
+    }
+}
+
+.item-nav {
+    font-family: "AvertaStdCY-Regular" !important;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    text-decoration: none;
+    font-size: 16px !important;
+    line-height: 22px;
+    color: #b0b8c4;
+}
+
+.mdc-list {
+    padding: unset !important;
+}
+
+::ng-deep a.custom-list-item.selected-item {
+    background-color: #e1f0ff !important;
+    color: #0a53be !important;
+    position: relative;
+    z-index: 1;
+}
+
+.custom-list-item {
+    font-family: "AvertaStdCY-Semibold";
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none !important;
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 18px;
+}
+
+.selected-item {
+    .icon-header,
+    .item-nav {
+        color: $color-global-blue-blue-6 !important;
+        font-weight: 550 !important;
+    }
+}
+
+::ng-deep a.custom-list-item.selected-item .mat-list-item-content {
+    background: transparent !important;
+}
+
+::ng-deep a.custom-list-item.selected-item::before,
+::ng-deep a.custom-list-item.selected-item::after {
+    background: transparent !important;
+    content: none !important;
+}
+
+::ng-deep a.custom-list-item.selected-item .mat-ripple-element {
+    background-color: transparent !important;
+    display: none !important;
+}
+
+::ng-deep .mat-expansion-panel-header {
+    padding-left: 16px !important;
+}
+
+.mat-accordion .mat-expansion-panel:last-of-type {
+    border-bottom-right-radius: unset !important;
+    border-bottom-left-radius: unset !important;
+}
+
+
+.nav-bar-company {
+    display: flex;
+    background-color: $color-background-main;
+    padding: $spacing-s;
+    border-radius: $border-radius-s;
+    gap: $spacing-xs;
+
+    .logo-company {
+        img {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+        }
+
+    }
+
+    .logo-company-collap {
+        img {
+            width: 32px;
+            height: 32px;
+            border-radius: 3.2px;
+        }
+    }
+
+    .info-company {
+        flex-direction: column;
+
+        .color-l {
+            color: $color-text-neutral-sub-2;
+        }
+    }
+
+}
+
+.paragraph-s-semibold-capital {
+    font-family: "AvertaStdCY-Semibold";
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none !important;
+    text-decoration: none;
+    font-size: 16px;
+    line-height: 18px;
+}
+.menuSub {
+    margin-left: 15px;
+}
+.mat-expansion-panel-body {
+    padding: 0 24px 16px !important;
+}
+
+::ng-deep .icon-header{
+    margin-right: 8px;
+}
+::ng-deep .menuNoSub{
+    margin-left: 15px;
+}
