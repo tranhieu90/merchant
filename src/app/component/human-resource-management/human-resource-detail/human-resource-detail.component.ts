@@ -29,6 +29,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import moment from 'moment';
 import { fomatAddress } from '../../../common/helpers/Ultils';
 import { TooltipModule } from 'primeng/tooltip';
+import { DirectiveModule } from '../../../base/module/directive.module';
+import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
 @Component({
   selector: 'app-human-resource-detail',
   standalone: true,
@@ -47,12 +49,14 @@ import { TooltipModule } from 'primeng/tooltip';
     MatStepper,
     MatStepperIcon,
     MatProgressSpinnerModule,
-    TooltipModule
+    TooltipModule,
+    DirectiveModule
   ],
   templateUrl: './human-resource-detail.component.html',
   styleUrl: './human-resource-detail.component.scss'
 })
 export class HumanResourceDetailComponent implements OnInit {
+  readonly MERCHANT_RULES = MERCHANT_RULES;
   personDetail?: IPersonelDetail;
   rolePesonel?: any;
   subMerchantList?: any;
