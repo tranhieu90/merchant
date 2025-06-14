@@ -12,7 +12,7 @@
                     }
                 </button>
                 <input type="checkbox" class="checkbox-custom" [checked]="item.checked" id="{{ item.id }}"
-                    [disabled]="checkDisable" (change)="onCheckboxChange( $event,item)"
+                    [disabled]="checkDisable||item.disabled" (change)="onCheckboxChange( $event,item)"
                     (click)="$event.stopPropagation()" />
 
                 <span class="group-name title-s-regular">{{ item.groupName }}</span>

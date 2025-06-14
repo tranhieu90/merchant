@@ -74,10 +74,10 @@ export class HumanResourceManagementComponent implements OnInit {
       label: 'ID',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-center'];
         },
         customCssHeader: () => {
-          return ['text-left'];
+          return ['text-center'];
         },
         customBodyRender: (value: any) => {
           return '#' + value;
@@ -92,7 +92,7 @@ export class HumanResourceManagementComponent implements OnInit {
           return ['text-left'];
         },
         customCssHeader: () => {
-          return ['text-left'];
+          return ['text-center'];
         },
       },
     },
@@ -116,10 +116,10 @@ export class HumanResourceManagementComponent implements OnInit {
       label: 'SỐ ĐIỆN THOẠI',
       options: {
         customCss: (obj: any) => {
-          return ['text-center'];
+          return ['text-left'];
         },
         customCssHeader: () => {
-          return ['text-left'];
+          return ['text-center'];
         },
       },
     },
@@ -128,7 +128,7 @@ export class HumanResourceManagementComponent implements OnInit {
       label: 'VAI TRÒ',
       options: {
         customCssHeader: (obj: any) => {
-          return ['text-left'];
+          return ['text-center'];
         },
         customCss: (obj: any) => {
           return ['text-left'];
@@ -200,7 +200,6 @@ export class HumanResourceManagementComponent implements OnInit {
     }
     this.doSearch();
     this.getLstRole();
-    this.getLstPointSale();
   }
 
   doSearch(pageInfo?: any) {
@@ -332,6 +331,8 @@ export class HumanResourceManagementComponent implements OnInit {
   clearFilter() {
     this.formDropdown.get('status')?.setValue('');
     this.formDropdown.get('role')?.setValue('');
+    this.keyword = '';
+    this.doSearch();
   }
 
   getLstRole() {
@@ -346,22 +347,12 @@ export class HumanResourceManagementComponent implements OnInit {
       .get(ROlE_ENDPOINT.SEARCH_LIST_ROLE, buildParams)
       .subscribe((res) => {
         this.lstRole = res['data']['list'];
-      });
-  }
-
-  getLstPointSale() {
-    let dataReq = { groupIdList: [], status: '', methodId: [], mappingKey: '' };
-
-    let param = {
-      page: this.pageIndex,
-      size: this.pageSize,
-    };
-    let buildParams = CommonUtils.buildParams(param);
-
-    this.api
-      .post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams)
-      .subscribe((res) => {
-        this.dataPointSale = res['data']['subInfo'];
+        this.lstRole.unshift({
+          id: '',
+          name: 'Tất cả',
+          description: 'Tất cả vai trò',
+        });
+        console.log('lstRole', this.lstRole);
       });
   }
 }

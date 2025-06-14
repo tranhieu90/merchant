@@ -214,3 +214,8 @@
 .text-content {
   display: inline;             
 }
+::ng-depp .p-datatable-frozen-column {
+  position: sticky;
+  background: var(--p-datatable-header-cell-background);
+} 
+  

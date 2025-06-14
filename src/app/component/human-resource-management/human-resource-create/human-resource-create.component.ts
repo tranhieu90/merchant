@@ -11,7 +11,7 @@ import {
 } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
-import { MatStep, MatStepper, MatStepperIcon } from '@angular/material/stepper';
+import { MatStep, MatStepper } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
@@ -58,7 +58,6 @@ import { environment } from '../../../../environments/environment';
     MatButton,
     MatStep,
     MatStepper,
-    MatStepperIcon,
     PaginatorModule,
     ReactiveFormsModule,
     GridViewComponent,
@@ -75,6 +74,7 @@ import { environment } from '../../../../environments/environment';
 export class HumanResourceCreateComponent implements OnInit {
   assetPath = environment.assetPath;
   @ViewChild('gridViewRef') gridViewComponent!: GridViewComponent;
+  @ViewChild('mTreeComponent') mTreeComponent!: MTreeComponent;
   id!: number;
   formInfo!: FormGroup;
   totalItem: number = 0;
@@ -101,6 +101,8 @@ export class HumanResourceCreateComponent implements OnInit {
   countSelectedPoint: number = 0;
   activeOrganization: string = '';
   isShowMechantList: boolean = false;
+  searchPoint: boolean = false;
+  searchPointV2: boolean = false;
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
@@ -216,14 +218,14 @@ export class HumanResourceCreateComponent implements OnInit {
   ];
   buildForm() {
     this.formInfo = this.fb.group({
-      fullName: ['', [Validators.required, Validators.maxLength(50)]],
+      fullName: ['', [Validators.required, Validators.maxLength(50),Validators.pattern(REGEX_PATTERN.FULL_NAME)]],
       emailChange: [
         '',
         [Validators.maxLength(254), Validators.pattern(REGEX_PATTERN.EMAIL), this.validateEmailPrefix],
       ],
       phoneNumber: ['', [Validators.pattern(REGEX_PATTERN.PHONE)]],
       dateOfBirth: [''],
-      userName: ['', [Validators.required, Validators.maxLength(50)]],
+      userName: ['', [Validators.required, Validators.maxLength(50),Validators.pattern(REGEX_PATTERN.USER_NAME)]],
       userPass: ['', [Validators.required]],
     });
   }
@@ -264,27 +266,40 @@ export class HumanResourceCreateComponent implements OnInit {
   }
 
   doActiveArea(group: any) {
-    console.log("doActiveArea", group);
     this.organizationIdActive=null;
     this.activeOrganization = '';
-    this.isShowMechantList = true;
     this.countSelectedPoint = 0;
     this.organizationIdActive = group.id;
     this.activeOrganization = group.groupName;
     if (group.children.length == 0) {
-      this.getLstMerchant();
+       this.isShowMechantList = true;
+       this.searchPointV2 = false;
+       this.getLstMerchant();
+         
+    }else{
+         this.isShowMechantList = false;
+       this.searchPointV2 = false;
+        this.pointSales = [];
     }
   }
   selectMearchant(event: any) {
+     
     if (event.checked) {
-      this.masterIdSelected = this.userInfo?.merchantId;
+      this.masterIdSelected = this.userInfo?.merchantId; 
+      if (this.mTreeComponent) {
+        this.mTreeComponent.checkAllItems(true);
+      }
     } else {
       this.masterIdSelected = null;
+       
     }
   }
 
   getLstMerchant(firstSearch: boolean = false) {
     this.isSearch = true;
+    if(this.searchOrganization.length==0){
+      this.searchPointV2 =true;
+    }
     let dataReq = {
       groupIdList: this.activeOrganization ? [this.organizationIdActive] : [],
       status: '',
@@ -311,7 +326,6 @@ export class HumanResourceCreateComponent implements OnInit {
                 item.provinceName,
               ]),
             }));
-            console.log(this.pointSales);
             if (firstSearch) {
               if (this.pointSales.length == 1) {
                 this.pointSalesSelected.add(this.pointSales[0].merchantId);
@@ -325,8 +339,10 @@ export class HumanResourceCreateComponent implements OnInit {
               this.pointSales.forEach((item: any) => {
                 item.checked = this.pointSalesSelected.has(item.merchantId);
               });
+              this.countSelectedPoint = this.pointSales.filter((x:any)=>x.checked).length;
             }
           } else {
+            this.searchPointV2 =true;
             this.pointSales = [];
           }
         },
@@ -336,6 +352,7 @@ export class HumanResourceCreateComponent implements OnInit {
       );
   }
   doCheckGroup(event: any) {
+    this.roleId = '';
     if (event.checked) {
       this.organizationSelected.push(event.id);
     } else {
@@ -359,6 +376,10 @@ export class HumanResourceCreateComponent implements OnInit {
         this.pointSalesSelected.delete(event?.merchantId);
       }
     }
+    this.roleId = '';
+  if (this.mTreeComponent) {
+        this.mTreeComponent.checkAllItems(false);
+      }
     this.totalPointSalesSelected = this.pointSalesSelected.size;
   }
   radioSetUpMerchantIds(event: any) {

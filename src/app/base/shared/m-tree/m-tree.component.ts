@@ -14,6 +14,7 @@ export class MTreeComponent implements OnInit, OnChanges {
   @Input() level = 0;
   @Input() activeItemId: number | null = null;
   @Input() checkDisable: boolean = false;
+  @Input() isCheckAll: boolean = false;
   @Output() groupChoice = new EventEmitter<any>();
   @Output() activeItemIdChange = new EventEmitter<number>();
   @Output() groupCheck = new EventEmitter<number[]>();
@@ -25,12 +26,26 @@ export class MTreeComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     console.log('m-tree data', this.data);
   }
+  checkAllItems(isChecked: boolean) {
+    this.data.forEach(item => {
+      item.checked = isChecked;
+      this.toggleChildren(item, isChecked);
+    });
+    this.groupCheck.emit(this.getCheckedIds(this.data));
+  }
   toggleExpand(item: any) {
     item.expanded = !item.expanded;
   }
-
+  
   onCheckboxChange(event: any, item?: any) {
+    var level = item.level || 0;
+    // this.data.forEach(item => {
+    //   if(item.level> level) {
+    //   item.disabled=true}
+    // });
+    console.log('onCheckboxChange', this.data);
     item.checked = event.target.checked;
+    this.toggleChildren(item, item.checked);
     this.groupSelect.emit({ ...item, children: item.children ? [...item.children] : [] });
   }
 
