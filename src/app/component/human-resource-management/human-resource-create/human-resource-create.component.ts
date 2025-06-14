@@ -83,6 +83,7 @@ export class HumanResourceCreateComponent implements OnInit {
   totalPointSalesSelected: number = 0;
   countSelectedPoint: number = 0;
   activeOrganization: string= '';
+  isShowMechantList: boolean = false;
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
@@ -240,6 +241,7 @@ export class HumanResourceCreateComponent implements OnInit {
     console.log("doActiveArea", group);
     this.organizationIdActive=null;
     this.activeOrganization = '';
+    this.isShowMechantList = true;
     this.countSelectedPoint = 0;
     this.organizationIdActive = group.id;
     this.activeOrganization = group.groupName;

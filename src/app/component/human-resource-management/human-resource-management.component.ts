@@ -1,6 +1,11 @@
 import { NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -13,23 +18,48 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { TreeSelectModule } from 'primeng/treeselect';
 import { GridViewComponent } from '../../base/shared/grid-view/grid-view.component';
 import { InputCommon } from '../../common/directives/input.directive';
-import { GROUP_ENDPOINT, HR_ENDPOINT, ROlE_ENDPOINT } from '../../common/enum/EApiUrl';
+import {
+  GROUP_ENDPOINT,
+  HR_ENDPOINT,
+  ROlE_ENDPOINT,
+} from '../../common/enum/EApiUrl';
 import { FetchApiService } from '../../common/service/api/fetch-api.service';
 import { AuthenticationService } from '../../common/service/auth/authentication.service';
 import { ToastService } from '../../common/service/toast/toast.service';
 import { GridViewModel } from '../../model/GridViewModel';
 import { CommonUtils } from '../../base/utils/CommonUtils';
 import { UserVerifyStatus } from '../../common/constants/CUser';
-import { DialogRoleComponent, DialogRoleModel } from '../role-management/dialog-role/dialog-role.component';
+import {
+  DialogRoleComponent,
+  DialogRoleModel,
+} from '../role-management/dialog-role/dialog-role.component';
+import { MERCHANT_RULES } from '../../base/constants/authority.constants';
+import { HasRolesDirective } from '../../base/directive/has-roles.directive';
+import { DirectiveModule } from '../../base/module/directive.module';
 
 @Component({
   selector: 'app-human-resource-management',
   standalone: true,
-  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, GridViewComponent, MatButtonModule, InputCommon, NgIf, DropdownModule, MultiSelectModule, TreeSelectModule],
+  imports: [
+    ButtonModule,
+    FormsModule,
+    InputTextModule,
+    ReactiveFormsModule,
+    AutoCompleteModule,
+    GridViewComponent,
+    MatButtonModule,
+    InputCommon,
+    NgIf,
+    DropdownModule,
+    MultiSelectModule,
+    TreeSelectModule,
+    DirectiveModule
+  ],
   templateUrl: './human-resource-management.component.html',
-  styleUrl: './human-resource-management.component.scss'
+  styleUrl: './human-resource-management.component.scss',
 })
 export class HumanResourceManagementComponent implements OnInit {
+  readonly MERCHANT_RULES = MERCHANT_RULES;
   keyword: string = '';
   isFilter: boolean = false;
   pageIndex = 0;
@@ -50,9 +80,9 @@ export class HumanResourceManagementComponent implements OnInit {
           return ['text-left'];
         },
         customBodyRender: (value: any) => {
-          return "#" + value;
+          return '#' + value;
         },
-      }
+      },
     },
     {
       name: 'fullName',
@@ -63,8 +93,8 @@ export class HumanResourceManagementComponent implements OnInit {
         },
         customCssHeader: () => {
           return ['text-left'];
-        }
-      }
+        },
+      },
     },
     {
       name: 'dateOfBirth',
@@ -79,7 +109,7 @@ export class HumanResourceManagementComponent implements OnInit {
         customBodyRender: (value: any) => {
           return value ? moment(value).format('DD/MM/YYYY') : '';
         },
-      }
+      },
     },
     {
       name: 'phoneNumber',
@@ -90,8 +120,8 @@ export class HumanResourceManagementComponent implements OnInit {
         },
         customCssHeader: () => {
           return ['text-left'];
-        }
-      }
+        },
+      },
     },
     {
       name: 'roleName',
@@ -103,9 +133,8 @@ export class HumanResourceManagementComponent implements OnInit {
         customCss: (obj: any) => {
           return ['text-left'];
         },
-      }
-    }
-    
+      },
+    },
   ];
   action: any = [
     {
@@ -115,13 +144,13 @@ export class HumanResourceManagementComponent implements OnInit {
         this.checkOpenViewDetailPage(item);
       },
     },
-  ]
+  ];
 
   formDropdown: FormGroup;
   statusOptions: any[] = [
     { name: 'Tất cả', code: '' },
     { name: 'Khóa', code: 0 },
-    { name: 'Hoạt động', code: 1 }
+    { name: 'Hoạt động', code: 1 },
   ];
 
   roleOptions: any[] = [];
@@ -129,9 +158,9 @@ export class HumanResourceManagementComponent implements OnInit {
   merchantId: any;
   lstRole: any = [];
   dataPointSale: any = [];
-  businessPoint: boolean = false;//Được gán với điểm kinh doanh
-  merchantNoGroup: boolean = false;//Được gán với merchant không có nhóm
-  merchantWithGroup: boolean = false;//Được gán với merchant có nhóm
+  businessPoint: boolean = false; //Được gán với điểm kinh doanh
+  merchantNoGroup: boolean = false; //Được gán với merchant không có nhóm
+  merchantWithGroup: boolean = false; //Được gán với merchant có nhóm
 
   constructor(
     private fb: FormBuilder,
@@ -148,9 +177,9 @@ export class HumanResourceManagementComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userInfo= this.auth.getUserInfo();
-    if(this.userInfo && this.userInfo.orgType !=2) {
-        this.columns.push({
+    this.userInfo = this.auth.getUserInfo();
+    if (this.userInfo && this.userInfo.orgType != 2) {
+      this.columns.push({
         name: 'status',
         label: 'TRẠNG THÁI',
         options: {
@@ -166,8 +195,8 @@ export class HumanResourceManagementComponent implements OnInit {
             }
             return msg;
           },
-        }
-      })
+        },
+      });
     }
     this.doSearch();
     this.getLstRole();
@@ -177,10 +206,9 @@ export class HumanResourceManagementComponent implements OnInit {
   doSearch(pageInfo?: any) {
     this.isSearch = true;
     if (pageInfo) {
-      this.pageIndex = pageInfo["page"];
-      this.pageSize = pageInfo["pageSize"]
-    }
-    else {
+      this.pageIndex = pageInfo['page'];
+      this.pageSize = pageInfo['pageSize'];
+    } else {
       this.pageIndex = 0;
     }
 
@@ -190,16 +218,19 @@ export class HumanResourceManagementComponent implements OnInit {
       roleId: this.formDropdown.controls['role']?.value,
       pageIndex: this.pageIndex,
       pageSize: this.pageSize,
-    }
+    };
 
-    this.api.get(HR_ENDPOINT.GET_LIST_HR, params).subscribe(res => {
-      this.dataList = res['data']['list'];
-      this.totalItem = res['data']['count'];
-    }, () => {
-      this.totalItem = 0;
-      this.dataList = [];
-      this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.')
-    })
+    this.api.get(HR_ENDPOINT.GET_LIST_HR, params).subscribe(
+      (res) => {
+        this.dataList = res['data']['list'];
+        this.totalItem = res['data']['count'];
+      },
+      () => {
+        this.totalItem = 0;
+        this.dataList = [];
+        this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
+      }
+    );
   }
 
   onEnterSearch(): void {
@@ -213,7 +244,7 @@ export class HumanResourceManagementComponent implements OnInit {
     const verifyUser = this.auth.checkVerifyUserInfo();
     switch (verifyUser) {
       case UserVerifyStatus.VERIFIED:
-          this.doDetail(item["userId"]);
+        this.doDetail(item['userId']);
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
         this.openDialogUnverifiedAccountAndEmail();
@@ -222,59 +253,58 @@ export class HumanResourceManagementComponent implements OnInit {
         this.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
-        console.warn("Trạng thái xác minh không hợp lệ:", verifyUser);
+        console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
         break;
     }
   }
 
   openDialogUnverifiedAccountAndEmail() {
-      let dataDialog: DialogRoleModel = new DialogRoleModel();
-      dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-      dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${this.auth.getUserInfo()?.emailChange}</b>.`;
-      dataDialog.icon = 'icon-warning';
-      dataDialog.iconColor = 'warning';
-      dataDialog.buttonLeftLabel = 'Thay đổi email';
-      dataDialog.buttonRightLabel = 'Xác thực email';
-  
-      const dialogRef = this.dialog.open(DialogRoleComponent, {
-        width: '500px',
-        data: dataDialog,
-        disableClose: true,
-      });
-  
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result != undefined) {
-          this.router.navigate(['/profile']);
-        } else {
-  
-        }
-  
-      })
-    }
-  
-    openDialogUnverifiedAccountAndNoEmail() {
-      let dataDialog: DialogRoleModel = new DialogRoleModel();
-      dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-      dataDialog.message = 'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
-      dataDialog.icon = 'icon-warning';
-      dataDialog.iconColor = 'warning';
-      dataDialog.buttonRightLabel = 'Bổ sung email';
-  
-      const dialogRef = this.dialog.open(DialogRoleComponent, {
-        width: '500px',
-        data: dataDialog,
-        disableClose: true,
-      });
-  
-      dialogRef.afterClosed().subscribe((result) => {
-        if (result) {
-          this.router.navigate(['/profile']);
-        } else {
-  
-        }
-  
-      })
-    }
+    let dataDialog: DialogRoleModel = new DialogRoleModel();
+    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
+    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${
+      this.auth.getUserInfo()?.emailChange
+    }</b>.`;
+    dataDialog.icon = 'icon-warning';
+    dataDialog.iconColor = 'warning';
+    dataDialog.buttonLeftLabel = 'Thay đổi email';
+    dataDialog.buttonRightLabel = 'Xác thực email';
+
+    const dialogRef = this.dialog.open(DialogRoleComponent, {
+      width: '500px',
+      data: dataDialog,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result != undefined) {
+        this.router.navigate(['/profile']);
+      } else {
+      }
+    });
+  }
+
+  openDialogUnverifiedAccountAndNoEmail() {
+    let dataDialog: DialogRoleModel = new DialogRoleModel();
+    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
+    dataDialog.message =
+      'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
+    dataDialog.icon = 'icon-warning';
+    dataDialog.iconColor = 'warning';
+    dataDialog.buttonRightLabel = 'Bổ sung email';
+
+    const dialogRef = this.dialog.open(DialogRoleComponent, {
+      width: '500px',
+      data: dataDialog,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.router.navigate(['/profile']);
+      } else {
+      }
+    });
+  }
 
   doOpenPage() {
     let verifyInfo = this.auth.checkVerifyUserInfo();
@@ -287,17 +317,17 @@ export class HumanResourceManagementComponent implements OnInit {
 
   doDetail(userId?: any) {
     if (userId)
-      this.router.navigate(['hr/hr-detail'], { queryParams: { userId: userId } });
-    else
-      this.router.navigate(['hr/hr-detail']);
+      this.router.navigate(['hr/hr-detail'], {
+        queryParams: { userId: userId },
+      });
+    else this.router.navigate(['hr/hr-detail']);
   }
 
   changeFilter() {
     this.isFilter = !this.isFilter;
   }
 
-  onConfirm() {
-  }
+  onConfirm() {}
 
   clearFilter() {
     this.formDropdown.get('status')?.setValue('');
@@ -312,13 +342,15 @@ export class HumanResourceManagementComponent implements OnInit {
     };
 
     let buildParams = CommonUtils.buildParams(param);
-    this.api.get(ROlE_ENDPOINT.SEARCH_LIST_ROLE, buildParams).subscribe(res => {
-      this.lstRole = res['data']['list'];
-    })
+    this.api
+      .get(ROlE_ENDPOINT.SEARCH_LIST_ROLE, buildParams)
+      .subscribe((res) => {
+        this.lstRole = res['data']['list'];
+      });
   }
 
   getLstPointSale() {
-    let dataReq = { groupIdList: [], status: '', methodId: [], mappingKey: "" }
+    let dataReq = { groupIdList: [], status: '', methodId: [], mappingKey: '' };
 
     let param = {
       page: this.pageIndex,
@@ -326,8 +358,10 @@ export class HumanResourceManagementComponent implements OnInit {
     };
     let buildParams = CommonUtils.buildParams(param);
 
-    this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe(res => {
-      this.dataPointSale = res['data']['subInfo'];
-    })
+    this.api
+      .post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams)
+      .subscribe((res) => {
+        this.dataPointSale = res['data']['subInfo'];
+      });
   }
 }
