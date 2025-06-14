@@ -105,16 +105,16 @@
   </div>
   <p-tabView styleClass="tabview-custom merchant-tab">
     <p-tabPanel header="Tổ chức">
-      <ng-container *ngIf="this.personDetail?.orgType === 0 && !personDetail?.groupList?.length">
+      <!-- <ng-container *ngIf="this.personDetail?.orgType === 0 && !personDetail?.groupList?.length">
         <h1 class="title-m-semibold mb-3">
           Doanh nghiệp: {{ userInfo?.merchantName }}
         </h1>
-      </ng-container>
+      </ng-container> -->
       <ng-container *ngIf="!!personDetail?.groupList?.length; else subtemplate">
         <div class="d-flex gap-3">
           <div class="col-3 organization">
             <div class="content">
-              <h1 class="title-m-semibold mb-3">
+              <h1 class="title-m-semibold mb-3 mt-3" *ngIf="this.personDetail?.orgType === 0">
                 {{ userInfo?.merchantName }}
               </h1>
               <div class="mt-3">
@@ -146,14 +146,14 @@
 
       <ng-template #subtemplate>
         <div
-          class="col-12 mt-4"
+          class="col-12"
           *ngIf="subMerchantList?.length > 0; else subNodata"
         >
-          <span
+          <!-- <span
             *ngIf="this.personDetail?.orgType === 0"
             class="title-m-semibold"
             >Danh sách điểm bán:</span
-          >
+          > -->
           <div class="row table-container" (scroll)="onScroll($event)">
             <grid-view
               [columns]="columns"
