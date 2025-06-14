@@ -22,10 +22,10 @@
         </div>
         <div class="col-9" style="max-height: 60vh;overflow-y: auto;">
           <div *ngIf="countSelectedPoint>0">Bạn đang gán nhân sự vào {{countSelectedPoint}} điểm kinh doanh thuộc nhóm
-            <b>{{activeOrganization}}</b>. Bạn có thể gán nhân sự vào các điểm kinh doanh thuộc nhóm khác
+            <b>{{activeOrganization}}</b>. Bạn có thể gán nhân sự vào các điểm kinh doanh thuộc nhóm khác.
           </div>
           <br />
-          <ng-container>
+          <ng-container *ngIf="isShowMechantList">
             <div class="d-flex">
               <div class="col-6 mb-4">
                 <div class="p-inputgroup show-icon-left search-role me-3">
@@ -33,7 +33,7 @@
                     <i class="icon-search input-icon input-icon-default"></i>
                   </span>
                   <input type="text" pInputText class="merchant-input search" [(ngModel)]="searchOrganization"
-                    placeholder="Tìm theo tên,địa chỉ điểm kinh doanh..." (keydown.enter)="getLstMerchant()"
+                    placeholder="Tìm theo tên, địa chỉ điểm kinh doanh..." (keydown.enter)="getLstMerchant()"
                     (blur)="getLstMerchant()" />
                 </div>
               </div>
@@ -218,7 +218,7 @@
           <div class="col-6 mb-4">
             <label class="form-label title-m-semibold">Số điện thoại</label>
             <div class="p-inputgroup">
-              <input type="number" pInputText class="merchant-input" formControlName="phoneNumber"
+              <input type="text" pInputText class="merchant-input" formControlName="phoneNumber"
                 placeholder="Nhập số điện thoại" (blur)="trimValue('phoneNumber')" />
               <span *ngIf="formInfo.get('phoneNumber')?.value" class="p-input-icon-right clear-icon"
                 (click)="clearValue('phoneNumber')">
