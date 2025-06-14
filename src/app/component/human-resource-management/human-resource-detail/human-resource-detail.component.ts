@@ -39,6 +39,7 @@ import { fomatAddress } from '../../../common/helpers/Ultils';
 import { TooltipModule } from 'primeng/tooltip';
 import { DirectiveModule } from '../../../base/module/directive.module';
 import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
+import { MatTooltipModule } from '@angular/material/tooltip';
 @Component({
   selector: 'app-human-resource-detail',
   standalone: true,
@@ -58,6 +59,7 @@ import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
     MatStepperIcon,
     MatProgressSpinnerModule,
     TooltipModule,
+    MatTooltipModule,
     DirectiveModule,
   ],
   templateUrl: './human-resource-detail.component.html',

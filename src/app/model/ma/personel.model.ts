@@ -15,6 +15,7 @@ export interface IPersonelDetail {
     createdBy?: Date;
     updatedDate?: Date;
     orgType?: number;
+    isVerify?: number;
     groupList?: IGroupList[];
     roleId?: number;
 }
