@@ -237,10 +237,13 @@ export class HumanResourceCreateComponent implements OnInit {
   }
 
   doActiveArea(group: any) {
+    console.log("doActiveArea", group);
+    this.organizationIdActive=null;
+    this.activeOrganization = '';
     this.countSelectedPoint = 0;
-    if (group && group.children.length == 0) {
-      this.organizationIdActive = group.id;
-      this.activeOrganization = group.groupName;
+    this.organizationIdActive = group.id;
+    this.activeOrganization = group.groupName;
+    if (group.children.length == 0) {
       this.getLstMerchant();
     }
   }

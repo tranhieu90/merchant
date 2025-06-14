@@ -1,14 +1,14 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <span class="header-m-semibold">Quản lý điểm kinh doanh</span>
-  <p-button label="+ Thêm mới điểm kinh doanh" class="merchant-button ms-auto title-s-semibold"
+  <p-button label="+ Tạo mới điểm kinh doanh" class="merchant-button ms-auto title-s-semibold"
     (click)="doOpenPage()" />
 </div>
 <div class="wrapper">
   <div class="d-flex justify-content-between align-items-center">
-    <span class="header-s-semibold">{{this.totalItem}} điểm kinh doanh</span>
+    <span class="header-s-semibold">Danh sách điểm kinh doanh ({{this.totalItem}})</span>
     <div class="d-flex">
-      <p-button class="merchant-button-icon button-l button-light mr-3" icon="icon-search" (onClick)="changeSearch()" />
-      <p-button class="merchant-button-icon button-l button-light" icon="icon-filter" (onClick)="changeFilter()" />
+      <p-button [matBadge]="countTotalSearch()" class="merchant-button-icon button-l button-light me-3" icon="icon-search" (onClick)="changeSearch()" />
+      <p-button [matBadge]="countTotalFilter()"class="merchant-button-icon button-l button-light" icon="icon-filter" (onClick)="changeFilter()" />
     </div>
   </div>
   <div *ngIf="isFilter || isFilter1">
@@ -39,14 +39,12 @@
     <div class="row mb-4" *ngIf="isFilter1">
       <div class="col-md-6 mt-4">
         <label class="form-label title-s-semibold">Mã dịch vụ</label>
-        <input type="text" pInputText class="merchant-input" [(ngModel)]="serviceCode" placeholder="Nhập mã dịch vụ"
-          (blur)="onEnterSearch()" (keydown.enter)="onEnterSearch()" />
+        <input type="text" pInputText class="merchant-input" (keydown.enter)="onEnterSearch()" [(ngModel)]="serviceCode" placeholder="Nhập mã dịch vụ"/>
       </div>
       <div class="col-md-6 mt-4">
         <label class="form-label title-s-semibold">Tên, địa chỉ điểm kinh doanh</label>
-        <input type="text" pInputText class="merchant-input" [(ngModel)]="keyWord"
-          placeholder="Tìm theo tên, địa chỉ điểm kinh doanh..." (blur)="onEnterSearch()"
-          (keydown.enter)="onEnterSearch()" />
+        <input type="text" pInputText class="merchant-input" (keydown.enter)="onEnterSearch()" [(ngModel)]="keyWord"
+          placeholder="Tìm theo tên, địa chỉ điểm kinh doanh"/>
       </div>
     </div>
 
@@ -56,7 +54,7 @@
     </div>
   </div>
   <div class="col-12 d-flex justify-content-end mt-4">
-    <grid-view [columns]="columns" [dataSource]="dataList" (doChangePage)="doSearch($event)" [total]="totalItem"
+    <grid-view [columns]="columns" [dataSource]="dataList" (doChangePage)="doSearch($event)" [pageInfo]="this.pageInfo" [total]="totalItem"
       [isOrder]="true" [action]="action" [search]="isSearch" style="float: left;width: 100%;"></grid-view>
   </div>
 

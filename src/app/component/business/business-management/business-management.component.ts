@@ -19,11 +19,12 @@ import { FetchApiService } from '../../../common/service/api/fetch-api.service';
 import { AuthenticationService } from '../../../common/service/auth/authentication.service';
 import { ToastService } from '../../../common/service/toast/toast.service';
 import { GridViewModel } from '../../../model/GridViewModel';
+import { MatBadge } from '@angular/material/badge';
 
 @Component({
   selector: 'app-business-management',
   standalone: true,
-  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, GridViewComponent, MatButtonModule, InputCommon, NgIf, DropdownModule, MultiSelectModule, TreeSelectModule],
+  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, GridViewComponent, MatButtonModule, InputCommon, NgIf, DropdownModule, MultiSelectModule, TreeSelectModule, MatBadge],
   templateUrl: './business-management.component.html',
   styleUrl: './business-management.component.scss'
 })
@@ -43,6 +44,10 @@ export class BusinessManagementComponent {
   serviceCode: string = '';
   lastClickedGroup: any = null;
   isConfig: any;
+  pageInfo: any = {
+    pageSize: 10,
+    page: 0,
+  };
 
   columns: Array<GridViewModel> = [
     {
@@ -89,7 +94,7 @@ export class BusinessManagementComponent {
     },
     {
       name: 'groupName',
-      label: 'CỤM/NHÓM',
+      label: 'TÊN NHÓM',
       options: {
         width: '15%',
         customCss: () => {
@@ -171,6 +176,9 @@ export class BusinessManagementComponent {
     this.getDataGroup();
     this.doSearch();
     this.hideColumn();
+    this.formDropdown.valueChanges.subscribe(() => {
+      this.countTotalFilter();
+    });
   }
 
   doSearch(pageInfo?: any) {
@@ -236,6 +244,10 @@ export class BusinessManagementComponent {
   onEnterSearch(): void {
     this.isSearch = true;
     this.pageIndex = 1;
+    this.pageInfo = {
+      pageSize: this.pageSize,
+      page: this.pageIndex - 1,
+    }
     this.keyWord = this.keyWord?.trim();
     this.serviceCode = this.serviceCode?.trim();
     this.doSearch();
@@ -371,5 +383,20 @@ export class BusinessManagementComponent {
     }
     return null;
   }
+  countTotalSearch() {
+    let countSearch = 0;
+    const fields = [this.serviceCode, this.keyWord];
+    countSearch = fields.filter(val => val && val.trim() !== '').length;
+    return countSearch > 0 ? countSearch : null;
+  }
 
+  countTotalFilter() {
+    let countSearch = 0;
+    const formValue = this.formDropdown.value;
+    countSearch = Object.values(formValue).filter(val => {
+      if (Array.isArray(val)) return val.length > 0;
+      return val !== null && val !== undefined && val !== '';
+    }).length;
+    return countSearch > 0 ? countSearch : null;
+  }
 }

@@ -138,6 +138,7 @@ export class LoginComponent implements OnInit {
     let params = this.loginForm.value;
     this.api.postEncrypted(LOGIN_ENDPOINT.LOGIN, params).subscribe(
       (res) => {
+        console.log("Login response: ", res);
         if (params["remember"]) {
           localStorage.setItem('userName', params["username"]);
           localStorage.setItem('password', this.encryptPassword(params["password"]));

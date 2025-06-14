@@ -5,12 +5,12 @@ import {Button} from 'primeng/button';
 import {CalendarModule} from 'primeng/calendar';
 import {InputCommon} from '../../../../common/directives/input.directive';
 import {InputTextModule} from 'primeng/inputtext';
-import {QRCodeComponent} from 'angularx-qrcode';
 import {NgClass, NgForOf, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 import {FetchApiService} from '../../../../common/service/api/fetch-api.service';
 import {ToastService} from '../../../../common/service/toast/toast.service';
 import {REFUND_ENDPOINT} from '../../../../common/enum/EApiUrl';
 import moment from 'moment';
+import { QRCodeModule  } from 'angularx-qrcode';
 
 @Component({
   selector: 'app-dialog-authentication',
@@ -22,7 +22,7 @@ import moment from 'moment';
     CalendarModule,
     InputCommon,
     InputTextModule,
-    QRCodeComponent,
+    QRCodeModule ,
     NgSwitch,
     NgSwitchCase,
     NgClass,

@@ -23,7 +23,7 @@ export class MTreeComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
-
+    console.log('m-tree data', this.data);
   }
   toggleExpand(item: any) {
     item.expanded = !item.expanded;

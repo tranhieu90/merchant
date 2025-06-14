@@ -5,12 +5,11 @@ import { BreadcumbComponent } from './base/layout/breadcumb/breadcumb/breadcumb.
 import { HeaderComponent } from './base/layout/header/header.component';
 import { NavBarComponent } from './base/layout/nav-bar/nav-bar.component';
 import { LoadingComponent } from './base/layout/loading/loading.component';
-
-
+import { MaterialModule } from './common/helpers/material-module';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, NavBarComponent, ToastModule, BreadcumbComponent,LoadingComponent],
+  imports: [RouterOutlet, HeaderComponent, NavBarComponent, ToastModule, BreadcumbComponent,LoadingComponent,MaterialModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

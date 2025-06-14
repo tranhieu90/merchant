@@ -14,12 +14,12 @@ import { BusinessDialogComponent } from '../business-dialog/business-dialog.comp
 import { BUSINESS_ENDPOINT } from '../../../../common/enum/EApiUrl';
 import { CommonUtils } from '../../../../base/utils/CommonUtils';
 import { CommonModule } from '@angular/common';
-import { QRCodeComponent } from 'angularx-qrcode'
+import { QRCodeModule  } from 'angularx-qrcode'
 import moment from 'moment';
 @Component({
   selector: 'app-business-detail',
   standalone: true,
-  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, MatButtonModule, CommonModule, QRCodeComponent],
+  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, MatButtonModule, CommonModule, QRCodeModule ],
   templateUrl: './business-detail.component.html',
   styleUrl: './business-detail.component.scss'
 })

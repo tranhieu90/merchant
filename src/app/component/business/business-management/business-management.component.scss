@@ -36,3 +36,8 @@
 .container-btn-cf {
     margin: 0 $spacing-s $spacing-s;
 }
+::ng-deep .mat-badge-content {
+  color: $color-surface-neutral-main !important;
+  background-color: #4E8AF1 !important;
+  opacity: 100% !important;
+}
