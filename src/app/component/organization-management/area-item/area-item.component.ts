@@ -1,13 +1,14 @@
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { CommonModule, NgClass, NgFor, NgIf } from '@angular/common';
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ElementRef, ViewChild } from '@angular/core';
 import { AreaModel } from '../../../model/AreaModel';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputSanitizeDirective } from '../../../common/directives/inputSanitize.directive';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-area-item',
   standalone: true,
-  imports: [NgClass, NgFor, NgIf, ReactiveFormsModule, InputSanitizeDirective],
+  imports: [NgClass, NgFor, NgIf, ReactiveFormsModule, InputSanitizeDirective,MatTooltipModule, CommonModule],
   templateUrl: './area-item.component.html',
   styleUrl: './area-item.component.scss'
 })

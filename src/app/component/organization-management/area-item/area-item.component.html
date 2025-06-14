@@ -1,50 +1,140 @@
-<div [ngClass]="['level', 'level-' + area.level, areaActive.id == area.id ? 'active': '']" >
-    @if(area.groupName)
-    {
-        <div class="content-group d-flex justify-content-between" (click)="onActiveArea(area)">
-            <div class="d-flex align-items-center gap-2">
-                <span [ngClass]="['cursor-pointer', area.children.length > 0 ? (isShowChildren? 'icon-angle_down':'icon-angle_right') : 'icon-arrow_right']" (click)="onOpenChildren()"></span>
-                <span [ngClass]="[area.level === 1 ? 'title-s-semibold': 'title-s-regular']" style="white-space: pre;">{{ area.groupName }}</span>
-            </div>
-            <div *ngIf="areaActive.id === area.id && isShowButton" class="box-button">
-                <span [ngClass]="['icon-trash', (area.level < 5 && area.lstMerchant.length == 0)? 'me-2': '']" (click)="onDeleteArea(area.id)"></span>
-                <span *ngIf="area.level < 5 && area.lstMerchant.length == 0" class="icon-plus_small" (click)="onAddArea(area.level + 1, area.id)"></span>
-            </div>
-            <div *ngIf="(areaActive.id !== area.id || !isShowButton) && area.children.length > 0">
-                <div class="count">{{ area.children.length }} nhóm</div>
-              </div>
-              
-        </div>
+<div
+  [ngClass]="[
+    'level',
+    'level-' + area.level,
+    areaActive.id == area.id ? 'active' : ''
+  ]"
+>
+  @if(area.groupName) {
+  <div
+    class="content-group d-flex justify-content-between"
+    (click)="onActiveArea(area)"
+    ngClass=""
+  >
+    <div class="col-9 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <span
+          [ngClass]="[
+            'cursor-pointer',
+            area.children.length > 0
+              ? isShowChildren
+                ? 'icon-angle_down'
+                : 'icon-angle_right'
+              : 'icon-arrow_right'
+          ]"
+          (click)="onOpenChildren()"
+        ></span>
+        <ng-container
+          *ngIf="
+            area.groupName.length > 35 && area.children.length > 0;
+            else noTooltip
+          "
+        >
+          <span
+            [ngClass]="[
+              area.level === 1 ? 'title-s-semibold' : 'title-s-regular'
+            ]"
+            style="white-space: pre"
+            [matTooltip]="area.groupName"
+            >{{ area.groupName | slice : 0 : 35 }}
+            {{ area.groupName.length > 35 ? "..." : "" }}</span
+          >
+        </ng-container>
+        <ng-template #noTooltip>
+          <ng-container *ngIf="area.groupName.length > 49; else noTooltipShort">
+            <span
+              [ngClass]="[
+                area.level === 1 ? 'title-s-semibold' : 'title-s-regular'
+              ]"
+              style="white-space: pre"
+              [matTooltip]="area.groupName"
+              >{{ area.groupName | slice : 0 : 49 }}
+              {{ area.groupName.length > 49 ? "..." : "" }}</span
+            >
+          </ng-container>
+          <ng-template #noTooltipShort>
+            <span
+              [ngClass]="[
+                area.level === 1 ? 'title-s-semibold' : 'title-s-regular'
+              ]"
+              style="white-space: pre"
+              >{{ area.groupName }}</span
+            >
+          </ng-template>
+        </ng-template>
+      </div>
+
+      <div *ngIf="areaActive.id === area.id && isShowButton" class="box-button">
+        <span
+          [ngClass]="[
+            'icon-trash',
+            area.level < 5 && area.lstMerchant.length == 0 ? 'me-2' : ''
+          ]"
+          (click)="onDeleteArea(area.id)"
+        ></span>
+        <span
+          *ngIf="area.level < 5 && area.lstMerchant.length == 0"
+          class="icon-plus_small"
+          (click)="onAddArea(area.level + 1, area.id)"
+        ></span>
+      </div>
+    </div>
+
+    <div
+      *ngIf="
+        (areaActive.id !== area.id || !isShowButton) && area.children.length > 0
+      "
+    >
+      <div class="count">{{ area.children.length }} nhóm</div>
+    </div>
+  </div>
+  } @else {
+  <form [formGroup]="formCreateArea">
+    <div class="p-inputgroup show-icon-left">
+      <span class="p-input-icon-left"
+        ><i class="icon-plus_small input-icon"></i
+      ></span>
+      <input
+        appInputSanitize
+        type="text"
+        pInputText
+        class="merchant-input input-name-group"
+        placeholder="Nhập tên nhóm"
+        formControlName="areaName"
+        (blur)="onBlurAreaName($event, area.id)"
+        (keydown.enter)="onBlurAreaName($event, area.id)"
+        #areaNameInput
+      />
+    </div>
+    @if (formCreateArea.controls['areaName'].touched &&
+    formCreateArea.controls['areaName'].invalid) {
+    <div class="m-caption error">
+      <div class="icon-caption">
+        <span class="icon-error_solid"></span>
+      </div>
+      @if(formCreateArea.controls['areaName'].hasError('areaExists')){
+      <span class="text-caption paragraph-m-regular">Tên nhóm đã tồn tại</span>
+      } @else if(formCreateArea.controls['areaName'].hasError('maxlength')){
+      <span class="text-caption paragraph-m-regular">Tối đa 50 ký tự</span>
+      }
+    </div>
     }
-    @else {
-        <form [formGroup]="formCreateArea">
-            <div class="p-inputgroup show-icon-left">
-                <span class="p-input-icon-left"><i class="icon-plus_small input-icon"></i></span>
-                <input appInputSanitize type="text" pInputText class="merchant-input input-name-group" placeholder="Nhập tên nhóm" formControlName="areaName"
-                    (blur)="onBlurAreaName($event, area.id)" (keydown.enter)="onBlurAreaName($event, area.id)" #areaNameInput />
-            </div>
-            @if (formCreateArea.controls['areaName'].touched && formCreateArea.controls['areaName'].invalid) {
-                <div class="m-caption error">
-                    <div class="icon-caption">
-                        <span class="icon-error_solid"></span>
-                    </div>
-                    @if(formCreateArea.controls['areaName'].hasError('areaExists')){
-                    <span class="text-caption paragraph-m-regular">Tên nhóm đã tồn tại</span>
-                    }
-                    @else if(formCreateArea.controls['areaName'].hasError('maxlength')){
-                    <span class="text-caption paragraph-m-regular">Tối đa 50 ký tự</span>
-                    }
-                </div>
-                }
-        </form>
-    }
+  </form>
+  }
 </div>
 
 <div *ngIf="area.children && area.children.length > 0 && isShowChildren">
-    <div *ngFor="let child of area.children">
-        <app-area-item [area]="child" [areaActive]="areaActive" [lstAreas]="lstAreas"
-            (activeArea)="onActiveArea($event)" (deleteArea)="onDeleteArea($event)"
-            (addArea)="onAddArea($event.level, $event.parentId)" (blurAreaName)="onBlurAreaName($event.event, $event.areaId)" [isShowButton] ="isShowButton">
-        </app-area-item>
-    </div>
+  <div *ngFor="let child of area.children">
+    <app-area-item
+      [area]="child"
+      [areaActive]="areaActive"
+      [lstAreas]="lstAreas"
+      (activeArea)="onActiveArea($event)"
+      (deleteArea)="onDeleteArea($event)"
+      (addArea)="onAddArea($event.level, $event.parentId)"
+      (blurAreaName)="onBlurAreaName($event.event, $event.areaId)"
+      [isShowButton]="isShowButton"
+    >
+    </app-area-item>
+  </div>
 </div>
