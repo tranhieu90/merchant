@@ -105,7 +105,7 @@
   </div>
   <p-tabView styleClass="tabview-custom merchant-tab">
     <p-tabPanel header="Tổ chức">
-      <ng-container *ngIf="this.personDetail?.orgType === 0">
+      <ng-container *ngIf="this.personDetail?.orgType === 0 && !personDetail?.groupList?.length">
         <h1 class="title-m-semibold mb-3">
           Doanh nghiệp: {{ userInfo?.merchantName }}
         </h1>
