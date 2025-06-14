@@ -12,7 +12,11 @@ import { TabViewModule } from 'primeng/tabview';
 import { environment } from '../../../../environments/environment';
 import { GridViewComponent } from '../../../base/shared/grid-view/grid-view.component';
 import { CommonUtils } from '../../../base/utils/CommonUtils';
-import { GROUP_ENDPOINT, HR_ENDPOINT, ROlE_ENDPOINT } from '../../../common/enum/EApiUrl';
+import {
+  GROUP_ENDPOINT,
+  HR_ENDPOINT,
+  ROlE_ENDPOINT,
+} from '../../../common/enum/EApiUrl';
 import { FetchApiService } from '../../../common/service/api/fetch-api.service';
 import { AuthenticationService } from '../../../common/service/auth/authentication.service';
 import { DialogCommonService } from '../../../common/service/dialog-common/dialog-common.service';
@@ -21,7 +25,11 @@ import { AreaModel } from '../../../model/AreaModel';
 import { DialogConfirmModel } from '../../../model/DialogConfirmModel';
 import { GridViewModel } from '../../../model/GridViewModel';
 import { IFuntionGroup } from '../../../model/ma/funtion-group.model';
-import { IGroupList, IPersonelDetail, IRolePersonel } from '../../../model/ma/personel.model';
+import {
+  IGroupList,
+  IPersonelDetail,
+  IRolePersonel,
+} from '../../../model/ma/personel.model';
 import { AreaItemComponent } from '../../organization-management/area-item/area-item.component';
 import { GenPasswordComponent } from '../gen-password/gen-password.component';
 import { FunctionModel } from '../../../model/FunctionModel';
@@ -50,10 +58,10 @@ import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
     MatStepperIcon,
     MatProgressSpinnerModule,
     TooltipModule,
-    DirectiveModule
+    DirectiveModule,
   ],
   templateUrl: './human-resource-detail.component.html',
-  styleUrl: './human-resource-detail.component.scss'
+  styleUrl: './human-resource-detail.component.scss',
 })
 export class HumanResourceDetailComponent implements OnInit {
   readonly MERCHANT_RULES = MERCHANT_RULES;
@@ -82,9 +90,9 @@ export class HumanResourceDetailComponent implements OnInit {
           return ['text-left'];
         },
         customBodyRender: (value: any) => {
-          return "#" + value;
+          return '#' + value;
         },
-      }
+      },
     },
     {
       name: 'merchantBizName',
@@ -95,8 +103,8 @@ export class HumanResourceDetailComponent implements OnInit {
         },
         customCssHeader: () => {
           return ['text-left'];
-        }
-      }
+        },
+      },
     },
     {
       name: 'formatAddress',
@@ -108,7 +116,7 @@ export class HumanResourceDetailComponent implements OnInit {
         customCssHeader: () => {
           return ['text-left'];
         },
-      }
+      },
     },
   ];
   lstAreas: AreaModel[] = [];
@@ -126,14 +134,13 @@ export class HumanResourceDetailComponent implements OnInit {
     private routeActive: ActivatedRoute,
     private dialogCommon: DialogCommonService
   ) {
-    this.routeActive.queryParams.subscribe(params => {
+    this.routeActive.queryParams.subscribe((params) => {
       this.userId = params['userId'] || null;
       if (params['userId']) {
         this.userId = _.toNumber(params['userId']);
       } else {
       }
     });
-
   }
 
   ngOnInit() {
@@ -153,7 +160,7 @@ export class HumanResourceDetailComponent implements OnInit {
         parentId: group.parentId ?? null,
         name: undefined,
         level: group.level ?? 0,
-        lstMerchant: []
+        lstMerchant: [],
       });
     }
 
@@ -177,9 +184,9 @@ export class HumanResourceDetailComponent implements OnInit {
   // }
 
   convertLstFunc(list: any[], parentId: number | null): any[] {
-    let result = list.filter(item => item.parentId === parentId);
+    let result = list.filter((item) => item.parentId === parentId);
 
-    result.forEach(item => {
+    result.forEach((item) => {
       let children = this.convertLstFunc(list, item.id);
       item.children = children;
       if (children.length > 0 && parentId === null) {
@@ -190,7 +197,6 @@ export class HumanResourceDetailComponent implements OnInit {
           item.partiallyComplete = true;
         }
       }
-
     });
 
     return result;
@@ -202,7 +208,7 @@ export class HumanResourceDetailComponent implements OnInit {
     if (parent.children && parent.children.length > 0) {
       total += parent.children.length;
 
-      parent.children.forEach(child => {
+      parent.children.forEach((child) => {
         total += this.getTotalChildren(child);
       });
     }
@@ -214,7 +220,7 @@ export class HumanResourceDetailComponent implements OnInit {
     let total = 0;
 
     if (parent.children && parent.children.length > 0) {
-      parent.children.forEach(child => {
+      parent.children.forEach((child) => {
         if (child.isChoose) {
           total += 1;
         }
@@ -225,9 +231,9 @@ export class HumanResourceDetailComponent implements OnInit {
   }
 
   convertLstAreaByOrder(list: any[], parentId: number | null): any[] {
-    let result = list.filter(item => item.parentId === parentId);
+    let result = list.filter((item) => item.parentId === parentId);
 
-    result.forEach(item => {
+    result.forEach((item) => {
       let children = this.convertLstAreaByOrder(list, item.id);
       item.children = children;
     });
@@ -271,51 +277,67 @@ export class HumanResourceDetailComponent implements OnInit {
   getLstMerchant(areaId?: any) {
     let dataReq = {
       groupIdList: [areaId],
-      status: "",
+      status: '',
       methodId: [],
-      mappingKey: ""
-    }
+      mappingKey: '',
+    };
 
     let param = {
       page: 1,
       size: 1000,
     };
     let buildParams = CommonUtils.buildParams(param);
-    this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe((res: any) => {
-      if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
-        this.subMerchantList = res['data']['subInfo'];
-        this.subMerchantList = res['data']['subInfo'].map((item: any) => ({
-          ...item,
-          formatAddress: fomatAddress([item.address, item.communeName, item.districtName, item.provinceName])
-        }));
-
-      } else {
-        this.subMerchantList = []
-      }
-    }, (error: any) => {
-      this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.')
-    });
+    this.api
+      .post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams)
+      .subscribe(
+        (res: any) => {
+          if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
+            this.subMerchantList = res['data']['subInfo'];
+            this.subMerchantList = res['data']['subInfo'].map((item: any) => ({
+              ...item,
+              formatAddress: fomatAddress([
+                item.address,
+                item.communeName,
+                item.districtName,
+                item.provinceName,
+              ]),
+            }));
+          } else {
+            this.subMerchantList = [];
+          }
+        },
+        (error: any) => {
+          this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.');
+        }
+      );
   }
 
   openChangeLockUser() {
     let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-    dataDialog.title = `${this.personDetail?.isActive == 0 ? 'Mở khóa nhân sự' : 'Khóa nhân sự'}`;
-    dataDialog.message = `${this.personDetail?.isActive == 0
-      ? 'Cân nhắc kiểm tra thông tin phân quyền và tổ chức của nhân sự để không ảnh hưởng đến hoạt động của doanh nghiệp. Bạn có chắc chắn muốn mở khoá nhân sự không?'
-      : 'Nhân sự bị khoá sẽ không thể truy cập vào hệ thống. Bạn có chắc chắn muốn khoá nhân sự không?'}`;
-    dataDialog.icon = `${this.personDetail?.isActive == 0 ? 'icon-lock' : 'icon-lock'}`;
+    dataDialog.title = `${
+      this.personDetail?.isActive == 0 ? 'Mở khóa nhân sự' : 'Khóa nhân sự'
+    }`;
+    dataDialog.message = `${
+      this.personDetail?.isActive == 0
+        ? 'Cân nhắc kiểm tra thông tin phân quyền và tổ chức của nhân sự để không ảnh hưởng đến hoạt động của doanh nghiệp. Bạn có chắc chắn muốn mở khoá nhân sự không?'
+        : 'Nhân sự bị khoá sẽ không thể truy cập vào hệ thống. Bạn có chắc chắn muốn khoá nhân sự không?'
+    }`;
+    dataDialog.icon = `${
+      this.personDetail?.isActive == 0 ? 'icon-lock' : 'icon-lock'
+    }`;
     dataDialog.viewCancel = true;
     dataDialog.iconColor = 'icon warning';
-    dataDialog.buttonLabel = `${this.personDetail?.isActive == 1 ? 'Mở khóa' : 'Khóa'}`;
-    dataDialog.width = "30%";
-    this.dialogCommon.openDialogInfo(dataDialog).subscribe(result => {
+    dataDialog.buttonLabel = `${
+      this.personDetail?.isActive == 1 ? 'Mở khóa' : 'Khóa'
+    }`;
+    dataDialog.width = '30%';
+    this.dialogCommon.openDialogInfo(dataDialog).subscribe((result) => {
       if (result) {
         if (this.personDetail?.isActive == 1) {
           this.openDialogBusinessUnActive();
         }
       }
     });
-
   }
 
   openDialogBusinessUnActive() {
@@ -325,51 +347,67 @@ export class HumanResourceDetailComponent implements OnInit {
     dataDialog.icon = 'icon-warning';
     dataDialog.viewCancel = true;
     dataDialog.iconColor = 'icon warning';
-    dataDialog.buttonLabel = 'Xác nhận'
-    dataDialog.width = "23,5%";
-    this.dialogCommon.openDialogInfo(dataDialog).subscribe(result => {
+    dataDialog.buttonLabel = 'Xác nhận';
+    dataDialog.width = '23,5%';
+    this.dialogCommon.openDialogInfo(dataDialog).subscribe((result) => {
       if (result) {
       }
     });
   }
 
   getDetail() {
-    this.api.get(HR_ENDPOINT.DETAIL, { userId: this.userId }).subscribe(res => {
-      this.personDetail = res?.data;
-      this.getDetailFunc(this.personDetail?.roleId!);
-      if (!!this.personDetail?.groupList && this.personDetail?.groupList?.length > 0) {
-        const treeData = this.buildGroupTree(this.personDetail.groupList);
-        this.lstAreas = treeData;
-        this.lstAreaByOrder = this.convertLstAreaByOrder(this.lstAreas, null);
-      } else {
-        // if(this.personDetail?.orgType === 2) {
-        this.api.post(HR_ENDPOINT.GET_SUB, {
-          userId: this.userId,
-          page: 1,
-          size: 10
-
-        }).subscribe(res => {
-          this.subMerchantList = res['data']['getPushSubInfos'];
-          this.subMerchantList = res['data']['getPushSubInfos'].map((item: any) => ({
-            ...item,
-            formatAddress: fomatAddress([item.address, item.communeName, item.districtName, item.provinceName])
-          }));
-        });
+    this.api.get(HR_ENDPOINT.DETAIL, { userId: this.userId }).subscribe(
+      (res) => {
+        this.personDetail = res?.data;
+        this.getDetailFunc(this.personDetail?.roleId!);
+        if (
+          !!this.personDetail?.groupList &&
+          this.personDetail?.groupList?.length > 0
+        ) {
+          const treeData = this.buildGroupTree(this.personDetail.groupList);
+          this.lstAreas = treeData;
+          this.lstAreaByOrder = this.convertLstAreaByOrder(this.lstAreas, null);
+        } else {
+          // if(this.personDetail?.orgType === 2) {
+          this.api
+            .post(HR_ENDPOINT.GET_SUB, {
+              userId: this.userId,
+              page: 1,
+              size: 10,
+            })
+            .subscribe((res) => {
+              this.subMerchantList = res['data']['getPushSubInfos'];
+              this.subMerchantList = res['data']['getPushSubInfos'].map(
+                (item: any) => ({
+                  ...item,
+                  formatAddress: fomatAddress([
+                    item.address,
+                    item.communeName,
+                    item.districtName,
+                    item.provinceName,
+                  ]),
+                })
+              );
+            });
+        }
+      },
+      () => {
+        this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
       }
-    }, () => {
-      this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.')
-    });
+    );
   }
 
   getDetailFunc(roleId: number) {
-    this.api.get(ROlE_ENDPOINT.GET_DETAILS_FUNC + roleId).subscribe(res => {
+    this.api.get(ROlE_ENDPOINT.GET_DETAILS_FUNC + roleId).subscribe((res) => {
       if (res) {
         this.rolePesonel = res.data;
-        this.listFunctionConvert = this.convertLstFunc(res?.data?.functionGroupModels, null);
+        this.listFunctionConvert = this.convertLstFunc(
+          res?.data?.functionGroupModels,
+          null
+        );
       }
     });
   }
-
 
   // getRoleDetail() {
   //   this.api.get(ROlE_ENDPOINT.GET_DETAILS_FUNC, { userId: this.userId }).subscribe(res => {
@@ -389,9 +427,9 @@ export class HumanResourceDetailComponent implements OnInit {
       page: this.pageIndex,
       size: this.pageSize,
       userId: this.userId,
-    }
+    };
 
-    this.api.post(HR_ENDPOINT.GET_SUB, params).subscribe(res => {
+    this.api.post(HR_ENDPOINT.GET_SUB, params).subscribe((res) => {
       if (res?.data?.getPushSubInfos) {
         this.subMerchantList.push(res?.data?.getPushSubInfos);
       }
@@ -420,17 +458,19 @@ export class HumanResourceDetailComponent implements OnInit {
   // }
 
   setSelectedItem(groups: FunctionModel[]) {
-    groups.forEach(g => {
+    groups.forEach((g) => {
       if (g.children.length > 0) {
         this.setSelectedItem(g.children);
       }
-      const existGroup = this.rolePesonel?.function?.some((rp: any) => rp.functionId === g.id);
+      const existGroup = this.rolePesonel?.function?.some(
+        (rp: any) => rp.functionId === g.id
+      );
       if (existGroup) {
         g.isChoose = true;
       } else {
         g.isChoose = false;
       }
-    })
+    });
   }
 
   updateFunctionSelectionStateList(list: FunctionModel[]): void {
@@ -447,12 +487,11 @@ export class HumanResourceDetailComponent implements OnInit {
     }
 
     const total = node.children.length;
-    const selected = node.children.filter(c => c.isChoose).length;
+    const selected = node.children.filter((c) => c.isChoose).length;
 
     node.isChoose = selected === total;
     node.partiallyComplete = selected > 0 && selected < total;
   }
-
 
   openGenNewPassword() {
     const dialogRef = this.dialog.open(GenPasswordComponent, {
@@ -463,27 +502,36 @@ export class HumanResourceDetailComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result?.actionType) {
         this.changePasswordStatus = 1;
-        this.api.postEncrypted(HR_ENDPOINT.CHANGE_PASS_PERSONEL, { userId: this.userId, password: result?.pass }).subscribe(res => {
-          this.changePassInfo = res?.data
-        }, () => {
-          this.isUpdatePassSuccess = false;
-        });
+        this.api
+          .postEncrypted(HR_ENDPOINT.CHANGE_PASS_PERSONEL, {
+            userId: this.userId,
+            password: result?.pass,
+          })
+          .subscribe(
+            (res) => {
+              this.changePassInfo = res?.data;
+            },
+            () => {
+              this.isUpdatePassSuccess = false;
+            }
+          );
         // this.openConfirmChangePassword(result?.pass);
       }
-    })
+    });
   }
 
   openConfirmChangePassword() {
     let dataDialog: DialogConfirmModel = new DialogConfirmModel();
     dataDialog.title = 'Cấp lại mật khẩu';
-    dataDialog.message = 'Mật khẩu hiện tại sẽ vô hiệu hoá và bắt buộc phải sử dụng mật khẩu mới để truy cập vào hệ thống. Bạn có chắc chắn muốn cấp lại mật khẩu cho nhân sự không?';
+    dataDialog.message =
+      'Mật khẩu hiện tại sẽ vô hiệu hoá và bắt buộc phải sử dụng mật khẩu mới để truy cập vào hệ thống. Bạn có chắc chắn muốn cấp lại mật khẩu cho nhân sự không?';
     dataDialog.buttonLabel = 'Xác nhận';
     dataDialog.icon = 'icon-change_password';
     dataDialog.viewCancel = true;
     dataDialog.iconColor = 'icon warning';
-    dataDialog.buttonLabel = 'Xác nhận'
-    dataDialog.width = "30%";
-    this.dialogCommon.openDialogInfo(dataDialog).subscribe(result => {
+    dataDialog.buttonLabel = 'Xác nhận';
+    dataDialog.width = '30%';
+    this.dialogCommon.openDialogInfo(dataDialog).subscribe((result) => {
       if (result) {
         // this.changePasswordStatus = 1;
         // this.api.postEncrypted(HR_ENDPOINT.CHANGE_PASS_PERSONEL, { userId: this.userId, password: pass }).subscribe(res => {
@@ -497,16 +545,36 @@ export class HumanResourceDetailComponent implements OnInit {
   }
 
   doUpdateHuman() {
-    this.router.navigate(['hr/hr-update'], {
-      state: {
-        dataInput: {
-          groupList: this.personDetail?.groupList,
-          roleId: this.personDetail?.roleId,
-          userId: this.personDetail?.id,
-          masterId: this.personDetail?.orgType === 0 ? this.userInfo?.merchantId : 0,
-          selectedMerchant: this.subMerchantList?.length === 1 ? this.subMerchantList[0].merchantId : undefined,
-          orgType: this.personDetail?.orgType
-        },
+    let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+    dataDialog.title = 'Cập nhật nhân sự';
+    dataDialog.message =
+      'Việc thay đổi sẽ ảnh hưởng đến quyền truy cập của nhân sự. Bạn có chắc chắn muốn cập nhật nhân sự không?';
+    dataDialog.buttonLabel = 'Xác nhận';
+    dataDialog.icon = 'icon-warning';
+    dataDialog.viewCancel = true;
+    dataDialog.iconColor = 'icon warning';
+    dataDialog.buttonLabel = 'Xác nhận';
+    dataDialog.width = '30%';
+    this.dialogCommon.openDialogInfo(dataDialog).subscribe((result) => {
+      if (result) {
+        this.router.navigate(['hr/hr-update'], {
+          state: {
+            dataInput: {
+              groupList: this.personDetail?.groupList,
+              roleId: this.personDetail?.roleId,
+              userId: this.personDetail?.id,
+              masterId:
+                this.personDetail?.orgType === 0
+                  ? this.userInfo?.merchantId
+                  : 0,
+              selectedMerchant:
+                this.subMerchantList?.length === 1
+                  ? this.subMerchantList[0].merchantId
+                  : undefined,
+              orgType: this.personDetail?.orgType,
+            },
+          },
+        });
       }
     });
   }
