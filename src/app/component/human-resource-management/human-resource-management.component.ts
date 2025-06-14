@@ -36,6 +36,8 @@ import {
 import { MERCHANT_RULES } from '../../base/constants/authority.constants';
 import { HasRolesDirective } from '../../base/directive/has-roles.directive';
 import { DirectiveModule } from '../../base/module/directive.module';
+import { PaginatorModule } from 'primeng/paginator';
+import { PaginatorComponent } from '../../base/layout/paginator/paginator.component';
 
 @Component({
   selector: 'app-human-resource-management',
@@ -53,7 +55,8 @@ import { DirectiveModule } from '../../base/module/directive.module';
     DropdownModule,
     MultiSelectModule,
     TreeSelectModule,
-    DirectiveModule
+    DirectiveModule,
+    PaginatorComponent,
   ],
   templateUrl: './human-resource-management.component.html',
   styleUrl: './human-resource-management.component.scss',
@@ -363,5 +366,9 @@ export class HumanResourceManagementComponent implements OnInit {
       .subscribe((res) => {
         this.dataPointSale = res['data']['subInfo'];
       });
+  }
+
+  onChangePage(event: any) {
+    this.doSearch({ pageSize: event.pageSize, page: event.pageIndex });
   }
 }

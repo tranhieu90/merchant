@@ -3,9 +3,28 @@
 
 .wrapper {
   background: $color-global-neutral-white;
-  height: calc(100vh - 240px);
-  // padding: 24px 24px 10px 24px;
+  height: calc(100vh - 220px);
   border-radius: $border-radius-xs;
+
+  //   .filter-wrapper {
+  //   // không cần height cứng ở đây
+  //   flex-shrink: 0; // tránh bị co lại
+  // }
+  //  .table-wrapper {
+  //   flex: 1;
+  //   overflow: auto;
+  // }
+
+  .table-wrapper {
+    // height: 100%;
+    overflow: auto;
+  }
+
+  &.has-filter {
+    .table-wrapper {
+      height: calc(100vh - 560px) !important;  // trừ khi filter hiển thị
+    }
+  }
 }
 
 .search-role {
