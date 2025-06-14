@@ -3,7 +3,7 @@
 
 .wrapper {
   background: $color-global-neutral-white;
-  min-height: calc(100vh - 160px);
+  min-height: calc(100vh - 230px);
   padding: $spacing-l;
   border-radius: $border-radius-xs;
 
@@ -15,6 +15,13 @@
 
     .no-data {
       width: 314px;
+      margin: auto;
+      text-align: center;
+      margin-top: 7rem;
+    }
+
+    .update-result-pass{
+      width: 50%;
       margin: auto;
       text-align: center;
       margin-top: 7rem;

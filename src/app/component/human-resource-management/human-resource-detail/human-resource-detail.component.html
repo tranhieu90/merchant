@@ -109,12 +109,12 @@
         </ng-container>
 
         <!-- <ng-container *ngIf="personDetail?.isVerify === 0"> -->
-          {{ personDetail?.email
-          }}<span
-            class="icon-warning_solid pb-1"
-            matTooltipPosition="above"
-            matTooltip="Tài khoản chưa được xác thực"
-          ></span>
+        {{ personDetail?.email
+        }}<span
+          class="icon-warning_solid pb-1"
+          matTooltipPosition="above"
+          matTooltip="Tài khoản chưa được xác thực"
+        ></span>
         <!-- </ng-container> -->
       </div>
     </div>
@@ -255,66 +255,74 @@
   </p-tabView>
 </div>
 } @else {
-<mat-stepper
-  class="step-role"
-  [selectedIndex]="3"
-  [disableRipple]="true"
-  [linear]="true"
-  #stepper
->
-  <ng-template matStepperIcon="edit" let-index="index">
-    {{ index + 1 }}
-  </ng-template>
 
-  <mat-step [completed]="true" label="Gán tổ chức"></mat-step>
+<!-- <mat-step [completed]="true" label="Gán tổ chức"></mat-step>
   <mat-step [completed]="true" label="Gán vai trò"></mat-step>
   <mat-step [completed]="true" label="Nhập thông tin"></mat-step>
-  <mat-step label="Hoàn tất">
-    <div
-      class="content-thirdForm d-flex flex-column align-items-center header-xs-bold mt-5"
-    >
+  <mat-step label="Hoàn tất"> -->
+<div class="wrapper">
+  <div class="content">
+    <div class="update-result-pass header-xs-bold">
       <ng-container *ngIf="this.isUpdatePassSuccess">
-        <img [src]="'/assets/images/image-success.svg'" alt="Success" />
+        <img
+          [src]="assetPath + '/assets/images/image-success.svg'"
+          alt="Success"
+        />
         <div class="mt-3">Cấp lại mật khẩu thành công</div>
         <div
-          class="text title-s-regular mt-3"
+          class="title-s-regular mt-3 text-secondary"
           *ngIf="this.changePassInfo?.email === 0"
         >
           Hãy gửi thông tin đăng nhập để nhân sự truy cập vào hệ thống.
         </div>
         <div
-          class="text title-s-regular mt-3"
+          class="title-s-regular mt-3 text-secondary"
           *ngIf="this.changePassInfo?.email === 1"
         >
-          Hãy gửi thông tin đăng nhập hoặc thông báo nhân sự kiểm tra email để
-          lấy thông tin truy cập vào hệ thống.
+          Hãy gửi thông tin đăng nhập hoặc thông báo nhân sự kiểm tra
         </div>
-        <a href="/hr" class="mt-3">
-          <p-button label="Về trang quản lý" class="merchant-button mt-4" />
-        </a>
+
+        <div
+          class="title-s-regular text-secondary"
+          *ngIf="this.changePassInfo?.email === 1"
+        >
+          email để lấy thông tin truy cập vào hệ thống.
+        </div>
+
+        <div class="mt-3">
+          <a [href]="assetPath + '/hr'">
+            <p-button label="Về trang quản lý" class="merchant-button mt-4" />
+          </a>
+        </div>
       </ng-container>
 
       <ng-container *ngIf="!this.isUpdatePassSuccess">
-        <img [src]="'/assets/images/image-false.svg'" alt="False" />
+        <img [src]="assetPath + '/assets/images/image-false.svg'" alt="False" />
         <div class="mt-3">Cấp lại mật khẩu không thành công:</div>
-        <div class="text title-s-regular mt-3">
+        <div class="text title-s-regular mt-3 text-secondary">
           Đã có lỗi xảy ra. Vui lòng thử lại.
         </div>
         <button
           mat-button
-          class="merchant-button-material mt-4"
+          class="merchant-button-material mt-3"
           width="500px"
           (click)="reloadChangePass()"
         >
           Thực hiện lại
         </button>
-        <a href="/hr" class="mt-3">
-          <p-button label="Về trang quản lý" class="merchant-button-tertiary" />
-        </a>
+        <div class="mt-3">
+          <a [href]="assetPath + '/hr'">
+            <p-button
+              label="Về trang quản lý"
+              class="merchant-button-tertiary"
+            />
+          </a>
+        </div>
       </ng-container>
     </div>
-  </mat-step>
-</mat-stepper>
+  </div>
+</div>
+<!-- </mat-step> -->
 }
 
 <ng-template #subNodata>
