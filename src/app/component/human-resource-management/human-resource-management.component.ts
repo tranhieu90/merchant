@@ -36,6 +36,8 @@ import {
 import { MERCHANT_RULES } from '../../base/constants/authority.constants';
 import { HasRolesDirective } from '../../base/directive/has-roles.directive';
 import { DirectiveModule } from '../../base/module/directive.module';
+import { DialogConfirmModel } from '../../model/DialogConfirmModel';
+import { DialogCommonService } from '../../common/service/dialog-common/dialog-common.service';
 
 @Component({
   selector: 'app-human-resource-management',
@@ -53,7 +55,7 @@ import { DirectiveModule } from '../../base/module/directive.module';
     DropdownModule,
     MultiSelectModule,
     TreeSelectModule,
-    DirectiveModule
+    DirectiveModule,
   ],
   templateUrl: './human-resource-management.component.html',
   styleUrl: './human-resource-management.component.scss',
@@ -168,7 +170,8 @@ export class HumanResourceManagementComponent implements OnInit {
     private router: Router,
     private api: FetchApiService,
     private toast: ToastService,
-    private auth: AuthenticationService
+    private auth: AuthenticationService,
+    private dialogCommon: DialogCommonService
   ) {
     this.formDropdown = this.fb.group({
       status: [''],
@@ -315,11 +318,28 @@ export class HumanResourceManagementComponent implements OnInit {
   }
 
   doDetail(userId?: any) {
-    if (userId)
-      this.router.navigate(['hr/hr-detail'], {
-        queryParams: { userId: userId },
+    const hasRole = this.auth.apiTracker([MERCHANT_RULES.USER_MANAGER_DETAIL]);
+    if (!hasRole) {
+      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+      dataDialog.title = 'Bạn không có quyền xem nhân sự';
+      dataDialog.message =
+        'Nhân sự này không thuộc tổ chức mà bạn được phân quyền.';
+      dataDialog.icon = 'icon-warning';
+      dataDialog.viewCancel = false;
+      dataDialog.iconColor = 'icon warning';
+      dataDialog.buttonLabel = 'Xác nhận';
+      dataDialog.width = '23,5%';
+      this.dialogCommon.openDialogInfo(dataDialog).subscribe((result) => {
+        if (result) {
+        }
       });
-    else this.router.navigate(['hr/hr-detail']);
+    } else {
+      if (userId)
+        this.router.navigate(['hr/hr-detail'], {
+          queryParams: { userId: userId },
+        });
+      else this.router.navigate(['hr/hr-detail']);
+    }
   }
 
   changeFilter() {
