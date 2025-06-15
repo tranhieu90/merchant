@@ -312,7 +312,7 @@ export class RoleManagementComponent implements OnInit {
     dataDialog.icon = 'icon-warning';
     dataDialog.iconColor = 'warning';
     dataDialog.buttonRightLabel = 'Bổ sung email';
-    dataDialog.hiddenButtonLeft = true
+    dataDialog.hiddenButtonLeft = false
     const dialogRef = this.dialog.open(DialogRoleComponent, {
       width: '500px',
       data: dataDialog,

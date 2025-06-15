@@ -1,6 +1,6 @@
 import { NgClass, NgIf } from '@angular/common';
-import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 export class DialogRoleModel {
   title!: string;
@@ -35,10 +35,15 @@ export class DialogRoleComponent {
 
 
   doAction(actionType: boolean) {
-    this.dialogRef.close(actionType);
+    if (actionType === false && this.dataDialog.hiddenButtonLeft === false) {
+      this.dialogRef.close();
+    } else {
+      this.dialogRef.close(actionType);
+    }
+
   }
 
-  onclose(){
+  onclose() {
     this.dialogRef.close();
   }
 }

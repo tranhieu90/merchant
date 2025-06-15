@@ -387,6 +387,7 @@ export class CreateRoleComponent implements OnInit {
     const dialogRef = this.dialog.open(DialogRoleComponent, {
       width: '500px',
       data: dataConfirm,
+      disableClose: true
     });
 
     dialogRef.afterClosed().subscribe((result) => {
