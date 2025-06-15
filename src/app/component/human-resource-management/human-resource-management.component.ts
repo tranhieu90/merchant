@@ -77,10 +77,10 @@ export class HumanResourceManagementComponent implements OnInit {
       label: 'ID',
       options: {
         customCss: (obj: any) => {
-          return ['text-center'];
+          return ['text-left'];
         },
         customCssHeader: () => {
-          return ['text-center'];
+          return ['text-left'];
         },
         customBodyRender: (value: any) => {
           return '#' + value;
@@ -95,7 +95,7 @@ export class HumanResourceManagementComponent implements OnInit {
           return ['text-left'];
         },
         customCssHeader: () => {
-          return ['text-center'];
+          return ['text-left'];
         },
       },
     },
@@ -104,10 +104,10 @@ export class HumanResourceManagementComponent implements OnInit {
       label: 'NGÀY SINH',
       options: {
         customCss: (obj: any) => {
-          return ['text-center'];
+          return ['text-left'];
         },
         customCssHeader: () => {
-          return ['text-center'];
+          return ['text-left'];
         },
         customBodyRender: (value: any) => {
           return value ? moment(value).format('DD/MM/YYYY') : '';
@@ -122,7 +122,7 @@ export class HumanResourceManagementComponent implements OnInit {
           return ['text-left'];
         },
         customCssHeader: () => {
-          return ['text-center'];
+          return ['text-left'];
         },
       },
     },
@@ -131,7 +131,7 @@ export class HumanResourceManagementComponent implements OnInit {
       label: 'VAI TRÒ',
       options: {
         customCssHeader: (obj: any) => {
-          return ['text-center'];
+          return ['text-left'];
         },
         customCss: (obj: any) => {
           return ['text-left'];
@@ -188,8 +188,11 @@ export class HumanResourceManagementComponent implements OnInit {
         name: 'status',
         label: 'TRẠNG THÁI',
         options: {
+          customCssHeader: (obj: any) => {
+            return ['text-left'];
+          },
           customCss: (obj: any) => {
-            return ['text-center'];
+            return ['text-left'];
           },
           customBodyRender: (value: any, obj: any) => {
             let msg;
