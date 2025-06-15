@@ -10,6 +10,7 @@ import { CommonUtils } from '../../../base/utils/CommonUtils';
 import { GROUP_ENDPOINT } from '../../../common/enum/EApiUrl';
 import { FetchApiService } from '../../../common/service/api/fetch-api.service';
 import { ToastService } from '../../../common/service/toast/toast.service';
+import { fomatAddress } from '../../../common/helpers/Ultils';
 
 @Component({
   selector: 'app-table-merchant',
@@ -148,7 +149,15 @@ export class TableMerchantComponent implements OnChanges {
         let buildParams = CommonUtils.buildParams(param);
         this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe((res: any) => {
           if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
-            this.dataTable = res['data']['subInfo'];
+            this.dataTable = res['data']['subInfo'].map((item: any) => ({
+                          ...item,
+                          formatAddress: fomatAddress([
+                            item.address,
+                            item.communeName,
+                            item.districtName,
+                            item.provinceName,
+                          ]),
+                        }));
           } else {
             this.dataTable = []
           }
