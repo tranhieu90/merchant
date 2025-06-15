@@ -134,6 +134,7 @@ export class TableMerchantComponent implements OnChanges {
   }
 
   doSearch(event: any) {
+    this.isSearch = true;
     let dataReq = {
           groupIdList: [this.groupId],
           status: "",
