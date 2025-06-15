@@ -41,7 +41,7 @@ export type Role = {
 @Component({
   selector: 'app-role-management',
   standalone: true,
-  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, GridViewComponent, MatButtonModule, InputCommon,PermissionDirective],
+  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, GridViewComponent, MatButtonModule, InputCommon, PermissionDirective],
   templateUrl: './role-management.component.html',
   styleUrl: './role-management.component.scss'
 })
@@ -75,7 +75,7 @@ export class RoleManagementComponent implements OnInit {
       label: 'VAI TRÒ',
       options: {
         customCss: () => {
-          return ['text-left','mw-160'];
+          return ['text-left', 'mw-160'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -192,6 +192,7 @@ export class RoleManagementComponent implements OnInit {
   }
 
   doOpenPage(roleId?: any) {
+    debugger
     const verifyUser = this.auth.checkVerifyUserInfo();
     switch (verifyUser) {
       case UserVerifyStatus.VERIFIED:
@@ -259,6 +260,7 @@ export class RoleManagementComponent implements OnInit {
       this.totalItem = res['data']['count'];
     }, (error) => {
       const errorData = error?.error || {};
+      debugger
       switch (errorData.soaErrorCode) {
         case 'ACCOUNT_ERROR_001':
           this.openDialogUnverifiedAccountNoEmail();
@@ -293,10 +295,12 @@ export class RoleManagementComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.verifyEmail();
-      } else {
-        this.updateEmail();
+      if (result != undefined) {
+        if (result === true) {
+          this.verifyEmail();
+        } else {
+          this.updateEmail();
+        }
       }
     })
   }
@@ -316,7 +320,7 @@ export class RoleManagementComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
+      if (result != undefined) {
         this.updateEmail();
       }
     })

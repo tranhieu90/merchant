@@ -51,7 +51,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="p-inputgroup">
                                 <input appInputSanitize appShowClearOnFocus=".clear-icon" type="text" pInputText class="merchant-input me-2" id="id" formControlName="areaName"
-                                    placeholder="Nhập tên nhóm" (blur)="onBlurEdit()"
+                                    placeholder="Nhập tên nhóm" (blur)="onBlurEdit()" maxlength="50"
                                     (keydown.enter)="checkDuplicateAreaName($event)" #areaNameInput/>
                                 @if(this.formEditArea.get('areaName')?.value){
                                 <span class="p-input-icon-right clear-icon" (click)="clearValue('areaName')">
