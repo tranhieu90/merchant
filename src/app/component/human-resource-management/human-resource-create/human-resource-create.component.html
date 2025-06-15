@@ -329,56 +329,57 @@
               >
             </div>
           </div>
-          <div class="col-6 mb-4">
+            <div class="col-6 mb-4">
             <label class="form-label title-m-semibold">Email</label>
             <div class="p-inputgroup">
               <input
-                type="text"
-                pInputText
-                class="merchant-input"
-                formControlName="emailChange"
-                placeholder="name@company.com"
-                (blur)="trimValue('emailChange')"
+              type="text"
+              pInputText
+              class="merchant-input"
+              formControlName="emailChange"
+              placeholder="name@company.com"
+              (blur)="trimValue('emailChange')"
+              maxlength="50"
               />
               <span
-                *ngIf="formInfo.get('emailChange')?.value"
-                class="p-input-icon-right clear-icon"
-                (click)="clearValue('emailChange')"
+              *ngIf="formInfo.get('emailChange')?.value"
+              class="p-input-icon-right clear-icon"
+              (click)="clearValue('emailChange')"
               >
-                <i
-                  class="icon-close_circle_solid input-icon input-icon-close"
-                ></i>
+              <i
+                class="icon-close_circle_solid input-icon input-icon-close"
+              ></i>
               </span>
             </div>
             <div
               *ngIf="
-                (formInfo.controls['emailChange'].dirty ||
-                  formInfo.controls['emailChange'].touched) &&
-                formInfo.controls['emailChange'].invalid
+              (formInfo.controls['emailChange'].dirty ||
+                formInfo.controls['emailChange'].touched) &&
+              formInfo.controls['emailChange'].invalid
               "
               class="m-caption error"
             >
               <div class="icon-caption">
-                <span class="icon-error_solid"></span>
+              <span class="icon-error_solid"></span>
               </div>
               <div
-                *ngIf="
-                  !formInfo.controls['emailChange'].hasError('required') &&
-                  formInfo.controls['emailChange'].hasError('pattern')
-                "
-                class="text-caption paragraph-m-regular"
+              *ngIf="
+                !formInfo.controls['emailChange'].hasError('required') &&
+                formInfo.controls['emailChange'].hasError('pattern')
+              "
+              class="text-caption paragraph-m-regular"
               >
-                Email không đúng định dạng
+              Email không đúng định dạng
               </div>
               <div
-                *ngIf="
-                  !formInfo.controls['emailChange'].hasError('required') &&
-                  !formInfo.controls['emailChange'].hasError('pattern') &&
-                  formInfo.controls['emailChange'].hasError('maxlength')
-                "
-                class="text-caption paragraph-m-regular"
+              *ngIf="
+                !formInfo.controls['emailChange'].hasError('required') &&
+                !formInfo.controls['emailChange'].hasError('pattern') &&
+                formInfo.controls['emailChange'].hasError('maxlength')
+              "
+              class="text-caption paragraph-m-regular"
               >
-                Vui lòng không nhập quá 50 kí tự
+              Vui lòng không nhập quá 50 kí tự
               </div>
               <div
                 *ngIf="
