@@ -333,12 +333,15 @@
             <label class="form-label title-m-semibold">Email</label>
             <div class="p-inputgroup">
               <input
+                maxlength="50"
                 type="text"
                 pInputText
+                id="email"
                 class="merchant-input"
                 formControlName="emailChange"
                 placeholder="name@company.com"
                 (blur)="trimValue('emailChange')"
+                (keypress)="allowPattern($event)"
               />
               <span
                 *ngIf="formInfo.get('emailChange')?.value"
@@ -500,10 +503,12 @@
                 appShowClearOnFocus=".clear-icon"
                 type="text"
                 pInputText
+                id="userName"
                 class="merchant-input"
                 formControlName="userName"
                 placeholder="Nhập tên đăng nhập"
                 (blur)="trimValue('userName')"
+                  (keypress)="allowPattern($event)"
               />
               <span
                 *ngIf="formInfo.get('userName')?.value"

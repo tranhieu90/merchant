@@ -552,6 +552,29 @@ export class HumanResourceCreateComponent implements OnInit {
       control.setValue(control.value.trim());
     }
   }
+ allowPattern(event: KeyboardEvent) {
+  const target = event.target as HTMLInputElement;
+  let pattern: RegExp = /.*/;
+  let maxLength = 254;
+
+  switch (target?.id) {
+    case "email":
+      pattern = /^[a-zA-Z0-9._%+\-@]$/;
+      maxLength = 254;
+      break;
+    case "userName":
+      pattern = /^[a-zA-Z0-9._\-]$/;
+      maxLength = 50;
+      break;
+  }
+  if (
+    !pattern.test(event.key) ||
+    event.key === " " ||
+    target.value.length >= maxLength
+  ) {
+    event.preventDefault();
+  }
+}
   createHr() {
     let params = this.formInfo.getRawValue();
     params['roleId'] = this.roleId;
