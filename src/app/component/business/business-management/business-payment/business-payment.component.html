@@ -16,7 +16,7 @@
                             (ngModelChange)="ischeck = $event" /> -->
                         <div class="w-100">
                             <label class="paragraph-m-semibold mb-spacing-xs">Terminal ID</label>
-                            <input class="merchant-input" pInputText formControlName="terminalId" />
+                            <input class="merchant-input" appInputSanitize pInputText formControlName="terminalId" />
                             @if (paymentQRFormUpdate.controls['terminalId'].dirty &&
                             paymentQRFormUpdate.controls['terminalId'].invalid)
                             {
@@ -51,7 +51,7 @@
                         <div class="w-100">
                             <div class="col-12 mb-spacing-l">
                                 <label class="paragraph-m-semibold mb-spacing-xs">Số tài khoản MB</label>
-                                <input class="merchant-input" pInputText formControlName="accountNumber"
+                                <input class="merchant-input" appInputSanitize pInputText formControlName="accountNumber"
                                     placeholder="Nhập số tài khoản MB" />
                                 @if (paymentQRFormUpdate.controls['accountNumber'].dirty &&
                                 paymentQRFormUpdate.controls['accountNumber'].invalid)
@@ -74,7 +74,7 @@
                             </div>
                             <div class="col-12">
                                 <label class="paragraph-m-semibold mb-spacing-xs">Tên tài khoản</label>
-                                <input class="merchant-input" pInputText formControlName="accountName"
+                                <input class="merchant-input" appInputSanitize pInputText formControlName="accountName"
                                     placeholder="Nhập tên tài khoản" />
                                 @if (paymentQRFormUpdate.controls['accountName'].dirty &&
                                 paymentQRFormUpdate.controls['accountName'].invalid)
@@ -117,7 +117,7 @@
                 </div>
                 <div class="col-12" *ngIf="ischeck==1">
                     <label class="paragraph-m-semibold mb-spacing-xs">Terminal ID</label>
-                    <input class="merchant-input" pInputText formControlName="terminalId"
+                    <input class="merchant-input" appInputSanitize pInputText formControlName="terminalId"
                         placeholder="Nhập mã Terminal ID do MB cung cấp khi tích hợp dịch vụ" />
                     @if (paymentQRFormInsert.controls['terminalId'].dirty &&
                     paymentQRFormInsert.controls['terminalId'].invalid)
@@ -148,7 +148,7 @@
                 <div class="ischeck-2" *ngIf="ischeck==2 && paymentTypeQr && paymentTypeQr==0">
                     <div class="col-12 mb-spacing-l">
                         <label class="paragraph-m-semibold mb-spacing-xs">Số tài khoản</label>
-                        <input class="merchant-input" pInputText formControlName="accountNumber"
+                        <input class="merchant-input" appInputSanitize pInputText formControlName="accountNumber"
                             placeholder="Nhập số tài khoản MB" />
                         @if (paymentQRFormInsert.controls['accountNumber'].dirty &&
                         paymentQRFormInsert.controls['accountNumber'].invalid)
@@ -172,7 +172,7 @@
                     </div>
                     <div class="col-12">
                         <label class="paragraph-m-semibold mb-spacing-xs">Tên tài khoản</label>
-                        <input class="merchant-input" pInputText formControlName="accountName"
+                        <input class="merchant-input" appInputSanitize pInputText formControlName="accountName"
                             placeholder="Nhập tên tài khoản" />
                         @if (paymentQRFormInsert.controls['accountName'].dirty &&
                         paymentQRFormInsert.controls['accountName'].invalid)
@@ -209,7 +209,7 @@
             <div class="row">
                 <div class="col-3 mb-spacing-l" *ngFor="let item of lstPaymentPodClone;index as i">
                     <div class="p-inputgroup show-icon-right" [ngClass]="{'disabled': !isSoftPos}">
-                        <input class="merchant-input" pInputText [readOnly]="true" [value]="item"
+                        <input class="merchant-input" appInputSanitize pInputText [readOnly]="true" [value]="item"
                             [disabled]="!isSoftPos" [ngClass]="isDuplicateClass(lstDuplicatePos,item)" />
                         <span class="p-input-icon-right clear-icon" (click)="deletePayment(item,i,1)">
                             <i class="icon-trash input-icon input-icon-default icon-color"></i>
@@ -226,7 +226,7 @@
                 </div>
             </div>
             <div class="col-12 mt-3" *ngIf="isAddPodId">
-                <input class="merchant-input" pInputText placeholder="Nhập mã TID trên thiết bị POS"
+                <input class="merchant-input" appInputSanitize pInputText placeholder="Nhập mã TID trên thiết bị POS"
                     [(ngModel)]="paymentMethodPodId" #posCodeRef="ngModel" required maxlength="50"
                     pattern="^[a-zA-Z0-9]+$" (blur)="doAddPaymentPod(posCodeRef)"
                     (keydown.enter)="doAddPaymentPod(posCodeRef)" />
@@ -262,7 +262,7 @@
             <div class="row">
                 <div class="col-3 mb-spacing-l" *ngFor="let item of lstPaymentTHDDClone;index as i">
                     <div class="p-inputgroup show-icon-right" [ngClass]="{'disabled': !isPaymentTHDD}">
-                        <input class="merchant-input" pInputText [readOnly]="true" [value]="item"
+                        <input class="merchant-input" appInputSanitize pInputText [readOnly]="true" [value]="item"
                             [disabled]="!isPaymentTHDD" [ngClass]="isDuplicateClass(lstDuplicateId,item)" />
                         <span class="p-input-icon-right clear-icon" (click)="deletePayment(item,i,2)">
                             <i class="icon-trash input-icon input-icon-default icon-color"></i>
@@ -279,7 +279,7 @@
                 </div>
             </div>
             <div class="col-12 mt-3" *ngIf="isAddTHDDId">
-                <input class="merchant-input" pInputText placeholder="Nhập mã THDD ID" [(ngModel)]="paymentMethodTHDDId"
+                <input class="merchant-input" appInputSanitize pInputText placeholder="Nhập mã THDD ID" [(ngModel)]="paymentMethodTHDDId"
                     #THDDCodeRef="ngModel" required maxlength="50" pattern="^[a-zA-Z0-9]+$"
                     (blur)="doAddPaymentTHDD(THDDCodeRef)" (keydown.enter)="doAddPaymentTHDD(THDDCodeRef)" />
                 <div class="m-caption error" *ngIf="THDDCodeRef.invalid && THDDCodeRef.dirty">

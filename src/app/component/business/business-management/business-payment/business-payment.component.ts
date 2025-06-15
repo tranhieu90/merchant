@@ -21,11 +21,12 @@ import { QRCodeComponent } from 'angularx-qrcode'
 import { ShowClearOnFocusDirective } from '../../../../common/directives/showClearOnFocusDirective';
 import { REGEX_PATTERN } from '../../../../common/enum/RegexPattern';
 import {InputCommon} from '../../../../common/directives/input.directive';
+import {InputSanitizeDirective} from '../../../../common/directives/inputSanitize.directive';
 
 @Component({
   selector: 'app-business-payment',
   standalone: true,
-  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, InputSwitchModule, RadioButtonModule, CommonModule, InputCommon],
+  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, InputSwitchModule, RadioButtonModule, CommonModule, InputCommon, InputSanitizeDirective],
   templateUrl: './business-payment.component.html',
   styleUrl: './business-payment.component.scss',
   animations: [
@@ -355,6 +356,9 @@ export class BusinessPaymentComponent implements OnInit {
   }
 
   doConfirm() {
+    if (this.isPaymentQR || this.isSoftPos || this.isPaymentTHDD) {
+      return;
+    }
     let dataDialog: DialogConfirmModel = new DialogConfirmModel();
     dataDialog.title = "Điểm kinh doanh yêu cầu gắn với ít nhất 1 phương thức thanh toán";
     dataDialog.message = "Vui lòng thêm phương thức thanh toán.";
@@ -395,7 +399,6 @@ export class BusinessPaymentComponent implements OnInit {
           this.doDetail(this.subId);
         } else if (res["status"] == 400) {
           this.handleResponeError400(this.dataRespone);
-          this.toast.showError('Đã xảy ra lỗi, vui lòng thử lại');
         }
       }
     }, (error) => {
@@ -438,6 +441,11 @@ export class BusinessPaymentComponent implements OnInit {
           }
         }
       })
+      if (dataRespone?.length) {
+        this.toast.showError('Đã xảy ra lỗi, vui lòng thử lại');
+      }
+    } else {
+      this.toast.showError('Đã xảy ra lỗi, vui lòng thử lại');
     }
   }
   isDuplicate(lstDuplicate: any, item: string): boolean {

@@ -29,7 +29,7 @@
         <div *ngIf="isConfig != 0" class="col-md-4 mt-4 ">
           <label class="form-label title-s-semibold">Tên nhóm</label>
           <p-treeSelect [options]="groupNameOptions" formControlName="groupName" optionLabel="label" optionValue="key"
-            selectionMode="checkbox" display="comma" [metaKeySelection]="false" [filter]="true" placeholder="Tất cả"
+            selectionMode="checkbox" display="comma" [metaKeySelection]="false" [filter]="true"  [emptyMessage]="'Không tìm thấy dữ liệu'" placeholder="Tất cả"
             class="merchant-treeSelect" (onNodeSelect)="onGroupClick($event)" (onNodeUnselect)="onGroupClick($event)">
           </p-treeSelect>
         </div>
