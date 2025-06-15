@@ -12,7 +12,7 @@
                     }
                 </button>
                 <input type="checkbox" class="checkbox-custom" [checked]="item.checked" id="{{ item.id }}"
-                    [disabled]="checkDisable||item.disabled" (change)="onCheckboxChange( $event,item)"
+                    [disabled]="checkDisable || item.disabled" (change)="onCheckboxChange( $event,item)"
                     (click)="$event.stopPropagation()" />
 
                 <span class="group-name title-s-regular">{{ item.groupName }}</span>
@@ -21,7 +21,6 @@
                     }}</span>
             </div>
 
-            <!-- children -->
             <div *ngIf="item.expanded && item.children?.length">
                 <m-tree [data]="item.children" [level]="level + 1" [activeItemId]="activeItemId"
                     (groupChoice)="groupChoice.emit($event)" [checkDisable]="checkDisable"

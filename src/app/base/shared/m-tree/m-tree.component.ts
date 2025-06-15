@@ -22,7 +22,6 @@ export class MTreeComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.expandCheckedNodes(this.data);
   }
-
   ngOnInit(): void {
     console.log('m-tree data', this.data);
   }
@@ -38,12 +37,6 @@ export class MTreeComponent implements OnInit, OnChanges {
   }
   
   onCheckboxChange(event: any, item?: any) {
-    var level = item.level || 0;
-    // this.data.forEach(item => {
-    //   if(item.level> level) {
-    //   item.disabled=true}
-    // });
-    console.log('onCheckboxChange', this.data);
     item.checked = event.target.checked;
     this.toggleChildren(item, item.checked);
     this.groupSelect.emit({ ...item, children: item.children ? [...item.children] : [] });

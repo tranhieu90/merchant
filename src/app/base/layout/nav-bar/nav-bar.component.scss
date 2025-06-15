@@ -16,11 +16,6 @@
         margin-bottom: 0;
     }
 
-    .mat-expansion-panel-body {
-        padding: 0 24px !important;
-        background: red;
-    }
-
     .mat-expansion-panel-header {
         background: transparent !important;
         border: none !important;
@@ -177,8 +172,8 @@
 
 .mat-expansion-panel .icon-header {
     color: #8c98a4;
-    font-size: 18px;
-    margin-right: 8px;
+    font-size: 16px;
+    margin-right: 12px;
 }
 
 .mat-mdc-nav-list .mat-mdc-list-item {
@@ -192,7 +187,7 @@
         .icon-header,
         .item-nav {
             color: $color-global-blue-blue-6 !important;
-            font-weight: 550 !important;
+            font-weight: 600 !important;
         }
     }
 }
@@ -203,7 +198,7 @@
     letter-spacing: 0;
     text-transform: none;
     text-decoration: none;
-    font-size: 16px !important;
+    font-size: 14px !important;
     line-height: 22px;
     color: #b0b8c4;
 }
@@ -233,7 +228,7 @@
     .icon-header,
     .item-nav {
         color: $color-global-blue-blue-6 !important;
-        font-weight: 550 !important;
+        font-weight: 600 !important;
     }
 }
 
@@ -305,16 +300,11 @@
     font-size: 16px;
     line-height: 18px;
 }
-.menuSub {
-    margin-left: 15px;
-}
-.mat-expansion-panel-body {
-    padding: 0 24px 16px !important;
-}
+
 
 ::ng-deep .icon-header{
     margin-right: 8px;
 }
-::ng-deep .menuNoSub{
-    margin-left: 15px;
+::ng-deep .mat-expansion-panel-body{
+    padding: 0 !important;
 }

@@ -283,7 +283,6 @@ export class HumanResourceCreateComponent implements OnInit {
     }
   }
   selectMearchant(event: any) {
-     
     if (event.checked) {
       this.masterIdSelected = this.userInfo?.merchantId; 
       if (this.mTreeComponent) {
@@ -291,7 +290,7 @@ export class HumanResourceCreateComponent implements OnInit {
       }
     } else {
       this.masterIdSelected = null;
-       
+         this.mTreeComponent.checkAllItems(false);
     }
   }
 

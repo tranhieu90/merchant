@@ -35,7 +35,7 @@
             <a mat-list-item [routerLink]="item.menuPathUrl" routerLinkActive="selected-item"
                 class="custom-list-item mt-1">
                 <div class="d-flex align-items-center menuNoSub">
-                    <span *ngIf="item.level" class="icon-header" [ngClass]="item.menuIcon"></span>
+                    <span class="icon-header" [ngClass]="item.menuIcon"></span>
                     <span *ngIf="item.level == 2" class="paragraph-s-semibold-capital">{{ item.menuName }}</span>
                     <span *ngIf="item.level == 3" class="item-nav">{{ item.menuName }}</span>
                 </div>
