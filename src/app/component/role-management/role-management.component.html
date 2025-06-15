@@ -11,7 +11,7 @@
           <span class="p-input-icon-left">
             <i class="icon-search input-icon input-icon-default"></i>
           </span>
-        <input type="text" pInputText class="merchant-input search" [(ngModel)]="keyWord" placeholder="Tìm kiếm theo tên vai trò, người tạo" (blur) = "onEnterSearch()" (keydown.enter)="onEnterSearch()" maxlength="255"/>
+        <input type="text" pInputText class="merchant-input search" [(ngModel)]="keyWord" placeholder="Tìm kiếm theo tên vai trò, người tạo" (keydown.enter)="onEnterSearch()" maxlength="255"/>
       </div>
     </div>
     <div class="col-12 d-flex justify-content-end mt-24">
