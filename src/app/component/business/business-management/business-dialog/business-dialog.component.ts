@@ -14,10 +14,11 @@ import { AuthenticationService } from '../../../../common/service/auth/authentic
 import { DialogCommonService } from '../../../../common/service/dialog-common/dialog-common.service';
 import { Router } from '@angular/router';
 import {InputCommon} from '../../../../common/directives/input.directive';
+import {InputSanitizeDirective} from '../../../../common/directives/inputSanitize.directive';
 @Component({
   selector: 'app-business-dialog',
   standalone: true,
-  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, DropdownModule, InputCommon],
+  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, DropdownModule, InputCommon, InputSanitizeDirective],
   templateUrl: './business-dialog.component.html',
   styleUrl: './business-dialog.component.scss'
 })

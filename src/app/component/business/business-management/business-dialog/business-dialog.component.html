@@ -7,7 +7,7 @@
         <form [formGroup]="formBusiness">
             <div class="col-12 mb-spacing-l">
                 <label class="title-s-semibold label mb-spacing-xs">Tên điểm kinh doanh</label>
-                <input class="merchant-input" pInputText formControlName="merchantBizName" />
+                <input class="merchant-input" appInputSanitize pInputText formControlName="merchantBizName" />
                 @if (formBusiness.controls['merchantBizName'].dirty && formBusiness.controls['merchantBizName'].invalid)
                 {
                 <div class="m-caption error">
@@ -28,7 +28,7 @@
             </div>
             <div class="col-12 mb-spacing-l">
                 <label class="title-s-semibold label mb-spacing-xs">Tên diễn giải</label>
-                <input class="merchant-input" pInputText formControlName="merchantName" />
+                <input class="merchant-input" appInputSanitize pInputText formControlName="merchantName" />
                 @if (formBusiness.controls['merchantName'].dirty && formBusiness.controls['merchantName'].invalid)
                 {
                 <div class="m-caption error">
@@ -107,7 +107,7 @@
             </div>
             <div class="col-12">
                 <label class="title-s-semibold label mb-spacing-xs">Địa điểm kinh doanh</label>
-                <input class="merchant-input" pInputText formControlName="address" />
+                <input class="merchant-input" appInputSanitize pInputText formControlName="address" />
                 @if (formBusiness.controls['address'].dirty && formBusiness.controls['address'].invalid)
                 {
                 <div class="m-caption error">
