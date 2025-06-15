@@ -355,6 +355,9 @@ export class BusinessPaymentComponent implements OnInit {
   }
 
   doConfirm() {
+    if (this.isPaymentQR || this.isSoftPos || this.isPaymentTHDD) {
+      return;
+    }
     let dataDialog: DialogConfirmModel = new DialogConfirmModel();
     dataDialog.title = "Điểm kinh doanh yêu cầu gắn với ít nhất 1 phương thức thanh toán";
     dataDialog.message = "Vui lòng thêm phương thức thanh toán.";
