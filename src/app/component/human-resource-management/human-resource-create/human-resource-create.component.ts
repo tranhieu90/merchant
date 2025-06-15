@@ -1,5 +1,5 @@
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
-import { CommonModule, ɵnormalizeQueryParams } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   AbstractControl,
@@ -10,6 +10,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { MatStep, MatStepper } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -19,33 +20,30 @@ import { CalendarModule } from 'primeng/calendar';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { PaginatorModule } from 'primeng/paginator';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { environment } from '../../../../environments/environment';
 import { GridViewComponent } from '../../../base/shared/grid-view/grid-view.component';
+import { MTreeComponent } from '../../../base/shared/m-tree/m-tree.component';
 import { CommonUtils } from '../../../base/utils/CommonUtils';
 import { InputCommon } from '../../../common/directives/input.directive';
+import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
 import {
   GROUP_ENDPOINT,
   HR_ENDPOINT,
-  ORGANIZATION_ENDPOINT,
-  ROlE_ENDPOINT,
+  ORGANIZATION_ENDPOINT
 } from '../../../common/enum/EApiUrl';
 import { REGEX_PATTERN } from '../../../common/enum/RegexPattern';
+import { fomatAddress, generatePassword } from '../../../common/helpers/Ultils';
 import { FetchApiService } from '../../../common/service/api/fetch-api.service';
 import { AuthenticationService } from '../../../common/service/auth/authentication.service';
 import { DialogCommonService } from '../../../common/service/dialog-common/dialog-common.service';
 import { ToastService } from '../../../common/service/toast/toast.service';
 import { GridViewModel } from '../../../model/GridViewModel';
-import _ from 'lodash';
-import { MTreeComponent } from '../../../base/shared/m-tree/m-tree.component';
+import { IErrorRespone } from '../../../model/ma/funtion-group.model';
 import {
   DialogRoleComponent,
   DialogRoleModel,
 } from '../../role-management/dialog-role/dialog-role.component';
-import { fomatAddress, generatePassword } from '../../../common/helpers/Ultils';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { RadioButtonModule } from 'primeng/radiobutton';
-import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
-import { IErrorRespone } from '../../../model/ma/funtion-group.model';
-import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-human-resource-create',
@@ -509,7 +507,7 @@ export class HumanResourceCreateComponent implements OnInit {
             this.formInfo.get('userName')!.setErrors({ userNameExist: true });
             break;
           case 'USER_CREATION_ERROR_004':
-            this.formInfo.get('email')!.setErrors({ emailExist: true });
+            this.formInfo.get('emailChange')!.setErrors({ emailExist: true });
             break;
           case 'USER_CREATION_ERROR_005':
             this.formInfo
