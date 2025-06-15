@@ -3,11 +3,13 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, Eleme
 import { AreaModel } from '../../../model/AreaModel';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputSanitizeDirective } from '../../../common/directives/inputSanitize.directive';
+import { ShowIfTruncatedDirective } from '../../../common/directives/showIfTruncatedDirective';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-area-item',
   standalone: true,
-  imports: [NgClass, NgFor, NgIf, ReactiveFormsModule, InputSanitizeDirective],
+  imports: [NgClass, NgFor, NgIf, ReactiveFormsModule, InputSanitizeDirective, ShowIfTruncatedDirective, MatTooltip],
   templateUrl: './area-item.component.html',
   styleUrl: './area-item.component.scss'
 })

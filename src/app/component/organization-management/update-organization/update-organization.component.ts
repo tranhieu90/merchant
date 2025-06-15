@@ -22,6 +22,7 @@ import { environment } from '../../../../environments/environment';
 import { CommonUtils } from '../../../base/utils/CommonUtils';
 import { InputCommon } from '../../../common/directives/input.directive';
 import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
+import { fomatAddress } from '../../../common/helpers/Ultils';
 
 @Component({
   selector: 'app-update-organization',
@@ -44,6 +45,7 @@ export class UpdateOrganizationComponent implements OnChanges {
   lstMerchantActive: any = [];
   isMoveMerchantSuccess: boolean = false;
   assetPath = environment.assetPath;
+  isCloseInput: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -120,7 +122,15 @@ export class UpdateOrganizationComponent implements OnChanges {
     let buildParams = CommonUtils.buildParams(param);
     this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe((res: any) => {
       if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
-        this.lstMerchantActive = res['data']['subInfo'];
+        this.lstMerchantActive = res['data']['subInfo'].map((item: any) => ({
+              ...item,
+              formatAddress: fomatAddress([
+                item.address,
+                item.communeName,
+                item.districtName,
+                item.provinceName,
+              ]),
+            }));
       } else {
         this.lstMerchantActive = []
       }
@@ -364,6 +374,8 @@ export class UpdateOrganizationComponent implements OnChanges {
 
   doAssignSubmerchant() {
     //chuyển về trang thêm mới điểm kinh doanh
+      this.router.navigate(['/business/business-create'],
+      { queryParams: { organizationSetup: true, groupId: this.areaActive.id } });
   }
 
   doEditArea() {
@@ -380,6 +392,7 @@ export class UpdateOrganizationComponent implements OnChanges {
 
   clearValue(nameInput: string) {
     this.formEditArea.get(nameInput)?.setValue('');
+    this.isCloseInput = true
   }
 
   checkDuplicateAreaName(event: any) {
@@ -404,9 +417,16 @@ export class UpdateOrganizationComponent implements OnChanges {
       this.toast.showSuccess('Đổi tên nhóm thành công');
       this.isEditArea = false;
       
-      // Thêm: cập nhật lại areaActive để hiển thị tên mới ngay lập tức
       this.areaActive.groupName = areaName;
     }, (error: any) => {
+      if (error && error?.error?.soaErrorCode === 'GROUP_ERROR_001') {
+        this.isCloseInput = true;
+        this.formEditArea.get('areaName')!.setErrors({ areaExists: true });
+        this.formEditArea.get('areaName')?.markAsTouched();
+        this.formEditArea.updateValueAndValidity();
+        
+        return
+      }
       const errorData = error?.error || {};
       this.toast.showError(errorData?.soaErrorDesc);
     });
@@ -478,11 +498,12 @@ export class UpdateOrganizationComponent implements OnChanges {
     }
   }
   onBlurEdit() {
+    this.isCloseInput = false;
     setTimeout(() => {
-      if (this.isEditArea) {
+      if (this.isEditArea && !this.isCloseInput) {
         this.cancelEdit();
       }
-    }, 200); // Delay 200ms để đợi click xử lý trước
+    }, 300); // Delay 200ms để đợi click xử lý trước
   }
   
   

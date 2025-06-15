@@ -2,9 +2,9 @@
     @if(area.groupName)
     {
         <div class="content-group d-flex justify-content-between" (click)="onActiveArea(area)">
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2" style="width: 65%;">
                 <span [ngClass]="['cursor-pointer', area.children.length > 0 ? (isShowChildren? 'icon-angle_down':'icon-angle_right') : 'icon-arrow_right']" (click)="onOpenChildren()"></span>
-                <span [ngClass]="[area.level === 1 ? 'title-s-semibold': 'title-s-regular']" style="white-space: pre;">{{ area.groupName }}</span>
+                <span [ngClass]="[area.level === 1 ? 'title-s-semibold': 'title-s-regular']" style="white-space: pre;" class="ellipsis"  matTooltipPosition="above" matTooltip="{{ area.groupName }}" appShowIfTruncated>{{ area.groupName }}</span>
             </div>
             <div *ngIf="areaActive.id === area.id && isShowButton" class="box-button">
                 <span [ngClass]="['icon-trash', (area.level < 5 && area.lstMerchant.length == 0)? 'me-2': '']" (click)="onDeleteArea(area.id)"></span>
@@ -13,7 +13,6 @@
             <div *ngIf="(areaActive.id !== area.id || !isShowButton) && area.children.length > 0">
                 <div class="count">{{ area.children.length }} nhóm</div>
               </div>
-              
         </div>
     }
     @else {

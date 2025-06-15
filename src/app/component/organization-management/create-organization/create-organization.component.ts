@@ -49,6 +49,7 @@ export class CreateOrganizationComponent {
   isFormCreateAreaInvalid: boolean = false;
   areaActive: AreaModel = new AreaModel();
   lstMerchantActive: any = [];
+  isCloseInput: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -200,18 +201,16 @@ export class CreateOrganizationComponent {
   }
 
   onBlurCreateArea(event: any, areaId: number, isFormCreateInvalid: boolean) {
-    console.log(1);
     let areaCreate:AreaModel = this.lstAreas.find(item => item.id == areaId) as AreaModel;
     if (areaCreate) {
-      console.log(2);
       const {target} = event;
       let areaName = target?.value?.trim();
       let checkDuplicate= this.lstAreas.some(x=>x.groupName== areaName);
       if (!checkDuplicate) {
-        console.log(3);
         areaCreate.groupName=areaName;
         this.lstAreaByOrder = this.convertLstAreaByOrder(this.lstAreas, null);
         this.isFormCreateAreaInvalid=false;
+        this.toast.showSuccess(`Tạo nhóm ${areaName} thành công`)
       }else
       {
         this.isFormCreateAreaInvalid = isFormCreateInvalid;
@@ -276,9 +275,18 @@ export class CreateOrganizationComponent {
     });
   }
 
+  onBlurEdit() {
+    this.isCloseInput = false;
+    setTimeout(() => {
+      if (this.isEditArea && !this.isCloseInput) {
+        this.cancelEdit();
+      }
+    }, 300);
+  }
+
+
   checkDuplicateAreaName(event: any) {
     const {target} = event;
-    console.log("checkDup",event);
     let areaName = event?.target?.value;
     if (!areaName) return;
     let areaExits = this.lstAreas.find(item => item.groupName?.toLowerCase() === areaName.toLowerCase());
@@ -293,6 +301,13 @@ export class CreateOrganizationComponent {
     let area = this.lstAreas.find(item => item.id === this.areaActive.id);
     if (area) {
       area.groupName = this.formEditArea.get("areaName")?.value;
+    }
+    let areaExits = this.lstAreas.find(item => item.groupName?.toLowerCase() === area?.groupName?.toLowerCase());
+    if (areaExits && areaExits.id == this.areaActive.id) {
+      this.formEditArea.get('areaName')!.setErrors({ areaExists: true });
+      this.formEditArea.get('areaName')?.markAsTouched(); // Đánh dấu trường là touched để hiển thị lỗi nếu có
+      this.formEditArea.updateValueAndValidity(); // Cập nhật trạng thái valid của form
+      return
     }
 
     this.isEditArea = false;
@@ -408,6 +423,13 @@ export class CreateOrganizationComponent {
 
   clearValue(nameInput: string) {
     this.formEditArea.get(nameInput)?.setValue('');
+    this.isCloseInput = true
+  }
+
+  cancelEdit() {
+    // Reset lại giá trị tên nhóm về tên cũ
+    this.formEditArea.get('areaName')?.setValue(this.areaActive.groupName);
+    this.isEditArea = false;
   }
 
 }
