@@ -96,7 +96,7 @@ export class HumanResourceCreateComponent implements OnInit {
   searchOrganization: string = '';
   masterIdSelected: number | null = null;
   pointSalesSelected: Set<any> = new Set();
-  organizationSelected: any = [];
+  organizationSelected: any[] = [];
   totalPointSalesSelected: number = 0;
   countSelectedPoint: number = 0;
   activeOrganization: string = '';
@@ -487,7 +487,7 @@ export class HumanResourceCreateComponent implements OnInit {
     params['roleId'] = this.roleId;
     params['organizationInfo'] = {
       masterId:
-        this.pointSalesSelected.size > 0 || this.organizationSelected > 0
+        this.pointSalesSelected.size > 0 || this.organizationSelected.length > 0
           ? ''
           : this.masterIdSelected,
       merchantIds: Array.from(this.pointSalesSelected),

@@ -38,7 +38,7 @@
             </div>
           </div>
         </div>
-        <div class="col-9" style="max-height: 60vh; overflow-y: auto">
+        <div *ngIf="organizationSelected.length == 0" class="col-9" style="max-height: 60vh; overflow-y: auto">
           <div *ngIf="countSelectedPoint > 0" class="text title-s-regular mt-3">
             Bạn đang gán nhân sự vào {{ countSelectedPoint }} điểm kinh doanh
             thuộc nhóm <b>{{ activeOrganization }}</b>. Bạn có thể gán nhân sự vào các điểm kinh doanh thuộc nhóm khác.
@@ -71,26 +71,30 @@
             ></grid-view>
           </ng-container>
           <ng-container *ngIf="pointSales.length == 0">
-            <div  class="content-thirdForm d-flex flex-column align-items-center header-xs-bold mt-5">
-              <ng-container  *ngIf="organizationSelected.length == 0; else noOrganization" >
-                <img
-                  [src]="assetPath + '/assets/images/grid-empty.png'"
-                  alt="Success"
-                />
-                <div class="text title-s-regular mt-3">
-                 <span *ngIf="masterIdSelected != null && masterIdSelected > 0; else noGroups" class="text title-s-regular mt-3">Bạn đang gán nhân sự vào doanh nghiệp. Nhân sự sẽ được phụ trách tất cả điểm kinh doanh thuộc nhóm đã chọn.</span>
-                  <ng-template #noGroups>
-                    <span class="text title-s-regular mt-3"> Bạn chưa gán nhân sự vào nhóm nào.</span>
-                  </ng-template>
-                </div>
-              </ng-container>
-              <ng-template #noOrganization>
-                <div class="text title-s-regular mt-3">Bạn đang gán nhân sự vào nhóm.</div>
-                <div class="text title-s-regular mt-3">
-                  Nhân sự sẽ được phụ trách tất cả điểm kinh doanh thuộc nhóm đã
-                  chọn.
-                </div>
+            <div  class="content-thirdForm d-flex flex-column align-items-center  mt-5">
+              <div *ngIf="masterIdSelected != null && masterIdSelected > 0; else noMerchantSelected" class="text-center title-s-regular mt-3">
+                <div><b>Bạn đang gán nhân sự vào doanh nghiệp.</b></div>
+                <div class="mt-2">Nhân sự sẽ được phụ trách tất cả điểm kinh doanh thuộc nhóm đã chọn.</div>
+              </div>
+               <ng-template #noMerchantSelected class="text-center">
+                <ng-container *ngIf="organizationSelected.length == 0; else groupSelected">
+                  <div class="text-center title-s-regular mt-3">
+                    <div class="gap-2">
+                      <img [src]="assetPath + '/assets/images/grid-empty.png'" alt="Success" />
+                      <br />
+                      <div class="text title-s-regular mt-3">Bạn chưa gán nhân sự vào nhóm nào.</div>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-template #groupSelected class="text-center">
+                  <div class="text title-s-regular"><b>Bạn đang gán nhân sự vào nhóm.</b></div>
+                  <div class="text title-s-regular mt-2">
+                    Nhân sự sẽ được phụ trách tất cả điểm kinh doanh thuộc nhóm đã
+                    chọn.
+                  </div>
+                </ng-template>
               </ng-template>
+            
             </div>
           </ng-container>
         </div>
@@ -264,7 +268,7 @@
     </div>
     <div class="div-button">
       <p-button
-        label="Quay lại"
+        [label]="typeUpdate == 1 ? 'Hủy' : 'Quay lại'"
         class="merchant-button-tertiary me-2"
         (click)="doPreStep()"
       />
