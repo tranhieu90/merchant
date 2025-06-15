@@ -55,7 +55,12 @@ export class GridViewComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
+  doCheckAllPointSales(){
+     this.dataSource.forEach((obj: any) => {
+        obj["checked"] = true;
+      });
+      this.checkAll = true;
+  }
   ngOnChanges() {
     if (this.showCheckbox) {
       this.doCheckAll();

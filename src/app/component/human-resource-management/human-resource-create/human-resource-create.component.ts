@@ -30,10 +30,14 @@ import { ShowClearOnFocusDirective } from '../../../common/directives/showClearO
 import {
   GROUP_ENDPOINT,
   HR_ENDPOINT,
-  ORGANIZATION_ENDPOINT
+  ORGANIZATION_ENDPOINT,
 } from '../../../common/enum/EApiUrl';
 import { REGEX_PATTERN } from '../../../common/enum/RegexPattern';
-import { fomatAddress, generatePassword } from '../../../common/helpers/Ultils';
+import {
+  convertLstAreaByOrder,
+  fomatAddress,
+  generatePassword,
+} from '../../../common/helpers/Ultils';
 import { FetchApiService } from '../../../common/service/api/fetch-api.service';
 import { AuthenticationService } from '../../../common/service/auth/authentication.service';
 import { DialogCommonService } from '../../../common/service/dialog-common/dialog-common.service';
@@ -101,6 +105,7 @@ export class HumanResourceCreateComponent implements OnInit {
   isShowMechantList: boolean = false;
   searchPoint: boolean = false;
   searchPointV2: boolean = false;
+  checkGroupHasPoinSales:boolean=false;
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
@@ -216,14 +221,32 @@ export class HumanResourceCreateComponent implements OnInit {
   ];
   buildForm() {
     this.formInfo = this.fb.group({
-      fullName: ['', [Validators.required, Validators.maxLength(50),Validators.pattern(REGEX_PATTERN.FULL_NAME)]],
+      fullName: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(50),
+          Validators.pattern(REGEX_PATTERN.FULL_NAME),
+        ],
+      ],
       emailChange: [
         '',
-        [Validators.maxLength(254), Validators.pattern(REGEX_PATTERN.EMAIL), this.validateEmailPrefix],
+        [
+          Validators.maxLength(254),
+          Validators.pattern(REGEX_PATTERN.EMAIL),
+          this.validateEmailPrefix,
+        ],
       ],
       phoneNumber: ['', [Validators.pattern(REGEX_PATTERN.PHONE)]],
       dateOfBirth: [''],
-      userName: ['', [Validators.required, Validators.maxLength(50),Validators.pattern(REGEX_PATTERN.USER_NAME)]],
+      userName: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(50),
+          Validators.pattern(REGEX_PATTERN.USER_NAME),
+        ],
+      ],
       userPass: ['', [Validators.required]],
     });
   }
@@ -232,7 +255,7 @@ export class HumanResourceCreateComponent implements OnInit {
       (res: any) => {
         if (res.data && res.data.length > 0) {
           this.organization = res.data;
-          this.organizationSort = this.convertLstAreaByOrder(
+          this.organizationSort = convertLstAreaByOrder(
             res.data,
             res.data[0].parentId
           );
@@ -253,49 +276,49 @@ export class HumanResourceCreateComponent implements OnInit {
       }
     );
   }
-  convertLstAreaByOrder(list: any[], parentId: number | null): any[] {
-    let result = list.filter((item) => item.parentId === parentId);
-    result.forEach((item) => {
-      let children = this.convertLstAreaByOrder(list, item.id);
-      item.children = children;
-    });
+  // convertLstAreaByOrder(list: any[], parentId: number | null): any[] {
+  //   let result = list.filter((item) => item.parentId === parentId);
+  //   result.forEach((item) => {
+  //     let children = this.convertLstAreaByOrder(list, item.id);
+  //     item.children = children;
+  //   });
 
-    return result;
-  }
+  //   return result;
+  // }
 
   doActiveArea(group: any) {
-    this.organizationIdActive=null;
+    this.organizationIdActive = null;
     this.activeOrganization = '';
     this.countSelectedPoint = 0;
     this.organizationIdActive = group.id;
     this.activeOrganization = group.groupName;
     if (group.children.length == 0) {
-       this.isShowMechantList = true;
-       this.searchPointV2 = false;
-       this.getLstMerchant();
-         
-    }else{
-         this.isShowMechantList = false;
-       this.searchPointV2 = false;
-        this.pointSales = [];
+      this.searchPointV2 = false;
+      this.getLstMerchant();
+    } else {
+      this.isShowMechantList = false;
+      this.searchPointV2 = false;
+      this.pointSales = [];
     }
   }
   selectMearchant(event: any) {
     if (event.checked) {
-      this.masterIdSelected = this.userInfo?.merchantId; 
+      this.masterIdSelected = this.userInfo?.merchantId;
       if (this.mTreeComponent) {
         this.mTreeComponent.checkAllItems(true);
       }
+      this.organizationSelected = [];
     } else {
       this.masterIdSelected = null;
-         this.mTreeComponent.checkAllItems(false);
+      this.mTreeComponent.checkAllItems(false);
+      this.organizationSelected = [];
     }
   }
 
   getLstMerchant(firstSearch: boolean = false) {
     this.isSearch = true;
-    if(this.searchOrganization.length==0){
-      this.searchPointV2 =true;
+    if (this.searchOrganization.length == 0) {
+      this.searchPointV2 = true;
     }
     let dataReq = {
       groupIdList: this.activeOrganization ? [this.organizationIdActive] : [],
@@ -332,14 +355,19 @@ export class HumanResourceCreateComponent implements OnInit {
                 this.typeUpdate = 0;
               }
             }
+            else{
+                this.isShowMechantList = true;
+            }
             if (this.pointSalesSelected.size > 0) {
               this.pointSales.forEach((item: any) => {
                 item.checked = this.pointSalesSelected.has(item.merchantId);
               });
-              this.countSelectedPoint = this.pointSales.filter((x:any)=>x.checked).length;
+              this.countSelectedPoint = this.pointSales.filter(
+                (x: any) => x.checked
+              ).length;
             }
           } else {
-            this.searchPointV2 =true;
+            this.searchPointV2 = true;
             this.pointSales = [];
           }
         },
@@ -348,14 +376,58 @@ export class HumanResourceCreateComponent implements OnInit {
         }
       );
   }
+  doCheckDisableAnotherlevel(level: number) {
+    this.organization.forEach((item: any) => {
+      if (item.level != level) {
+        item.disabled = true;
+      }
+    });
+    this.organizationSort = convertLstAreaByOrder(
+      this.organization,
+      this.organization[0].parentId
+    );
+  }
+  doCheckUnDisableAnotherlevel(level: number) {
+    if (this.organizationSelected.length == 0) {
+      this.organization.forEach((item: any) => {
+        if (item.level != level) {
+          item.disabled = false;
+        }
+      });
+      this.organizationSort = convertLstAreaByOrder(
+        this.organization,
+        this.organization[0].parentId
+      );
+    }
+  }
   doCheckGroup(event: any) {
     this.roleId = '';
     if (event.checked) {
       this.organizationSelected.push(event.id);
+      this.pointSalesSelected = new Set();
+      if(event.children.length==0)
+      {
+        this.getLstMerchant();
+         setTimeout(()=>{
+          this.countSelectedPoint= this.pointSales.length;
+        },200)
+        setTimeout(()=>{
+           this.gridViewComponent.doCheckAllPointSales();
+        },500)
+      }
+      else{
+        this.pointSales = [];
+      }
+      this.doCheckDisableAnotherlevel(event.level);
     } else {
       this.organizationSelected = this.organizationSelected.filter(
         (item: string) => item !== event.id
       );
+      if(event.children.length==0){
+        this.countSelectedPoint=0;
+        this.pointSales = [];
+      }
+      this.doCheckUnDisableAnotherlevel(event.level);
     }
   }
   setUpMerchantIds(event: any) {
@@ -374,9 +446,9 @@ export class HumanResourceCreateComponent implements OnInit {
       }
     }
     this.roleId = '';
-  if (this.mTreeComponent) {
-        this.mTreeComponent.checkAllItems(false);
-      }
+    if (this.mTreeComponent) {
+      this.mTreeComponent.checkAllItems(false);
+    }
     this.totalPointSalesSelected = this.pointSalesSelected.size;
   }
   radioSetUpMerchantIds(event: any) {

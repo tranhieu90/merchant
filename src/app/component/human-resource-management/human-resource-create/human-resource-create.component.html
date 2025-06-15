@@ -23,7 +23,7 @@
             <mat-checkbox
               *ngIf="userInfo?.orgType == 0" disabled="{{totalPointSalesSelected >0}}"
               (change)="selectMearchant($event)"
-              ><b class="text title-s-regular mt-3" >{{ userInfo?.merchantName }}</b></mat-checkbox
+              ><span class="text title-m-semibold mt-3" >{{ userInfo?.merchantName }}</span></mat-checkbox
             >
             <div class="mt-3">
               <m-tree
@@ -38,14 +38,14 @@
             </div>
           </div>
         </div>
-        <div *ngIf="organizationSelected.length == 0" class="col-9" style="max-height: 60vh; overflow-y: auto">
-          <div *ngIf="countSelectedPoint > 0" class="text title-s-regular mt-3">
+        <div class="col-9" style="max-height: 60vh; overflow-y: auto">
+          <div *ngIf=" countSelectedPoint > 0" class="text title-s-regular mt-3">
             Bạn đang gán nhân sự vào {{ countSelectedPoint }} điểm kinh doanh
             thuộc nhóm <b>{{ activeOrganization }}</b>. Bạn có thể gán nhân sự vào các điểm kinh doanh thuộc nhóm khác.
           </div>
           <br />
-          <ng-container  *ngIf="isShowMechantList">
-            <div class="d-flex" *ngIf="isShowMechantList || searchPointV2 ||  (searchPointV2 && pointSales.length== 0)">
+          <ng-container>
+            <div class="d-flex" *ngIf="isShowMechantList">
               <div class="col-6 mb-4">
                 <div class="p-inputgroup show-icon-left search-role me-3">
                   <span class="p-input-icon-left">
@@ -70,12 +70,11 @@
               style="float: left; width: 100%"
             ></grid-view>
           </ng-container>
-          <ng-container *ngIf="pointSales.length == 0">
-            <div  class="content-thirdForm d-flex flex-column align-items-center  mt-5">
-              <div *ngIf="masterIdSelected != null && masterIdSelected > 0; else noMerchantSelected" class="text-center title-s-regular mt-3">
+            <div *ngIf="!isShowMechantList"class="content-thirdForm d-flex flex-column align-items-center  mt-5">
+              <ng-container *ngIf="masterIdSelected != null && masterIdSelected > 0;else noMerchantSelected" class="text-center title-s-regular mt-3">
                 <div><b>Bạn đang gán nhân sự vào doanh nghiệp.</b></div>
-                <div class="mt-2">Nhân sự sẽ được phụ trách tất cả điểm kinh doanh thuộc nhóm đã chọn.</div>
-              </div>
+                <div class="mt-2">Nhân sự sẽ được phụ trách tất cả điểm kinh doanh.</div>
+              </ng-container>
                <ng-template #noMerchantSelected class="text-center">
                 <ng-container *ngIf="organizationSelected.length == 0; else groupSelected">
                   <div class="text-center title-s-regular mt-3">
@@ -96,7 +95,6 @@
               </ng-template>
             
             </div>
-          </ng-container>
         </div>
       </div>
       <div *ngIf="userInfo?.orgType == 2" class="d-flex gap-3">
@@ -167,7 +165,7 @@
                   (ngModelChange)="onRadioChange($event)"
                   (click)="$event.stopPropagation()"
                 />
-                <span
+                <span class="text"
                   ><b
                     >Gán vào doanh nghiệp: {{ userInfo?.merchantName }}</b
                   ></span
