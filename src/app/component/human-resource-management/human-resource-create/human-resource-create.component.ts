@@ -563,7 +563,7 @@ export class HumanResourceCreateComponent implements OnInit {
       maxLength = 254;
       break;
     case "userName":
-      pattern = /^[a-zA-Z0-9._\-]$/;
+      pattern = /^[a-zA-Z0-9._@'\-]$/;
       maxLength = 50;
       break;
   }
