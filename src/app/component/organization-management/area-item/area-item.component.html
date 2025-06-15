@@ -20,7 +20,7 @@
             <div class="p-inputgroup show-icon-left">
                 <span class="p-input-icon-left"><i class="icon-plus_small input-icon"></i></span>
                 <input appInputSanitize type="text" pInputText class="merchant-input input-name-group" placeholder="Nhập tên nhóm" formControlName="areaName"
-                    (blur)="onBlurAreaName($event, area.id)" (keydown.enter)="onBlurAreaName($event, area.id)" #areaNameInput />
+                    (blur)="onBlurAreaName($event, area.id)" (keydown.enter)="onBlurAreaName($event, area.id)" #areaNameInput maxlength="50"/>
             </div>
             @if (formCreateArea.controls['areaName'].touched && formCreateArea.controls['areaName'].invalid) {
                 <div class="m-caption error">
