@@ -63,7 +63,17 @@
         <div class="title">Phương thức thanh toán</div>
         <p-dropdown class="merchant-dropdown" [options]="paymentMethodOptions"
                     optionValue="paymentMethodId" optionLabel="paymentMethodName" placeholder="Tất cả" [filter]="false"
-                    [(ngModel)]="filterCriteria.selectedPaymentMethod"/>
+                    [(ngModel)]="filterCriteria.selectedPaymentMethod">
+          <ng-template let-method pTemplate="item">
+            <div class="item-method">
+              {{ method.paymentMethodName }}
+              <span
+                *ngIf="method.paymentMethodId === filterCriteria.selectedPaymentMethod"
+                class="icon-check_circle_solid"
+              ></span>
+            </div>
+          </ng-template>
+        </p-dropdown>
       </div>
       <div class="col-md-4">
         <div class="title">Ngân hàng thanh toán</div>
@@ -78,15 +88,20 @@
           [(ngModel)]="filterCriteria.selectedBanks"
           styleClass="custom-bank-multiselect">
           <ng-template let-bank pTemplate="item">
-            <div class="bank-item">
-              <div class="bank-info">
-                <div class="d-flex gap-2">
-                  <img [src]="bank.logo" alt="{{ bank.shortName }}"
-                       class="bank-logo"/>
+            <div class="bank-item position-relative">
+              <div class="d-flex gap-2 align-items-center">
+                <img [src]="bank.logo" alt="{{ bank.shortName }}" class="bank-logo" />
+                <div class="bank-info">
                   <div class="bank-name">{{ bank.shortName }}</div>
+                  <div class="bank-description">{{ bank.fullName }}</div>
                 </div>
               </div>
-              <div class="bank-description">{{ bank.fullName }}</div>
+
+              <!-- Icon tick nếu được chọn -->
+              <span
+                *ngIf="bank.code === filterCriteria.selectedBanks"
+                class="icon-check_circle_solid"
+              ></span>
             </div>
           </ng-template>
         </p-dropdown>
@@ -103,7 +118,7 @@
   </div>
   <div class="d-flex justify-content-end mt-3">
     <p-button label="Xóa bộ lọc" class="merchant-button-tertiary me-2" (click)="onReset()" [disabled]="!checkHasSearchOrFilterData()"/>
-    <p-button label="Áp dụng" class="merchant-button" (click)="onSearch()" [disabled]="!checkHasSearchOrFilterData()"/>
+    <p-button label="Áp dụng" class="merchant-button" (click)="onSearch()"/>
   </div>
   <div class="mt-3">
     @if (dataTable.length > 0) {

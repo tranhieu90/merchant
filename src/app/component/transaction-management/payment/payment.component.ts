@@ -51,7 +51,11 @@ export class PaymentComponent implements OnInit {
   isSearch: boolean = true;
   isFilter: boolean = false;
   dataTable: any = [];
-  lstColumnShow: string[] = [];
+  lstColumnShow: string[] = [
+    'paymentContent',
+    'ftCode',
+    'transactionCode'
+  ];
   pageIndex = 1;
   pageSize = 10;
   totalItem: number = 0;
@@ -152,7 +156,7 @@ export class PaymentComponent implements OnInit {
       },
       {
         name: 'amount',
-        label: 'Số tiền',
+        label: 'Số tiền (₫)',
         options: {
           customCss: (obj: any) => {
             return ['text-left'];
@@ -161,26 +165,30 @@ export class PaymentComponent implements OnInit {
             return ['text-left'];
           },
           customBodyRender: (value: any) => {
-            return this.formatMoney(value);
+            return this.formatMoney2(value);
           },
           width: "139px",
           minWidth: "139px"
         }
       },
-      {
-        name: 'orderInfo',
-        label: 'Nội dung thanh toán',
-        options: {
-          customCss: (obj: any) => {
-            return ['text-left'];
-          },
-          customCssHeader: () => {
-            return ['text-left'];
-          },
-          width: "174px",
-          minWidth: "174px"
-        }
-      },
+      ...(this.lstColumnShow.includes("paymentContent")
+          ? [
+            {
+              name: 'orderInfo',
+              label: 'Nội dung thanh toán',
+              options: {
+                customCss: (obj: any) => {
+                  return ['text-left', 'mw-180'];
+                },
+                customCssHeader: () => {
+                  return ['text-left'];
+                },
+                width: "174px",
+                minWidth: "174px"
+              }
+            },
+          ] : []
+      ),
       {
         name: 'orderRef',
         label: 'Mã định danh',
@@ -254,20 +262,24 @@ export class PaymentComponent implements OnInit {
           minWidth: "226px"
         }
       },
-      {
-        name: 'txnReference',
-        label: 'Mã FT giao dịch',
-        options: {
-          customCss: (obj: any) => {
-            return ['text-left'];
-          },
-          customCssHeader: () => {
-            return ['text-left'];
-          },
-          width: "134px",
-          minWidth: "134px"
-        }
-      },
+      ...(this.lstColumnShow.includes("ftCode")
+          ? [
+            {
+              name: 'txnReference',
+              label: 'Mã FT giao dịch',
+              options: {
+                customCss: (obj: any) => {
+                  return ['text-left'];
+                },
+                customCssHeader: () => {
+                  return ['text-left'];
+                },
+                width: "134px",
+                minWidth: "134px"
+              }
+            },
+          ] : []
+      ),
       {
         name: 'debitAccount',
         label: 'Tài khoản/Thẻ thanh toán',
@@ -334,7 +346,7 @@ export class PaymentComponent implements OnInit {
           ? [
             {
               name: 'feeAmount',
-              label: 'Phí giao dịch',
+              label: 'Phí giao dịch (₫)',
               options: {
                 customCss: (obj: any) => {
                   return ['text-left'];
@@ -343,7 +355,7 @@ export class PaymentComponent implements OnInit {
                   return ['text-left'];
                 },
                 customBodyRender: (value: any) => {
-                  return this.formatMoney(value);
+                  return this.formatMoney2(value);
                 },
                 width: "135px",
                 minWidth: "135px"
@@ -355,7 +367,7 @@ export class PaymentComponent implements OnInit {
           ? [
             {
               name: 'feeVat',
-              label: 'VAT',
+              label: 'VAT (₫)',
               options: {
                 customCss: (obj: any) => {
                   return ['text-left'];
@@ -364,7 +376,7 @@ export class PaymentComponent implements OnInit {
                   return ['text-left'];
                 },
                 customBodyRender: (value: any) => {
-                  return this.formatMoney(value);
+                  return this.formatMoney2(value);
                 },
                 width: "78px",
                 minWidth: "78px"
@@ -512,20 +524,11 @@ export class PaymentComponent implements OnInit {
       });
   }
 
-  onToggleSearch() {
-    this.isSearch = !this.isSearch;
-    this.isFilter = false;
-  }
-
-  onToggleFilter() {
-    this.isFilter = !this.isFilter;
-    this.isSearch = false;
-  }
-
   onSetting() {
     const dialogRef = this.dialog.open(DialogSettingComponent, {
       width: '500px',
-      data: this.lstColumnShow
+      data: this.lstColumnShow,
+      disableClose: true
     });
 
     dialogRef.afterClosed().subscribe((lstColumnShow: any) => {
@@ -547,7 +550,12 @@ export class PaymentComponent implements OnInit {
 
   formatMoney(value: any): string {
     if (value == null) return '0 đ';
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₫';
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ';
+  }
+
+  formatMoney2(value: any): string {
+    if (value == null) return '0';
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
   onExport() {
@@ -829,7 +837,7 @@ export class PaymentComponent implements OnInit {
           if (userInfo.orgType === 0 && dataGroup.length > 0) {
             this.merchantId = dataGroup[0].merchantId;
             const merchantName = userInfo.merchantName;
- 
+
             const rootNode = {
               id: this.merchantId,
               groupName: merchantName,
@@ -837,7 +845,7 @@ export class PaymentComponent implements OnInit {
               parentId: null,
               merchantId: this.merchantId,
             };
- 
+
             // Cập nhật parentId cho các node cấp cao nhất (nếu chưa có)
             const updatedDataGroup = dataGroup.map((item: any) => {
               return {
@@ -845,14 +853,14 @@ export class PaymentComponent implements OnInit {
                 parentId: item.parentId === null ? this.merchantId : item.parentId,
               };
             });
- 
+
             const newDataGroup = [rootNode, ...updatedDataGroup];
- 
+
             this.groupOptions = this.convertLstAreaByOrder(newDataGroup, newDataGroup[0].parentId);
           } else {
             this.groupOptions = this.convertLstAreaByOrder(dataGroup, dataGroup[0].parentId);
           }
- 
+
           console.log('groupNameOptions', this.groupOptions);
         }
       },

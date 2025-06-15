@@ -197,7 +197,7 @@ export class CashbackComponent implements OnInit {
       },
       {
         name: 'amount',
-        label: 'Số tiền hoàn',
+        label: 'Số tiền hoàn (₫)',
         options: {
           customCss: (obj: any) => {
             return ['text-left'];
@@ -206,7 +206,7 @@ export class CashbackComponent implements OnInit {
             return ['text-left'];
           },
           customBodyRender: (value: any) => {
-            return this.formatMoney(value);
+            return this.formatMoney2(value);
           },
           width: "139px",
           minWidth: "139px"
@@ -311,12 +311,12 @@ export class CashbackComponent implements OnInit {
           ? [
             {
               name: 'feeAmount',
-              label: 'Phí giao dịch',
+              label: 'Phí giao dịch (₫)',
               options: {
                 customCss: (obj: any) => ['text-left'],
                 customCssHeader: () => ['text-left'],
                 customBodyRender: (value: any) => {
-                  return this.formatMoney(value);
+                  return this.formatMoney2(value);
                 },
                 width: "135px",
                 minWidth: "135px"
@@ -328,7 +328,7 @@ export class CashbackComponent implements OnInit {
           ? [
             {
               name: 'feeVAT',
-              label: 'VAT',
+              label: 'VAT (₫)',
               options: {
                 customCss: (obj: any) => {
                   return ['text-left'];
@@ -337,7 +337,7 @@ export class CashbackComponent implements OnInit {
                   return ['text-left'];
                 },
                 customBodyRender: (value: any) => {
-                  return this.formatMoney(value);
+                  return this.formatMoney2(value);
                 },
                 width: "78px",
                 minWidth: "78px"
@@ -385,7 +385,6 @@ export class CashbackComponent implements OnInit {
   }
 
   onSearch(pageInfo?: any) {
-    debugger
     if (pageInfo) {
       this.pageIndex = pageInfo["page"] || 1;
       this.pageSize = pageInfo["pageSize"]
@@ -492,7 +491,12 @@ export class CashbackComponent implements OnInit {
 
   formatMoney(value: any): string {
     if (value == null) return '0 đ';
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₫';
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + 'đ';
+  }
+
+  formatMoney2(value: any): string {
+    if (value == null) return '0';
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
   onExport() {
