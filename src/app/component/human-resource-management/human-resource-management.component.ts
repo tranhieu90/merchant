@@ -338,7 +338,7 @@ export class HumanResourceManagementComponent implements OnInit {
       dataDialog.icon = 'icon-warning';
       dataDialog.viewCancel = false;
       dataDialog.iconColor = 'icon warning';
-      dataDialog.buttonLabel = 'Xác nhận';
+      dataDialog.buttonLabel = 'Tôi đã hiểu';
       dataDialog.width = '23,5%';
       this.dialogCommon.openDialogInfo(dataDialog).subscribe((result) => {
         if (result) {
