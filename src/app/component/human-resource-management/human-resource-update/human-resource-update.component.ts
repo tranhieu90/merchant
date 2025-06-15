@@ -83,6 +83,8 @@ export class HumanResourceUpdateComponent implements OnInit {
   userInfo!: any;
   typeUpdate!: number;
   lstAreas: AreaModel[] = [];
+
+  listgroupIdInMerchant?: number[] = [];
   lstAreaByOrder: AreaModel[] = [];
   areaActive: AreaModel = new AreaModel();
   subMerchantList?: any;
@@ -152,7 +154,6 @@ export class HumanResourceUpdateComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    debugger
     this.userInfo = this.auth.getUserInfo();
     if (this.userInfo?.isConfig == 0) {
       this.typeUpdate = 0;
@@ -165,6 +166,7 @@ export class HumanResourceUpdateComponent implements OnInit {
         }).subscribe({
           next: ({ lstMerchant, pointSales }) => {
             this.subMerchantList = lstMerchant;
+            this.pointSales = pointSales;
             if (this.subMerchantList?.length == 1) {
               this.typeUpdate = 1;
               this.groupNameSelect = this.subMerchantList[0]?.merchantBizName;
@@ -198,6 +200,7 @@ export class HumanResourceUpdateComponent implements OnInit {
           }).subscribe({
             next: ({ lstAreas, pointSales }) => {
               this.lstAreas = lstAreas;
+              this.pointSales = pointSales;
               const uniqueGroupIds = Array.from(
                 new Set(pointSales.map((item: any) => Number(item.groupId)))
               );
@@ -205,21 +208,24 @@ export class HumanResourceUpdateComponent implements OnInit {
                 this.isDisableCheckbox = true;
               }
               this.groupListClone = [...uniqueGroupIds];
-              const resultMarsk = this.markChecked(
-                this.lstAreas,
-                this.groupListClone
-              );
-              this.lstAreaByOrder = this.convertLstAreaByOrder(
-                resultMarsk,
-                resultMarsk[0]?.parentId
-              );
+
               this.merchantIds = new Set(
                 pointSales.map((item: any) => Number(item.merchantId))
               );
               this.merchantIdsClone = clone(this.merchantIds);
               // this.totalMerchant = this.merchantIds.size;
               this.activeItemId = this.groupListClone[0];
-              this.getLstMerchant();
+              this.getLstMerchantWithCheckedObs(true).subscribe((merchantList) => {
+                const resultMarsk = this.markChecked(
+                  this.lstAreas,
+                  this.groupListClone
+                );
+                this.lstAreaByOrder = this.convertLstAreaByOrder(
+                  resultMarsk,
+                  resultMarsk[0]?.parentId
+                );
+              });
+              // this.getLstMerchant();
             },
             error: (err) => {
               console.error('Lỗi khi load dữ liệu:', err);
@@ -249,17 +255,17 @@ export class HumanResourceUpdateComponent implements OnInit {
           });
         } else {
           this.doGetGroupListLogin().subscribe((data) => {
-            this.isCheckboxMerchant = true
+            this.isCheckboxMerchant = true;
             this.lstAreas = data;
-            this.lstAreas = data.map(item => ({
+            this.lstAreas = data.map((item) => ({
               ...item,
-              checked: true
+              checked: true,
             }));
             this.lstAreaByOrder = this.convertLstAreaByOrder(
               this.lstAreas,
               this.lstAreas[0]?.parentId
             );
-          })
+          });
         }
       }
     }
@@ -454,15 +460,15 @@ export class HumanResourceUpdateComponent implements OnInit {
       param.oraganizationDelete = {
         masterId:
           this.masterIdSelectedDelete !== null &&
-            this.masterIdSelectedDelete !== undefined
+          this.masterIdSelectedDelete !== undefined
             ? this.masterIdSelectedDelete
             : undefined,
         merchantIds:
           this.merchantIds.size > 0
             ? [...lstmerchantDelete]
             : this.merchantIdsSelectedDelete?.length > 0
-              ? this.merchantIdsSelectedDelete
-              : [],
+            ? this.merchantIdsSelectedDelete
+            : [],
         groupIds: this.totalMerchant > 0 ? this.groupList : lstGroupDelete,
       };
     }
@@ -480,15 +486,15 @@ export class HumanResourceUpdateComponent implements OnInit {
       param.oraganizationInfo = {
         masterId:
           this.masterIdSelectedAdd !== null &&
-            this.masterIdSelectedAdd !== undefined
+          this.masterIdSelectedAdd !== undefined
             ? this.masterIdSelectedAdd
             : undefined,
         merchantIds:
           this.totalMerchant > 0
             ? [...lstmerchantInsert]
             : this.merchantIdsSelectedAdd?.length > 0
-              ? this.merchantIdsSelectedAdd
-              : [],
+            ? this.merchantIdsSelectedAdd
+            : [],
         groupIds: this.totalMerchant > 0 ? [] : lstGroupInsert,
       };
     }
@@ -529,7 +535,6 @@ export class HumanResourceUpdateComponent implements OnInit {
       }
     });
   }
-
 
   doGetLstBusiness() {
     this.api.post(GROUP_ENDPOINT.GET_POINT_SALE).subscribe(
@@ -572,6 +577,9 @@ export class HumanResourceUpdateComponent implements OnInit {
     return this.api.get(HR_ENDPOINT.GET_GROUP_BY_USER_UPDATE, buildParams).pipe(
       map((res: any) => {
         if (res.data && res.data.groupList?.length > 0) {
+          this.listgroupIdInMerchant = res.data.groupList.map(
+            (item: any) => item
+          );
           return res.data.groupList;
         }
         return [];
@@ -598,7 +606,11 @@ export class HumanResourceUpdateComponent implements OnInit {
     if (group && group.children.length == 0) {
       this.activeItemId = group.id;
       this.groupNameSelect = group?.groupName;
-      this.getLstMerchant();
+      // this.getLstMerchant();
+      this.getLstMerchantWithCheckedObs(false)?.subscribe((merchantList) => {
+        // this.subMerchantList = merchantList ? merchantList : [];
+        this.markChecked(this.lstAreas, this.listgroupIdInMerchant ?? []);
+      });
     }
   }
 
@@ -610,10 +622,66 @@ export class HumanResourceUpdateComponent implements OnInit {
         (item: number) => item !== group?.id
       );
     }
-    console.log(this.groupListClone);
   }
 
   getLstMerchant() {
+    this.getLstMerchantWithCheckedObs(true)?.subscribe();
+    // this.isSearch = true;
+    // let dataReq = {
+    //   groupIdList: [] as number[],
+    //   status: '',
+    //   methodId: [],
+    //   mappingKey: '',
+    // };
+    // if (this.activeItemId) {
+    //   dataReq.groupIdList = [this.activeItemId];
+    // }
+
+    // let param = {
+    //   page: 1,
+    //   size: 1000,
+    //   keySearch: this.keyWord ? this.keyWord : null,
+    // };
+    // let buildParams = CommonUtils.buildParams(param);
+    // this.api
+    //   .post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams)
+    //   .subscribe(
+    //     (res: any) => {
+    //       if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
+    //         this.subMerchantList = res['data']['subInfo'];
+    //         this.subMerchantList = res['data']['subInfo'].map((item: any) => ({
+    //           ...item,
+    //           formatAddress: fomatAddress([
+    //             item.address,
+    //             item.communeName,
+    //             item.districtName,
+    //             item.provinceName,
+    //           ]),
+    //         }));
+    //         //check voi nhung diem ban da tich tu truoc
+    //         if (this.merchantIdsClone.size > 0) {
+    //           this.totalSelect = 0;
+    //           this.subMerchantList.forEach((item: any) => {
+    //             item.checked = this.merchantIdsClone.has(item.merchantId);
+    //             if(item.checked){
+    //               this.listgroupIdInMerchant?.push(item.groupId);
+    //             }
+    //             if (this.merchantIdsClone.has(item.merchantId)) {
+    //               this.totalSelect++;
+    //             }
+    //           });
+    //         }
+    //       } else {
+    //         this.subMerchantList = [];
+    //       }
+    //     },
+    //     (error: any) => {
+    //       this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.');
+    //     }
+    //   );
+  }
+
+  getLstMerchantWithCheckedObs(isFirstLoad?: boolean): Observable<any[]> {
     this.isSearch = true;
     let dataReq = {
       groupIdList: [] as number[],
@@ -631,10 +699,11 @@ export class HumanResourceUpdateComponent implements OnInit {
       keySearch: this.keyWord ? this.keyWord : null,
     };
     let buildParams = CommonUtils.buildParams(param);
-    this.api
+
+    return this.api
       .post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams)
-      .subscribe(
-        (res: any) => {
+      .pipe(
+        map((res: any) => {
           if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
             this.subMerchantList = res['data']['subInfo'];
             this.subMerchantList = res['data']['subInfo'].map((item: any) => ({
@@ -651,18 +720,33 @@ export class HumanResourceUpdateComponent implements OnInit {
               this.totalSelect = 0;
               this.subMerchantList.forEach((item: any) => {
                 item.checked = this.merchantIdsClone.has(item.merchantId);
+                // if(item.checked){
+                //   this.listgroupIdInMerchant?.push(item.groupId);
+                // }
                 if (this.merchantIdsClone.has(item.merchantId)) {
                   this.totalSelect++;
                 }
               });
             }
+
+            if (this.pointSales?.length > 0 && isFirstLoad ) {
+              this.listgroupIdInMerchant = this.pointSales
+                ?.filter((item: any) =>
+                  this.merchantIdsClone.has(+item.merchantId)
+                )
+                ?.map((item: any) => +item.groupId);
+            }
+
+            return this.subMerchantList;
           } else {
             this.subMerchantList = [];
+            return this.subMerchantList;
           }
-        },
-        (error: any) => {
+        }),
+        catchError((err) => {
           this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.');
-        }
+          return of([]);
+        })
       );
   }
 
@@ -710,31 +794,64 @@ export class HumanResourceUpdateComponent implements OnInit {
   setUpMerchantIds(event: any) {
     if (event && Array.isArray(event)) {
       let dataChange = event.map((item) => item.merchantId);
+      let groupId = event.map((item) => item.groupId);
       if (event[0]?.checked) {
         this.addListToSet(dataChange);
+        groupId.forEach((id) => this.listgroupIdInMerchant?.push(id));
       } else {
         this.removeListFromSet(dataChange);
+        groupId.forEach((id) => {
+          const index = this.listgroupIdInMerchant?.indexOf(id);
+          if (index !== undefined && index !== -1) {
+            this.listgroupIdInMerchant?.splice(index, 1);
+          }
+        });
       }
     } else {
       if (event.checked) {
+        if (
+          this.groupListClone.length > 0 &&
+          this.merchantIdsClone.size === 0
+        ) {
+          const setB = new Set(this.groupListClone?.map((item: any) => item));
+          this.listgroupIdInMerchant = this.listgroupIdInMerchant?.filter(
+            (id) => !setB.has(id)
+          );
+        }
+
         this.merchantIdsClone.add(event?.merchantId);
+        this.listgroupIdInMerchant?.push(event?.groupId);
       } else {
         this.merchantIdsClone.delete(event?.merchantId);
+        const index = this.listgroupIdInMerchant?.indexOf(event?.groupId);
+        if (index !== undefined && index !== -1) {
+          this.listgroupIdInMerchant?.splice(index, 1);
+        }
+        // this.listgroupIdInMerchant?.delete(event?.groupId);
       }
     }
 
     this.totalMerchant = this.merchantIdsClone.size;
     if (this.totalMerchant === 0) {
       this.isDisableCheckbox = false;
+      this.listgroupIdInMerchant = this.groupListClone;
     }
-    console.log('merchantIds', this.merchantIdsClone);
+
+    this.markChecked(
+      this.lstAreas,
+      Array.from(this.listgroupIdInMerchant ?? [])
+    );
   }
 
   markChecked(parentList: any[], childList: number[]): any[] {
     if (parentList?.length && childList?.length) {
       const childIds = new Set(childList);
       parentList.forEach((item) => {
-        item.checked = childIds.has(item.id);
+        if (this.merchantIdsClone.size > 0 && childIds.has(item.id)) {
+          item.checked = 'partial';
+        } else {
+          item.checked = childIds.has(item.id);
+        }
       });
     } else if (parentList?.length) {
       parentList.forEach((item) => {

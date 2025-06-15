@@ -1,12 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 
 @Component({
   selector: 'm-tree',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './m-tree.component.html',
-  styleUrl: './m-tree.component.scss'
+  styleUrl: './m-tree.component.scss',
 })
 export class MTreeComponent implements OnInit, OnChanges {
   @Input() data: any[] = [];
@@ -18,14 +26,17 @@ export class MTreeComponent implements OnInit, OnChanges {
   @Output() groupChoice = new EventEmitter<any>();
   @Output() activeItemIdChange = new EventEmitter<number>();
   @Output() groupCheck = new EventEmitter<number[]>();
-  @Output() groupSelect= new EventEmitter<any>();
+
+  @Output() groupSelect = new EventEmitter<any>();
+
   isUpdateTree: boolean = true;
+
   ngOnChanges(changes: SimpleChanges): void {
-    this.expandCheckedNodes(this.data);
-     if (this.isUpdateTree) {
+    if (this.isUpdateTree) {
       this.expandCheckedNodes(this.data);
     }
   }
+  
   ngOnInit(): void {
     console.log('m-tree data', this.data);
   }
@@ -39,11 +50,14 @@ export class MTreeComponent implements OnInit, OnChanges {
   toggleExpand(item: any) {
     item.expanded = !item.expanded;
   }
-  
+
   onCheckboxChange(event: any, item?: any) {
     item.checked = event.target.checked;
     this.toggleChildren(item, item.checked);
-    this.groupSelect.emit({ ...item, children: item.children ? [...item.children] : [] });
+    this.groupSelect.emit({
+      ...item,
+      children: item.children ? [...item.children] : [],
+    });
   }
 
   toggleChildren(item: any, isChecked: boolean) {
@@ -61,6 +75,7 @@ export class MTreeComponent implements OnInit, OnChanges {
   }
 
   doChangeGroup(item: any) {
+    this.isUpdateTree = false;
     this.activeItemId = item.id;
     this.isUpdateTree = false;
     this.activeItemIdChange.emit(item.id);
@@ -70,6 +85,7 @@ export class MTreeComponent implements OnInit, OnChanges {
     this.isUpdateTree = false;
     this.groupChoice.emit(event);
   }
+
   expandCheckedNodes(items: any[]): boolean {
     let shouldExpand = false;
     items.forEach((item) => {
@@ -78,7 +94,7 @@ export class MTreeComponent implements OnInit, OnChanges {
         childExpanded = this.expandCheckedNodes(item.children);
       }
       // Node này sẽ được mở nếu nó checked hoặc có con được mở
-       item.expanded = item.checked === true || item.checked === 'partial' || childExpanded;
+      item.expanded = item.checked === true || item.checked === 'partial' || childExpanded;
       if (item.expanded) {
         shouldExpand = true;
       }
@@ -88,7 +104,7 @@ export class MTreeComponent implements OnInit, OnChanges {
 
   getCheckedIds(items: any[]): number[] {
     let checkedIds: number[] = [];
-      items.forEach((item) => {
+    items.forEach((item) => {
       if (item.checked) checkedIds.push(item.id);
       if (item.children?.length) {
         checkedIds = checkedIds.concat(this.getCheckedIds(item.children));
