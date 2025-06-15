@@ -18,7 +18,7 @@
           <input type="text" pInputText class="merchant-input search" [(ngModel)]="keyword"
             [placeholder]="userInfo?.roleType !== 2 ? 'Tìm kiếm theo họ và tên, tên đăng nhập, email' : 'Tìm kiếm theo họ và tên'"
             (keydown.enter)="onEnterSearch()"
-            (blur)="onEnterSearch()"/>
+            (blur)="onBlurSearch()"/>
         </div>
         <p-button class="merchant-button-icon button-l button-light" icon="icon-filter" (onClick)="changeFilter()" />
       </div>
