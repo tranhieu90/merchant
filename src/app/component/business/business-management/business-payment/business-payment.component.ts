@@ -20,11 +20,12 @@ import { distinctUntilChanged } from 'rxjs';
 import { QRCodeComponent } from 'angularx-qrcode'
 import { ShowClearOnFocusDirective } from '../../../../common/directives/showClearOnFocusDirective';
 import { REGEX_PATTERN } from '../../../../common/enum/RegexPattern';
+import {InputCommon} from '../../../../common/directives/input.directive';
 
 @Component({
   selector: 'app-business-payment',
   standalone: true,
-  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, InputSwitchModule, RadioButtonModule, CommonModule],
+  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, InputSwitchModule, RadioButtonModule, CommonModule, InputCommon],
   templateUrl: './business-payment.component.html',
   styleUrl: './business-payment.component.scss',
   animations: [

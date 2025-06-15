@@ -34,10 +34,10 @@
                                 <span class="text-caption paragraph-m-regular">Lấy thông tin termianl thất bại hoặc
                                     termianlId không tồn tại</span>
                                 }
-                                @if (paymentQRFormInsert.controls['terminalId'].hasError('Invalid')) {
+                                @if (paymentQRFormUpdate.controls['terminalId'].hasError('Invalid')) {
                                 <span class="text-caption paragraph-m-regular">Terminal ID không hợp lệ</span>
                                 }
-                                @if (paymentQRFormInsert.controls['terminalId'].hasError('NotValue')) {
+                                @if (paymentQRFormUpdate.controls['terminalId'].hasError('NotValue')) {
                                 <span class="text-caption paragraph-m-regular">TerminalId không phải của merchant</span>
                                 }
                             </div>
@@ -126,6 +126,9 @@
                         <div class="icon-caption">
                             <span class="icon-error_solid"></span>
                         </div>
+                        @if (paymentQRFormInsert.controls['terminalId'].hasError('pattern')) {
+                          <span class="text-caption paragraph-m-regular">Terminal ID không hợp lệ</span>
+                        }
                         @if (paymentQRFormInsert.controls['terminalId'].hasError('required')) {
                         <span class="text-caption paragraph-m-regular">Chưa nhập Terminal ID</span>
                         }
