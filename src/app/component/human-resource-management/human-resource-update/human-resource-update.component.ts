@@ -122,6 +122,7 @@ export class HumanResourceUpdateComponent implements OnInit {
   lstGroupDelete: any;
   masterId?: number;
   orgTypeUser!: number;
+  isCheckboxMerchant: boolean = false;
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
@@ -151,6 +152,7 @@ export class HumanResourceUpdateComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    debugger
     this.userInfo = this.auth.getUserInfo();
     if (this.userInfo?.isConfig == 0) {
       this.typeUpdate = 0;
@@ -164,9 +166,8 @@ export class HumanResourceUpdateComponent implements OnInit {
           next: ({ lstMerchant, pointSales }) => {
             this.subMerchantList = lstMerchant;
             if (this.subMerchantList?.length == 1) {
-              debugger
               this.typeUpdate = 1;
-              this.groupNameSelect=this.subMerchantList[0]?.merchantBizName;
+              this.groupNameSelect = this.subMerchantList[0]?.merchantBizName;
             } else {
               this.typeUpdate = 4;
               this.merchantIds = new Set(
@@ -224,7 +225,7 @@ export class HumanResourceUpdateComponent implements OnInit {
               console.error('Lỗi khi load dữ liệu:', err);
             },
           });
-        } else {
+        } else if (this.orgTypeUser == 1) {
           forkJoin({
             lstAreas: this.doGetGroupListLogin(),
             groupList: this.getGroupListUserUpdate(this.userId),
@@ -246,6 +247,19 @@ export class HumanResourceUpdateComponent implements OnInit {
               console.error('Lỗi khi load dữ liệu:', err);
             },
           });
+        } else {
+          this.doGetGroupListLogin().subscribe((data) => {
+            this.isCheckboxMerchant = true
+            this.lstAreas = data;
+            this.lstAreas = data.map(item => ({
+              ...item,
+              checked: true
+            }));
+            this.lstAreaByOrder = this.convertLstAreaByOrder(
+              this.lstAreas,
+              this.lstAreas[0]?.parentId
+            );
+          })
         }
       }
     }
@@ -440,15 +454,15 @@ export class HumanResourceUpdateComponent implements OnInit {
       param.oraganizationDelete = {
         masterId:
           this.masterIdSelectedDelete !== null &&
-          this.masterIdSelectedDelete !== undefined
+            this.masterIdSelectedDelete !== undefined
             ? this.masterIdSelectedDelete
             : undefined,
         merchantIds:
           this.merchantIds.size > 0
             ? [...lstmerchantDelete]
             : this.merchantIdsSelectedDelete?.length > 0
-            ? this.merchantIdsSelectedDelete
-            : [],
+              ? this.merchantIdsSelectedDelete
+              : [],
         groupIds: this.totalMerchant > 0 ? this.groupList : lstGroupDelete,
       };
     }
@@ -466,15 +480,15 @@ export class HumanResourceUpdateComponent implements OnInit {
       param.oraganizationInfo = {
         masterId:
           this.masterIdSelectedAdd !== null &&
-          this.masterIdSelectedAdd !== undefined
+            this.masterIdSelectedAdd !== undefined
             ? this.masterIdSelectedAdd
             : undefined,
         merchantIds:
           this.totalMerchant > 0
             ? [...lstmerchantInsert]
             : this.merchantIdsSelectedAdd?.length > 0
-            ? this.merchantIdsSelectedAdd
-            : [],
+              ? this.merchantIdsSelectedAdd
+              : [],
         groupIds: this.totalMerchant > 0 ? [] : lstGroupInsert,
       };
     }
@@ -509,7 +523,9 @@ export class HumanResourceUpdateComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.router.navigate(['/hr']);
+        this.router.navigate(['hr/hr-detail'], {
+          queryParams: { userId: this.userId },
+        });
       }
     });
   }
@@ -578,6 +594,7 @@ export class HumanResourceUpdateComponent implements OnInit {
   }
 
   doActiveArea(group: any) {
+    this.subMerchantList = [];
     if (group && group.children.length == 0) {
       this.activeItemId = group.id;
       this.groupNameSelect = group?.groupName;
@@ -845,5 +862,12 @@ export class HumanResourceUpdateComponent implements OnInit {
 
   checkDisableCheckbox(): boolean {
     return this.totalMerchant > 0 || this.isDisableCheckbox;
+  }
+
+  truncateString(str: string): string {
+    if (str && str.length > 100) {
+      return str.substring(0, 100) + '...';
+    }
+    return str;
   }
 }

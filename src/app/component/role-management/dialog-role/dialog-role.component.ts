@@ -1,6 +1,6 @@
 import { NgClass, NgIf } from '@angular/common';
-import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 export class DialogRoleModel {
   title!: string;
@@ -38,7 +38,7 @@ export class DialogRoleComponent {
     this.dialogRef.close(actionType);
   }
 
-  onclose(){
+  onclose() {
     this.dialogRef.close();
   }
 }
