@@ -11,6 +11,17 @@
         <div>
             Mã FT giao dịch: <span>{{ traceTransfer }}</span>
         </div>
+      <div>
+        Số lần hoàn còn lại: <span>{{ totalNumberCanRefund }}</span>
+      </div>
+      @if (totalNumberCanRefund < 1) {
+        <div class="m-caption error">
+          <div class="icon-caption">
+            <div class="icon-error_solid"></div>
+          </div>
+            <div class="text-caption paragraph-m-regular">Giao dịch không thể thực hiện do vượt quá số lần hoàn tiền quy định</div>
+        </div>
+      }
     </div>
 
     <form [formGroup]="formRepay">
@@ -42,10 +53,10 @@
         <div class="col-12">
             <label class="form-label title-m-semibold">Nội dung hoàn trả</label>
             <div class="p-inputgroup p-textaregroup">
-                <textarea rows="2" pInputTextarea appInputSanitize formControlName="description" class="merchant-input"
-                    placeholder="Nhập lý do hoàn tiền không dấu & không ký tự đặc biệt">
+                <textarea rows="2" pInputTextarea appInputSanitize2 formControlName="description" class="merchant-input"
+                    placeholder="Nhập lý do hoàn tiền không dấu & không ký tự đặc biệt" maxlength="500">
                            </textarea>
-                <span class="count-length">{{ this.formRepay.get("description")?.value?.length }}/500</span>
+                <span class="count-length">{{ this.formRepay.get("description")?.value?.length }}/50</span>
                 @if(this.formRepay.get('description')?.value){
                 <span class="p-input-icon-right" (click)="clearValue('description')">
                     <i class="icon-close_circle_solid input-icon input-icon-close"></i>

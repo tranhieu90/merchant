@@ -23,11 +23,12 @@ import {DialogCommonService} from '../../../../common/service/dialog-common/dial
 import {MatButton} from '@angular/material/button';
 import {PrintInvoice} from '../../print-invoice/print-invoice';
 import {NgxPrintDirective} from 'ngx-print';
+import {MaskDebitAccountPipe} from '../../../../common/pipe/mask-debit-account.pipe';
 
 @Component({
   selector: 'app-detail-payment',
   standalone: true,
-  imports: [ButtonModule, GridViewComponent, NgClass, NgIf, MatButton, PrintInvoice, NgxPrintDirective],
+  imports: [ButtonModule, GridViewComponent, NgClass, NgIf, MatButton, PrintInvoice, NgxPrintDirective, MaskDebitAccountPipe],
   templateUrl: './detail-payment.component.html',
   styleUrl: './detail-payment.component.scss'
 })
@@ -208,7 +209,8 @@ export class DetailPaymentComponent implements OnInit {
         ftNumber: this.detailTrans?.txnReference,
         amount: this.detailTrans?.amount,
         merchantId: this.detailTrans?.merchantId
-      }
+      },
+      disableClose: true
     });
 
     dialogRef.afterClosed().subscribe((data: any) => {
@@ -353,7 +355,7 @@ export class DetailPaymentComponent implements OnInit {
 
   formatMoney(value: any): string {
     if (value == null) return '0 đ';
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₫';
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ';
   }
 
   getClassStatus(status: any) {

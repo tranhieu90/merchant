@@ -12,12 +12,12 @@ import {CommonUtils} from '../../../../base/utils/CommonUtils';
 import moment from 'moment';
 import {ToastService} from '../../../../common/service/toast/toast.service';
 import {InputCommon} from '../../../../common/directives/input.directive';
-import {InputSanitizeDirective} from '../../../../common/directives/inputSanitize.directive';
+import { InputSanitizeDirective2 } from '../../../../common/directives/inputSanitize2.directive';
 
 @Component({
   selector: 'app-dialog-repay',
   standalone: true,
-  imports: [ButtonModule, InputTextModule, InputTextareaModule, InputNumberModule, ReactiveFormsModule, InputCommon, InputSanitizeDirective],
+  imports: [ButtonModule, InputTextModule, InputTextareaModule, InputNumberModule, ReactiveFormsModule, InputCommon, InputSanitizeDirective2],
   templateUrl: './dialog-repay.component.html',
   styleUrl: './dialog-repay.component.scss'
 })
@@ -62,14 +62,6 @@ export class DialogRepayComponent {
         const amountRefund = res['data']['amount'] || 0;
         this.traceTransfer = res['data']['traceTransfer'];
         this.maxMoney = this.dataDialog.amount - Number(amountRefund);
-        if (this.totalNumberCanRefund <= 0) {
-          this.toast.showError('Giao dịch không thể thực hiện do vượt quá số lần hoàn tiền quy định');
-          return;
-        }
-        if (this.maxMoney <= 2000) {
-          this.toast.showError('Giao dịch không thể thực hiện do số tiền có thể hoàn nhỏ hơn số tiền quy định');
-          return;
-        }
         this.formRepay.controls['money'].setValue(this.maxMoney);
       },
       error => {
@@ -112,7 +104,7 @@ export class DialogRepayComponent {
 
   formatMoney(value: any): string {
     if (value == null) return '';
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' ₫';
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ';
   }
 
   getDaysPassed(dateStr: string): number {
