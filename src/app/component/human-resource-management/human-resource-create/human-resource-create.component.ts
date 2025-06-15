@@ -250,6 +250,9 @@ export class HumanResourceCreateComponent implements OnInit {
       userPass: ['', [Validators.required]],
     });
   }
+  checkShowTextSearchPoinsales(){
+    
+  }
   doGetGroup() {
     this.api.post(ORGANIZATION_ENDPOINT.GET_LIST_GROUPS).subscribe(
       (res: any) => {

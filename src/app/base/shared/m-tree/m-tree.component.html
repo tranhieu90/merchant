@@ -1,5 +1,5 @@
 <ul class="tree-list">
-    <ng-container *ngFor="let item of data">
+    <!-- <ng-container *ngFor="let item of data">
         <li>
             <div class="tree-node" [style.paddingLeft.px]="item.children?.length ? level * 20 : level * 20 + 24"
                 [class.active]="item.id === activeItemId" (click)="doChangeGroup(item)">
@@ -28,5 +28,63 @@
                 </m-tree>
             </div>
         </li>
-    </ng-container>
+    </ng-container> -->
+    <ng-container *ngFor="let item of data">
+    <li>
+      <div
+        class="tree-node"
+        [style.paddingLeft.px]="
+          item.children?.length ? level * 20 : level * 20 + 24
+        "
+        [class.active]="item.id === activeItemId"
+        (click)="doChangeGroup(item)"
+      >
+        <button
+          class="expand-btn"
+          *ngIf="item.children?.length"
+          (click)="toggleExpand(item); $event.stopPropagation()"
+        >
+          @if (item.expanded) {
+          <span class="icon-angle_down icon-custom"></span>
+          }@else {
+          <span class="icon-angle_right icon-custom"></span>
+          }
+        </button>
+        <input
+          type="checkbox"
+          class="checkbox-custom"
+          [checked]="item.checked === true"
+          [indeterminate]="item.checked === 'partial'"
+          id="{{ item.id }}"
+          [disabled]="checkDisable || item.disabled"
+          (change)="onCheckboxChange($event, item)"
+          (click)="$event.stopPropagation()"
+        />
+
+        <span
+          class="group-name text"
+          [class]="item.level == 1 ? 'title-s-semibold' : 'title-s-regular'"
+          >{{ item.groupName }}</span
+        >
+
+        <span
+          class="group-count title-xs-regular"
+          *ngIf="item.children?.length > 0"
+          >{{ getGroupLabel(item) }}</span
+        >
+      </div>
+
+      <div *ngIf="item.expanded && item.children?.length">
+        <m-tree
+          [data]="item.children"
+          [level]="level + 1"
+          [activeItemId]="activeItemId"
+          (groupChoice)="emitGroupChoice($event)"
+          [checkDisable]="checkDisable"
+          (groupSelect)="groupSelect.emit($event)"
+        >
+        </m-tree>
+      </div>
+    </li>
+  </ng-container>
 </ul>

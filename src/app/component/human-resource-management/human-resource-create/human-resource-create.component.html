@@ -122,6 +122,8 @@
                 </div>
               </div>
             </div>
+            </ng-container>
+            <ng-container *ngIf="pointSales.length > 0;else noPointSales">
             <grid-view
               #gridViewRef
               [columns]="columnsMerchant"
@@ -133,6 +135,13 @@
               style="float: left; width: 100%"
             ></grid-view>
           </ng-container>
+           <ng-template #noPointSales>
+                <div class="content "class="content-thirdForm d-flex flex-column align-items-center  mt-5" >
+                  <img [src]="assetPath + '/assets/images/grid-search-empty.png'">
+                  <div class="mt-4 title-l-semibold title-no-data">Không tìm thấy điểm kinh doanh nào</div>
+                  <div class="title-s-regular summary-no-data">Vui lòng thử lại với điều kiện tìm kiếm khác.</div>
+                </div>
+            </ng-template>
         </div>
       </div>
     </ng-container>
@@ -205,19 +214,25 @@
                 </div>
               </div>
             </div>
-            <ng-container *ngIf="pointSales.length > 0">
+            <ng-container *ngIf="pointSales.length > 0;else noPointSales">
               <grid-view
                 #gridViewRef
                 [columns]="columnsMerchant"
                 [dataSource]="pointSales"
                 [isShowPage]="false"
                 [search]="true"
-                (selectedItem)="(pointSalesSelected)"
                 [showRadio]="!masterIdSelected"
                 (selectedItemChange)="radioSetUpMerchantIds($event)"
                 style="float: left; width: 100%"
               ></grid-view>
             </ng-container>
+            <ng-template #noPointSales>
+                <div class="content "class="content-thirdForm d-flex flex-column align-items-center  mt-5" >
+                  <img [src]="assetPath + '/assets/images/grid-search-empty.png'">
+                  <div class="mt-4 title-l-semibold title-no-data">Không tìm thấy điểm kinh doanh nào</div>
+                  <div class="title-s-regular summary-no-data">Vui lòng thử lại với điều kiện tìm kiếm khác.</div>
+                </div>
+            </ng-template>
           </div>
         </div>
       </div>
