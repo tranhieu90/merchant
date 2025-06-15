@@ -395,7 +395,6 @@ export class BusinessPaymentComponent implements OnInit {
           this.doDetail(this.subId);
         } else if (res["status"] == 400) {
           this.handleResponeError400(this.dataRespone);
-          this.toast.showError('Đã xảy ra lỗi, vui lòng thử lại');
         }
       }
     }, (error) => {
@@ -438,6 +437,11 @@ export class BusinessPaymentComponent implements OnInit {
           }
         }
       })
+      if (dataRespone?.length) {
+        this.toast.showError('Đã xảy ra lỗi, vui lòng thử lại');
+      }
+    } else {
+      this.toast.showError('Đã xảy ra lỗi, vui lòng thử lại');
     }
   }
   isDuplicate(lstDuplicate: any, item: string): boolean {
