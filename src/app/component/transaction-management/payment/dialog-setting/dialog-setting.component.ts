@@ -27,7 +27,11 @@ export class DialogSettingComponent implements OnInit {
   }
 
   onDefault() {
-    this.lstChecked = [];
+    this.lstChecked = [
+      'paymentContent',
+      'ftCode',
+      'transactionCode'
+    ];
   }
 
   onClose() {

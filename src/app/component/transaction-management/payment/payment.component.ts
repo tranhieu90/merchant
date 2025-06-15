@@ -51,7 +51,11 @@ export class PaymentComponent implements OnInit {
   isSearch: boolean = true;
   isFilter: boolean = false;
   dataTable: any = [];
-  lstColumnShow: string[] = [];
+  lstColumnShow: string[] = [
+    'paymentContent',
+    'ftCode',
+    'transactionCode'
+  ];
   pageIndex = 1;
   pageSize = 10;
   totalItem: number = 0;
@@ -167,20 +171,24 @@ export class PaymentComponent implements OnInit {
           minWidth: "139px"
         }
       },
-      {
-        name: 'orderInfo',
-        label: 'Nội dung thanh toán',
-        options: {
-          customCss: (obj: any) => {
-            return ['text-left', 'mw-180'];
-          },
-          customCssHeader: () => {
-            return ['text-left'];
-          },
-          width: "174px",
-          minWidth: "174px"
-        }
-      },
+      ...(this.lstColumnShow.includes("paymentContent")
+          ? [
+            {
+              name: 'orderInfo',
+              label: 'Nội dung thanh toán',
+              options: {
+                customCss: (obj: any) => {
+                  return ['text-left', 'mw-180'];
+                },
+                customCssHeader: () => {
+                  return ['text-left'];
+                },
+                width: "174px",
+                minWidth: "174px"
+              }
+            },
+          ] : []
+      ),
       {
         name: 'orderRef',
         label: 'Mã định danh',
@@ -254,20 +262,24 @@ export class PaymentComponent implements OnInit {
           minWidth: "226px"
         }
       },
-      {
-        name: 'txnReference',
-        label: 'Mã FT giao dịch',
-        options: {
-          customCss: (obj: any) => {
-            return ['text-left'];
-          },
-          customCssHeader: () => {
-            return ['text-left'];
-          },
-          width: "134px",
-          minWidth: "134px"
-        }
-      },
+      ...(this.lstColumnShow.includes("ftCode")
+          ? [
+            {
+              name: 'txnReference',
+              label: 'Mã FT giao dịch',
+              options: {
+                customCss: (obj: any) => {
+                  return ['text-left'];
+                },
+                customCssHeader: () => {
+                  return ['text-left'];
+                },
+                width: "134px",
+                minWidth: "134px"
+              }
+            },
+          ] : []
+      ),
       {
         name: 'debitAccount',
         label: 'Tài khoản/Thẻ thanh toán',
