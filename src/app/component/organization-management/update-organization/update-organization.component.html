@@ -38,6 +38,7 @@
                             (blur)="onBlurEdit()"
                             appShowClearOnFocus=".clear-icon"
                             class="merchant-input"
+                            maxlength="50"
                           />
                             @if(this.formEditArea.get('areaName')?.value){
                             <span class="p-input-icon-right clear-icon" (click)="clearValue('areaName')">

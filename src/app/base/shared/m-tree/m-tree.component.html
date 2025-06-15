@@ -15,7 +15,7 @@
                     [disabled]="checkDisable|| item.disabled" (change)="onCheckboxChange( $event,item)"
                     (click)="$event.stopPropagation()" />
 
-                <span class="group-name title-s-regular">{{ item.groupName }}</span>
+                <span class="group-name text" [class]="item.level==1? 'title-s-semibold': 'title-s-regular'">{{ item.groupName }}</span>
 
                 <span class="group-count title-xs-regular" *ngIf="item.children?.length>0">{{ getGroupLabel(item)
                     }}</span>

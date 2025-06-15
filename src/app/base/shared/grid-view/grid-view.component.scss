@@ -219,3 +219,10 @@
   background: var(--p-datatable-header-cell-background);
 } 
   
+.ellipsis {
+    display: inline-block; 
+    max-width: 600px; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+}
