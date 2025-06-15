@@ -70,6 +70,7 @@ export class HumanResourceManagementComponent implements OnInit {
   dataList: any = [];
   isSearch: boolean = false;
   userInfo: any = {};
+  skipSearch = false;
   columns: Array<GridViewModel> = [
     {
       name: 'userId',
@@ -143,6 +144,7 @@ export class HumanResourceManagementComponent implements OnInit {
       icon: 'icon-eye_on',
       title: 'Xem chi tiết',
       doAction: (item: any) => {
+        this.skipSearch = true;
         this.checkOpenViewDetailPage(item);
       },
     },
@@ -240,6 +242,15 @@ export class HumanResourceManagementComponent implements OnInit {
     this.pageIndex = 1;
     this.keyword = this.keyword?.trim();
     this.doSearch();
+  }
+
+  onBlurSearch() {
+    setTimeout(() => {
+      if (!this.skipSearch) {
+        this.onEnterSearch();
+      }
+      this.skipSearch = false; // reset lại
+    }, 100);
   }
 
   checkOpenViewDetailPage(item: any) {
