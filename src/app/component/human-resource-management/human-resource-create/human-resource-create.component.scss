@@ -302,3 +302,19 @@
     height: 0px;
   }
 }
+.no-underline {
+  text-decoration: none !important;
+  color: #0058F0;
+}
+.ellipsis {
+    display: inline-block; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+}
+.ellipsis-mw-500{
+  max-width: 500px; 
+}
+.ellipsis-mw-250{
+  max-width: 250px; 
+}

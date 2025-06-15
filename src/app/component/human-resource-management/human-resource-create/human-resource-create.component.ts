@@ -48,6 +48,7 @@ import {
   DialogRoleComponent,
   DialogRoleModel,
 } from '../../role-management/dialog-role/dialog-role.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-human-resource-create',
@@ -69,6 +70,7 @@ import {
     MTreeComponent,
     MatCheckboxModule,
     RadioButtonModule,
+    MatTooltipModule
   ],
   templateUrl: './human-resource-create.component.html',
   styleUrl: './human-resource-create.component.scss',
@@ -104,7 +106,8 @@ export class HumanResourceCreateComponent implements OnInit {
   activeOrganization: string = '';
   isShowMechantList: boolean = false;
   searchPoint: boolean = false;
-  searchPointV2: boolean = false;
+  isSelectGroup: boolean = false;
+  isShowSearchPointSales: boolean = false;
   checkGroupHasPoinSales:boolean=false;
   constructor(
     private fb: FormBuilder,
@@ -130,6 +133,10 @@ export class HumanResourceCreateComponent implements OnInit {
       if (this.userInfo.orgType != 2) this.doGetGroup();
       if (this.userInfo.orgType == 2) this.getLstMerchant(true);
     }
+  }
+  ngOnChanges():void{
+    console.log(1);
+    this.checkShowTextSearchPoinsales();
   }
   columns: Array<GridViewModel> = [
     {
@@ -251,7 +258,16 @@ export class HumanResourceCreateComponent implements OnInit {
     });
   }
   checkShowTextSearchPoinsales(){
-    
+    console.log(this.activeOrganization);
+     var group= this.organization.filter((gr:any)=>gr.id==this.organizationIdActive);
+      if(group && group.chidren.length==0 && this.pointSales.length > 0 )
+      {
+        this.isShowMechantList= true;
+      }
+      this.isShowMechantList= false;
+  }
+  openCreateGroups() {
+  window.open(this.assetPath + '/organization', '_blank', 'noopener,noreferrer');
   }
   doGetGroup() {
     this.api.post(ORGANIZATION_ENDPOINT.GET_LIST_GROUPS).subscribe(
@@ -295,12 +311,13 @@ export class HumanResourceCreateComponent implements OnInit {
     this.countSelectedPoint = 0;
     this.organizationIdActive = group.id;
     this.activeOrganization = group.groupName;
+    this.isShowSearchPointSales=false;
     if (group.children.length == 0) {
-      this.searchPointV2 = false;
       this.getLstMerchant();
+      setTimeout(()=>{if(this.pointSales.length>0) {
+          this.isShowSearchPointSales=true;
+      }},300)
     } else {
-      this.isShowMechantList = false;
-      this.searchPointV2 = false;
       this.pointSales = [];
     }
   }
@@ -320,9 +337,6 @@ export class HumanResourceCreateComponent implements OnInit {
 
   getLstMerchant(firstSearch: boolean = false) {
     this.isSearch = true;
-    if (this.searchOrganization.length == 0) {
-      this.searchPointV2 = true;
-    }
     let dataReq = {
       groupIdList: this.activeOrganization ? [this.organizationIdActive] : [],
       status: '',
@@ -370,7 +384,6 @@ export class HumanResourceCreateComponent implements OnInit {
               ).length;
             }
           } else {
-            this.searchPointV2 = true;
             this.pointSales = [];
           }
         },
@@ -405,17 +418,27 @@ export class HumanResourceCreateComponent implements OnInit {
   }
   doCheckGroup(event: any) {
     this.roleId = '';
+    this.isSelectGroup=false;
+     this.isShowSearchPointSales=false;
     if (event.checked) {
       this.organizationSelected.push(event.id);
+       this.isSelectGroup=true;
       this.pointSalesSelected = new Set();
       if(event.children.length==0)
       {
+         this.isSelectGroup=true;
         this.getLstMerchant();
          setTimeout(()=>{
+          if(this.pointSales.length>0)
+          {
+            this.isShowSearchPointSales=true;
+          }
           this.countSelectedPoint= this.pointSales.length;
         },200)
         setTimeout(()=>{
-           this.gridViewComponent.doCheckAllPointSales();
+          if(this.gridViewComponent){
+             this.gridViewComponent.doCheckAllPointSales();
+          }
         },500)
       }
       else{
@@ -426,6 +449,7 @@ export class HumanResourceCreateComponent implements OnInit {
       this.organizationSelected = this.organizationSelected.filter(
         (item: string) => item !== event.id
       );
+      this.isSelectGroup=false;
       if(event.children.length==0){
         this.countSelectedPoint=0;
         this.pointSales = [];
