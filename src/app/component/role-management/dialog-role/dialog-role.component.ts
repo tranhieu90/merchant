@@ -35,12 +35,7 @@ export class DialogRoleComponent {
 
 
   doAction(actionType: boolean) {
-    if (actionType === false && this.dataDialog.hiddenButtonLeft === false) {
-      this.dialogRef.close();
-    } else {
-      this.dialogRef.close(actionType);
-    }
-
+    this.dialogRef.close(actionType);
   }
 
   onclose() {
