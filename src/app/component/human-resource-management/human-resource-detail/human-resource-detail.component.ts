@@ -316,22 +316,18 @@ export class HumanResourceDetailComponent implements OnInit {
 
   openChangeLockUser() {
     let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-    dataDialog.title = `${
-      this.personDetail?.isActive == 0 ? 'Mở khóa nhân sự' : 'Khóa nhân sự'
-    }`;
-    dataDialog.message = `${
-      this.personDetail?.isActive == 0
-        ? 'Cân nhắc kiểm tra thông tin phân quyền và tổ chức của nhân sự để không ảnh hưởng đến hoạt động của doanh nghiệp. Bạn có chắc chắn muốn mở khoá nhân sự không?'
-        : 'Nhân sự bị khoá sẽ không thể truy cập vào hệ thống. Bạn có chắc chắn muốn khoá nhân sự không?'
-    }`;
-    dataDialog.icon = `${
-      this.personDetail?.isActive == 0 ? 'icon-lock' : 'icon-lock'
-    }`;
+    dataDialog.title = `${this.personDetail?.isActive == 0 ? 'Mở khóa nhân sự' : 'Khóa nhân sự'
+      }`;
+    dataDialog.message = `${this.personDetail?.isActive == 0
+      ? 'Cân nhắc kiểm tra thông tin phân quyền và tổ chức của nhân sự để không ảnh hưởng đến hoạt động của doanh nghiệp. Bạn có chắc chắn muốn mở khoá nhân sự không?'
+      : 'Nhân sự bị khoá sẽ không thể truy cập vào hệ thống. Bạn có chắc chắn muốn khoá nhân sự không?'
+      }`;
+    dataDialog.icon = `${this.personDetail?.isActive == 0 ? 'icon-lock' : 'icon-lock'
+      }`;
     dataDialog.viewCancel = true;
     dataDialog.iconColor = 'icon warning';
-    dataDialog.buttonLabel = `${
-      this.personDetail?.isActive == 1 ? 'Mở khóa' : 'Khóa'
-    }`;
+    dataDialog.buttonLabel = `${this.personDetail?.isActive == 1 ? 'Mở khóa' : 'Khóa'
+      }`;
     dataDialog.width = '30%';
     this.dialogCommon.openDialogInfo(dataDialog).subscribe((result) => {
       if (result) {
@@ -547,18 +543,19 @@ export class HumanResourceDetailComponent implements OnInit {
   }
 
   doUpdateHuman() {
+    const hasRole = this.auth.apiTracker([MERCHANT_RULES.USER_MANAGER_UPDATE]);
     let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-    dataDialog.title = 'Cập nhật nhân sự';
+    dataDialog.title = hasRole ? 'Cập nhật nhân sự' : 'Bạn không có quyền cập nhật nhân sự';
     dataDialog.message =
-      'Việc thay đổi sẽ ảnh hưởng đến quyền truy cập của nhân sự. Bạn có chắc chắn muốn cập nhật nhân sự không?';
-    dataDialog.buttonLabel = 'Xác nhận';
+      hasRole ? 'Việc thay đổi sẽ ảnh hưởng đến quyền truy cập của nhân sự. Bạn có chắc chắn muốn cập nhật nhân sự không?' :
+        'Nhân sự không thuộc tổ chức mà bạn được phân quyền.';
+    dataDialog.buttonLabel = hasRole ? 'Xác nhận' : 'Tôi đã hiểu';
     dataDialog.icon = 'icon-warning';
-    dataDialog.viewCancel = true;
+    dataDialog.viewCancel = hasRole;
     dataDialog.iconColor = 'icon warning';
-    dataDialog.buttonLabel = 'Xác nhận';
     dataDialog.width = '30%';
     this.dialogCommon.openDialogInfo(dataDialog).subscribe((result) => {
-      if (result) {
+      if (result && hasRole) {
         this.router.navigate(['hr/hr-update'], {
           state: {
             dataInput: {
