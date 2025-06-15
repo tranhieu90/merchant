@@ -13,10 +13,11 @@ import { DialogConfirmModel } from '../../../../model/DialogConfirmModel';
 import { AuthenticationService } from '../../../../common/service/auth/authentication.service';
 import { DialogCommonService } from '../../../../common/service/dialog-common/dialog-common.service';
 import { Router } from '@angular/router';
+import {InputCommon} from '../../../../common/directives/input.directive';
 @Component({
   selector: 'app-business-dialog',
   standalone: true,
-  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, DropdownModule],
+  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, DropdownModule, InputCommon],
   templateUrl: './business-dialog.component.html',
   styleUrl: './business-dialog.component.scss'
 })
