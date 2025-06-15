@@ -19,9 +19,9 @@
         </ng-template>
       </p-calendar>
       <p-button [matBadge]="checkSearchNumber()" [ngClass]="['merchant-button-icon button-l button-light me-2', isSearch? 'active': '']"
-                icon="icon-search" (click)="onToggleSearch()"/>
-      <p-button [matBadge]="checkFilterNumber()" [ngClass]="['merchant-button-icon button-l button-light me-2', isFilter? 'active': '']"
-                icon="icon-filter" (click)="onToggleFilter()"/>
+                icon="icon-search" (click)="isSearch=true"/>
+      <p-button [matBadge]="checkFilterNumber()" [ngClass]="['merchant-button-icon button-l button-light me-2', !isSearch? 'active': '']"
+                icon="icon-filter" (click)="isSearch=false"/>
       <p-button class="merchant-button-icon button-l button-light" icon="icon-setting" (click)="onSetting()"/>
     </div>
   </div>
@@ -51,7 +51,7 @@
       </div>
     </div>
   </div>
-  <div *ngIf="isFilter" class="box-filter mt-4">
+  <div *ngIf="!isSearch" class="box-filter mt-4">
     <div class="row mb-4">
       <div class="col-md-4">
         <div class="title">Trạng thái</div>
@@ -101,7 +101,7 @@
       </div>
     </div>
   </div>
-  <div *ngIf="isSearch || isFilter" class="d-flex justify-content-end mt-3">
+  <div class="d-flex justify-content-end mt-3">
     <p-button label="Xóa bộ lọc" class="merchant-button-tertiary me-2" (click)="onReset()" [disabled]="!checkHasSearchOrFilterData()"/>
     <p-button label="Áp dụng" class="merchant-button" (click)="onSearch()" [disabled]="!checkHasSearchOrFilterData()"/>
   </div>

@@ -118,9 +118,6 @@ export class PaymentComponent implements OnInit {
           customCssHeader: () => {
             return ['text-left'];
           },
-          customBodyRender: (value: any) => {
-            return value ? moment(value).format('DD/MM/YYYY HH:mm') : '';
-          },
           width: "131px",
           minWidth: "131px"
         }

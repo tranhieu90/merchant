@@ -182,7 +182,7 @@ export const routes: Routes = [
   },
   {
     path: 'transaction',
-    data: { breadcrumb: 'Giao dịch thanh toán' },
+    data: { breadcrumb: 'Giao dịch' },
     children: [
       {
         path: 'payment', 

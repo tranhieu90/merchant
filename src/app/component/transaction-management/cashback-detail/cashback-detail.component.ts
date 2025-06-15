@@ -1,4 +1,4 @@
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,8 +23,9 @@ import { AuthenticationService } from '../../../common/service/auth/authenticati
 import { DialogCommonService } from '../../../common/service/dialog-common/dialog-common.service';
 import { ToastService } from '../../../common/service/toast/toast.service';
 import { GridViewModel } from '../../../model/GridViewModel';
-import {TRANSACTION_ENDPOINT} from '../../../common/enum/EApiUrl';
+import { TRANSACTION_ENDPOINT } from '../../../common/enum/EApiUrl';
 import moment from 'moment';
+import { MaskDebitAccountPipe } from '../../../common/pipe/mask-debit-account.pipe';
 
 @Component({
   selector: 'app-cashback-detail',
@@ -48,7 +49,9 @@ import moment from 'moment';
     InputNumberModule,
     InputCommon,
     InputSanitizeDirective,
-    NgClass],
+    NgClass,
+    MaskDebitAccountPipe,
+    DatePipe],
   templateUrl: './cashback-detail.component.html',
   styleUrl: './cashback-detail.component.scss',
 
@@ -100,8 +103,8 @@ export class CashbackDetailComponent implements OnInit {
     }
 
     this.api.post(TRANSACTION_ENDPOINT.GET_DETAIL_REFUND, param).subscribe(res => {
-        this.detailTrans = res['data'];
-      },
+      this.detailTrans = res['data'];
+    },
       error => {
         const errorData = error?.error || {};
         this.toast.showError(errorData?.soaErrorDesc);

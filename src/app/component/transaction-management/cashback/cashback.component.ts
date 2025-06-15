@@ -84,7 +84,6 @@ export class CashbackComponent implements OnInit {
   merchantOptions: any = [];
   bankOptions: any = [];
   isSearch: boolean = true;
-  isFilter: boolean = false;
   dataTable: any = [];
   lstColumnShow: string[] = [
     'refundTransactionCode',
@@ -240,20 +239,6 @@ export class CashbackComponent implements OnInit {
         },
 
       },
-      {
-        name: 'methodName',
-        label: 'Phương thức thanh toán',
-        options: {
-          customCss: (obj: any) => {
-            return ['text-left'];
-          },
-          customCssHeader: () => {
-            return ['text-left'];
-          },
-          width: "226px",
-          minWidth: "226px"
-        }
-      },
       ...(this.lstColumnShow.includes("refundFTCode")
           ? [
             {
@@ -282,6 +267,20 @@ export class CashbackComponent implements OnInit {
             }
           ] : []
       ),
+      {
+        name: 'methodName',
+        label: 'Phương thức thanh toán',
+        options: {
+          customCss: (obj: any) => {
+            return ['text-left'];
+          },
+          customCssHeader: () => {
+            return ['text-left'];
+          },
+          width: "226px",
+          minWidth: "226px"
+        }
+      },
       {
         name: 'debitAccount',
         label: 'Tài khoản/Thẻ thanh toán',
@@ -386,6 +385,7 @@ export class CashbackComponent implements OnInit {
   }
 
   onSearch(pageInfo?: any) {
+    debugger
     if (pageInfo) {
       this.pageIndex = pageInfo["page"] || 1;
       this.pageSize = pageInfo["pageSize"]
@@ -466,20 +466,11 @@ export class CashbackComponent implements OnInit {
       });
   }
 
-  onToggleSearch() {
-    this.isSearch = !this.isSearch;
-    this.isFilter = false;
-  }
-
-  onToggleFilter() {
-    this.isFilter = !this.isFilter;
-    this.isSearch = false;
-  }
-
   onSetting() {
     const dialogRef = this.dialog.open(CashbackDialogSettingComponent, {
       width: '500px',
-      data: this.lstColumnShow
+      data: this.lstColumnShow,
+      disableClose: true
     });
 
     dialogRef.afterClosed().subscribe((lstColumnShow: any) => {

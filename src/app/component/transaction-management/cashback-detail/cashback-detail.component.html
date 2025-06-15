@@ -11,7 +11,7 @@
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
             <div class="info-label">Số tài khoản/Thẻ thanh toán</div>
-            <div class="info-value">{{ detailTrans?.debitAccount }}</div>
+            <div class="info-value">{{ detailTrans?.debitAccount | maskDebitAccount}}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
             <div class="info-label">Phương thức thanh toán</div>
@@ -19,7 +19,7 @@
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
             <div class="info-label">Ngày giao dịch</div>
-            <div class="info-value">{{ detailTrans?.tranTime }}</div>
+            <div class="info-value">{{ detailTrans?.tranTime | date: 'dd/MM/yyyy HH:mm'}}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
             <div class="info-label">Số tiền hoàn trả</div>
@@ -35,7 +35,8 @@
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
             <div class="info-label">Trạng thái</div>
-            <span [ngClass]="['status', getClassStatus(detailTrans?.status)]" class="">{{ getLabelStatus(detailTrans?.status)}}</span>
+            <span [ngClass]="['status', getClassStatus(detailTrans?.status)]" class="">{{
+                getLabelStatus(detailTrans?.status)}}</span>
         </div>
     </div>
 </div>
