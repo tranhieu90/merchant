@@ -17,7 +17,8 @@
                     <div class="p-inputgroup">
                         <input appInputSanitize type="text" pInputText class="merchant-input" formControlName="roleName"
                             placeholder="Tối đa 50 ký tự (Ví dụ: Nhân viên thu ngân, Nhân viên bán hàng, Kế toán...)"
-                            (keydown.enter)="onEnterRoleName($event)" appShowClearOnFocus=".clear-icon"/>
+                            (keydown.enter)="onEnterRoleName($event)" appShowClearOnFocus=".clear-icon"
+                            [maxlength]="50"/>
                         @if(this.formNameRole.get('roleName')?.value){
                         <span class="p-input-icon-right clear-icon" (mousedown)="clearValue('roleName')">
                             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
@@ -47,7 +48,9 @@
                     <label class="form-label title-s-semibold">Mô tả</label>
                     <div class="p-inputgroup p-textaregroup">
                         <textarea appInputSanitize rows="9" pInputTextarea formControlName="description"
-                            class="merchant-input" placeholder="Nhập mô tả chi tiết cho vai trò"  appShowClearOnFocus=".clear-icon">
+                            class="merchant-input" placeholder="Nhập mô tả chi tiết cho vai trò"  
+                            [maxlength]="150"
+                            appShowClearOnFocus=".clear-icon">
                                </textarea>
                         <span class="count-length">{{ this.formNameRole.get("description")?.value?.length }}/150</span>
                         @if(this.formNameRole.get('description')?.value){

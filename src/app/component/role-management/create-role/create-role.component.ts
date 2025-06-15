@@ -43,10 +43,10 @@ import { ShowClearOnFocusDirective } from '../../../common/directives/showClearO
     MatInputModule,
     InputTextModule,
     ShowClearOnFocusDirective,
-    InputTextareaModule, ButtonModule, NgFor, NgIf, CheckboxModule, MatCheckboxModule, MatIconModule, InputNumberModule, InputCommon,InputSanitizeDirective],
+    InputTextareaModule, ButtonModule, NgFor, NgIf, CheckboxModule, MatCheckboxModule, MatIconModule, InputNumberModule, InputCommon, InputSanitizeDirective],
   templateUrl: './create-role.component.html',
   styleUrl: './create-role.component.scss',
-  
+
 })
 
 export class CreateRoleComponent implements OnInit {
@@ -151,7 +151,7 @@ export class CreateRoleComponent implements OnInit {
           this.isSuccess = 0;
           this.doNextStep();
         }
-        
+
       });
   }
 
@@ -390,7 +390,7 @@ export class CreateRoleComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
+      if (result != undefined) {
         this.router.navigate(['/role']);
       }
 
@@ -417,7 +417,7 @@ export class CreateRoleComponent implements OnInit {
     this.formNameRole.get(nameInput)?.setValue('');
   }
 
-  hasRoleAddUser() {  
+  hasRoleAddUser() {
     return this.isHasRoleAddUser = this.auth.apiTracker("/api/v1/add-user-role");;
   }
 
