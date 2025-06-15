@@ -377,7 +377,7 @@ export class BusinessPaymentComponent implements OnInit {
     }
     this.api.post(BUSINESS_ENDPOINT.UPDATE_SUB_MERCHANT, dataSave).subscribe(res => {
       if (res) {
-        this.dataRespone = res.data.paymentMethod;
+        this.dataRespone = res?.data?.paymentMethod;
         if (res["status"] == 200) {
           let checkErrorMethod = 0;
           res["data"]["paymentMethod"].forEach((item: any) => {
