@@ -496,8 +496,10 @@ export class HumanResourceCreateComponent implements OnInit {
     }
   }
   doPreStep() {
-    if (this.currentStep >= 0) {
+    if (this.currentStep > 0) {
       this.currentStep--;
+    }else{
+      this.onCancel(); 
     }
   }
   setRoleId(event: any) {
@@ -512,9 +514,7 @@ export class HumanResourceCreateComponent implements OnInit {
   }
   copyPassword() {
     const password = this.formInfo.get('userPass')?.value;
-    console.log(password);
     if (!password) return;
-
     navigator.clipboard
       .writeText(password)
       .then(() => {
