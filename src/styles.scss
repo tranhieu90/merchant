@@ -82,3 +82,34 @@ body {
   @include base-icon;
   color: $color-surface-semantic-warning;
 }
+
+.mat-tooltip {
+   background: $color-surface-neutral-main;
+    border-radius: $border-radius-s;
+    padding: $spacing-s;
+    box-shadow: $shadow-s3;
+    color: $color-text-neutral-main;
+
+    .p-tooltip-text {
+    background: $color-surface-neutral-main;
+    border-radius: $border-radius-s;
+    padding: $spacing-s;
+    box-shadow: $shadow-s3;
+    color: $color-text-neutral-main;
+    //typo/paragraph-m/regular
+    @include typo-style($typo-font-sizes-m, $typo-font-weights-regular, none, none);
+    width: max-content;
+    max-width: 240px;
+
+    .tooltip-content {
+      display: flex;
+
+      i {
+        margin-right: 3px;
+        font-size: 24px;
+        color: $color-surface-semantic-information;
+      }
+    }
+
+  }
+}

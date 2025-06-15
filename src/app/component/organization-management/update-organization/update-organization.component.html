@@ -28,6 +28,7 @@
                     <div class="d-flex justify-content-between align-items-center formEdit">
                         <div class="p-inputgroup">
                             <input
+                            appInputSanitize
                             #areaNameInput
                             type="text"
                             pInputText
@@ -35,6 +36,8 @@
                             label="Cập nhật"
                             (keydown.enter)="onEnterKey()"
                             (blur)="onBlurEdit()"
+                            appShowClearOnFocus=".clear-icon"
+                            class="merchant-input"
                           />
                             @if(this.formEditArea.get('areaName')?.value){
                             <span class="p-input-icon-right clear-icon" (click)="clearValue('areaName')">
@@ -89,7 +92,7 @@
                 <div *ngIf="areaActive.children.length == 0"  style="max-height: 80vh; overflow-y: auto;">
                     <div *ngIf="lstMerchantActive.length > 0" class="mt-4">
                         <app-table-merchant [dataSource]="lstMerchantActive" [isShowCheckbox]="true"
-                            [isShowMoveMerchant]="true" (doMoveMerchant)="doMoveMerchant($event)"></app-table-merchant>
+                            [isShowMoveMerchant]="true" (doMoveMerchant)="doMoveMerchant($event)" [groupId]="areaActive.id"></app-table-merchant>
                     </div>
                     <div *ngIf="lstMerchantActive.length === 0" class="no-data">
                         <img [src]="assetPath +'/assets/images/grid-search-empty.png'">

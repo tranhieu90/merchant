@@ -151,8 +151,9 @@ export class BusinessCreateComponent implements OnInit {
     private dialogCommon: DialogCommonService,
   ) {
     this.routeActive.queryParams.subscribe(params => {
-      this.organizationSetup = params['organizationSetup'] === 'true';
+      this.organizationSetup = params['organizationSetup'] ? params['organizationSetup'] : false;
       this.lstBusiness = params['lstBusiness'] === 'true';
+      this.areaIdMove = params['groupId'];
     });
   }
 

@@ -6,6 +6,10 @@ import { NgIf } from '@angular/common';
 import _ from 'lodash';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
+import { CommonUtils } from '../../../base/utils/CommonUtils';
+import { GROUP_ENDPOINT } from '../../../common/enum/EApiUrl';
+import { FetchApiService } from '../../../common/service/api/fetch-api.service';
+import { ToastService } from '../../../common/service/toast/toast.service';
 
 @Component({
   selector: 'app-table-merchant',
@@ -18,11 +22,11 @@ export class TableMerchantComponent implements OnChanges {
   @Input() dataSource: any = [];
   @Input() isShowCheckbox: boolean = false;
   @Input() isShowMoveMerchant: boolean = false;
+  @Input() groupId: any = [];
   @Output() doMoveMerchant = new EventEmitter<{ lstRowId: number[], isNotDelete: boolean }>();
   @Output() returnRowsChecked = new EventEmitter<any>();
   countRowChecked: number = 0;
   dataTable: any = [];
-  dataSearch: any = [];
   formSearch!: FormGroup;
   isSearch: boolean = false;
 
@@ -47,7 +51,7 @@ export class TableMerchantComponent implements OnChanges {
       label: 'TÊN ĐIỂM KINH DOANH',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left','mw-160'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -55,11 +59,11 @@ export class TableMerchantComponent implements OnChanges {
       }
     },
     {
-      name: 'address',
+      name: 'formatAddress',
       label: 'ĐỊA CHỈ',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left','mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -89,6 +93,8 @@ export class TableMerchantComponent implements OnChanges {
 
   constructor(
     private fb: FormBuilder,
+    private api: FetchApiService,
+    private toast: ToastService,
   ) {
     this.formSearch = this.fb.group({
       keyWord: [''],
@@ -98,7 +104,6 @@ export class TableMerchantComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.countRowChecked = 0;
     this.dataTable = _.cloneDeep(this.dataSource);
-    this.dataSearch = this.dataTable;
   }
 
   returnRowChecked(count: number) {
@@ -110,7 +115,6 @@ export class TableMerchantComponent implements OnChanges {
   onDeselectAll() {
     this.countRowChecked = 0;
     this.dataTable = this.dataTable.map((item: any) => ({ ...item, checked: false }));
-    this.dataSearch = this.dataTable;
     if (this.formSearch.get("keyWord")?.value) {
       this.formSearch.get("keyWord")?.setValue("");
     }
@@ -129,20 +133,33 @@ export class TableMerchantComponent implements OnChanges {
   }
 
   doSearch(event: any) {
-    let keyWord = event?.target?.value?.trim();
-    if (keyWord) {
-      let keyWordToLowerCase = this.removeVietnamese(keyWord.toLowerCase());
-      this.dataSearch = this.dataTable.filter((item: any) => this.removeVietnamese(item.merchantBizName?.toLowerCase())?.includes(keyWordToLowerCase) || this.removeVietnamese(item.address?.toLowerCase())?.includes(keyWordToLowerCase));
-      this.isSearch = true;
-    }
-    else {
-      this.dataSearch = this.dataTable;
-    }
+    let dataReq = {
+          groupIdList: [this.groupId],
+          status: "",
+          methodId: [],
+          mappingKey: ""
+        }
+    
+        let param = {
+          page: 1,
+          size: 1000,
+          keySearch: event?.target?.value?.trim()
+        };
+        let buildParams = CommonUtils.buildParams(param);
+        this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe((res: any) => {
+          if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
+            this.dataTable = res['data']['subInfo'];
+          } else {
+            this.dataTable = []
+          }
+        }, (error: any) => {
+          this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.')
+          this.dataTable = [];
+        });
   }
 
   clearValue(nameInput: string) {
     this.formSearch.get(nameInput)?.setValue('');
-    this.dataSearch = this.dataTable;
   }
 
   removeVietnamese(str: string): string {

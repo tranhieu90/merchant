@@ -58,3 +58,19 @@
 .icon-plus_small{
    color: $color-icon-action-main;
 }
+
+.ellipsis {
+//   white-space: nowrap;        /* Không xuống dòng */
+//   overflow: hidden;           /* Ẩn phần vượt quá khung */
+//   text-overflow: ellipsis;    /* Hiển thị dấu ... */
+//   width: 130px;               /* Đặt chiều rộng cụ thể */
+    display: inline-block; 
+    max-width: 150px; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+}
+
+.text-content {
+  display: inline;             
+}
