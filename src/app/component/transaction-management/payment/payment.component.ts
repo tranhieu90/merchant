@@ -485,8 +485,8 @@ export class PaymentComponent implements OnInit {
       this.pageIndex = 1;
     }
 
-    let groupIdArray = this.filterCriteria?.selectedGroups?.filter(item => item?.id !== this.merchantId)?.map(item => item?.id);
-
+    let groupIdArray = this.getTopLevelGroupIds(this.filterCriteria?.selectedGroups || []);
+    groupIdArray = groupIdArray?.filter(item => item !== this.merchantId)?.map(item => item);
     if (this.filterCriteria?.selectedMerchants?.length > 0) {
       groupIdArray = [];
     }
@@ -586,7 +586,8 @@ export class PaymentComponent implements OnInit {
   }
 
   exportExcel() {
-    const groupIdArray = this.filterCriteria?.selectedGroups?.filter(item => item?.id !== this.merchantId)?.map(item => item?.id);
+    let groupIdArray = this.getTopLevelGroupIds(this.filterCriteria?.selectedGroups || []);
+    groupIdArray = groupIdArray?.filter(item => item !== this.merchantId)?.map(item => item);
 
     let param = {
       fromDate: this.searchCriteria?.dateRange[0] ? moment(this.searchCriteria?.dateRange[0]).format('DD/MM/YYYY HH:mm:ss') : null,
@@ -751,32 +752,63 @@ export class PaymentComponent implements OnInit {
 
   onGroupClick(event: any) {
     const clickedNode = event.node;
-
-    // Lưu lại node vừa click (nếu cần)
     this.lastClickedGroup = clickedNode;
 
-    // Delay nhỏ để đợi ngModel cập nhật xong
     setTimeout(() => {
       const selected = this.filterCriteria.selectedGroups || [];
-      const parentId = clickedNode.parentId;
+      const clickedFullNode = this.findItemById(this.groupOptions, clickedNode.id);
+      if (!clickedFullNode) return;
 
-      // Giữ lại các lựa chọn có cùng parentId với node vừa click
-      const filtered = selected.filter(item => item.parentId === parentId);
+      const targetLevel = clickedFullNode.level;
+      const targetParentId = clickedFullNode.parentId;
 
-      // Cập nhật lại ngModel
-      this.filterCriteria.selectedGroups = filtered;
+      // Lọc các node cùng level và cùng parentId
+      const sameLevelNodes = selected.filter(item => {
+        const fullItem = this.findItemById(this.groupOptions, item.id);
+        return fullItem?.level === targetLevel && fullItem?.parentId === targetParentId;
+      });
 
-      // Gọi API/logic khác nếu cần
+      // Lấy toàn bộ con (mọi cấp) của các node này
+      const allWithChildren: any[] = [];
+
+      for (const node of sameLevelNodes) {
+        const fullNode = this.findItemById(this.groupOptions, node.id);
+        if (fullNode) {
+          allWithChildren.push(fullNode);
+          const children = this.getAllChildNodes(fullNode);
+          allWithChildren.push(...children);
+        }
+      }
+
+      // Loại bỏ trùng ID
+      const uniqueById = Array.from(new Map(allWithChildren.map(item => [item.id, item])).values());
+
+      // Gán lại cho ngModel
+      this.filterCriteria.selectedGroups = uniqueById;
+
+      // Gọi logic tiếp theo
       this.onChangeGroup();
     }, 0);
   }
 
-  findItemById(tree: any[], id: number): any {
-    for (let node of tree) {
-      if (node.id === id) {
-        return node;
+  getAllChildNodes(node: any): any[] {
+    let result: any[] = [];
+    if (node?.children && node.children.length > 0) {
+      for (const child of node.children) {
+        const fullChild = this.findItemById(this.groupOptions, child.id);
+        if (fullChild) {
+          result.push(fullChild);
+          result.push(...this.getAllChildNodes(fullChild)); // đệ quy lấy mọi cấp con
+        }
       }
-      if (node.children?.length) {
+    }
+    return result;
+  }
+
+  findItemById(nodes: any[], id: any): any {
+    for (const node of nodes) {
+      if (node.id === id) return node;
+      if (node.children) {
         const found = this.findItemById(node.children, id);
         if (found) return found;
       }
@@ -788,22 +820,34 @@ export class PaymentComponent implements OnInit {
     const selected = this.filterCriteria.selectedGroups || [];
     if (!this.lastClickedGroup || selected.length === 0) return;
 
-    const clickedNode = this.findItemById(this.groupOptions, this.lastClickedGroup.id);
-    if (!clickedNode) return;
+    const topLevelIds = this.getTopLevelGroupIds(selected);
+    const groupIdList = topLevelIds.filter(id => id !== this.merchantId).join(',');
 
-    const targetLevel = clickedNode.level;
-    const targetParentId = clickedNode.parentId;
-
-    const filtered = selected.filter(item => {
-      const current = this.findItemById(this.groupOptions, item.id);
-      return current?.level === targetLevel && current?.parentId === targetParentId;
-    });
-
-    // Gán lại danh sách đã lọc
-    this.filterCriteria.selectedGroups = filtered;
-
-    const groupIdList = filtered.filter(item => item.id !== this.merchantId).map(item => item.id).join(',');
     this.getMerchantOptions(groupIdList);
+  }
+
+  getTopLevelGroupIds(selectedNodes: any[]): string[] {
+    const selectedIds = selectedNodes.map(node => node.id);
+    const topLevelNodes: any[] = [];
+
+    for (const node of selectedNodes) {
+      const fullNode = this.findItemById(this.groupOptions, node.id);
+      const hasAncestorInSelected = this.hasParentInList(fullNode, selectedIds);
+
+      if (!hasAncestorInSelected) {
+        topLevelNodes.push(fullNode);
+      }
+    }
+
+    return topLevelNodes.map(node => node.id);
+  }
+
+  hasParentInList(node: any, idList: string[]): boolean {
+    if (!node || !node.parentId) return false;
+    if (idList.includes(node.parentId)) return true;
+
+    const parentNode = this.findItemById(this.groupOptions, node.parentId);
+    return this.hasParentInList(parentNode, idList);
   }
 
   onReset() {
