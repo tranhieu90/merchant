@@ -414,8 +414,8 @@ export class CashbackComponent implements OnInit {
 
     this.api.post(TRANSACTION_ENDPOINT.GET_LIST_REFUND, param).subscribe(res => {
         this.dataTable = res['data']['refunds'];
-        this.totalItem = res['data']['paging']['total'];
-        this.totalTrans = res['data']['totalRecord'];
+        this.totalItem = Number(res['data']['totalCount']) || 0;
+        this.totalTrans = res['data']['totalCount'];
         this.totalAmount = res['data']['totalAmount'];
       },
       error => {

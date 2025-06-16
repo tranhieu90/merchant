@@ -216,7 +216,7 @@ export class DetailPaymentComponent implements OnInit {
     dialogRef.afterClosed().subscribe((data: any) => {
       if (data) {
         const qrData = {
-          userId: this.auth.getUserInfo()?.id,
+          username: this.auth.getUserInfo()?.userName,
           id: data.id,
           transTime: data.transTime,
           refundReason: data.refundReason,

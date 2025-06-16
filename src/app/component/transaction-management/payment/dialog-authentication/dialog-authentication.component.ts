@@ -64,7 +64,7 @@ export class DialogAuthenticationComponent implements OnInit {
       });
     const now = new Date();
     const expireTime = moment(new Date(now.getTime() + 120 * 1000)).format('DD/MM/YYYY HH:mm:ss');
-    this.textQrCode = `${dataDialog.id}##${dataDialog.transTime}##${dataDialog.userId}##${dataDialog.currentRefundMoney}##${dataDialog.txnReferenceOrigin}##${dataDialog.refundReason}##${this.deviceId || ''}##${expireTime}`
+    this.textQrCode = `${dataDialog.id}##${dataDialog.transTime}##${dataDialog.username}##${dataDialog.currentRefundMoney}##${dataDialog.txnReferenceOrigin}##${dataDialog.refundReason}##${this.deviceId || ''}##${expireTime}`
   }
 
   ngOnInit() {
