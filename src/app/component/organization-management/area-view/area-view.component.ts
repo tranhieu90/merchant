@@ -7,7 +7,7 @@ import { AreaModel } from '../../../model/AreaModel';
   standalone: true,
   imports: [NgFor, NgClass, NgIf],
   templateUrl: './area-view.component.html',
-  styleUrl: './area-view.component.scss'
+  styleUrl: './area-view.component.scss',
 })
 export class AreaViewComponent implements OnInit {
   @Input() area: any;
@@ -16,13 +16,18 @@ export class AreaViewComponent implements OnInit {
   @Input() isSelectArea?: boolean = false;
   @Input() isShowChildren?: boolean = false;
   @Input() isLeaf: boolean = false;
-  @Input() isSearching: boolean = false
+  @Input() isSearching: boolean = false;
+  @Input() isShowCountGroup: boolean = true;
+  @Input() isShowCheckbox: boolean = false;
   @Output() doChangeAreaIdMove = new EventEmitter<AreaModel>();
-  ngOnInit(): void {
-  }
+  @Output() groupSelect = new EventEmitter<any>();
+  @Output() doChangeExpand = new EventEmitter<any>();
+  ngOnInit(): void {}
 
-  onOpenChildren() {
-    this.isShowChildren = !this.isShowChildren;
+  onOpenChildren(event: any) {
+    event.expanded = !event.expanded;
+    this.doChangeExpand.emit(event);
+    // this.isShowChildren = !this.isShowChildren;
   }
 
   doActiveArea(areaMoveTo: AreaModel): void {
@@ -46,5 +51,16 @@ export class AreaViewComponent implements OnInit {
     } else {
       return !this.area.children || this.area.children.length === 0;
     }
+  }
+
+  onCheckboxChange(event: any, item?: any) {
+    item.checked = event.target.checked;
+    this.area.expanded = item.checked;
+    console.log(item);
+    this.doChangeExpand.emit(this.area);
+    this.groupSelect.emit({
+      ...item,
+      event,
+    });
   }
 }
