@@ -1,7 +1,7 @@
 export const environment = {
     production: false,
-    // apiUrl: 'https://api-sandbox.mbbank.com.vn/mb-ma/ma-service/',
-    apiUrl: 'http://localhost:1501/',
+    apiUrl: 'https://api-sandbox.mbbank.com.vn/mb-ma/ma-service/',
+    // apiUrl: 'http://localhost:1501/',
     accessToken: 'access_token',
     refeshToken: 'refesh_token',
     userInfo: 'userInfo',

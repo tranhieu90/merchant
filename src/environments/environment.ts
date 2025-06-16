@@ -1,6 +1,6 @@
 export const environment = {
     production: false,
-    apiUrl: 'https://openbanking-dev.mbbank.com.vn/ma-service/',
+    apiUrl: 'https://api-sandbox.mbbank.com.vn/mb-ma/ma-service/',
     accessToken: 'access_token',
     refeshToken:'refesh_token',
     userInfo: 'userInfo',
