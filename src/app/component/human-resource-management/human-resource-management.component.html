@@ -1,6 +1,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <span class="header-m-semibold">Quản lý nhân sự</span>
-  <p-button *hasRoles="[MERCHANT_RULES.USER_MANAGER_CREATE]" label="Thêm mới nhân sự" class="merchant-button ms-auto" icon="icon-plus_small" (click)="doOpenPage()" />
+  <p-button *hasRoles="[MERCHANT_RULES.USER_MANAGER_CREATE]" label="Thêm mới nhân sự" class="merchant-button ms-auto"
+    icon="icon-plus_small" (click)="doOpenPage()" />
 </div>
 <div class="wrapper">
   <div class="pt-4 pb-2 px-4">
@@ -16,16 +17,15 @@
             <i class="icon-search input-icon input-icon-default"></i>
           </span>
           <input type="text" pInputText class="merchant-input search" [(ngModel)]="keyword"
-            [placeholder]="[MERCHANT_RULES.USER_MANAGER_CREATE] ? 'Tìm kiếm theo họ và tên, tên đăng nhập, email' : 'Tìm kiếm theo họ và tên'"
-            (keydown.enter)="onEnterSearch()"
-            (blur)="onBlurSearch()"/>
+            [placeholder]="hasRole ? 'Tìm kiếm theo họ và tên, tên đăng nhập, email' : 'Tìm kiếm theo họ và tên'"
+            (keydown.enter)="onEnterSearch()" (blur)="onBlurSearch()" />
         </div>
         <p-button class="merchant-button-icon button-l button-light" icon="icon-filter" (onClick)="changeFilter()" />
       </div>
     </div>
     <div *ngIf="isFilter">
       <form [formGroup]="formDropdown" (ngSubmit)="onEnterSearch()" class="row mb-4">
-        <div *ngIf="[MERCHANT_RULES.USER_MANAGER_CREATE]" class="col-md-4 mt-4">
+        <div *hasRoles="[MERCHANT_RULES.USER_MANAGER_DETAIL]" class="col-md-4 mt-4">
           <label class="form-label title-s-semibold">Trạng thái</label>
           <p-dropdown class="merchant-dropdown" formControlName="status" [options]="statusOptions" optionValue="code"
             optionLabel="name" placeholder="Select a status" />
@@ -43,7 +43,8 @@
     </div>
     <div class="col-12 d-flex justify-content-end mt-3">
       <grid-view [columns]="columns" [dataSource]="dataList" (doChangePage)="doSearch($event)" [total]="totalItem"
-        [action]="[MERCHANT_RULES.USER_MANAGER_CREATE]?action:null" [search]="isSearch" style="float: left;width: 100%;"></grid-view>
+        [action]="action" [search]="isSearch"
+        style="float: left;width: 100%;"></grid-view>
     </div>
     <div *ngIf="dataList.length == 0 && !isSearch" class="col-12 text-center">
       <div class="mt-4 title-l-semibold title-no-data">Không có nhân sự nào</div>

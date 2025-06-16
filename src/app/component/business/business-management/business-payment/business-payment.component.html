@@ -16,7 +16,8 @@
                             (ngModelChange)="ischeck = $event" /> -->
                         <div class="w-100">
                             <label class="paragraph-m-semibold mb-spacing-xs">Terminal ID</label>
-                            <input class="merchant-input" appInputSanitize pInputText formControlName="terminalId" />
+                            <input class="merchant-input" appInputSanitize pInputText formControlName="terminalId"
+                                [maxlength]="50" />
                             @if (paymentQRFormUpdate.controls['terminalId'].dirty &&
                             paymentQRFormUpdate.controls['terminalId'].invalid)
                             {
@@ -51,8 +52,9 @@
                         <div class="w-100">
                             <div class="col-12 mb-spacing-l">
                                 <label class="paragraph-m-semibold mb-spacing-xs">Số tài khoản MB</label>
-                                <input class="merchant-input" appInputSanitize pInputText formControlName="accountNumber"
-                                    placeholder="Nhập số tài khoản MB" />
+                                <input class="merchant-input" appInputSanitize pInputText
+                                    formControlName="accountNumber" placeholder="Nhập số tài khoản MB"
+                                    [maxlength]="50" />
                                 @if (paymentQRFormUpdate.controls['accountNumber'].dirty &&
                                 paymentQRFormUpdate.controls['accountNumber'].invalid)
                                 {
@@ -106,19 +108,19 @@
                 <div class="row mb-spacing-l">
                     <div class="col-3 d-flex align-items-center gap-2">
                         <p-radioButton [ngModel]="ischeck" [value]="1" name="checkOption"
-                            (ngModelChange)="ischeck = $event" inputId="radio1" [ngModelOptions]="{standalone: true}" />
+                            (ngModelChange)="setValidatorsByIsCheck($event)" inputId="radio1" [ngModelOptions]="{standalone: true}" />
                         <label for="radio1" class="paragraph-m-semibold">Nhập mã Terminal ID đã có</label>
                     </div>
                     <div class="col-3 d-flex align-items-center gap-2">
                         <p-radioButton [ngModel]="ischeck" [value]="2" name="checkOption"
-                            (ngModelChange)="ischeck = $event" inputId="radio2" [ngModelOptions]="{standalone: true}" />
+                            (ngModelChange)="setValidatorsByIsCheck($event)" inputId="radio2" [ngModelOptions]="{standalone: true}" />
                         <label for="radio2" class="paragraph-m-semibold">Tự động tạo Terminal ID</label>
                     </div>
                 </div>
                 <div class="col-12" *ngIf="ischeck==1">
                     <label class="paragraph-m-semibold mb-spacing-xs">Terminal ID</label>
                     <input class="merchant-input" appInputSanitize pInputText formControlName="terminalId"
-                        placeholder="Nhập mã Terminal ID do MB cung cấp khi tích hợp dịch vụ" />
+                        placeholder="Nhập mã Terminal ID do MB cung cấp khi tích hợp dịch vụ" [maxlength]="50" />
                     @if (paymentQRFormInsert.controls['terminalId'].dirty &&
                     paymentQRFormInsert.controls['terminalId'].invalid)
                     {
@@ -127,7 +129,7 @@
                             <span class="icon-error_solid"></span>
                         </div>
                         @if (paymentQRFormInsert.controls['terminalId'].hasError('pattern')) {
-                          <span class="text-caption paragraph-m-regular">Terminal ID không hợp lệ</span>
+                        <span class="text-caption paragraph-m-regular">Terminal ID không hợp lệ</span>
                         }
                         @if (paymentQRFormInsert.controls['terminalId'].hasError('required')) {
                         <span class="text-caption paragraph-m-regular">Chưa nhập Terminal ID</span>
@@ -149,7 +151,7 @@
                     <div class="col-12 mb-spacing-l">
                         <label class="paragraph-m-semibold mb-spacing-xs">Số tài khoản</label>
                         <input class="merchant-input" appInputSanitize pInputText formControlName="accountNumber"
-                            placeholder="Nhập số tài khoản MB" />
+                            placeholder="Nhập số tài khoản MB" [maxlength]="50" />
                         @if (paymentQRFormInsert.controls['accountNumber'].dirty &&
                         paymentQRFormInsert.controls['accountNumber'].invalid)
                         {
@@ -161,8 +163,8 @@
                             <span class="text-caption paragraph-m-regular">Vui lòng nhập số tài khoản</span>
                             }
                             @if (paymentQRFormInsert.controls['accountNumber'].hasError('pattern')) {
-                                <span class="text-caption paragraph-m-regular">Số tài khoản không hợp lệ</span>
-                                }
+                            <span class="text-caption paragraph-m-regular">Số tài khoản không hợp lệ</span>
+                            }
                             @if (paymentQRFormInsert.controls['accountNumber'].hasError('ExitErorr')) {
                             <span class="text-caption paragraph-m-regular">Số tài khoản không chính
                                 xác</span>
@@ -185,8 +187,8 @@
                             <span class="text-caption paragraph-m-regular">Vui lòng nhập tên tài khoản</span>
                             }
                             @if (paymentQRFormInsert.controls['accountName'].hasError('pattern')) {
-                                <span class="text-caption paragraph-m-regular">Tên tài khoản không hợp lệ</span>
-                                }
+                            <span class="text-caption paragraph-m-regular">Tên tài khoản không hợp lệ</span>
+                            }
                             @if (paymentQRFormInsert.controls['accountName'].hasError('ExitErorr')) {
                             <span class="text-caption paragraph-m-regular">Tên tài khoản không chính
                                 xác</span>
@@ -279,9 +281,10 @@
                 </div>
             </div>
             <div class="col-12 mt-3" *ngIf="isAddTHDDId">
-                <input class="merchant-input" appInputSanitize pInputText placeholder="Nhập mã THDD ID" [(ngModel)]="paymentMethodTHDDId"
-                    #THDDCodeRef="ngModel" required maxlength="50" pattern="^[a-zA-Z0-9]+$"
-                    (blur)="doAddPaymentTHDD(THDDCodeRef)" (keydown.enter)="doAddPaymentTHDD(THDDCodeRef)" />
+                <input class="merchant-input" appInputSanitize pInputText placeholder="Nhập mã THDD ID"
+                    [(ngModel)]="paymentMethodTHDDId" #THDDCodeRef="ngModel" required maxlength="50"
+                    pattern="^[a-zA-Z0-9]+$" (blur)="doAddPaymentTHDD(THDDCodeRef)"
+                    (keydown.enter)="doAddPaymentTHDD(THDDCodeRef)" />
                 <div class="m-caption error" *ngIf="THDDCodeRef.invalid && THDDCodeRef.dirty">
                     <div class="icon-caption">
                         <span class="icon-error_solid"></span>
@@ -305,7 +308,8 @@
     </div>
     <div class="button-form">
         <p-button label="Hủy" class="merchant-button-tertiary me-3" (onClick)="doClose()" />
-        <p-button label="Cập nhật" class="merchant-button" [disabled]=" !isPaymentQR && !isSoftPos && !isPaymentTHDD"
+        <p-button label="Cập nhật" class="merchant-button"
+            [disabled]=" (!isPaymentQR && !isSoftPos && !isPaymentTHDD) ||(paymentQRFormUpdate.invalid && hasQR )||(paymentQRFormInsert.invalid && !hasQR && isPaymentQR)"
             (onClick)="doUpdate()" />
     </div>
 </div>

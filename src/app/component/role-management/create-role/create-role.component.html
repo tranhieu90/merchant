@@ -140,7 +140,7 @@
                 </ng-container>
                 <ng-container *ngIf="this.isHasRoleAddUser && this.countUserInRole == 0">
                     <div class="text title-s-regular mt-3">Bạn có thể thiết lập gán nhân sự cho vai trò này.</div>
-                    <p-button label="Thêm mới nhân sự" class="merchant-button mt-4" />
+                    <p-button label="Thêm mới nhân sự" class="merchant-button mt-4" (click)="addUserRole()"/>
                     <p-button label="Về trang quản lý" class="merchant-button-tertiary mt-4" (click)="backRole()" />
                 </ng-container>
             </ng-container>
@@ -153,6 +153,13 @@
                 <button (click)="this.doPreStep()" mat-button class="merchant-button-material mt-4" width="500px">
                     Thực hiện lại</button>
                 <p-button label="Về trang quản lý" class="merchant-button-tertiary" (click)="backRole()" />
+            </ng-container>
+
+            <ng-container *ngIf="isSuccess === 2">
+                <img [src]="assetPath +'/assets/images/image-false.svg'" alt="False" />
+                <div class="mt-3">Cập nhật vai trò không thành công</div>
+                <div class="text title-s-regular mt-3">Không ghi nhận sự thay đổi thông tin nào</div>
+                <p-button label="Về trang quản lý" class="merchant-button mt-4" (click)="backRole()" />
             </ng-container>
         </div>
     </mat-step>

@@ -8,11 +8,12 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'm-tree',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatTooltipModule],
   templateUrl: './m-tree.component.html',
   styleUrl: './m-tree.component.scss',
 })
@@ -23,6 +24,7 @@ export class MTreeComponent implements OnInit, OnChanges {
   @Input() activeItemId: number | null = null;
   @Input() checkDisable: boolean = false;
   @Input() isCheckAll: boolean = false;
+  @Input() isShowCheckbox: boolean = true;
   @Output() groupChoice = new EventEmitter<any>();
   @Output() activeItemIdChange = new EventEmitter<number>();
   @Output() groupCheck = new EventEmitter<number[]>();
@@ -36,7 +38,7 @@ export class MTreeComponent implements OnInit, OnChanges {
       this.expandCheckedNodes(this.data);
     }
   }
-  
+
   ngOnInit(): void {
     console.log('m-tree data', this.data);
   }
@@ -48,6 +50,9 @@ export class MTreeComponent implements OnInit, OnChanges {
     this.groupCheck.emit(this.getCheckedIds(this.data));
   }
   toggleExpand(item: any) {
+    this.data.forEach(i => {
+      if (i !== item) i.expanded = false;
+    });
     item.expanded = !item.expanded;
   }
 

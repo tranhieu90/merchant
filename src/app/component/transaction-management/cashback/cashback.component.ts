@@ -424,7 +424,7 @@ export class CashbackComponent implements OnInit {
   }
 
   getLstPaymentMethod() {
-    this.api.get(BUSINESS_ENDPOINT.GET_LIST_PAYMENT_METHOD).subscribe(res => {
+    this.api.get(BUSINESS_ENDPOINT.GET_LIST_PAYMENT_METHOD_FILTER).subscribe(res => {
       if (res['data']) {
         const allOption = {paymentMethodId: 'ALL', paymentMethodName: 'Tất cả '};
         this.paymentMethodOptions = [allOption, ...res['data']['paymentMethodList']];

@@ -47,6 +47,7 @@ export class GridViewComponent implements OnInit {
   checkAll: boolean = false;
   displayedColumns: string[] = [];
   @Input() selectedItem: any;
+  isCheckAll: boolean = false;
 
   // get selectedItemCount(): number {
   //   var count= this.dataSource.filter((item: any) => item.checked).length;
@@ -55,12 +56,24 @@ export class GridViewComponent implements OnInit {
 
   ngOnInit(): void {
   }
-  doCheckAllPointSales(){
-     this.dataSource.forEach((obj: any) => {
-        obj["checked"] = true;
-      });
-      this.checkAll = true;
+  doCheckAllPointSales() {
+    this.isCheckAll = true;
+    this.dataSource.forEach((obj: any) => {
+      obj["checked"] = true;
+    });
+    this.checkAll = true;
   }
+
+  doUnCheckAllPointSales() {
+    if (this.isCheckAll) {
+      this.dataSource.forEach((obj: any) => {
+        obj["checked"] = false;
+      });
+      this.checkAll = false;
+      this.isCheckAll = false;
+    }
+  }
+
   ngOnChanges() {
     if (this.showCheckbox) {
       this.doCheckAll();

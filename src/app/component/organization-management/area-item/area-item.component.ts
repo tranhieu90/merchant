@@ -28,7 +28,7 @@ export class AreaItemComponent implements OnChanges{
   formCreateArea!: FormGroup;
   isShowChildren: boolean = true;
   @ViewChild('areaNameInput') areaNameInput!: ElementRef;
-  
+
   constructor(
     private fb: FormBuilder,
   ) {

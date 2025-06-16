@@ -14,12 +14,12 @@ import { BusinessDialogComponent } from '../business-dialog/business-dialog.comp
 import { BUSINESS_ENDPOINT } from '../../../../common/enum/EApiUrl';
 import { CommonUtils } from '../../../../base/utils/CommonUtils';
 import { CommonModule } from '@angular/common';
-import { QRCodeModule  } from 'angularx-qrcode'
 import moment from 'moment';
+import { QRCodeComponent, QRCodeModule } from 'angularx-qrcode';
 @Component({
   selector: 'app-business-detail',
   standalone: true,
-  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, MatButtonModule, CommonModule, QRCodeModule ],
+  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, MatButtonModule, CommonModule, QRCodeModule],
   templateUrl: './business-detail.component.html',
   styleUrl: './business-detail.component.scss'
 })
@@ -34,7 +34,7 @@ export class BusinessDetailComponent implements OnInit {
   subId!: number
   isShowAllPos: boolean = false;
   isShowAllThd: boolean = false;
-  
+
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
@@ -52,9 +52,6 @@ export class BusinessDetailComponent implements OnInit {
     });
   }
   ngOnInit(): void {
-    if (!this.paymentQR) {
-      this.genQRCode();
-    }
   }
 
   getDataDetail(subId: number) {
@@ -69,6 +66,9 @@ export class BusinessDetailComponent implements OnInit {
         merchantPaymentMethodList.forEach((item: any) => {
           if (item.methodId == 324) {
             this.paymentQR = item.paymentInfo[0];
+            if (!this.paymentQR?.qrCode) {
+              this.genQRCode();
+            }
           } else if (item.methodId == 333) {
             this.lstPaymentPod = item.paymentInfo
           } else {
@@ -77,7 +77,7 @@ export class BusinessDetailComponent implements OnInit {
         })
       }
       if (res['status'] == 400) {
-        this.toast.showError('not support create payment method!');
+        this.toast.showError(res?.soaErrorDesc);
       }
     }, (error) => {
       this.toast.showError('Xem chi tiết điểm bán xảy ra lỗi');

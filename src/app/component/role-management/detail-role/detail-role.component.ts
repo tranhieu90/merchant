@@ -1,34 +1,48 @@
-import {Component} from '@angular/core';
-import {ButtonModule} from 'primeng/button';
-import {TabViewModule} from 'primeng/tabview';
-import {BadgeModule} from 'primeng/badge';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {NgClass, NgFor, NgIf} from '@angular/common';
-import {GridViewComponent} from '../../../base/shared/grid-view/grid-view.component';
-import {GridViewModel} from '../../../model/GridViewModel';
-import {TooltipModule} from 'primeng/tooltip';
-import {DialogRoleComponent, DialogRoleModel} from '../dialog-role/dialog-role.component';
-import {MatDialog} from '@angular/material/dialog';
-import {ActivatedRoute, Router} from '@angular/router';
-import {ChangeRoleComponent} from '../change-role/change-role.component';
+import { Component } from '@angular/core';
+import { ButtonModule } from 'primeng/button';
+import { TabViewModule } from 'primeng/tabview';
+import { BadgeModule } from 'primeng/badge';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { NgClass, NgFor, NgIf } from '@angular/common';
+import { GridViewComponent } from '../../../base/shared/grid-view/grid-view.component';
+import { GridViewModel } from '../../../model/GridViewModel';
+import { TooltipModule } from 'primeng/tooltip';
+import {
+  DialogRoleComponent,
+  DialogRoleModel,
+} from '../dialog-role/dialog-role.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ChangeRoleComponent } from '../change-role/change-role.component';
 import * as _ from 'lodash';
-import {ROlE_ENDPOINT} from '../../../common/enum/EApiUrl';
-import {FetchApiService} from '../../../common/service/api/fetch-api.service';
-import {FormsModule} from '@angular/forms';
-import {FunctionModel} from '../../../model/FunctionModel';
-import {UserVerifyStatus} from '../../../common/constants/CUser';
-import {AuthenticationService} from '../../../common/service/auth/authentication.service';
-import {DialogCommonService} from '../../../common/service/dialog-common/dialog-common.service';
-import {DialogConfirmModel} from '../../../model/DialogConfirmModel';
-import {ToastService} from '../../../common/service/toast/toast.service';
-import {environment} from '../../../../environments/environment';
+import { ROlE_ENDPOINT } from '../../../common/enum/EApiUrl';
+import { FetchApiService } from '../../../common/service/api/fetch-api.service';
+import { FormsModule } from '@angular/forms';
+import { FunctionModel } from '../../../model/FunctionModel';
+import { UserVerifyStatus } from '../../../common/constants/CUser';
+import { AuthenticationService } from '../../../common/service/auth/authentication.service';
+import { DialogCommonService } from '../../../common/service/dialog-common/dialog-common.service';
+import { DialogConfirmModel } from '../../../model/DialogConfirmModel';
+import { ToastService } from '../../../common/service/toast/toast.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-detail-role',
   standalone: true,
-  imports: [ButtonModule, TabViewModule, BadgeModule, MatCheckboxModule, NgFor, NgIf, GridViewComponent, TooltipModule, FormsModule, NgClass],
+  imports: [
+    ButtonModule,
+    TabViewModule,
+    BadgeModule,
+    MatCheckboxModule,
+    NgFor,
+    NgIf,
+    GridViewComponent,
+    TooltipModule,
+    FormsModule,
+    NgClass,
+  ],
   templateUrl: './detail-role.component.html',
-  styleUrl: './detail-role.component.scss'
+  styleUrl: './detail-role.component.scss',
 })
 export class DetailRoleComponent {
   assetPath = environment.assetPath;
@@ -57,8 +71,8 @@ export class DetailRoleComponent {
         customCssHeader: (obj: any) => {
           return ['text-left'];
         },
-        width:'150px'
-      }
+        width: '150px',
+      },
     },
     {
       name: 'fullName',
@@ -69,14 +83,14 @@ export class DetailRoleComponent {
         },
         customCssHeader: (obj: any) => {
           return ['text-left'];
-        }
-      }
+        },
+      },
     },
     {
       name: 'isActive',
       label: 'TRẠNG THÁI',
       options: {
-        width:'350px',
+        width: '350px',
         customCss: (obj: any) => {
           return ['text-left'];
         },
@@ -92,8 +106,8 @@ export class DetailRoleComponent {
           }
           return msg;
         },
-      }
-    }
+      },
+    },
   ];
 
   constructor(
@@ -105,7 +119,7 @@ export class DetailRoleComponent {
     private toast: ToastService,
     private dialogCommon: DialogCommonService
   ) {
-    this.routeActive.queryParams.subscribe(params => {
+    this.routeActive.queryParams.subscribe((params) => {
       this.roleId = params['roleId'] || null;
       if (params['roleId']) {
         this.roleId = _.toNumber(params['roleId']);
@@ -120,17 +134,19 @@ export class DetailRoleComponent {
   }
 
   getDetailFunc() {
-    this.api.get(ROlE_ENDPOINT.GET_DETAILS_FUNC + this.roleId).subscribe(res => {
-      if (res) {
-        this.defaultDataDetail(res['data']);
-      }
-    });
+    this.api
+      .get(ROlE_ENDPOINT.GET_DETAILS_FUNC + this.roleId)
+      .subscribe((res) => {
+        if (res) {
+          this.defaultDataDetail(res['data']);
+        }
+      });
   }
 
   defaultDataDetail(val: any) {
     this.roleInfo = val;
     this.listFunction = val['functionGroupModels'];
-    this.listFunctionConvert = this.convertLstFunc(this.listFunction, null)
+    this.listFunctionConvert = this.convertLstFunc(this.listFunction, null);
   }
 
   getRoleType(type?: number | undefined) {
@@ -146,7 +162,7 @@ export class DetailRoleComponent {
     }
   }
 
-  getRoleTypeClass(type?: number | undefined){
+  getRoleTypeClass(type?: number | undefined) {
     switch (type) {
       case 1:
         return 'config';
@@ -159,17 +175,40 @@ export class DetailRoleComponent {
     }
   }
 
-  doOpenPage(code?:string) {
+  doOpenPage(code?: string) {
     const verifyUser = this.auth.checkVerifyUserInfo();
     switch (verifyUser) {
       case UserVerifyStatus.VERIFIED:
         let roleId = this.roleId;
-        if(code =="createUser")
-          {
-            this.router.navigate(['/hr/hr-create'], {queryParams: {roleId: roleId}});
-          }else{
-            this.router.navigate(['/role/create-role'], {queryParams: {roleId: roleId}});
+        if (code == 'createUser') {
+          this.router.navigate(['/hr/hr-create'], {
+            queryParams: { roleId: roleId },
+          });
+        } else {
+          if (this.totalUsers > 0) {
+            let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+            dataDialog.title =
+              'Vai trò đang gán cho ' + this.totalUsers + ' nhân sự';
+            dataDialog.message =
+              'Việc thay đổi thông tin vai trò sẽ ảnh hưởng đến danh sách tính năng được sử dụng của nhân sự. Bạn có chắc chắn muốn tiếp tục cập nhật vai trò không?';
+            dataDialog.buttonLabel = 'Xác nhận';
+            dataDialog.icon = 'icon-warning';
+            dataDialog.viewCancel = true;
+            dataDialog.iconColor = 'icon warning';
+            this.dialogCommon.openDialogInfo(dataDialog).subscribe((result) => {
+              if (result) {
+                this.router.navigate(['/role/create-role'], {
+                  queryParams: { roleId: roleId },
+                });
+              }
+            });
+            return;
+          } else {
+            this.router.navigate(['/role/create-role'], {
+              queryParams: { roleId: roleId },
+            });
           }
+        }
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
         this.openDialogUnverifiedAccountAndEmail();
@@ -178,7 +217,7 @@ export class DetailRoleComponent {
         this.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
-        console.warn("Trạng thái xác minh không hợp lệ:", verifyUser);
+        console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
         break;
     }
   }
@@ -188,7 +227,9 @@ export class DetailRoleComponent {
     switch (verifyUser) {
       case UserVerifyStatus.VERIFIED:
         let roleId = this.roleId;
-        this.router.navigate(['/role/clone-role'], {queryParams: {roleId: roleId}});
+        this.router.navigate(['/role/clone-role'], {
+          queryParams: { roleId: roleId },
+        });
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
         this.openDialogUnverifiedAccountAndEmail();
@@ -197,19 +238,18 @@ export class DetailRoleComponent {
         this.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
-        console.warn("Trạng thái xác minh không hợp lệ:", verifyUser);
+        console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
         break;
     }
   }
 
   convertLstFunc(list: any[], parentId: number | null): any[] {
-    let result = list.filter(item => item.parentId === parentId);
+    let result = list.filter((item) => item.parentId === parentId);
 
-    result.forEach(item => {
+    result.forEach((item) => {
       let children = this.convertLstFunc(list, item.id);
       item.children = children;
-      if(children.length > 0 && parentId === null)
-      {
+      if (children.length > 0 && parentId === null) {
         const totalChild = this.getTotalChildren(item);
         const totalchildIsChoose = this.getTotalChildIsChoose(item);
 
@@ -217,7 +257,6 @@ export class DetailRoleComponent {
           item.partiallyComplete = true;
         }
       }
-      
     });
 
     return result;
@@ -229,7 +268,7 @@ export class DetailRoleComponent {
     if (parent.children && parent.children.length > 0) {
       total += parent.children.length;
 
-      parent.children.forEach(child => {
+      parent.children.forEach((child) => {
         total += this.getTotalChildren(child);
       });
     }
@@ -241,7 +280,7 @@ export class DetailRoleComponent {
     let total = 0;
 
     if (parent.children && parent.children.length > 0) {
-      parent.children.forEach(child => {
+      parent.children.forEach((child) => {
         if (child.isChoose) {
           total += 1;
         }
@@ -254,21 +293,23 @@ export class DetailRoleComponent {
   getLstUsers(pageInfo?: any) {
     let param = {
       roleId: this.roleId,
-      pageIndex: pageInfo ? pageInfo["page"] : this.pageIndex,
-      pageSize: pageInfo ? pageInfo["pageSize"] : this.pageSize,
+      pageIndex: pageInfo ? pageInfo['page'] : this.pageIndex,
+      pageSize: pageInfo ? pageInfo['pageSize'] : this.pageSize,
     };
     //let buildParams = CommonUtils.buildParams(param);
-    this.api.get(ROlE_ENDPOINT.SEARCH_LIST_USER_ROLE, param).subscribe(res => {
-      this.dataUsers = res['data']['list'];
-      this.totalUsers = res['data']['count'];
-    });
+    this.api
+      .get(ROlE_ENDPOINT.SEARCH_LIST_USER_ROLE, param)
+      .subscribe((res) => {
+        this.dataUsers = res['data']['list'];
+        this.totalUsers = res['data']['count'];
+      });
   }
 
   onDeleteRole() {
     const verifyUser = this.auth.checkVerifyUserInfo();
     switch (verifyUser) {
       case UserVerifyStatus.VERIFIED:
-        this.handleDeleteRole()
+        this.handleDeleteRole();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
         this.openDialogUnverifiedAccountAndEmail();
@@ -277,15 +318,15 @@ export class DetailRoleComponent {
         this.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
-        console.warn("Trạng thái xác minh không hợp lệ:", verifyUser);
+        console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
         break;
     }
   }
 
   handleDeleteRole() {
     let param = {
-      roleId: this.roleId
-    }
+      roleId: this.roleId,
+    };
 
     this.getLstUsers();
     // this.api.get(ROlE_ENDPOINT.GET_NUMBER_USER_IN_ROLE, param).subscribe(res => {
@@ -308,20 +349,24 @@ export class DetailRoleComponent {
     dataDialog.viewCancel = true;
     dataDialog.buttonColor = 'error';
 
-    this.dialogCommon.openDialogInfo(dataDialog).subscribe(result => {
+    this.dialogCommon.openDialogInfo(dataDialog).subscribe((result) => {
       if (result) {
         //call API
         const param = {
-          "currentRoleId": this.roleId
-        }
-        this.api.post(ROlE_ENDPOINT.DELETE_ROLE, param).subscribe(res => {
+          currentRoleId: this.roleId,
+        };
+        this.api.post(ROlE_ENDPOINT.DELETE_ROLE, param).subscribe(
+          (res) => {
             this.toast.showSuccess(`Đã xoá vai trò ${this.roleInfo?.name}`);
             this.router.navigate(['/role']);
           },
-          error => {
-            let message = error?.error?.soaErrorCode || "Có lỗi xảy ra, vui lòng thử lại sau";
+          (error) => {
+            let message =
+              error?.error?.soaErrorCode ||
+              'Có lỗi xảy ra, vui lòng thử lại sau';
             this.toast.showError(message);
-          });
+          }
+        );
       }
     });
   }
@@ -336,13 +381,12 @@ export class DetailRoleComponent {
     dataDialog.viewCancel = true;
     dataDialog.buttonColor = 'error';
 
-    this.dialogCommon.openDialogInfo(dataDialog).subscribe(result => {
+    this.dialogCommon.openDialogInfo(dataDialog).subscribe((result) => {
       if (result) {
         this.deleteRoleWithChangeUser();
       }
     });
   }
-
 
   deleteRoleWithChangeUser() {
     //Chuyển đổi vai trò
@@ -350,32 +394,33 @@ export class DetailRoleComponent {
       panelClass: 'custom-dialog-panel-123',
       width: '600px',
       data: {
-        roleInfo: this.roleInfo
-      }
+        roleInfo: this.roleInfo,
+      },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.roleNameChange = result["roleNameChange"];
+        this.roleNameChange = result['roleNameChange'];
         const param = {
-          "currentRoleId": result["currentRole"],
-          "newRoleId": result["newRole"]
-        }
+          currentRoleId: result['currentRole'],
+          newRoleId: result['newRole'],
+        };
         this.viewPageIndex = 1;
-        this.api.post(ROlE_ENDPOINT.DELETE_ROLE, param).subscribe(res => {
+        this.api.post(ROlE_ENDPOINT.DELETE_ROLE, param).subscribe(
+          (res) => {
             this.viewPageIndex = 2;
           },
-          error => {
+          (error) => {
             this.viewPageIndex = 3;
-          });
+          }
+        );
       }
-    })
+    });
   }
 
   redoDelete() {
     this.viewPageIndex = 0;
   }
-
 
   openDialogUnverifiedAccountAndEmail() {
     let dataDialog: DialogRoleModel = new DialogRoleModel();
@@ -396,16 +441,15 @@ export class DetailRoleComponent {
       if (result != undefined) {
         this.router.navigate(['/profile']);
       } else {
-
       }
-
-    })
+    });
   }
 
   openDialogUnverifiedAccountAndNoEmail() {
     let dataDialog: DialogRoleModel = new DialogRoleModel();
     dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = 'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
+    dataDialog.message =
+      'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
     dataDialog.icon = 'icon-warning';
     dataDialog.iconColor = 'warning';
     dataDialog.buttonRightLabel = 'Bổ sung email';
@@ -420,9 +464,7 @@ export class DetailRoleComponent {
       if (result) {
         this.router.navigate(['/profile']);
       } else {
-
       }
-
-    })
+    });
   }
 }
