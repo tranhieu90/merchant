@@ -77,6 +77,13 @@
   </ng-template>
 
   <mat-step label="Gán tổ chức">
+    <!-- <p-radioButton class="m-radio m-radio-check" [value]="0" name="radioOrganization"
+                  [(ngModel)]="orgTypeUser" (ngModelChange)="onRadioChange($event)" (click)="$event.stopPropagation()" />0
+     <p-radioButton class="m-radio m-radio-check" [value]="1" name="radioOrganization"
+                  [(ngModel)]="orgTypeUser" (ngModelChange)="onRadioChange($event)" (click)="$event.stopPropagation()" />1
+     <p-radioButton class="m-radio m-radio-check" [value]="2" name="radioOrganization"
+                  [(ngModel)]="orgTypeUser" (ngModelChange)="onRadioChange($event)" (click)="$event.stopPropagation()" />2 -->
+                   
     <ng-container *ngIf="typeUpdate == 1">
       <div class="content d-flex flex-column align-items-center justify-content-center">
         <div class="content-text">
@@ -94,7 +101,7 @@
               <span class="group-name title-m-semibold">{{userInfo?.merchantName}}</span>
             </div>
             <m-tree [data]="lstAreaByOrder" [level]="0" (groupChoice)="doActiveArea($event)"
-              (groupSelect)="doGroup($event)" [activeItemId]="activeItemId" [checkDisable]="checkDisableCheckbox()">
+              (groupSelect)="doGroup($event)" [activeItemId]="activeItemId" [checkDisable]="orgTypeUser==2">
             </m-tree>
           </div>
         </div>
@@ -118,7 +125,7 @@
               </div>
             </div>
             <grid-view [columns]="columnsMerchant" [dataSource]="subMerchantList" [isShowPage]="false" [search]="true"
-              [showCheckbox]="true" (dataChoice)="setUpMerchantIds($event)" (isChecked)="totalSelect=$event"
+              [showCheckbox]="orgTypeUser==2" (dataChoice)="setUpMerchantIds($event)" (isChecked)="totalSelect=$event"
               style="float: left;width: 100%;"></grid-view>
           </ng-container>
         </div>
