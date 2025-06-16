@@ -33,6 +33,7 @@ import {AuthenticationService} from '../../../common/service/auth/authentication
 import {UserVerifyStatus} from '../../../common/constants/CUser';
 import {InputCommon} from '../../../common/directives/input.directive';
 import {MatBadge} from '@angular/material/badge';
+import {BANK_IMAGE_DATA} from '../../../../assets/bank-map';
 
 @Component({
   selector: 'app-payment',
@@ -441,6 +442,13 @@ export class PaymentComponent implements OnInit {
   getListBank() {
     this.api.get(BANK_ENDPOINT.LIST_BANK, null).subscribe(res => {
         this.bankOptions = res['data'];
+        this.bankOptions = this.bankOptions.map((bank: any) => {
+          const match = BANK_IMAGE_DATA.find((b: any) => b.code === bank.code);
+          return {
+            ...bank,
+            logo: match ? match.image + '.png' : null
+          };
+        });
       },
       error => {
         const errorData = error?.error || {};

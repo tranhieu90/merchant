@@ -83,12 +83,12 @@
           styleClass="custom-bank-multiselect">
           <ng-template let-bank pTemplate="item">
             <div class="bank-item position-relative">
-              <div class="d-flex gap-2 align-items-center">
-                <img [src]="bank.logo" alt="{{ bank.shortName }}" class="bank-logo" />
+              <div class="d-flex flex-column gap-2 align-items-center">
                 <div class="bank-info">
+                  <img [src]="assetPath + '/assets/bank/' + bank.logo"  alt="{{ bank.shortName }}" class="bank-logo" />
                   <div class="bank-name">{{ bank.shortName }}</div>
-                  <div class="bank-description">{{ bank.fullName }}</div>
                 </div>
+                <div class="bank-description">{{ bank.fullName }}</div>
               </div>
 
               <!-- Icon tick nếu được chọn -->
