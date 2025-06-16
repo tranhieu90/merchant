@@ -60,7 +60,7 @@
                     <div class="p-inputgroup">
                         <input appShowClearOnFocus=".clear-icon" appInputSanitize (blur)="trimValue('merchantBizName')"
                             trim="blur" class=" merchant-input" pInputText formControlName="merchantBizName"
-                            placeholder="Ví dụ: Mã cửa hàng ABC ..." />
+                            placeholder="Ví dụ: Mã cửa hàng ABC ..." [maxlength]="32"/>
                         @if (this.formBusiness.get('merchantBizName')?.value) {
                         <span class="p-input-icon-right clear-icon" (click)="clearValue('merchantBizName')">
                             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
@@ -91,7 +91,7 @@
                     <div class="p-inputgroup">
                         <input appShowClearOnFocus=".clear-icon" appInputSanitize (blur)="trimValue('merchantName')"
                             trim="blur" class="merchant-input" pInputText formControlName="merchantName"
-                            placeholder="Ví dụ: Cửa hàng ABC ..." />
+                            placeholder="Ví dụ: Cửa hàng ABC ..." [maxlength]="128"/>
                         @if (this.formBusiness.get('merchantName')?.value) {
                         <span class="p-input-icon-right clear-icon" (click)="clearValue('merchantName')">
                             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
@@ -117,7 +117,7 @@
                     <div class="col-4">
                         <label class="title-s-semibold label mb-spacing-xs">Tỉnh/Thành phố</label>
                         <p-dropdown [options]="lstProvince" formControlName="provinceId" optionLabel="provinceName"
-                            optionValue="provinceId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
+                            optionValue="provinceId" [filter]="true" emptyFilterMessage="Không tìm thấy kết quả"
                             filterBy="provinceName" styleClass="w-100" [panelStyle]="{'width':'300px'}" appendTo="body"
                             placeholder="Chọn tỉnh, thành phố " (ngModelChange)="doGetDistrict($event)"
                             class="merchant-dropdown">
@@ -137,7 +137,7 @@
                     <div class="col-4">
                         <label class="title-s-semibold label mb-spacing-xs">Quận/Huyện</label>
                         <p-dropdown [options]="lstDistrict" formControlName="districtId" optionLabel="districtName"
-                            optionValue="districtId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
+                            optionValue="districtId" [filter]="true" emptyFilterMessage="Không tìm thấy kết quả"
                             styleClass="w-100" filterBy="districtName" [panelStyle]="{'width':'300px'}" appendTo="body"
                             placeholder="Chọn quận, huyện" (ngModelChange)="doGetCommune(001,$event,1)"
                             class="merchant-dropdown">
@@ -157,7 +157,7 @@
                     <div class="col-4">
                         <label class="title-s-semibold label mb-spacing-xs">Phường/Xã</label>
                         <p-dropdown [options]="lstCommune" formControlName="communeId" optionLabel="communeName"
-                            optionValue="communeId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
+                            optionValue="communeId" [filter]="true" emptyFilterMessage="Không tìm thấy kết quả"
                             filterBy="communeName" styleClass="w-100" [panelStyle]="{'width':'300px'}" appendTo="body"
                             placeholder="Chọn phường, xã" class="merchant-dropdown">
                         </p-dropdown>
@@ -179,7 +179,7 @@
                     <div class="p-inputgroup">
                         <input appShowClearOnFocus=".clear-icon" (blur)="trimValue('address')" trim="blur"
                             class="merchant-input" appInputSanitize pInputText formControlName="address"
-                            placeholder="Nhập địa chỉ điểm kinh doanh" />
+                            placeholder="Nhập địa chỉ điểm kinh doanh" [maxlength]="256"/>
                         @if (this.formBusiness.get('address')?.value) {
                         <span class="p-input-icon-right clear-icon" (click)="clearValue('address')">
                             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
