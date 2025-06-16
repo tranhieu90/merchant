@@ -48,6 +48,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { IPersonelUpdate } from '../../../model/ma/personel.model';
 import { environment } from '../../../../environments/environment';
 import { fomatAddress } from '../../../common/helpers/Ultils';
+import { AreaViewComponent } from '../../organization-management/area-view/area-view.component';
 @Component({
   selector: 'app-human-resource-update',
   standalone: true,
@@ -63,7 +64,7 @@ import { fomatAddress } from '../../../common/helpers/Ultils';
     ReactiveFormsModule,
     GridViewComponent,
     CalendarModule,
-    // AreaItemComponent,
+   AreaViewComponent,
     CommonModule,
     TreeModule,
     MatCheckboxModule,
