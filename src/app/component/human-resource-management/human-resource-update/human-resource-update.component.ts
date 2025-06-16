@@ -100,11 +100,8 @@ export class HumanResourceUpdateComponent implements OnInit {
   totalMerchant: number = 0;
   totalSelect: number = 0;
   groupNameSelect!: string;
-  // groupIdsDelete: any = [];
   totalSubmerchant: number = 0;
-
   isDisableCheckbox: boolean = false;
-
   pointSales: any = [];
   selectedMerchantDefault?: any;
   merchantIdsSelectedAdd: any = [];
@@ -139,7 +136,6 @@ export class HumanResourceUpdateComponent implements OnInit {
     const state = this.router.getCurrentNavigation()?.extras.state;
     const personData = state?.['dataInput'];
     if (personData) {
-      // this.groupList = personData.groupList;
       this.roleId = personData.roleId;
       this.userId = personData.userId;
       this.selectedMerchantDefault = personData?.selectedMerchant;
