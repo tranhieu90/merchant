@@ -38,6 +38,11 @@
         <input class="merchant-input" pInputText placeholder="Nhập mã giao dịch hoàn trả"
                [(ngModel)]="searchCriteria.transactionNumber"/>
       </div>
+      <div class="col-md-3">
+        <div class="title">Mã định danh</div>
+        <input class="merchant-input" pInputText placeholder="Nhập mã định danh"
+               [(ngModel)]="searchCriteria.orderReferenceOrigin"/>
+      </div>
     </div>
   </div>
   <div *ngIf="!isSearch" class="box-filter mt-4">

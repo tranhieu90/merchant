@@ -101,14 +101,12 @@ export class CashbackComponent implements OnInit {
   searchCriteria: {
     transactionNumber: string | null;
     transactionOriginNumber: string | null;
-    credit_account: string | null;
-    amount: string | null;
+    orderReferenceOrigin: string | null;
     dateRange: Date[] | [];
   } = {
     transactionNumber: null,
     transactionOriginNumber: null,
-    credit_account: null,
-    amount: null,
+    orderReferenceOrigin: null,
     dateRange: [],
   };
 
@@ -398,8 +396,7 @@ export class CashbackComponent implements OnInit {
 
       transactionNumber: this.searchCriteria.transactionNumber || null,
       transactionOriginNumber: this.searchCriteria.transactionOriginNumber || null,
-      creditAccount: this.searchCriteria.credit_account || null,
-      amount: this.searchCriteria.amount || null,
+      orderReferenceOrigin: this.searchCriteria.orderReferenceOrigin || null,
 
       status: this.filterCriteria?.selectedStatuses || null,
       paymentMethodId: (this.filterCriteria?.selectedPaymentMethod == 'ALL' || this.filterCriteria?.selectedPaymentMethod == null) ? null : this.filterCriteria?.selectedPaymentMethod,
@@ -527,8 +524,7 @@ export class CashbackComponent implements OnInit {
       // txnReferenceOrigin: this.searchCriteria.txn_reference_origin || null, //ds bo
       // transactionNumber: this.searchCriteria.transactionNumber || null, //ds them
       // transactionOriginNumber: this.searchCriteria.transactionOriginNumber || null, ds them
-      creditAccount: this.searchCriteria.credit_account || null,
-      amount: this.searchCriteria.amount || null,
+      orderReferenceOrigin: this.searchCriteria.orderReferenceOrigin || null,
 
       statusRefund: this.filterCriteria?.selectedStatuses ? [this.filterCriteria?.selectedStatuses] : [],
       refundMethodID: (this.filterCriteria?.selectedPaymentMethod == 'ALL' || this.filterCriteria?.selectedPaymentMethod == null) ? null : this.filterCriteria?.selectedPaymentMethod,
@@ -569,8 +565,7 @@ export class CashbackComponent implements OnInit {
     this.searchCriteria = {
       transactionNumber: null,
       transactionOriginNumber: null,
-      credit_account: null,
-      amount: null,
+      orderReferenceOrigin: null,
       dateRange: [],
     };
 
