@@ -113,12 +113,12 @@ export class CashbackComponent implements OnInit {
   };
 
   filterCriteria: {
-    selectedStatuses: string[];
+    selectedStatuses: string | null;
     selectedPaymentMethod: string | null;
     selectedBanks: string | null;
     selectedMerchants: string[];
   } = {
-    selectedStatuses: [],
+    selectedStatuses: null,
     selectedPaymentMethod: null,
     selectedBanks: null,
     selectedMerchants: []
@@ -401,7 +401,7 @@ export class CashbackComponent implements OnInit {
       creditAccount: this.searchCriteria.credit_account || null,
       amount: this.searchCriteria.amount || null,
 
-      statusRefund: this.filterCriteria?.selectedStatuses || [],
+      status: this.filterCriteria?.selectedStatuses || null,
       paymentMethodId: (this.filterCriteria?.selectedPaymentMethod == 'ALL' || this.filterCriteria?.selectedPaymentMethod == null) ? null : this.filterCriteria?.selectedPaymentMethod,
       merchantIdArray: this.filterCriteria?.selectedMerchants || [],
       // merchantIdArray: ['202852'],
@@ -530,7 +530,7 @@ export class CashbackComponent implements OnInit {
       creditAccount: this.searchCriteria.credit_account || null,
       amount: this.searchCriteria.amount || null,
 
-      statusRefund: this.filterCriteria?.selectedStatuses || [],
+      statusRefund: this.filterCriteria?.selectedStatuses ? [this.filterCriteria?.selectedStatuses] : [],
       refundMethodID: (this.filterCriteria?.selectedPaymentMethod == 'ALL' || this.filterCriteria?.selectedPaymentMethod == null) ? null : this.filterCriteria?.selectedPaymentMethod,
       merchantIdArray: this.filterCriteria?.selectedMerchants || [],
       issuerCode: this.filterCriteria?.selectedBanks || null,
@@ -575,7 +575,7 @@ export class CashbackComponent implements OnInit {
     };
 
     this.filterCriteria = {
-      selectedStatuses: [],
+      selectedStatuses: null,
       selectedPaymentMethod: null,
       selectedBanks: null,
       selectedMerchants: []

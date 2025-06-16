@@ -44,7 +44,7 @@
     <div class="row mb-4">
       <div class="col-md-4">
         <div class="title">Trạng thái</div>
-        <p-multiSelect class="merchant-multiSelect multiselect-all" [options]="statusOptions" optionValue="code"
+        <p-dropdown class="merchant-dropdown" [options]="statusOptions" optionValue="code"
                        optionLabel="name" placeholder="Tất cả" [filter]="false"
                        [(ngModel)]="filterCriteria.selectedStatuses"/>
       </div>
