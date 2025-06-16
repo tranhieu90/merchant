@@ -101,7 +101,10 @@
         <div class="title">Điểm kinh doanh</div>
         <p-multiSelect class="merchant-multiSelect" [options]="merchantOptions" optionValue="merchantId"
                        optionLabel="merchantName" placeholder="Tất cả" filterPlaceHolder="Tìm kiếm điểm kinh doanh"
-                       [filter]="true" [(ngModel)]="filterCriteria.selectedMerchants"/>
+                       [filter]="true" [(ngModel)]="filterCriteria.selectedMerchants"
+                       selectedItemsLabel="{0} điểm kinh doanh đang chọn"
+                       emptyFilterMessage="Không tìm thấy kết quả"
+        />
       </div>
     </div>
   </div>
