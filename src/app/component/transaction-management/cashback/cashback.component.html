@@ -29,25 +29,14 @@
   <div *ngIf="isSearch" class="box-search">
     <div class="row mb-4">
       <div class="col-md-3">
-        <div class="title">Mã FT giao dịch hoàn</div>
-        <input class="merchant-input" pInputText placeholder="Nhập mã FT giao dịch hoàn"
-               [(ngModel)]="searchCriteria.txn_reference"/>
+        <div class="title">Mã giao dịch gốc</div>
+        <input class="merchant-input" pInputText placeholder="Nhập mã giao dịch gốc"
+               [(ngModel)]="searchCriteria.transactionOriginNumber"/>
       </div>
       <div class="col-md-3">
-        <div class="title">Mã FT giao dịch gốc</div>
-        <input class="merchant-input" pInputText placeholder="Nhập mã FT giao dịch"
-               [(ngModel)]="searchCriteria.txn_reference_origin"/>
-      </div>
-      <div class="col-md-3">
-        <div class="title">Số tài khoản/số thẻ</div>
-        <input class="merchant-input" pInputText placeholder="Nhập số tài khoản/số thẻ"
-               [(ngModel)]="searchCriteria.credit_account"/>
-      </div>
-      <div class="col-md-3">
-        <div class="title">Số tiền hoàn trả</div>
-        <p-inputNumber class="merchant-inputNumber" inputId="integeronly" [locale]="'en-US'" suffix=" ₫" [min]="0"
-                       [showClear]="true" placeholder="Nhập số tiền hoàn trả"
-                       [(ngModel)]="searchCriteria.amount"/>
+        <div class="title">Mã giao dịch hoàn trả</div>
+        <input class="merchant-input" pInputText placeholder="Nhập mã giao dịch hoàn trả"
+               [(ngModel)]="searchCriteria.transactionNumber"/>
       </div>
     </div>
   </div>

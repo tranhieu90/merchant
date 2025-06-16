@@ -99,14 +99,14 @@ export class CashbackComponent implements OnInit {
   maxDate: any = null;
 
   searchCriteria: {
-    txn_reference: string | null;
-    txn_reference_origin: string | null;
+    transactionNumber: string | null;
+    transactionOriginNumber: string | null;
     credit_account: string | null;
     amount: string | null;
     dateRange: Date[] | [];
   } = {
-    txn_reference: null,
-    txn_reference_origin: null,
+    transactionNumber: null,
+    transactionOriginNumber: null,
     credit_account: null,
     amount: null,
     dateRange: [],
@@ -386,7 +386,7 @@ export class CashbackComponent implements OnInit {
 
   onSearch(pageInfo?: any) {
     if (pageInfo) {
-      this.pageIndex = pageInfo["page"] || 1;
+      this.pageIndex = pageInfo["page"] ? (pageInfo["page"] + 1) : 1;
       this.pageSize = pageInfo["pageSize"]
     } else {
       this.pageIndex = 1;
@@ -396,8 +396,8 @@ export class CashbackComponent implements OnInit {
       fromDate: this.searchCriteria?.dateRange[0] ? moment(this.searchCriteria?.dateRange[0]).format('DD/MM/YYYY HH:mm:ss') : null,
       toDate: this.searchCriteria?.dateRange[1] ? moment(this.searchCriteria?.dateRange[1]).format('DD/MM/YYYY HH:mm:ss') : null,
 
-      transactionNumber: this.searchCriteria.txn_reference || null,
-      transactionOriginNumber: this.searchCriteria.txn_reference_origin || null,
+      transactionNumber: this.searchCriteria.transactionNumber || null,
+      transactionOriginNumber: this.searchCriteria.transactionOriginNumber || null,
       creditAccount: this.searchCriteria.credit_account || null,
       amount: this.searchCriteria.amount || null,
 
@@ -523,8 +523,10 @@ export class CashbackComponent implements OnInit {
       fromDate: this.searchCriteria?.dateRange[0] ? moment(this.searchCriteria?.dateRange[0]).format('DD/MM/YYYY HH:mm:ss') : null,
       toDate: this.searchCriteria?.dateRange[1] ? moment(this.searchCriteria?.dateRange[1]).format('DD/MM/YYYY HH:mm:ss') : null,
 
-      txnReference: this.searchCriteria.txn_reference || null,
-      txnReferenceOrigin: this.searchCriteria.txn_reference_origin || null,
+      // txnReference: this.searchCriteria.txn_reference || null, // ds bo
+      // txnReferenceOrigin: this.searchCriteria.txn_reference_origin || null, //ds bo
+      // transactionNumber: this.searchCriteria.transactionNumber || null, //ds them
+      // transactionOriginNumber: this.searchCriteria.transactionOriginNumber || null, ds them
       creditAccount: this.searchCriteria.credit_account || null,
       amount: this.searchCriteria.amount || null,
 
@@ -565,8 +567,8 @@ export class CashbackComponent implements OnInit {
     const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 0);
 
     this.searchCriteria = {
-      txn_reference: null,
-      txn_reference_origin: null,
+      transactionNumber: null,
+      transactionOriginNumber: null,
       credit_account: null,
       amount: null,
       dateRange: [],

@@ -471,7 +471,7 @@ export class PaymentComponent implements OnInit {
 
   onSearch(pageInfo?: any) {
     if (pageInfo) {
-      this.pageIndex = pageInfo["page"] || 1;
+      this.pageIndex = pageInfo["page"] ? (pageInfo["page"] + 1) : 1;
       this.pageSize = pageInfo["pageSize"]
     } else {
       this.pageIndex = 1;
