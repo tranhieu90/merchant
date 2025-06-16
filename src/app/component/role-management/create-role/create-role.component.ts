@@ -177,6 +177,11 @@ export class CreateRoleComponent implements OnInit {
   doUpdate() {
     let lstAddFunctionIds = this.listFunctionIdsSelected.filter((item: any) => !this.listFunctionIdsSelectedOld.includes(item));
     let lstDeleteFunctionIds = this.listFunctionIdsSelectedOld.filter((item: any) => !this.listFunctionIdsSelected.includes(item));
+    if(lstAddFunctionIds.length == 0 && lstDeleteFunctionIds.length == 0) {
+      this.isSuccess = 2;
+      this.doNextStep();
+      return
+    }
     let param = {
       roleId: this.roleId,
       roleName: this.formNameRole.get('roleName')?.value,
@@ -391,8 +396,7 @@ export class CreateRoleComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      debugger
-      if (result != undefined && result !== false) {
+      if (result != undefined && result) {
         this.router.navigate(['/role']);
       }
 
@@ -442,6 +446,10 @@ export class CreateRoleComponent implements OnInit {
       roleNameControl.markAsTouched(); // Đánh dấu trường là touched để hiển thị lỗi nếu có
       this.formNameRole.updateValueAndValidity(); // Cập nhật trạng thái valid của form
     }
+  }
+
+  addUserRole() {
+    this.router.navigate(['/hr/hr-create'], { queryParams: { roleId: this.roleId } });
   }
 
   backRole() {

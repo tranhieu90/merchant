@@ -428,7 +428,7 @@ export class PaymentComponent implements OnInit {
   }
 
   getLstPaymentMethod() {
-    this.api.get(BUSINESS_ENDPOINT.GET_LIST_PAYMENT_METHOD).subscribe(res => {
+    this.api.get(BUSINESS_ENDPOINT.GET_LIST_PAYMENT_METHOD_FILTER).subscribe(res => {
       if (res['data']) {
         const allOption = {paymentMethodId: 'ALL', paymentMethodName: 'Tất cả '};
         this.paymentMethodOptions = [allOption, ...res['data']['paymentMethodList']];
@@ -884,7 +884,6 @@ export class PaymentComponent implements OnInit {
       res => {
         if (res['data']) {
           let dataGroup = res['data'];
-          console.log("dataGroup", dataGroup);
           const userInfo = this.auth.getUserInfo();
           if (userInfo.orgType === 0 && dataGroup.length > 0) {
             this.merchantId = dataGroup[0].merchantId;
@@ -913,7 +912,6 @@ export class PaymentComponent implements OnInit {
             this.groupOptions = this.convertLstAreaByOrder(dataGroup, dataGroup[0].parentId);
           }
 
-          console.log('groupNameOptions', this.groupOptions);
         }
       },
       error => {

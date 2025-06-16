@@ -52,6 +52,7 @@ export enum BUSINESS_ENDPOINT {
   GET_GROUP_FILTER = 'api/v1/group-management/filter-group',
   UPDATE_SUB_MERCHANT = 'api/v1/subMerchant/update',
   GET_LIST_PAYMENT_METHOD = 'api/v1/subMerchant/get-merchant-with-payment-method',
+  GET_LIST_PAYMENT_METHOD_FILTER='api/v1/query/get-payment-method',
   CREATE_SUB_MERCHANT = 'api/v1/subMerchant/add',
   GEN_QR = 'api/v1/qr/get-qr-code'
 }

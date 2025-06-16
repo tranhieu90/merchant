@@ -21,7 +21,7 @@
         </div>
         <div class="col-md-4 mt-4">
           <label class="form-label title-s-semibold">Phương thức thanh toán</label>
-          <p-multiSelect class="merchant-multiSelect multiselect-all" formControlName="paymentMethod"
+          <p-multiSelect class="merchant-multiSelect multiselect-all" formControlName="paymentMethod" [emptyMessage]="'Không tìm thấy dữ liệu'"
             [options]="lstPaymentMethod" optionValue="paymentMethodId" optionLabel="paymentMethodName" [filter]="false"
             placeholder="Tất cả">
           </p-multiSelect>
@@ -30,8 +30,7 @@
           <label class="form-label title-s-semibold">Tên nhóm</label>
           <p-treeSelect [options]="groupNameOptions" formControlName="groupName" optionLabel="label" optionValue="key"
             selectionMode="checkbox" display="comma" [metaKeySelection]="false" [filter]="true"  [emptyMessage]="'Không tìm thấy dữ liệu'" placeholder="Tất cả"
-            class="merchant-treeSelect" (onNodeSelect)="onGroupClick($event)" (onNodeUnselect)="onGroupClick($event)"
-            filterPlaceholder="Tìm kiếm cụm/nhóm">
+            class="merchant-treeSelect" (onNodeSelect)="onGroupClick($event)" (onNodeUnselect)="onGroupClick($event)">
           </p-treeSelect>
         </div>
       </div>

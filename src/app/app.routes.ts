@@ -27,7 +27,6 @@ import { CashbackComponent } from './component/transaction-management/cashback/c
 import { UserProfileComponent } from './component/user-profile/user-profile.component';
 import { HistoryExportComponent } from './component/transaction-management/history-export/history-export.component';
 import { CashbackDetailComponent } from './component/transaction-management/cashback-detail/cashback-detail.component';
-import { HumanResourceUpdateV2Component } from './component/human-resource-management/human-resource-update-v2/human-resource-update-v2.component';
 import { HumanResourceUpdateComponent } from './component/human-resource-management/human-resource-update/human-resource-update.component';
 
 export const routes: Routes = [

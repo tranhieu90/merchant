@@ -24,9 +24,9 @@
                         <span class="p-input-icon-left">
                             <i class="icon-search input-icon input-icon-default"></i>
                         </span>
-                        <input type="text" appInputSanitize pInputText class="merchant-input search" [(ngModel)]="searchAreaIdMove"
-                            placeholder="Tìm theo tên cụm/nhóm..." (blur)="onSearchChange()"
-                            (keydown.enter)="onSearchChange()" />
+                        <input type="text" appInputSanitize pInputText class="merchant-input search"
+                            [(ngModel)]="searchAreaIdMove" placeholder="Tìm theo tên cụm/nhóm..."
+                            (blur)="onSearchChange()" (keydown.enter)="onSearchChange()" />
                     </div>
                 </div>
 
@@ -34,7 +34,8 @@
                     <div *ngIf="filteredAreas.length > 0">
                         <div *ngFor="let area of filteredAreas">
                             <app-area-view [area]="area" [isSelectArea]="true" [isShowChildren]="true"
-                                [areaIdMove]="areaIdMove" (doChangeAreaIdMove)="doChangeAreaIdMove($event)">
+                                [areaIdMove]="areaIdMove" [isLeaf]="area.isLeaf" [isSearching]="isSearching"
+                                (doChangeAreaIdMove)="doChangeAreaIdMove($event)">
                             </app-area-view>
                         </div>
                     </div>
@@ -60,7 +61,7 @@
                     <div class="p-inputgroup">
                         <input appShowClearOnFocus=".clear-icon" appInputSanitize (blur)="trimValue('merchantBizName')"
                             trim="blur" class=" merchant-input" pInputText formControlName="merchantBizName"
-                            placeholder="Ví dụ: Mã cửa hàng ABC ..." [maxlength]="32"/>
+                            placeholder="Ví dụ: Mã cửa hàng ABC ..." maxlength="32" />
                         @if (this.formBusiness.get('merchantBizName')?.value) {
                         <span class="p-input-icon-right clear-icon" (click)="clearValue('merchantBizName')">
                             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
@@ -77,9 +78,6 @@
                         @if (formBusiness.controls['merchantBizName'].hasError('required')) {
                         <span class="text-caption paragraph-m-regular">Vui lòng nhập tên điểm kinh doanh</span>
                         }
-                        @if (formBusiness.controls['merchantBizName'].hasError('maxlength')) {
-                        <span class="text-caption paragraph-s-regular">Vui lòng không nhập quá 32 kí tự</span>
-                        }
                         @if (formBusiness.controls['merchantBizName'].hasError('isMerchantBizNameUsed')) {
                         <span class="text-caption paragraph-m-regular">Tên điểm kinh doanh đã tồn tại</span>
                         }
@@ -91,7 +89,7 @@
                     <div class="p-inputgroup">
                         <input appShowClearOnFocus=".clear-icon" appInputSanitize (blur)="trimValue('merchantName')"
                             trim="blur" class="merchant-input" pInputText formControlName="merchantName"
-                            placeholder="Ví dụ: Cửa hàng ABC ..." [maxlength]="128"/>
+                            placeholder="Ví dụ: Cửa hàng ABC ..." maxlength="128" />
                         @if (this.formBusiness.get('merchantName')?.value) {
                         <span class="p-input-icon-right clear-icon" (click)="clearValue('merchantName')">
                             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
@@ -107,9 +105,6 @@
                         @if (formBusiness.controls['merchantName'].hasError('required')) {
                         <span class="text-caption paragraph-m-regular">Vui lòng nhập tên diễn giải</span>
                         }
-                        @if (formBusiness.controls['merchantName'].hasError('maxlength')) {
-                        <span class="text-caption paragraph-s-regular">Vui lòng không nhập quá 128 kí tự</span>
-                        }
                     </div>
                     }
                 </div>
@@ -117,7 +112,7 @@
                     <div class="col-4">
                         <label class="title-s-semibold label mb-spacing-xs">Tỉnh/Thành phố</label>
                         <p-dropdown [options]="lstProvince" formControlName="provinceId" optionLabel="provinceName"
-                            optionValue="provinceId" [filter]="true" emptyFilterMessage="Không tìm thấy kết quả"
+                            optionValue="provinceId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
                             filterBy="provinceName" styleClass="w-100" [panelStyle]="{'width':'300px'}" appendTo="body"
                             placeholder="Chọn tỉnh, thành phố " (ngModelChange)="doGetDistrict($event)"
                             class="merchant-dropdown">
@@ -137,7 +132,7 @@
                     <div class="col-4">
                         <label class="title-s-semibold label mb-spacing-xs">Quận/Huyện</label>
                         <p-dropdown [options]="lstDistrict" formControlName="districtId" optionLabel="districtName"
-                            optionValue="districtId" [filter]="true" emptyFilterMessage="Không tìm thấy kết quả"
+                            optionValue="districtId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
                             styleClass="w-100" filterBy="districtName" [panelStyle]="{'width':'300px'}" appendTo="body"
                             placeholder="Chọn quận, huyện" (ngModelChange)="doGetCommune(001,$event,1)"
                             class="merchant-dropdown">
@@ -157,7 +152,7 @@
                     <div class="col-4">
                         <label class="title-s-semibold label mb-spacing-xs">Phường/Xã</label>
                         <p-dropdown [options]="lstCommune" formControlName="communeId" optionLabel="communeName"
-                            optionValue="communeId" [filter]="true" emptyFilterMessage="Không tìm thấy kết quả"
+                            optionValue="communeId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
                             filterBy="communeName" styleClass="w-100" [panelStyle]="{'width':'300px'}" appendTo="body"
                             placeholder="Chọn phường, xã" class="merchant-dropdown">
                         </p-dropdown>
@@ -179,7 +174,7 @@
                     <div class="p-inputgroup">
                         <input appShowClearOnFocus=".clear-icon" (blur)="trimValue('address')" trim="blur"
                             class="merchant-input" appInputSanitize pInputText formControlName="address"
-                            placeholder="Nhập địa chỉ điểm kinh doanh" [maxlength]="256"/>
+                            placeholder="Nhập địa chỉ điểm kinh doanh" maxlength="256" />
                         @if (this.formBusiness.get('address')?.value) {
                         <span class="p-input-icon-right clear-icon" (click)="clearValue('address')">
                             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
@@ -194,9 +189,6 @@
                         </div>
                         @if (formBusiness.controls['address'].hasError('required')) {
                         <span class="text-caption paragraph-m-regular">Vui lòng nhập địa chỉ điểm kinh doanh</span>
-                        }
-                        @if (formBusiness.controls['address'].hasError('maxlength')) {
-                        <span class="text-caption paragraph-s-regular">Vui lòng không nhập quá 256 kí tự</span>
                         }
                     </div>
                     }
@@ -246,7 +238,8 @@
                     </div>
                     <div class="col-12" *ngIf="ischeck==1">
                         <label class="paragraph-m-semibold mb-spacing-xs">Terminal ID</label>
-                        <input appInputSanitize class="merchant-input" pInputText [(ngModel)]="terminalId" #temiralId="ngModel" required
+                        <input appInputSanitize class="merchant-input" pInputText [(ngModel)]="terminalId"
+                            #temiralId="ngModel" required
                             placeholder="Nhập mã Terminal ID do MB cung cấp khi tích hợp dịch vụ" />
                         <div class="m-caption error" *ngIf="temiralId.invalid && temiralId.touched">
                             <div class="icon-caption">
@@ -289,8 +282,9 @@
                         </div>
                         <div class="col-12">
                             <label class="paragraph-m-semibold mb-spacing-xs">Tên tài khoản</label>
-                            <input class="merchant-input" appInputSanitize pInputText [(ngModel)]="accountName" #accountNameId="ngModel"
-                                [pattern]="accountNamePattern" required placeholder="Nhập tên tài khoản" />
+                            <input class="merchant-input" appInputSanitize pInputText [(ngModel)]="accountName"
+                                #accountNameId="ngModel" [pattern]="accountNamePattern" required
+                                placeholder="Nhập tên tài khoản" />
                             <div class="m-caption error" *ngIf="accountNameId.invalid && accountNameId.touched">
                                 <div class="icon-caption">
                                     <span class="icon-error_solid"></span>
@@ -323,8 +317,8 @@
                     <div class="row mb-spacing-l">
                         <div *ngFor="let pos of lstPaymentPos, let i = index" class="col-3 mb-spacing-l">
                             <div class="p-inputgroup show-icon-right">
-                                <input class="merchant-input" appInputSanitize pInputText [readOnly]="true" [value]="pos"
-                                    [ngClass]="{'input-error': tidPosErrorList.includes(pos)}" />
+                                <input class="merchant-input" appInputSanitize pInputText [readOnly]="true"
+                                    [value]="pos" [ngClass]="{'input-error': tidPosErrorList.includes(pos)}" />
                                 <span class="p-input-icon-right clear-icon" (click)="removePos(i)">
                                     <i class="icon-trash input-icon input-icon-default icon-color"></i>
                                 </span>

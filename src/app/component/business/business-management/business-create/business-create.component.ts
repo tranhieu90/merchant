@@ -139,6 +139,7 @@ export class BusinessCreateComponent implements OnInit {
 
   tidPosErrorList: any = [];
   thddErrorList: any = [];
+  isSearching: any;
 
   constructor(
     private fb: FormBuilder,
@@ -153,7 +154,7 @@ export class BusinessCreateComponent implements OnInit {
     this.routeActive.queryParams.subscribe(params => {
       this.organizationSetup = params['organizationSetup'] ? params['organizationSetup'] : false;
       this.lstBusiness = params['lstBusiness'] === 'true';
-      this.areaIdMove = params['groupId'] ? params['groupId'] : 0;
+      this.areaIdMove = params['groupId'];
     });
   }
 
@@ -172,12 +173,12 @@ export class BusinessCreateComponent implements OnInit {
 
   buildForm() {
     this.formBusiness = this.fb.group({
-      merchantBizName: ['', [Validators.required, Validators.maxLength(32)]],
-      merchantName: ['', [Validators.required, Validators.maxLength(128)]],
+      merchantBizName: ['', [Validators.required]],
+      merchantName: ['', [Validators.required]],
       provinceId: ['', [Validators.required]],
       districtId: ['', [Validators.required]],
       communeId: ['', [Validators.required]],
-      address: ['', [Validators.required, Validators.maxLength(256)]],
+      address: ['', [Validators.required]],
     })
   }
 
@@ -199,7 +200,6 @@ export class BusinessCreateComponent implements OnInit {
             this.handleOrganizationNotSet();
             break;
           case 'ACCOUNT_ERROR_001':
-            this.toast.showError(errorData.soaErrorDesc);
             this.openDialogUnverifiedAccountNoEmail();
             break;
           case 'ACCOUNT_ERROR_002':
@@ -703,26 +703,32 @@ export class BusinessCreateComponent implements OnInit {
   }
 
   onSearchChange() {
-    if (!this.searchAreaIdMove.trim()) {
+    const term = this.searchAreaIdMove.trim().toLowerCase();
+    this.isSearching = term.length > 0;
+    if (!term) {
       this.filteredAreas = this.lstAreaByOrder;
     } else {
-      this.filteredAreas = this.filterAreas(this.lstAreaByOrder, this.searchAreaIdMove.trim().toLowerCase());
+      this.filteredAreas = this.filterAreas(this.lstAreaByOrder, term);
     }
   }
-
-  filterAreas(areas: any, term: string): any[] {
+  
+  filterAreas(areas: any[], term: string): any[] {
     const filtered = [];
-
+  
     for (const area of areas) {
       const filteredChildren = area.children ? this.filterAreas(area.children, term) : [];
-
-      if (area.groupName?.toLowerCase().includes(term) || filteredChildren.length > 0) {
+      const isMatch = area.groupName?.toLowerCase().includes(term);
+      const isLeaf = !area.children || area.children.length === 0;
+  
+      if (isMatch || filteredChildren.length > 0) {
         filtered.push({
           ...area,
+          isLeaf: isLeaf,
           children: filteredChildren
         });
       }
     }
+  
     return filtered;
   }
 
