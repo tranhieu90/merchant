@@ -13,262 +13,437 @@
     {{ index + 1 }}
   </ng-template>
   <mat-step *ngIf="typeUpdate !== 1" label="Gán tổ chức">
-    <ng-container *ngIf="typeUpdate == 2">
-      <div *ngIf="userInfo?.orgType != 2" class="d-flex gap-3">
-        <div
-          class="col-3 organization"
-          style="max-height: 60vh; overflow-y: auto"
-        >
-          <div class="content border-custom">
-            <mat-checkbox
-              *ngIf="userInfo?.orgType == 0" disabled="{{totalPointSalesSelected >0}}"
-              (change)="selectMearchant($event)"
-              ><span class="text title-l-semibold ellipsis ellipsis-mw-250" matTooltipPosition="above" matTooltip="{{ userInfo?.merchantName }}" appShowIfTruncated>{{ userInfo?.merchantName }}</span>
-              </mat-checkbox>
-            <div class="mt-3">
-              <m-tree
-                #mTreeComponent
-                [data]="organizationSort"
-                [level]="0"
-                (groupChoice)="doActiveArea($event)"
-                (groupSelect)="doCheckGroup($event)"
-                [activeItemId]="organizationIdActive"
-                [checkDisable]="totalPointSalesSelected > 0"
-              ></m-tree>
-            </div>
+    <div class="row">
+      <div class="col-1"></div>
+      <div class="col-10">
+        <div>
+          <div class="title-s-regular">
+            Vui lòng chọn tổ chức để gán cho nhân sự, bạn có thể gán nhân sự vào
+            doanh nghiệp, nhóm hoặc điểm kinh doanh.
+          </div>
+          <div class="title-s-regular">
+            Khi gán vào doanh nghiệp, nhân sự sẽ được phụ trách tất cả các điểm
+            kinh doanh của doanh nghiệp.
+          </div>
+          <div class="title-s-regular">
+            Khi gán vào nhóm, nhân sự sẽ được phụ trách tất cả điểm kinh doanh
+            thuộc nhóm.
           </div>
         </div>
-        <div class="col-9" style="max-height: 60vh; overflow-y: auto">
-          <div *ngIf="!isSelectGroup && countSelectedPoint > 0" class="text title-s-regular mt-3">
-            Bạn đang gán nhân sự vào {{ countSelectedPoint }} điểm kinh doanh
-            thuộc nhóm <b>{{ activeOrganization }}</b>. Bạn có thể gán nhân sự vào các điểm kinh doanh thuộc nhóm khác.
-          </div>
-          <div *ngIf="isSelectGroup && countSelectedPoint > 0" class="text title-s-regular mt-3">
-           Bạn đang gán nhân sự vào nhóm, đồng nghĩa nhân sự sẽ được phụ trách {{countSelectedPoint}} điểm kinh doanh thuộc nhóm đã chọn.
-          </div>
-          <div *ngIf="isSelectGroup && countSelectedPoint == 0" class="text text-center title-s-regular mt-3">
-                <div><b>Bạn đang gán nhân sự vào nhóm</b></div>
-                <div class="mt-2">Nhân sự sẽ được phụ trách tất cả điểm kinh doanh thuộc nhóm đã chọn</div>
-          </div>
-          <br />
-          <ng-container>
-            <div class="d-flex" *ngIf="isShowSearchPointSales">
-              <div class="col-6 mb-4">
-                <div class="p-inputgroup show-icon-left search-role me-3">
-                  <span class="p-input-icon-left">
-                    <i class="icon-search input-icon input-icon-default"></i>
-                  </span>
-                  <input type="text" pInputText class="merchant-input search" [(ngModel)]="searchOrganization" 
-                    placeholder="Tìm kiếm tên, địa chỉ điểm kinh doanh" (keydown.enter)="getLstMerchant()"
-                    (blur)="getLstMerchant()" />
-                </div>
-              </div>
-            </div>
-            <ng-container *ngIf="pointSales.length > 0">
-              <grid-view
-                #gridViewRef
-                [columns]="columnsMerchant"
-                [dataSource]="pointSales"
-                [isShowPage]="false"
-                [search]="true"
-                (isChecked)="seletedPointSales($event)"
-                [showCheckbox]="true"
-                (dataChoice)="setUpMerchantIds($event)"
-                style="float: left; width: 100%"
-              ></grid-view>
-            </ng-container>
-             <ng-container *ngIf="isShowSearchPointSales && pointSales.length==0">
-                <div class="content "class="content-thirdForm d-flex flex-column align-items-center  mt-5" >
-                  <img [src]="assetPath + '/assets/images/grid-search-empty.png'">
-                  <div class="mt-4 title-l-semibold title-no-data">Không tìm thấy điểm kinh doanh nào</div>
-                  <div class="title-s-regular summary-no-data">Vui lòng thử lại với điều kiện tìm kiếm khác.</div>
-                </div>
-            </ng-container>
-          </ng-container>
-            <div class="content-thirdForm d-flex flex-column align-items-center  mt-5">
-              <ng-container *ngIf="masterIdSelected != null && masterIdSelected > 0" class="text-center title-s-regular mt-3">
-                <div><b>Bạn đang gán nhân sự vào doanh nghiệp.</b></div>
-                <div class="mt-2">Nhân sự sẽ được phụ trách tất cả điểm kinh doanh.</div>
-              </ng-container>
-              <ng-container *ngIf="!isShowSearchPointSales && organizationSelected.length == 0 ">
-                <div class="text-center title-s-regular mt-3">
-                  <div class="gap-2">
-                    <img [src]="assetPath + '/assets/images/grid-empty.png'" alt="Success" />
-                    <br />
-                    <div class="text title-s-regular mt-3">Bạn chưa gán nhân sự vào nhóm nào.</div>
-                  </div>
-                </div>
-              </ng-container>
-            </div>
-        </div>
-      </div>
-      <div *ngIf="userInfo?.orgType == 2" class="d-flex gap-3">
-        <div class="col-12" style="max-height: 80vh; overflow-y: auto">
-          <div *ngIf="countSelectedPoint > 0" class="text title-s-regular mt-3">
-            Bạn đang gán nhân sự vào {{ countSelectedPoint }} điểm kinh doanh.
-          </div>
-          <br />
-          <ng-container *ngIf="pointSales.length > 0">
-            <div class="d-flex">
-              <div class="col-6 mb-4">
-                <div class="p-inputgroup show-icon-left search-role me-3">
-                  <span class="p-input-icon-left">
-                    <i class="icon-search input-icon input-icon-default"></i>
-                  </span>
-                  <input
-                    type="text"
-                    pInputText
-                    class="merchant-input search"
-                    [(ngModel)]="searchOrganization"
-                    placeholder="Tìm theo tên, địa chỉ điểm kinh doanh"
-                    (keydown.enter)="getLstMerchant()"
-                    (blur)="getLstMerchant()"
-                  />
-                </div>
-              </div>
-            </div>
-            </ng-container>
-          <ng-container *ngIf="pointSales.length > 0;else noPointSales">
-            <grid-view
-              #gridViewRef
-              [columns]="columnsMerchant"
-              [dataSource]="pointSales"
-              [isShowPage]="false"
-              [search]="true"
-              [showCheckbox]="true"
-              (dataChoice)="setUpMerchantIds($event)"
-              style="float: left; width: 100%"
-            ></grid-view>
-          </ng-container>
-           <ng-template #noPointSales>
-                <div class="content "class="content-thirdForm d-flex flex-column align-items-center  mt-5" >
-                  <img [src]="assetPath + '/assets/images/grid-search-empty.png'">
-                  <div class="mt-4 title-l-semibold title-no-data">Không tìm thấy điểm kinh doanh nào</div>
-                  <div class="title-s-regular summary-no-data">Vui lòng thử lại với điều kiện tìm kiếm khác.</div>
-                </div>
-            </ng-template>
-        </div>
-      </div>
-    </ng-container>
-    <ng-container *ngIf="typeUpdate == 0">
-      <div class="d-flex gap-3">
-        <div
-          class="col-12 organization"
-          style="max-height: 60vh; overflow-y: auto"
-        >
-          <div class="content" style="padding: 0 45px 0 45px">
-            <div class="paragraph-m-regular mb-spacing-l text title-s-regular mt-3">
-              Vui lòng chọn 1 điểm kinh doanh để gán cho nhân sự, hoặc gán trực
-              tiếp vào doanh nghiệp. Khi gán vào doanh nghiệp, nhân sự sẽ được
-              phụ trách tất cả điểm kinh doanh.
-            </div>
 
-            <div class="paragraph-m-regular mb-spacing-l mt-2 text title-s-regular mt-3">Nếu bạn muốn gán nhân sự vào 2 điểm kinh doanh trở lên,
-              vui
-              lòng tạo nhóm. 
-            <b class="text title-s-regular mt-3 no-underline"
-                (click)="openCreateGroups()"
-              >
-                Tạo nhóm mới <span class="icon-arrow_right"></span>
-              </b>
-            </div>
-
-            <div class="d-flex mt-3">
+        <ng-container *ngIf="typeUpdate == 2">
+          <div *ngIf="userInfo?.orgType != 2" class="gap-3 mt-3">
+            <div class="col-12 d-flex mt-3">
               <div class="d-flex align-items-center gap-2">
                 <p-radioButton
                   class="m-radio m-radio-check"
-                  [value]="userInfo?.merchantId"
+                  [value]="'1'"
                   name="radioOrganization"
                   [(ngModel)]="masterIdSelected"
                   (ngModelChange)="onRadioChange($event)"
                   (click)="$event.stopPropagation()"
                 />
-                <span class="text ellipsis ellipsis-mw-500" matTooltipPosition="above" matTooltip="{{ userInfo?.merchantName }}" appShowIfTruncated
-                  ><b
-                    >Gán vào doanh nghiệp: {{ userInfo?.merchantName }}</b
-                  ></span
+                <span
+                  class="text ellipsis ellipsis-mw-500"
+                  matTooltipPosition="above"
+                  matTooltip="{{ userInfo?.merchantName }}"
+                  appShowIfTruncated
+                  ><b>Gán vào nhóm</b></span
                 >
               </div>
             </div>
 
-            <div class="d-flex mt-3">
+            <div class="col-12 d-flex mt-3">
               <div class="d-flex align-items-center gap-2">
                 <p-radioButton
                   class="m-radio m-radio-check"
-                  [value]=""
+                  [value]="'2'"
                   name="radioOrganization"
                   [(ngModel)]="masterIdSelected"
                   (ngModelChange)="onRadioChange($event)"
                   (click)="$event.stopPropagation()"
                 />
-                <span><b class="text mw-160" >Gán vào 1 điểm kinh doanh</b></span>
+                <span><b class="text mw-160">Gán vào điểm kinh doanh</b></span>
               </div>
             </div>
-            <br />
-            <div class="d-flex" *ngIf="!masterIdSelected">
-              <div class="col-6 mb-4">
-                <div class="p-inputgroup show-icon-left search-role me-3">
+
+            <div class="mt-3">
+              <div class="d-flex">
+                <div class="p-inputgroup show-icon-left search-role">
                   <span class="p-input-icon-left">
                     <i class="icon-search input-icon input-icon-default"></i>
                   </span>
                   <input
                     type="text"
+                    appInputSanitize
                     pInputText
                     class="merchant-input search"
-                    [(ngModel)]="searchOrganization"
-                    placeholder="Tìm theo tên, địa chỉ điểm kinh doanh"
-                    (keydown.enter)="getLstMerchant()"
-                    (blur)="getLstMerchant()"
+                    placeholder="Tìm theo tên cụm/nhóm..."
                   />
                 </div>
               </div>
-            </div>
-             <ng-container *ngIf="pointSales.length > 0;else noPointSales">
-              <grid-view
-                #gridViewRef
-                [columns]="columnsMerchant"
-                [dataSource]="pointSales"
-                [isShowPage]="false"
-                [search]="true"
-                [showRadio]="!masterIdSelected"
-                (selectedItemChange)="radioSetUpMerchantIds($event)"
-                style="float: left; width: 100%"
-              ></grid-view>
-            </ng-container>
-            <ng-template #noPointSales>
-                <div class="content "class="content-thirdForm d-flex flex-column align-items-center  mt-5" >
-                  <img [src]="assetPath + '/assets/images/grid-search-empty.png'">
-                  <div class="mt-4 title-l-semibold title-no-data">Không tìm thấy điểm kinh doanh nào</div>
-                  <div class="title-s-regular summary-no-data">Vui lòng thử lại với điều kiện tìm kiếm khác.</div>
+
+              <div class="box-area mt-4 scroll-box">
+                  <div *ngFor="let area of organizationSort">
+                    <app-area-view
+                      [area]="area"
+                      [isShowCountGroup]="false"
+                      [isShowCheckbox]="true"
+                      (groupSelect)="doCheckGroup($event)"
+                      (doChangeExpand)="doActiveAreaCheckbox($event)"
+                    >
+                    </app-area-view>
                 </div>
-            </ng-template>
+              </div>
+              <!-- <div class="content border-custom">
+                <mat-checkbox
+                  *ngIf="userInfo?.orgType == 0"
+                  disabled="{{ totalPointSalesSelected > 0 }}"
+                  (change)="selectMearchant($event)"
+                  ><span
+                    class="text title-l-semibold ellipsis ellipsis-mw-250"
+                    matTooltipPosition="above"
+                    matTooltip="{{ userInfo?.merchantName }}"
+                    appShowIfTruncated
+                    >{{ userInfo?.merchantName }}</span
+                  >
+                </mat-checkbox>
+                <div class="mt-3">
+                  <m-tree
+                    #mTreeComponent
+                    [data]="organizationSort"
+                    [level]="0"
+                    (groupChoice)="doActiveArea($event)"
+                    (groupSelect)="doCheckGroup($event)"
+                    [activeItemId]="organizationIdActive"
+                    [checkDisable]="totalPointSalesSelected > 0"
+                  ></m-tree>
+                </div>
+              </div> -->
+            </div>
+            <!-- <div class="col-9" style="max-height: 60vh; overflow-y: auto">
+              <div
+                *ngIf="!isSelectGroup && countSelectedPoint > 0"
+                class="text title-s-regular mt-3"
+              >
+                Bạn đang gán nhân sự vào {{ countSelectedPoint }} điểm kinh
+                doanh thuộc nhóm <b>{{ activeOrganization }}</b
+                >. Bạn có thể gán nhân sự vào các điểm kinh doanh thuộc nhóm
+                khác.
+              </div>
+              <div
+                *ngIf="isSelectGroup && countSelectedPoint > 0"
+                class="text title-s-regular mt-3"
+              >
+                Bạn đang gán nhân sự vào nhóm, đồng nghĩa nhân sự sẽ được phụ
+                trách
+                {{ countSelectedPoint }} điểm kinh doanh thuộc nhóm đã chọn.
+              </div>
+              <div
+                *ngIf="isSelectGroup && countSelectedPoint == 0"
+                class="text text-center title-s-regular mt-3"
+              >
+                <div><b>Bạn đang gán nhân sự vào nhóm</b></div>
+                <div class="mt-2">
+                  Nhân sự sẽ được phụ trách tất cả điểm kinh doanh thuộc nhóm đã
+                  chọn
+                </div>
+              </div>
+              <br />
+              <ng-container>
+                <div class="d-flex" *ngIf="isShowSearchPointSales">
+                  <div class="col-6 mb-4">
+                    <div class="p-inputgroup show-icon-left search-role me-3">
+                      <span class="p-input-icon-left">
+                        <i
+                          class="icon-search input-icon input-icon-default"
+                        ></i>
+                      </span>
+                      <input
+                        type="text"
+                        pInputText
+                        class="merchant-input search"
+                        [(ngModel)]="searchOrganization"
+                        placeholder="Tìm kiếm tên, địa chỉ điểm kinh doanh"
+                        (keydown.enter)="getLstMerchant()"
+                        (blur)="getLstMerchant()"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <ng-container *ngIf="pointSales.length > 0">
+                  <grid-view
+                    #gridViewRef
+                    [columns]="columnsMerchant"
+                    [dataSource]="pointSales"
+                    [isShowPage]="false"
+                    [search]="true"
+                    (isChecked)="seletedPointSales($event)"
+                    [showCheckbox]="true"
+                    (dataChoice)="setUpMerchantIds($event)"
+                    style="float: left; width: 100%"
+                  ></grid-view>
+                </ng-container>
+                <ng-container
+                  *ngIf="isShowSearchPointSales && pointSales.length == 0"
+                >
+                  <div
+                    class="content"
+                    class="content-thirdForm d-flex flex-column align-items-center mt-5"
+                  >
+                    <img
+                      [src]="assetPath + '/assets/images/grid-search-empty.png'"
+                    />
+                    <div class="mt-4 title-l-semibold title-no-data">
+                      Không tìm thấy điểm kinh doanh nào
+                    </div>
+                    <div class="title-s-regular summary-no-data">
+                      Vui lòng thử lại với điều kiện tìm kiếm khác.
+                    </div>
+                  </div>
+                </ng-container>
+              </ng-container>
+              <div
+                class="content-thirdForm d-flex flex-column align-items-center mt-5"
+              >
+                <ng-container
+                  *ngIf="masterIdSelected != null && masterIdSelected > 0"
+                  class="text-center title-s-regular mt-3"
+                >
+                  <div><b>Bạn đang gán nhân sự vào doanh nghiệp.</b></div>
+                  <div class="mt-2">
+                    Nhân sự sẽ được phụ trách tất cả điểm kinh doanh.
+                  </div>
+                </ng-container>
+                <ng-container
+                  *ngIf="
+                    !isShowSearchPointSales && organizationSelected.length == 0
+                  "
+                >
+                  <div class="text-center title-s-regular mt-3">
+                    <div class="gap-2">
+                      <img
+                        [src]="assetPath + '/assets/images/grid-empty.png'"
+                        alt="Success"
+                      />
+                      <br />
+                      <div class="text title-s-regular mt-3">
+                        Bạn chưa gán nhân sự vào nhóm nào.
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
+              </div>
+            </div> -->
           </div>
+          <div *ngIf="userInfo?.orgType == 2" class="d-flex gap-3">
+            <div class="col-12" style="max-height: 80vh; overflow-y: auto">
+              <div
+                *ngIf="countSelectedPoint > 0"
+                class="text title-s-regular mt-3"
+              >
+                Bạn đang gán nhân sự vào {{ countSelectedPoint }} điểm kinh
+                doanh.
+              </div>
+              <br />
+              <ng-container *ngIf="pointSales.length > 0">
+                <div class="d-flex">
+                  <div class="col-6 mb-4">
+                    <div class="p-inputgroup show-icon-left search-role me-3">
+                      <span class="p-input-icon-left">
+                        <i
+                          class="icon-search input-icon input-icon-default"
+                        ></i>
+                      </span>
+                      <input
+                        type="text"
+                        pInputText
+                        class="merchant-input search"
+                        [(ngModel)]="searchOrganization"
+                        placeholder="Tìm theo tên, địa chỉ điểm kinh doanh"
+                        (keydown.enter)="getLstMerchant()"
+                        (blur)="getLstMerchant()"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="pointSales.length > 0; else noPointSales">
+                <grid-view
+                  #gridViewRef
+                  [columns]="columnsMerchant"
+                  [dataSource]="pointSales"
+                  [isShowPage]="false"
+                  [search]="true"
+                  [showCheckbox]="true"
+                  (dataChoice)="setUpMerchantIds($event)"
+                  style="float: left; width: 100%"
+                ></grid-view>
+              </ng-container>
+              <ng-template #noPointSales>
+                <div
+                  class="content"
+                  class="content-thirdForm d-flex flex-column align-items-center mt-5"
+                >
+                  <img
+                    [src]="assetPath + '/assets/images/grid-search-empty.png'"
+                  />
+                  <div class="mt-4 title-l-semibold title-no-data">
+                    Không tìm thấy điểm kinh doanh nào
+                  </div>
+                  <div class="title-s-regular summary-no-data">
+                    Vui lòng thử lại với điều kiện tìm kiếm khác.
+                  </div>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="typeUpdate == 0">
+          <div class="d-flex gap-3">
+            <div
+              class="col-12 organization"
+              style="max-height: 60vh; overflow-y: auto"
+            >
+              <div class="content" style="padding: 0 45px 0 45px">
+                <div
+                  class="paragraph-m-regular mb-spacing-l text title-s-regular mt-3"
+                >
+                  Vui lòng chọn 1 điểm kinh doanh để gán cho nhân sự, hoặc gán
+                  trực tiếp vào doanh nghiệp. Khi gán vào doanh nghiệp, nhân sự
+                  sẽ được phụ trách tất cả điểm kinh doanh.
+                </div>
+
+                <div
+                  class="paragraph-m-regular mb-spacing-l mt-2 text title-s-regular mt-3"
+                >
+                  Nếu bạn muốn gán nhân sự vào 2 điểm kinh doanh trở lên, vui
+                  lòng tạo nhóm.
+                  <b
+                    class="text title-s-regular mt-3 no-underline"
+                    (click)="openCreateGroups()"
+                  >
+                    Tạo nhóm mới <span class="icon-arrow_right"></span>
+                  </b>
+                </div>
+
+                <div class="d-flex mt-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <p-radioButton
+                      class="m-radio m-radio-check"
+                      [value]="userInfo?.merchantId"
+                      name="radioOrganization"
+                      [(ngModel)]="masterIdSelected"
+                      (ngModelChange)="onRadioChange($event)"
+                      (click)="$event.stopPropagation()"
+                    />
+                    <span
+                      class="text ellipsis ellipsis-mw-500"
+                      matTooltipPosition="above"
+                      matTooltip="{{ userInfo?.merchantName }}"
+                      appShowIfTruncated
+                      ><b
+                        >Gán vào doanh nghiệp: {{ userInfo?.merchantName }}</b
+                      ></span
+                    >
+                  </div>
+                </div>
+
+                <div class="d-flex mt-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <p-radioButton
+                      class="m-radio m-radio-check"
+                      [value]=""
+                      name="radioOrganization"
+                      [(ngModel)]="masterIdSelected"
+                      (ngModelChange)="onRadioChange($event)"
+                      (click)="$event.stopPropagation()"
+                    />
+                    <span
+                      ><b class="text mw-160"
+                        >Gán vào 1 điểm kinh doanh</b
+                      ></span
+                    >
+                  </div>
+                </div>
+                <br />
+                <div class="d-flex" *ngIf="!masterIdSelected">
+                  <div class="col-6 mb-4">
+                    <div class="p-inputgroup show-icon-left search-role me-3">
+                      <span class="p-input-icon-left">
+                        <i
+                          class="icon-search input-icon input-icon-default"
+                        ></i>
+                      </span>
+                      <input
+                        type="text"
+                        pInputText
+                        class="merchant-input search"
+                        [(ngModel)]="searchOrganization"
+                        placeholder="Tìm theo tên, địa chỉ điểm kinh doanh"
+                        (keydown.enter)="getLstMerchant()"
+                        (blur)="getLstMerchant()"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <ng-container *ngIf="pointSales.length > 0; else noPointSales">
+                  <grid-view
+                    #gridViewRef
+                    [columns]="columnsMerchant"
+                    [dataSource]="pointSales"
+                    [isShowPage]="false"
+                    [search]="true"
+                    [showRadio]="!masterIdSelected"
+                    (selectedItemChange)="radioSetUpMerchantIds($event)"
+                    style="float: left; width: 100%"
+                  ></grid-view>
+                </ng-container>
+                <ng-template #noPointSales>
+                  <div
+                    class="content"
+                    class="content-thirdForm d-flex flex-column align-items-center mt-5"
+                  >
+                    <img
+                      [src]="assetPath + '/assets/images/grid-search-empty.png'"
+                    />
+                    <div class="mt-4 title-l-semibold title-no-data">
+                      Không tìm thấy điểm kinh doanh nào
+                    </div>
+                    <div class="title-s-regular summary-no-data">
+                      Vui lòng thử lại với điều kiện tìm kiếm khác.
+                    </div>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <div class="div-button">
+          <p-button
+            label="Hủy"
+            class="merchant-button-tertiary me-2"
+            (click)="onCancel()"
+          />
+          <button
+            mat-button
+            [disabled]="
+              !masterIdSelected &&
+              totalPointSalesSelected == 0 &&
+              organizationSelected.length === 0
+            "
+            (click)="doNextStep(1)"
+            class="merchant-button-material"
+          >
+            Tiếp tục
+          </button>
         </div>
       </div>
-    </ng-container>
-    <div class="div-button">
-      <p-button
-        label="Hủy"
-        class="merchant-button-tertiary me-2"
-        (click)="onCancel()"
-      />
-      <button
-        mat-button
-        [disabled]="
-          !masterIdSelected &&
-          totalPointSalesSelected == 0 &&
-          organizationSelected.length === 0
-        "
-        (click)="doNextStep(1)"
-        class="merchant-button-material"
-      >
-        Tiếp tục
-      </button>
     </div>
   </mat-step>
 
-  <mat-step label="Gán vai trò" >
-    <div style="padding: 0 150px ">
+  <mat-step label="Gán vai trò">
+    <div style="padding: 0 150px">
       <div>
         <p class="title-s-regular color-040d1f">
           Vui lòng chọn 1 vai trò để gán cho nhân sự.
@@ -334,8 +509,8 @@
             </div>
             <div
               *ngIf="
-              (formInfo.controls['fullName'].dirty ||
-                formInfo.controls['fullName'].touched) &&
+                (formInfo.controls['fullName'].dirty ||
+                  formInfo.controls['fullName'].touched) &&
                 formInfo.controls['fullName'].invalid
               "
               class="m-caption error"
@@ -358,7 +533,6 @@
                 class="text-caption paragraph-m-regular"
                 >Họ và tên không đúng định dạng</span
               >
-               
             </div>
           </div>
           <div class="col-6 mb-4">
@@ -541,7 +715,7 @@
                 formControlName="userName"
                 placeholder="Nhập tên đăng nhập"
                 (blur)="trimValue('userName')"
-                  (keypress)="allowPattern($event)"
+                (keypress)="allowPattern($event)"
               />
               <span
                 *ngIf="formInfo.get('userName')?.value"
@@ -641,8 +815,17 @@
         </div>
       </div>
       <div class="div-button">
-        <p-button label="Quay lại" class="merchant-button-tertiary me-2" (click)="doPreStep()" />
-        <button [disabled]="this.formInfo.invalid" mat-button (click)="createHr()" class="merchant-button-material">
+        <p-button
+          label="Quay lại"
+          class="merchant-button-tertiary me-2"
+          (click)="doPreStep()"
+        />
+        <button
+          [disabled]="this.formInfo.invalid"
+          mat-button
+          (click)="createHr()"
+          class="merchant-button-material"
+        >
           Thêm mới
         </button>
       </div>

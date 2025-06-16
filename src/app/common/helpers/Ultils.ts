@@ -24,6 +24,7 @@ export function convertLstAreaByOrder(list: any[], parentId: number | null): any
   result.forEach(item => {
     let children = convertLstAreaByOrder(list, item.id);
     item.children = children;
+    item.expanded = false;
   });
   return result;
 }
