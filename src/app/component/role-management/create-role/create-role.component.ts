@@ -391,7 +391,8 @@ export class CreateRoleComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result != undefined) {
+      debugger
+      if (result != undefined && result !== false) {
         this.router.navigate(['/role']);
       }
 

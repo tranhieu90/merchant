@@ -192,7 +192,6 @@ export class RoleManagementComponent implements OnInit {
   }
 
   doOpenPage(roleId?: any) {
-    debugger
     const verifyUser = this.auth.checkVerifyUserInfo();
     switch (verifyUser) {
       case UserVerifyStatus.VERIFIED:
