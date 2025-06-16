@@ -153,7 +153,7 @@ export class BusinessCreateComponent implements OnInit {
     this.routeActive.queryParams.subscribe(params => {
       this.organizationSetup = params['organizationSetup'] ? params['organizationSetup'] : false;
       this.lstBusiness = params['lstBusiness'] === 'true';
-      this.areaIdMove = params['groupId'];
+      this.areaIdMove = params['groupId'] ? params['groupId'] : 0;
     });
   }
 

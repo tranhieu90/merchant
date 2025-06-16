@@ -30,7 +30,8 @@
           <label class="form-label title-s-semibold">Tên nhóm</label>
           <p-treeSelect [options]="groupNameOptions" formControlName="groupName" optionLabel="label" optionValue="key"
             selectionMode="checkbox" display="comma" [metaKeySelection]="false" [filter]="true"  [emptyMessage]="'Không tìm thấy dữ liệu'" placeholder="Tất cả"
-            class="merchant-treeSelect" (onNodeSelect)="onGroupClick($event)" (onNodeUnselect)="onGroupClick($event)">
+            class="merchant-treeSelect" (onNodeSelect)="onGroupClick($event)" (onNodeUnselect)="onGroupClick($event)"
+            filterPlaceholder="Tìm kiếm cụm/nhóm">
           </p-treeSelect>
         </div>
       </div>
