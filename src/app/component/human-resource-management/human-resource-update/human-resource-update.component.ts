@@ -48,7 +48,6 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { IPersonelUpdate } from '../../../model/ma/personel.model';
 import { environment } from '../../../../environments/environment';
 import { fomatAddress } from '../../../common/helpers/Ultils';
-import { AreaViewComponent } from '../../organization-management/area-view/area-view.component';
 @Component({
   selector: 'app-human-resource-update',
   standalone: true,
@@ -64,7 +63,7 @@ import { AreaViewComponent } from '../../organization-management/area-view/area-
     ReactiveFormsModule,
     GridViewComponent,
     CalendarModule,
-   AreaViewComponent,
+    // AreaItemComponent,
     CommonModule,
     TreeModule,
     MatCheckboxModule,
@@ -101,8 +100,11 @@ export class HumanResourceUpdateComponent implements OnInit {
   totalMerchant: number = 0;
   totalSelect: number = 0;
   groupNameSelect!: string;
+  // groupIdsDelete: any = [];
   totalSubmerchant: number = 0;
+
   isDisableCheckbox: boolean = false;
+
   pointSales: any = [];
   selectedMerchantDefault?: any;
   merchantIdsSelectedAdd: any = [];
@@ -137,6 +139,7 @@ export class HumanResourceUpdateComponent implements OnInit {
     const state = this.router.getCurrentNavigation()?.extras.state;
     const personData = state?.['dataInput'];
     if (personData) {
+      // this.groupList = personData.groupList;
       this.roleId = personData.roleId;
       this.userId = personData.userId;
       this.selectedMerchantDefault = personData?.selectedMerchant;
@@ -331,7 +334,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       options: {
         width: '25%',
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left','mw-140'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -344,7 +347,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       options: {
         width: '60%',
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left','mw-160'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -370,7 +373,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       label: 'TÊN ĐIỂM KINH DOANH',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left','mw-120'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -382,7 +385,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       label: 'ĐỊA CHỈ',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left','mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -614,10 +617,15 @@ export class HumanResourceUpdateComponent implements OnInit {
   doGroup(group: any) {
     if (group.checked) {
       this.groupListClone.push(group?.id);
+      this.listgroupIdInMerchant?.push(group?.id);
     } else {
       this.groupListClone = this.groupListClone.filter(
         (item: number) => item !== group?.id
       );
+      const index = this.listgroupIdInMerchant?.indexOf(group?.id);
+        if (index !== undefined && index !== -1) {
+          this.listgroupIdInMerchant?.splice(index, 1);
+        }
     }
   }
 

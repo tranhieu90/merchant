@@ -59,7 +59,7 @@
                     <i class="icon-search input-icon input-icon-default"></i>
                   </span>
                   <input type="text" pInputText class="merchant-input search" [(ngModel)]="searchOrganization" 
-                    placeholder="Tìm kiếm theo tên, địa chỉ điểm kinh doanh" (keydown.enter)="getLstMerchant()"
+                    placeholder="Tìm kiếm tên, địa chỉ điểm kinh doanh" (keydown.enter)="getLstMerchant()"
                     (blur)="getLstMerchant()" />
                 </div>
               </div>
@@ -316,6 +316,7 @@
               <input
                 type="text"
                 pInputText
+                maxlength="50"
                 class="merchant-input"
                 formControlName="fullName"
                 placeholder="Nhập họ và tên"
@@ -333,7 +334,8 @@
             </div>
             <div
               *ngIf="
-                formInfo.controls['fullName'].touched &&
+              (formInfo.controls['fullName'].dirty ||
+                formInfo.controls['fullName'].touched) &&
                 formInfo.controls['fullName'].invalid
               "
               class="m-caption error"
@@ -351,14 +353,20 @@
                 class="text-caption paragraph-m-regular"
                 >Tối đa 50 ký tự</span
               >
+              <span
+                *ngIf="formInfo.controls['fullName'].hasError('pattern')"
+                class="text-caption paragraph-m-regular"
+                >Họ và tên không đúng định dạng</span
+              >
+               
             </div>
           </div>
           <div class="col-6 mb-4">
             <label class="form-label title-m-semibold">Email</label>
             <div class="p-inputgroup">
               <input
-                maxlength="50"
                 type="text"
+                maxlength="254"
                 pInputText
                 id="email"
                 class="merchant-input"
@@ -405,7 +413,7 @@
                 "
                 class="text-caption paragraph-m-regular"
               >
-                Vui lòng không nhập quá 50 kí tự
+                Vui lòng không nhập quá 254 kí tự
               </div>
               <div
                 *ngIf="
@@ -527,6 +535,7 @@
                 appShowClearOnFocus=".clear-icon"
                 type="text"
                 pInputText
+                maxlength="100"
                 id="userName"
                 class="merchant-input"
                 formControlName="userName"

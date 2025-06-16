@@ -92,7 +92,7 @@ export class HumanResourceManagementComponent implements OnInit {
       label: 'HỌ VÀ TÊN',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left','mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -104,7 +104,7 @@ export class HumanResourceManagementComponent implements OnInit {
       label: 'NGÀY SINH',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left','mw-140'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -119,7 +119,7 @@ export class HumanResourceManagementComponent implements OnInit {
       label: 'SỐ ĐIỆN THOẠI',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left','mw-140'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -131,7 +131,7 @@ export class HumanResourceManagementComponent implements OnInit {
       label: 'VAI TRÒ',
       options: {
         customCssHeader: (obj: any) => {
-          return ['text-left'];
+          return ['text-left','mw-160'];
         },
         customCss: (obj: any) => {
           return ['text-left'];
@@ -139,16 +139,7 @@ export class HumanResourceManagementComponent implements OnInit {
       },
     },
   ];
-  action: any = [
-    {
-      icon: 'icon-eye_on',
-      title: 'Xem chi tiết',
-      doAction: (item: any) => {
-        this.skipSearch = true;
-        this.checkOpenViewDetailPage(item);
-      },
-    },
-  ];
+  action: any = [];
 
   formDropdown: FormGroup;
   statusOptions: any[] = [
@@ -165,6 +156,7 @@ export class HumanResourceManagementComponent implements OnInit {
   businessPoint: boolean = false; //Được gán với điểm kinh doanh
   merchantNoGroup: boolean = false; //Được gán với merchant không có nhóm
   merchantWithGroup: boolean = false; //Được gán với merchant có nhóm
+  hasRole?: boolean
 
   constructor(
     private fb: FormBuilder,
@@ -183,7 +175,8 @@ export class HumanResourceManagementComponent implements OnInit {
 
   ngOnInit() {
     this.userInfo = this.auth.getUserInfo();
-    if (this.userInfo && this.userInfo.orgType != 2) {
+    this.hasRole = this.auth.apiTracker([MERCHANT_RULES.USER_MANAGER_DETAIL]);
+    if (this.hasRole) {
       this.columns.push({
         name: 'status',
         label: 'TRẠNG THÁI',
@@ -205,7 +198,16 @@ export class HumanResourceManagementComponent implements OnInit {
           },
         },
       });
+      this.action.push({
+        icon: 'icon-eye_on',
+        title: 'Xem chi tiết',
+        doAction: (item: any) => {
+          this.skipSearch = true;
+          this.checkOpenViewDetailPage(item);
+        },
+      });
     }
+
     this.doSearch();
     this.getLstRole();
   }
@@ -260,7 +262,7 @@ export class HumanResourceManagementComponent implements OnInit {
     const verifyUser = this.auth.checkVerifyUserInfo();
     switch (verifyUser) {
       case UserVerifyStatus.VERIFIED:
-        this.doDetail(item['userId']);
+        this.doDetail(item);
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
         this.openDialogUnverifiedAccountAndEmail();
@@ -277,9 +279,8 @@ export class HumanResourceManagementComponent implements OnInit {
   openDialogUnverifiedAccountAndEmail() {
     let dataDialog: DialogRoleModel = new DialogRoleModel();
     dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${
-      this.auth.getUserInfo()?.emailChange
-    }</b>.`;
+    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${this.auth.getUserInfo()?.emailChange
+      }</b>.`;
     dataDialog.icon = 'icon-warning';
     dataDialog.iconColor = 'warning';
     dataDialog.buttonLeftLabel = 'Thay đổi email';
@@ -305,6 +306,7 @@ export class HumanResourceManagementComponent implements OnInit {
     dataDialog.message =
       'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
     dataDialog.icon = 'icon-warning';
+    dataDialog.hiddenButtonLeft = true;
     dataDialog.iconColor = 'warning';
     dataDialog.buttonRightLabel = 'Bổ sung email';
 
@@ -323,17 +325,33 @@ export class HumanResourceManagementComponent implements OnInit {
   }
 
   doOpenPage() {
-    let verifyInfo = this.auth.checkVerifyUserInfo();
-    if (verifyInfo == 'VERIFIED') {
-      this.router.navigate(['/hr/hr-create']);
-    } else {
-      this.router.navigate(['/profile']);
+    // let verifyInfo = this.auth.checkVerifyUserInfo();
+    // if (verifyInfo == 'VERIFIED') {
+    //   this.router.navigate(['/hr/hr-create']);
+    // } else {
+    //   this.router.navigate(['/profile']);
+    // }
+
+    const verifyUser = this.auth.checkVerifyUserInfo();
+    switch (verifyUser) {
+      case UserVerifyStatus.VERIFIED:
+         this.router.navigate(['/hr/hr-create']);
+        break;
+      case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
+        this.openDialogUnverifiedAccountAndEmail();
+        break;
+      case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
+        this.openDialogUnverifiedAccountAndNoEmail();
+        break;
+      default:
+        console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
+        break;
     }
   }
 
-  doDetail(userId?: any) {
+  doDetail(userDetail?: any) {
     const hasRole = this.auth.apiTracker([MERCHANT_RULES.USER_MANAGER_DETAIL]);
-    if (!hasRole) {
+    if (!hasRole || (this.userInfo.orgType === 2 && (userDetail['orgType'] === 1 || userDetail['orgType'] === 0))) {
       let dataDialog: DialogConfirmModel = new DialogConfirmModel();
       dataDialog.title = 'Bạn không có quyền xem nhân sự';
       dataDialog.message =
@@ -348,9 +366,9 @@ export class HumanResourceManagementComponent implements OnInit {
         }
       });
     } else {
-      if (userId)
+      if (userDetail['userId'])
         this.router.navigate(['hr/hr-detail'], {
-          queryParams: { userId: userId },
+          queryParams: { userId: userDetail['userId'] },
         });
       else this.router.navigate(['hr/hr-detail']);
     }
@@ -360,7 +378,7 @@ export class HumanResourceManagementComponent implements OnInit {
     this.isFilter = !this.isFilter;
   }
 
-  onConfirm() {}
+  onConfirm() { }
 
   clearFilter() {
     this.formDropdown.get('status')?.setValue('');
@@ -386,7 +404,6 @@ export class HumanResourceManagementComponent implements OnInit {
           name: 'Tất cả',
           description: 'Tất cả vai trò',
         });
-        console.log('lstRole', this.lstRole);
       });
   }
 }

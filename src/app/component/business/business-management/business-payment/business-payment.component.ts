@@ -20,8 +20,8 @@ import { distinctUntilChanged } from 'rxjs';
 import { QRCodeComponent } from 'angularx-qrcode'
 import { ShowClearOnFocusDirective } from '../../../../common/directives/showClearOnFocusDirective';
 import { REGEX_PATTERN } from '../../../../common/enum/RegexPattern';
-import {InputCommon} from '../../../../common/directives/input.directive';
-import {InputSanitizeDirective} from '../../../../common/directives/inputSanitize.directive';
+import { InputCommon } from '../../../../common/directives/input.directive';
+import { InputSanitizeDirective } from '../../../../common/directives/inputSanitize.directive';
 
 @Component({
   selector: 'app-business-payment',
@@ -76,6 +76,7 @@ export class BusinessPaymentComponent implements OnInit {
   dataRespone!: any
   lstDuplicatePos: any = [];
   lstDuplicateId: any = [];
+  hasQR: boolean = false;
   constructor(
     private fb: FormBuilder,
     private dialogCommon: DialogCommonService,
@@ -112,6 +113,31 @@ export class BusinessPaymentComponent implements OnInit {
       initialAccountName: ['',],
       paymentType: [''],
     })
+    this.setValidatorsByIsCheck(1);
+  }
+  setValidatorsByIsCheck(ischeck: number) {
+    this.ischeck = ischeck;
+    if (ischeck == 1) {
+      this.paymentQRFormInsert.get('terminalId')?.setValidators([
+        Validators.required,
+        Validators.pattern(/^[a-zA-Z0-9]+$/),
+      ]);
+      this.paymentQRFormInsert.get('accountNumber')?.clearValidators();
+      this.paymentQRFormInsert.get('accountName')?.clearValidators();
+    } else {
+      this.paymentQRFormInsert.get('terminalId')?.clearValidators();
+      this.paymentQRFormInsert.get('accountNumber')?.setValidators([
+        Validators.required,
+        Validators.pattern(/^[a-zA-Z0-9]+$/),
+      ]);
+      this.paymentQRFormInsert.get('accountName')?.setValidators([
+        Validators.required,
+        Validators.pattern(/^[a-zA-Z0-9\s`~!@#$%^&*()_\-+=\[\]{}\\|;:'",.<>\/?]+$/),
+      ]);
+    }
+    this.paymentQRFormInsert.get('terminalId')?.updateValueAndValidity();
+    this.paymentQRFormInsert.get('accountNumber')?.updateValueAndValidity();
+    this.paymentQRFormInsert.get('accountName')?.updateValueAndValidity();
   }
 
   setDataFormUpdate(data: any) {
@@ -182,6 +208,7 @@ export class BusinessPaymentComponent implements OnInit {
         let merchantPaymentMethodList = res.data['merchantPaymentMethodList'];
         merchantPaymentMethodList.forEach((item: any) => {
           if (item.methodId == 324) {
+            this.hasQR = true;
             this.paymentQR = item.paymentInfo[0];
             this.setDataFormUpdate(this.paymentQR);
             this.paymentQRFormUpdate.enable();
@@ -373,6 +400,10 @@ export class BusinessPaymentComponent implements OnInit {
   }
 
   doUpdate() {
+    if (!this.doCreateMerchantPaymentMethodList().length) {
+      this.toast.showWarn('Không có sự thay đổi thông tin phương thức thanh toán !')
+      return;
+    }
     let dataSave = {
       merchantId: this.merchantId,
       subId: this.subId,
@@ -441,7 +472,7 @@ export class BusinessPaymentComponent implements OnInit {
           }
         }
       })
-      if (dataRespone?.length) {
+      if (!dataRespone?.length) {
         this.toast.showError('Đã xảy ra lỗi, vui lòng thử lại');
       }
     } else {

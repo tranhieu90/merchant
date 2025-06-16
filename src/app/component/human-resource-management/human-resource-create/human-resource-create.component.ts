@@ -49,6 +49,7 @@ import {
   DialogRoleModel,
 } from '../../role-management/dialog-role/dialog-role.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import moment from 'moment';
 
 @Component({
   selector: 'app-human-resource-create',
@@ -108,7 +109,10 @@ export class HumanResourceCreateComponent implements OnInit {
   searchPoint: boolean = false;
   isSelectGroup: boolean = false;
   isShowSearchPointSales: boolean = false;
-  checkGroupHasPoinSales:boolean=false;
+  checkGroupHasPoinSales: boolean = false;
+
+
+  lstGroupIdMerchant: any[] = [];
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
@@ -120,7 +124,7 @@ export class HumanResourceCreateComponent implements OnInit {
     private routeActive: ActivatedRoute,
     private dialogCommon: DialogCommonService
   ) {
-    this.routeActive.queryParams.subscribe((params) => {});
+    this.routeActive.queryParams.subscribe((params) => { });
   }
 
   ngOnInit(): void {
@@ -134,8 +138,7 @@ export class HumanResourceCreateComponent implements OnInit {
       if (this.userInfo.orgType == 2) this.getLstMerchant(true);
     }
   }
-  ngOnChanges():void{
-    console.log(1);
+  ngOnChanges(): void {
     this.checkShowTextSearchPoinsales();
   }
   columns: Array<GridViewModel> = [
@@ -161,7 +164,7 @@ export class HumanResourceCreateComponent implements OnInit {
       options: {
         width: '35%',
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left','mw-140'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -174,7 +177,7 @@ export class HumanResourceCreateComponent implements OnInit {
       options: {
         width: '60%',
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left','mw-160'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -205,7 +208,7 @@ export class HumanResourceCreateComponent implements OnInit {
       options: {
         width: '45%',
         customCss: () => {
-          return ['text-left'];
+          return ['text-left','mw-120'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -218,7 +221,7 @@ export class HumanResourceCreateComponent implements OnInit {
       options: {
         width: '50%',
         customCss: () => {
-          return ['text-left'];
+          return ['text-left','mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -250,24 +253,23 @@ export class HumanResourceCreateComponent implements OnInit {
         '',
         [
           Validators.required,
-          Validators.maxLength(50),
+          Validators.maxLength(100),
           Validators.pattern(REGEX_PATTERN.USER_NAME),
         ],
       ],
       userPass: ['', [Validators.required]],
     });
   }
-  checkShowTextSearchPoinsales(){
+  checkShowTextSearchPoinsales() {
     console.log(this.activeOrganization);
-     var group= this.organization.filter((gr:any)=>gr.id==this.organizationIdActive);
-      if(group && group.chidren.length==0 && this.pointSales.length > 0 )
-      {
-        this.isShowMechantList= true;
-      }
-      this.isShowMechantList= false;
+    var group = this.organization.filter((gr: any) => gr.id == this.organizationIdActive);
+    if (group && group.chidren.length == 0 && this.pointSales.length > 0) {
+      this.isShowMechantList = true;
+    }
+    this.isShowMechantList = false;
   }
   openCreateGroups() {
-  window.open(this.assetPath + '/organization', '_blank', 'noopener,noreferrer');
+    window.open(this.assetPath + '/organization', '_blank', 'noopener,noreferrer');
   }
   doGetGroup() {
     this.api.post(ORGANIZATION_ENDPOINT.GET_LIST_GROUPS).subscribe(
@@ -311,16 +313,19 @@ export class HumanResourceCreateComponent implements OnInit {
     this.countSelectedPoint = 0;
     this.organizationIdActive = group.id;
     this.activeOrganization = group.groupName;
-    this.isShowSearchPointSales=false;
+    this.isShowSearchPointSales = false;
     if (group.children.length == 0) {
       this.getLstMerchant();
-      setTimeout(()=>{if(this.pointSales.length>0) {
-          this.isShowSearchPointSales=true;
-      }},300)
+      setTimeout(() => {
+        if (this.pointSales.length > 0) {
+          this.isShowSearchPointSales = true;
+        }
+      }, 300)
     } else {
       this.pointSales = [];
     }
   }
+
   selectMearchant(event: any) {
     if (event.checked) {
       this.masterIdSelected = this.userInfo?.merchantId;
@@ -372,8 +377,8 @@ export class HumanResourceCreateComponent implements OnInit {
                 this.typeUpdate = 0;
               }
             }
-            else{
-                this.isShowMechantList = true;
+            else {
+              this.isShowMechantList = true;
             }
             if (this.pointSalesSelected.size > 0) {
               this.pointSales.forEach((item: any) => {
@@ -418,30 +423,28 @@ export class HumanResourceCreateComponent implements OnInit {
   }
   doCheckGroup(event: any) {
     this.roleId = '';
-    this.isSelectGroup=false;
-     this.isShowSearchPointSales=false;
+    this.isSelectGroup = false;
+    this.isShowSearchPointSales = false;
     if (event.checked) {
       this.organizationSelected.push(event.id);
-       this.isSelectGroup=true;
+      this.isSelectGroup = true;
       this.pointSalesSelected = new Set();
-      if(event.children.length==0)
-      {
-         this.isSelectGroup=true;
+      if (event.children.length == 0) {
+        this.isSelectGroup = true;
         this.getLstMerchant();
-         setTimeout(()=>{
-          if(this.pointSales.length>0)
-          {
-            this.isShowSearchPointSales=true;
+        setTimeout(() => {
+          if (this.pointSales.length > 0) {
+            this.isShowSearchPointSales = true;
           }
-          this.countSelectedPoint= this.pointSales.length;
-        },200)
-        setTimeout(()=>{
-          if(this.gridViewComponent){
-             this.gridViewComponent.doCheckAllPointSales();
+          this.countSelectedPoint = this.pointSales.length;
+        }, 200)
+        setTimeout(() => {
+          if (this.gridViewComponent) {
+            this.gridViewComponent.doCheckAllPointSales();
           }
-        },500)
+        }, 500)
       }
-      else{
+      else {
         this.pointSales = [];
       }
       this.doCheckDisableAnotherlevel(event.level);
@@ -449,41 +452,60 @@ export class HumanResourceCreateComponent implements OnInit {
       this.organizationSelected = this.organizationSelected.filter(
         (item: string) => item !== event.id
       );
-      this.isSelectGroup=false;
-      if(event.children.length==0){
-        this.countSelectedPoint=0;
+      this.isSelectGroup = false;
+      if (event.children.length == 0) {
+        this.countSelectedPoint = 0;
         this.pointSales = [];
       }
       this.doCheckUnDisableAnotherlevel(event.level);
     }
   }
   setUpMerchantIds(event: any) {
+    if (this.gridViewComponent) {
+      this.gridViewComponent.doUnCheckAllPointSales();
+    }
+
     if (event && Array.isArray(event)) {
       let dataChange = event.map((item) => item.merchantId);
+      let groupId = event.map((item) => item.groupId);
       if (event[0]?.checked) {
         this.addListToSet(dataChange);
+        groupId.forEach((id) => this.lstGroupIdMerchant?.push(id));
       } else {
         this.removeListFromSet(dataChange);
+        groupId.forEach((id) => {
+          const index = this.lstGroupIdMerchant?.indexOf(id);
+          if (index !== undefined && index !== -1) {
+            this.lstGroupIdMerchant?.splice(index, 1);
+          }
+        });
       }
     } else {
       if (event.checked) {
         this.pointSalesSelected.add(event?.merchantId);
+        this.lstGroupIdMerchant?.push(event?.groupId);
       } else {
         this.pointSalesSelected.delete(event?.merchantId);
+        const index = this.lstGroupIdMerchant?.indexOf(event?.groupId);
+        if (index !== undefined && index !== -1) {
+          this.lstGroupIdMerchant?.splice(index, 1);
+        }
       }
     }
     this.roleId = '';
     if (this.mTreeComponent) {
       this.mTreeComponent.checkAllItems(false);
     }
+
     this.totalPointSalesSelected = this.pointSalesSelected.size;
+    this.markChecked(this.organizationSort, this.lstGroupIdMerchant);
+
   }
   radioSetUpMerchantIds(event: any) {
     this.pointSalesSelected.add(event.merchantId);
     this.totalPointSalesSelected = this.pointSalesSelected.size;
   }
   seletedPointSales(event: any) {
-    console.log('seletedPointSales', event);
     if (this.gridViewComponent) {
       this.countSelectedPoint = event;
     } else {
@@ -496,13 +518,13 @@ export class HumanResourceCreateComponent implements OnInit {
       this.pointSalesSelected = new Set();
     }
   }
-  markChecked(parentList: any[], childList: any[]) {
-    const childIds = new Set(childList.map((item) => item.id));
-    parentList.forEach((item) => {
-      item.checked = childIds.has(item.id);
-    });
-    return parentList;
-  }
+  // markChecked(parentList: any[], childList: any[]) {
+  //   const childIds = new Set(childList.map((item) => item.id));
+  //   parentList.forEach((item) => {
+  //     item.checked = childIds.has(item.id);
+  //   });
+  //   return parentList;
+  // }
 
   addListToSet(listToAdd: number[]): void {
     listToAdd.forEach((item) => this.pointSalesSelected.add(item));
@@ -525,8 +547,8 @@ export class HumanResourceCreateComponent implements OnInit {
   doPreStep() {
     if (this.currentStep > 0) {
       this.currentStep--;
-    }else{
-      this.onCancel(); 
+    } else {
+      this.onCancel();
     }
   }
   setRoleId(event: any) {
@@ -579,31 +601,32 @@ export class HumanResourceCreateComponent implements OnInit {
       control.setValue(control.value.trim());
     }
   }
- allowPattern(event: KeyboardEvent) {
-  const target = event.target as HTMLInputElement;
-  let pattern: RegExp = /.*/;
-  let maxLength = 254;
+  allowPattern(event: KeyboardEvent) {
+    const target = event.target as HTMLInputElement;
+    let pattern: RegExp = /.*/;
+    let maxLength = 254;
 
-  switch (target?.id) {
-    case "email":
-      pattern = /^[a-zA-Z0-9._%+\-@]$/;
-      maxLength = 254;
-      break;
-    case "userName":
-      pattern = /^[a-zA-Z0-9._@'\-]$/;
-      maxLength = 50;
-      break;
+    switch (target?.id) {
+      case "email":
+        pattern = /^[a-zA-Z0-9._%+\-@]$/;
+        maxLength = 254;
+        break;
+      case "userName":
+        pattern = /^[a-zA-Z0-9._@'\-]$/;
+        maxLength = 50;
+        break;
+    }
+    if (
+      !pattern.test(event.key) ||
+      event.key === " " ||
+      target.value.length >= maxLength
+    ) {
+      event.preventDefault();
+    }
   }
-  if (
-    !pattern.test(event.key) ||
-    event.key === " " ||
-    target.value.length >= maxLength
-  ) {
-    event.preventDefault();
-  }
-}
   createHr() {
     let params = this.formInfo.getRawValue();
+    params['dateOfBirth'] = moment(params['dateOfBirth']).format('DD/MM/YYYY') ;
     params['roleId'] = this.roleId;
     params['organizationInfo'] = {
       masterId:
@@ -690,5 +713,39 @@ export class HumanResourceCreateComponent implements OnInit {
     }
 
     return null;
+  }
+
+  markChecked(parentList: any[], childList: number[]): any[] {
+    if (parentList?.length && childList?.length) {
+      this.flatParentGroup(parentList, childList);
+
+      // const childIds = new Set(childList);
+      // parentList.forEach((item) => {
+      //   if (this.pointSalesSelected.size > 0 && childIds.has(item.id)) {
+      //     item.checked = 'partial';
+      //   } else {
+      //     item.checked = childIds.has(item.id);
+      //   }
+      // });
+    } else if (parentList?.length) {
+      parentList.forEach((item) => {
+        item.checked = false;
+      });
+    }
+    return parentList;
+  }
+
+  flatParentGroup(parentList: any[], childList: number[]) {
+    parentList.forEach((item) => {
+      const childIds = new Set(childList);
+      if (item?.children?.length > 0) {
+        this.flatParentGroup(item?.children, childList);
+      }
+      if (this.pointSalesSelected.size > 0 && childIds.has(item.id)) {
+        item.checked = 'partial';
+      } else {
+        item.checked = childIds.has(item.id);
+      }
+    });
   }
 }

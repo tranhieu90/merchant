@@ -42,11 +42,10 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.authService.userInfo$.subscribe(userInfo => {
-      console.log('userInfo', userInfo);
       if (userInfo) {
         this.userName = userInfo.fullName;
         this.userNameFomat = this.userName.length > 16 ? this.userName.slice(0, 16) + '...' : this.userName;
-        this.avatarBase64 = userInfo.avatar;
+        this.avatarBase64 = userInfo?.avatar;
         this.roleName = userInfo?.roleName?.length > 16 ? userInfo?.roleName?.slice(0, 16) + '...' : userInfo?.roleName;
       }
     });

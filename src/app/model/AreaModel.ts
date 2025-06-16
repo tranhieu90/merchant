@@ -6,4 +6,5 @@ export class AreaModel {
     groupName?: string;
     children: AreaModel[] = [];
     lstMerchant: number[] =[];
+    isLeaf?: boolean=false;
   }

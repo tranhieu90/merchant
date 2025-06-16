@@ -101,7 +101,7 @@ export class UpdateOrganizationComponent implements OnChanges {
           this.setAreaActive(this.lstAreaByOrder, type);
         }
       }, (error: any) => {
-        window.location.reload(); 
+        window.location.reload();
         // const errorData = error?.error || {};
         // this.toast.showError(errorData?.soaErrorDesc);
       });
@@ -205,7 +205,7 @@ export class UpdateOrganizationComponent implements OnChanges {
       this.lstAreas = this.lstAreas.filter(x=>x.id !=id) ;
       this.lstAreaByOrder= this.convertLstAreaByOrder(this.lstAreas,null);
       this.isFormCreateAreaInvalid= false;
-    } 
+    }
     else{
       let param = {
         groupId: id
@@ -416,7 +416,7 @@ export class UpdateOrganizationComponent implements OnChanges {
       this.getLstAreas(2);  // Lấy lại danh sách mới nhất
       this.toast.showSuccess('Đổi tên nhóm thành công');
       this.isEditArea = false;
-      
+
       this.areaActive.groupName = areaName;
     }, (error: any) => {
       if (error && error?.error?.soaErrorCode === 'GROUP_ERROR_001') {
@@ -424,14 +424,14 @@ export class UpdateOrganizationComponent implements OnChanges {
         this.formEditArea.get('areaName')!.setErrors({ areaExists: true });
         this.formEditArea.get('areaName')?.markAsTouched();
         this.formEditArea.updateValueAndValidity();
-        
+
         return
       }
       const errorData = error?.error || {};
       this.toast.showError(errorData?.soaErrorDesc);
     });
   }
-  
+
 
   doMoveMerchant(lstMerchantIdMove: any) {
     let lstAreaExistMove = this.lstAreas.filter((item) => item.id != this.areaActive.id && item.children.length == 0);
@@ -477,9 +477,20 @@ export class UpdateOrganizationComponent implements OnChanges {
       (res: any) => {
         if(isNotDelete) {
           this.toast.showSuccess("Chuyển điểm kinh doanh thành công");
-          this.getLstAreas(1);
+
+          // Active nhóm đích ngay sau khi lấy lại danh sách
+          setTimeout(() => {
+            const newActiveArea = this.lstAreas.find(item => item.id === param.groupNewId);
+            if (newActiveArea) {
+              this.doActiveArea(newActiveArea);
+            }
+          }, 500);
         } else {
           this.isMoveMerchantSuccess = true;
+          const newActiveArea = this.lstAreas.find(item => item.id === param.groupNewId);
+          if (newActiveArea) {
+            this.doActiveArea(newActiveArea);
+          }
         }
       },
       (error: any) => {
@@ -492,30 +503,31 @@ export class UpdateOrganizationComponent implements OnChanges {
         }
       });
   }
+
+  cancelEdit() {
+
+    this.formEditArea.get('areaName')?.setValue(this.areaActive.groupName);
+    this.isEditArea = false;
+  }
+
+  backOrganization() {
+    this.isMoveMerchantSuccess = false;
+    this.getLstAreas(1);
+  }
   onEnterKey() {
     if (this.formEditArea.valid) {
-      this.updateAreaName(); 
+      this.updateAreaName();
     }
   }
+
   onBlurEdit() {
     this.isCloseInput = false;
     setTimeout(() => {
       if (this.isEditArea && !this.isCloseInput) {
         this.cancelEdit();
       }
-    }, 300); // Delay 200ms để đợi click xử lý trước
+    }, 300);
   }
-  
-  
-  cancelEdit() {
-    // Reset lại giá trị tên nhóm về tên cũ
-    this.formEditArea.get('areaName')?.setValue(this.areaActive.groupName);
-    this.isEditArea = false;
-  }
-  
-  backOrganization() {
-    this.isMoveMerchantSuccess = false;
-    this.getLstAreas(1);
-  }
+
 }
 

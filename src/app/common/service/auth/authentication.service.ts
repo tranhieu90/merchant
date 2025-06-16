@@ -10,7 +10,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class AuthenticationService {
   isFlag: boolean = false;
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   private userInfoSubject = new BehaviorSubject<any>(this.getUserInfo());
   userInfo$ = this.userInfoSubject.asObservable();
@@ -68,6 +68,7 @@ export class AuthenticationService {
     return JSON.parse(localStorage.getItem('menus') || '[]');
   }
 
+
   isLoggedIn(): boolean {
     let token: string | null = null;
     token = localStorage.getItem(environment.accessToken);
@@ -99,8 +100,13 @@ export class AuthenticationService {
   }
 
   updateUserInfo(newInfo: any) {
-    localStorage.setItem(environment.userInfo, JSON.stringify(newInfo));
-    this.userInfoSubject.next(newInfo);
+    let userInfo = this.getUserInfo();
+    if (userInfo) {
+      userInfo.avatar = newInfo?.avatar,
+        userInfo.fullName = newInfo?.fullName
+    }
+    localStorage.setItem(environment.userInfo, JSON.stringify(userInfo));
+    this.userInfoSubject.next(userInfo);
   }
 
   apiTracker(path: string | string[]) {

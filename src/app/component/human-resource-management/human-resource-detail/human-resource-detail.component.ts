@@ -40,6 +40,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DirectiveModule } from '../../../base/module/directive.module';
 import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MTreeComponent } from '../../../base/shared/m-tree/m-tree.component';
 @Component({
   selector: 'app-human-resource-detail',
   standalone: true,
@@ -61,6 +62,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     TooltipModule,
     MatTooltipModule,
     DirectiveModule,
+    MTreeComponent,
   ],
   templateUrl: './human-resource-detail.component.html',
   styleUrl: './human-resource-detail.component.scss',
@@ -101,7 +103,7 @@ export class HumanResourceDetailComponent implements OnInit {
       label: 'TÊN ĐIỂM KINH DOANH',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left','mw-120'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -113,7 +115,7 @@ export class HumanResourceDetailComponent implements OnInit {
       label: 'ĐỊA CHỈ',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left','mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];

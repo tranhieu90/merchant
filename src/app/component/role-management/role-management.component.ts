@@ -259,7 +259,6 @@ export class RoleManagementComponent implements OnInit {
       this.totalItem = res['data']['count'];
     }, (error) => {
       const errorData = error?.error || {};
-      debugger
       switch (errorData.soaErrorCode) {
         case 'ACCOUNT_ERROR_001':
           this.openDialogUnverifiedAccountNoEmail();

@@ -173,7 +173,9 @@ export class BusinessManagementComponent {
   ngOnInit() {
     this.isConfig = this.auth.getUserInfo()?.isConfig;
     this.getLstPaymentMethod();
-    this.getDataGroup();
+    if (this.auth.getUserInfo()?.orgType != 2) {
+      this.getDataGroup();
+    }
     this.doSearch();
     this.hideColumn();
     this.formDropdown.valueChanges.subscribe(() => {
@@ -189,7 +191,7 @@ export class BusinessManagementComponent {
       this.pageSize = pageInfo["pageSize"]
     }
     let lstMethodId = this.formDropdown.get('paymentMethod')?.value;
-    let groupIdList = this.getIdBygroupIdlst(this.formDropdown.get('groupName')?.value);
+    let groupIdList = this.getTopLevelGroupIds(this.formDropdown.get('groupName')?.value || []);
     let dataReq = {
       groupIdList: groupIdList ? groupIdList : [],
       status: this.formDropdown.get('status')?.value,
@@ -230,7 +232,7 @@ export class BusinessManagementComponent {
   }
 
   getLstPaymentMethod() {
-    this.api.get(BUSINESS_ENDPOINT.GET_LIST_PAYMENT_METHOD).subscribe((res: any) => {
+    this.api.get(BUSINESS_ENDPOINT.GET_LIST_PAYMENT_METHOD_FILTER).subscribe((res: any) => {
       if (res['data']) {
         this.lstPaymentMethod = res['data']['paymentMethodList'];
         // this.lstPaymentMethod.unshift({ paymentMethodName: "Tất cả", paymentMethodId: [324, 333, 332] })
@@ -337,16 +339,41 @@ export class BusinessManagementComponent {
 
   onGroupClick(event: any) {
     const clickedNode = event.node;
-
     this.lastClickedGroup = clickedNode;
 
     setTimeout(() => {
       const selected = this.formDropdown.controls['groupName']?.value || [];
-      const parentId = clickedNode.parentId;
-      const filtered = selected.filter((item: any) => item.parentId === parentId);
+      const clickedFullNode = this.findItemById(this.groupNameOptions, clickedNode.id);
+      if (!clickedFullNode) return;
 
-      this.formDropdown.controls['groupName']?.setValue(filtered);
+      const targetLevel = clickedFullNode.level;
+      const targetParentId = clickedFullNode.parentId;
 
+      // Lọc các node cùng level và cùng parentId
+      const sameLevelNodes = selected.filter((item: any) => {
+        const fullItem = this.findItemById(this.groupNameOptions, item.id);
+        return fullItem?.level === targetLevel && fullItem?.parentId === targetParentId;
+      });
+
+      // Lấy toàn bộ con (mọi cấp) của các node này
+      const allWithChildren: any[] = [];
+
+      for (const node of sameLevelNodes) {
+        const fullNode = this.findItemById(this.groupNameOptions, node.id);
+        if (fullNode) {
+          allWithChildren.push(fullNode);
+          const children = this.getAllChildNodes(fullNode);
+          allWithChildren.push(...children);
+        }
+      }
+
+      // Loại bỏ trùng ID
+      const uniqueById = Array.from(new Map(allWithChildren.map(item => [item.id, item])).values());
+
+      // Gán lại cho ngModel
+      this.formDropdown.controls['groupName']?.setValue(uniqueById);
+
+      // Gọi logic tiếp theo
       this.onChangeGroup();
     }, 0);
   }
@@ -355,33 +382,56 @@ export class BusinessManagementComponent {
     const selected = this.formDropdown.controls['groupName']?.value || [];
     if (!this.lastClickedGroup || selected.length === 0) return;
 
-    const clickedNode = this.findItemById(this.groupNameOptions, this.lastClickedGroup.id);
-    if (!clickedNode) return;
-
-    const targetLevel = clickedNode.level;
-    const targetParentId = clickedNode.parentId;
-
-    const filtered = selected.filter((item: any) => {
-      const current = this.findItemById(this.groupNameOptions, item.id);
-      return current?.level === targetLevel && current?.parentId === targetParentId;
-    });
-
-    this.formDropdown.controls['groupName']?.setValue(filtered);
-
-    const groupIdList = filtered.map((item: any) => item.id).join(',');
+    const topLevelIds = this.getTopLevelGroupIds(selected);
   }
 
-  findItemById(tree: any[], id: number): any {
-    for (let node of tree) {
-      if (node.id === id) {
-        return node;
+  getTopLevelGroupIds(selectedNodes: any[]): string[] {
+    const selectedIds = selectedNodes.map(node => node.id);
+    const topLevelNodes: any[] = [];
+
+    for (const node of selectedNodes) {
+      const fullNode = this.findItemById(this.groupNameOptions, node.id);
+      const hasAncestorInSelected = this.hasParentInList(fullNode, selectedIds);
+
+      if (!hasAncestorInSelected) {
+        topLevelNodes.push(fullNode);
       }
-      if (node.children?.length) {
+    }
+
+    return topLevelNodes.map(node => node.id);
+  }
+
+  hasParentInList(node: any, idList: string[]): boolean {
+    if (!node || !node.parentId) return false;
+    if (idList.includes(node.parentId)) return true;
+
+    const parentNode = this.findItemById(this.groupNameOptions, node.parentId);
+    return this.hasParentInList(parentNode, idList);
+  }
+
+  findItemById(nodes: any[], id: any): any {
+    for (const node of nodes) {
+      if (node.id === id) return node;
+      if (node.children) {
         const found = this.findItemById(node.children, id);
         if (found) return found;
       }
     }
     return null;
+  }
+
+  getAllChildNodes(node: any): any[] {
+    let result: any[] = [];
+    if (node?.children && node.children.length > 0) {
+      for (const child of node.children) {
+        const fullChild = this.findItemById(this.groupNameOptions, child.id);
+        if (fullChild) {
+          result.push(fullChild);
+          result.push(...this.getAllChildNodes(fullChild)); // đệ quy lấy mọi cấp con
+        }
+      }
+    }
+    return result;
   }
   countTotalSearch() {
     let countSearch = 0;

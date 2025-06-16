@@ -10,7 +10,7 @@ import {FetchApiService} from '../../../../common/service/api/fetch-api.service'
 import {ToastService} from '../../../../common/service/toast/toast.service';
 import {REFUND_ENDPOINT} from '../../../../common/enum/EApiUrl';
 import moment from 'moment';
-import { QRCodeModule  } from 'angularx-qrcode';
+import { QRCodeComponent, QRCodeModule } from 'angularx-qrcode';
 
 @Component({
   selector: 'app-dialog-authentication',
@@ -22,7 +22,7 @@ import { QRCodeModule  } from 'angularx-qrcode';
     CalendarModule,
     InputCommon,
     InputTextModule,
-    QRCodeModule ,
+    QRCodeModule,
     NgSwitch,
     NgSwitchCase,
     NgClass,
