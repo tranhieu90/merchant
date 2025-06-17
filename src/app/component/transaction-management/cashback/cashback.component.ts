@@ -174,8 +174,8 @@ export class CashbackComponent implements OnInit {
               options: {
                 customCss: (obj: any) => ['text-left'],
                 customCssHeader: () => ['text-left'],
-                width: "148px",
-                minWidth: "148px"
+                width: "149px",
+                minWidth: "149px"
               }
             }
           ] : []
@@ -212,6 +212,34 @@ export class CashbackComponent implements OnInit {
         }
       },
       {
+        name: 'paymentDesc',
+        label: 'NỘI DUNG HOÀN TRẢ',
+        options: {
+          customCss: (obj: any) => {
+            return ['text-left', 'mv-180'];
+          },
+          customCssHeader: () => {
+            return ['text-left'];
+          },
+          width: "170px",
+          minWidth: "170px"
+        }
+      },
+      {
+        name: 'orderReferenceOrigin',
+        label: 'MÃ ĐỊNH DANH',
+        options: {
+          customCss: (obj: any) => {
+            return ['text-left', 'mv-180'];
+          },
+          customCssHeader: () => {
+            return ['text-left'];
+          },
+          width: "170px",
+          minWidth: "170px"
+        }
+      },
+      {
         name: 'status',
         label: 'Trạng thái',
         options: {
@@ -238,34 +266,6 @@ export class CashbackComponent implements OnInit {
         },
 
       },
-      ...(this.lstColumnShow.includes("refundFTCode")
-          ? [
-            {
-              name: 'txnReference',
-              label: 'Mã FT giao dịch hoàn',
-              options: {
-                customCss: (obj: any) => ['text-left'],
-                customCssHeader: () => ['text-left'],
-                width: "173px",
-                minWidth: "173px"
-              }
-            }
-          ] : []
-      ),
-      ...(this.lstColumnShow.includes("rawFTCode")
-          ? [
-            {
-              name: 'txnReferenceOrigin',
-              label: 'Mã FT giao dịch gốc',
-              options: {
-                customCss: (obj: any) => ['text-left'],
-                customCssHeader: () => ['text-left'],
-                width: "165px",
-                minWidth: "165px"
-              }
-            }
-          ] : []
-      ),
       {
         name: 'methodName',
         label: 'Phương thức thanh toán',
@@ -280,8 +280,36 @@ export class CashbackComponent implements OnInit {
           minWidth: "226px"
         }
       },
+      ...(this.lstColumnShow.includes("refundFTCode")
+          ? [
+            {
+              name: 'txnReference',
+              label: 'Mã FT giao dịch hoàn',
+              options: {
+                customCss: (obj: any) => ['text-left'],
+                customCssHeader: () => ['text-left'],
+                width: "175px",
+                minWidth: "175px"
+              }
+            }
+          ] : []
+      ),
+      ...(this.lstColumnShow.includes("rawFTCode")
+          ? [
+            {
+              name: 'txnReferenceOrigin',
+              label: 'Mã FT giao dịch gốc',
+              options: {
+                customCss: (obj: any) => ['text-left'],
+                customCssHeader: () => ['text-left'],
+                width: "167px",
+                minWidth: "167px"
+              }
+            }
+          ] : []
+      ),
       {
-        name: 'debitAccount',
+        name: 'creditAccount',
         label: 'Tài khoản/Thẻ thanh toán',
         options: {
           customCss: (obj: any) => {
@@ -293,8 +321,8 @@ export class CashbackComponent implements OnInit {
           customBodyRender: (obj: any, params: any) => {
 
             const bankName = params.issuerName || '';
-            const accountNumber = params.debitAccount || '';
-            const accountHolder = params.debitName || '';
+            const accountNumber = this.transform(params.creditAccount || '');
+            const accountHolder = params.creditName || '';
 
             return `
               <div class="paragraph-m-semibold mb-1">${bankName}</div>
@@ -317,8 +345,8 @@ export class CashbackComponent implements OnInit {
                 customBodyRender: (value: any) => {
                   return this.formatMoney2(value);
                 },
-                width: "135px",
-                minWidth: "135px"
+                width: "136px",
+                minWidth: "136px"
               }
             }
           ] : []
@@ -743,6 +771,18 @@ export class CashbackComponent implements OnInit {
     });
 
     return count > 0 ? count : null;
+  }
+
+  transform(value: string): string {
+    if (!value || value.length < 10) {
+      return value;
+    }
+
+    const start = value.substring(0, 3);
+    const end = value.substring(value.length - 3);
+    const masked = 'x'.repeat(value.length - 6);
+
+    return `${start}${masked}${end}`;
   }
 
 }

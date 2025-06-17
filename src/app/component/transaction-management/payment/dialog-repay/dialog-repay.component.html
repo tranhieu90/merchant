@@ -83,5 +83,5 @@
 </div>
 <div class="modal-footer">
     <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="onClose()" />
-    <p-button label="Hoàn tiền" class="merchant-button" (click)="doAction()" [disabled]="formRepay.invalid || totalNumberCanRefund < 1 || timeCanRefund > 30" />
+    <p-button label="Hoàn tiền" class="merchant-button" (click)="doAction()" [disabled]="formRepay.invalid || totalNumberCanRefund < 1 || isExpireDate" />
 </div>
