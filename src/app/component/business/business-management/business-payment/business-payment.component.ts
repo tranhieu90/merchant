@@ -401,7 +401,7 @@ export class BusinessPaymentComponent implements OnInit {
 
   doUpdate() {
     if (!this.doCreateMerchantPaymentMethodList().length) {
-      this.toast.showWarn('Không có sự thay đổi thông tin phương thức thanh toán !')
+      this.toast.showWarn('Không có sự thay đổi thông tin phương thức thanh toán')
       return;
     }
     let dataSave = {
@@ -454,6 +454,9 @@ export class BusinessPaymentComponent implements OnInit {
           this.lstDuplicateId = item.keyAlreadyList;
         } else if (item.methodId == 324) {
           switch (item.soaErrorCode) {
+            case 'MAPPING_KEY_01':
+              this.paymentQR ? this.paymentQRFormUpdate.get('terminalId')!.setErrors({ Exited: true }) : this.paymentQRFormInsert.get('terminalId')!.setErrors({ Exited: true });
+              break;
             case 'AC_01':
               this.paymentQR ? this.paymentQRFormUpdate.get('accountNumber')!.setErrors({ ExitErorr: true }) : this.paymentQRFormInsert.get('accountNumber')!.setErrors({ ExitErorr: true });
               break;

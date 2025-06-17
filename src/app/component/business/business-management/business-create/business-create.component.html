@@ -68,7 +68,7 @@
                         </span>
                         }
                     </div>
-                    @if (formBusiness.controls['merchantBizName'].touched &&
+                    @if (formBusiness.controls['merchantBizName'].dirty &&
                     formBusiness.controls['merchantBizName'].invalid)
                     {
                     <div class="m-caption error">
@@ -96,7 +96,7 @@
                         </span>
                         }
                     </div>
-                    @if (formBusiness.controls['merchantName'].touched && formBusiness.controls['merchantName'].invalid)
+                    @if (formBusiness.controls['merchantName'].dirty && formBusiness.controls['merchantName'].invalid)
                     {
                     <div class="m-caption error">
                         <div class="icon-caption">
@@ -117,7 +117,7 @@
                             placeholder="Chọn tỉnh, thành phố " (ngModelChange)="doGetDistrict($event)"
                             class="merchant-dropdown">
                         </p-dropdown>
-                        @if (formBusiness.controls['provinceId'].touched && formBusiness.controls['provinceId'].invalid)
+                        @if (formBusiness.controls['provinceId'].dirty && formBusiness.controls['provinceId'].invalid)
                         {
                         <div class="m-caption error">
                             <div class="icon-caption">
@@ -137,7 +137,7 @@
                             placeholder="Chọn quận, huyện" (ngModelChange)="doGetCommune(001,$event,1)"
                             class="merchant-dropdown">
                         </p-dropdown>
-                        @if (formBusiness.controls['districtId'].touched && formBusiness.controls['districtId'].invalid)
+                        @if (formBusiness.controls['districtId'].dirty && formBusiness.controls['districtId'].invalid)
                         {
                         <div class="m-caption error">
                             <div class="icon-caption">
@@ -156,7 +156,7 @@
                             filterBy="communeName" styleClass="w-100" [panelStyle]="{'width':'300px'}" appendTo="body"
                             placeholder="Chọn phường, xã" class="merchant-dropdown">
                         </p-dropdown>
-                        @if (formBusiness.controls['communeId'].touched && formBusiness.controls['communeId'].invalid)
+                        @if (formBusiness.controls['communeId'].dirty && formBusiness.controls['communeId'].invalid)
                         {
                         <div class="m-caption error">
                             <div class="icon-caption">
@@ -181,7 +181,7 @@
                         </span>
                         }
                     </div>
-                    @if (formBusiness.controls['address'].touched && formBusiness.controls['address'].invalid)
+                    @if (formBusiness.controls['address'].dirty && formBusiness.controls['address'].invalid)
                     {
                     <div class="m-caption error">
                         <div class="icon-caption">
@@ -199,7 +199,7 @@
                     <p-button *ngIf="!organizationSetup" label="Quay lại" class="merchant-button-tertiary me-2"
                         (onClick)="doPreStep()" />
                     <button [disabled]="formBusiness.invalid" mat-button class="merchant-button-material"
-                        (click)="doNextStep() ">
+                        (click)="checkStepPayment() ">
                         Tiếp tục
                     </button>
                 </div>
@@ -262,7 +262,7 @@
                             <input appInputSanitize class="merchant-input" pInputText [(ngModel)]="accountNumber"
                                 [pattern]="accountNumberPattern" #accountNumberId="ngModel" required
                                 placeholder="Nhập số tài khoản MB" />
-                            <div class="m-caption error" *ngIf="accountNumberId.invalid && accountNumberId.touched">
+                            <div class="m-caption error" *ngIf="accountNumberId.invalid &&  accountNumberId.dirty">
                                 <div class="icon-caption">
                                     <span class="icon-error_solid"></span>
                                 </div>
@@ -285,7 +285,7 @@
                             <input class="merchant-input" appInputSanitize pInputText [(ngModel)]="accountName"
                                 #accountNameId="ngModel" [pattern]="accountNamePattern" required
                                 placeholder="Nhập tên tài khoản" />
-                            <div class="m-caption error" *ngIf="accountNameId.invalid && accountNameId.touched">
+                            <div class="m-caption error" *ngIf="accountNameId.invalid && accountNameId.dirty">
                                 <div class="icon-caption">
                                     <span class="icon-error_solid"></span>
                                 </div>
@@ -452,9 +452,9 @@
                 <a *ngIf="!oneSuccessful && roleHr" [href]="assetPath +'/hr/hr-create'" class="mt-3">
                     <p-button label="Thêm nhân sự" class="merchant-button mt-4" />
                 </a>
-                <!-- <a [href]="assetPath +'/business'" class="mt-3">
+                <a *ngIf="oneSuccessful" [href]="assetPath +'/business'" class="mt-3">
                     <p-button label="Về trang quản lý" class="merchant-button-tertiary mt-4" />
-                </a> -->
+                </a>
                 <!-- Không được phân quyền thêm nhân sự -->
                 <a *ngIf="!oneSuccessful && !roleHr" [href]="assetPath +'/business'" class="mt-3">
                     <p-button label="Về trang quản lý" class="merchant-button mt-4" />

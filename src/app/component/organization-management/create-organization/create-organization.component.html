@@ -12,13 +12,14 @@
             <h1 class="title-m-semibold mb-3"><span class="icon-building"></span> {{this.merchantName}}
                 ({{lstMerchantRemain.length}})</h1>
             <p-button *ngIf="isPermission" label="Tạo nhóm" class="merchant-button-tertiary merchant-button-m"
-                icon="icon-Folder-plus" (click)="addArea(1, null)" />
+                icon="icon-Folder-plus" (click)="addArea(1, null,null)" />
             <div *ngIf="lstAreas.length > 0" class="mt-3">
                 <div *ngFor="let area of lstAreaByOrder">
                     <app-area-item [lstAreas]="lstAreas" [area]="area" [areaActive]="areaActive"
                         (activeArea)="doActiveArea($event)" (deleteArea)="deleteArea($event)"
-                        (addArea)="addArea($event.level, $event.parentId)"
+                        (addArea)="addArea($event.level, $event.parentId, $event)"
                         (blurAreaName)="onBlurCreateArea($event.event, $event.areaId, $event.isFormCreateInvalid)"
+                        (doChangeExpand)="doActiveAreaCheckbox($event)"
                         [isShowButton]="isPermission">
                     </app-area-item>
                 </div>
@@ -52,7 +53,7 @@
                             <div class="p-inputgroup">
                                 <input appInputSanitize appShowClearOnFocus=".clear-icon" type="text" pInputText class="merchant-input me-2" id="id" formControlName="areaName"
                                     placeholder="Nhập tên nhóm" (blur)="onBlurEdit()" maxlength="50"
-                                    (keydown.enter)="checkDuplicateAreaName($event)" #areaNameInput/>
+                                    (keydown.enter)="updateAreaName()" #areaNameInput/>
                                 @if(this.formEditArea.get('areaName')?.value){
                                 <span class="p-input-icon-right clear-icon" (click)="clearValue('areaName')">
                                     <i class="icon-close_circle_solid input-icon input-icon-close"></i>
@@ -89,9 +90,9 @@
                         <div>
                             <p-button *ngIf="areaActive.level < 5 && areaActive.lstMerchant.length == 0"
                                 label="Thêm nhóm mới" class="merchant-button-secondary me-2" icon="icon-Folder-plus"
-                                (click)="addArea(areaActive.level + 1, areaActive.id)" />
+                                (click)="addArea(areaActive.level + 1, areaActive.id,areaActive)" />
                             <p-button class="merchant-button-icon button-l button-light button-trash" icon="icon-trash"
-                                (click)="deleteArea(areaActive.id)" />
+                                (click)="deleteArea(areaActive)" />
                         </div>
                     </div>
 
@@ -124,9 +125,9 @@
             </div>
             <div *ngIf="lstMerchantsAll.length == 0">
                 <div class="no-data">
-                    <img [src]="assetPath + '/assets/images/grid-search-empty.png'">
+                    <img [src]="assetPath + '/assets/images/grid-empty.png'">
                     <div class="mt-4 title-l-semibold title-no-data">Doanh nghiệp chưa tồn tại nhóm</div>
-                    <div class="title-s-regular summary-no-data mb-3">Vui lòng tạo nhóm và thiết lập để quản lý các điểm kinh doanh của bạn hiệu quả hơn</div>
+                    <div class="title-s-regular summary-no-data mb-3">Vui lòng tạo nhóm và thiết lập để quản lý các điểm kinh doanh của bạn hiệu quả hơn.</div>
                     <!-- <p-button label="Quản lý điểm kinh doanh" class="merchant-button" icon="icon-setting" /> -->
                 </div>
             </div>

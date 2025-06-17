@@ -64,6 +64,7 @@ export class PaymentComponent implements OnInit {
   totalAmount: number = 0;
   lastClickedGroup: any = null;
   maxDate: any = null;
+  minDate: any = null;
   merchantId: any = null;
 
   searchCriteria: {
@@ -294,7 +295,7 @@ export class PaymentComponent implements OnInit {
           customBodyRender: (obj: any, params: any) => {
 
             const bankName = params.issuerName || '';
-            const accountNumber = params.debitAccount || '';
+            const accountNumber = this.transform(params.debitAccount || '');
             const accountHolder = params.debitName || '';
 
             return `
@@ -320,7 +321,10 @@ export class PaymentComponent implements OnInit {
                   return ['text-left'];
                 },
                 width: "191px",
-                minWidth: "191px"
+                minWidth: "191px",
+                customBodyRender: (value: any) => {
+                  return this.transform(value || '');
+                },
               }
             }
           ] : []
@@ -408,6 +412,10 @@ export class PaymentComponent implements OnInit {
     const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 0);
 
     this.searchCriteria.dateRange = [startDate, endDate];
+
+    const minDate = new Date();
+    minDate.setDate(today.getDate() - 365);
+    this.minDate = minDate;
 
     this.statusOptions = [
       {name: 'Thành công', code: '00'},
@@ -977,5 +985,16 @@ export class PaymentComponent implements OnInit {
     return count > 0 ? count : null;
   }
 
+  transform(value: string): string {
+    if (!value || value.length < 10) {
+      return value;
+    }
+
+    const start = value.substring(0, 6);
+    const end = value.substring(value.length - 4);
+    const masked = 'x'.repeat(value.length - 10);
+
+    return `${start}${masked}${end}`;
+  }
 
 }

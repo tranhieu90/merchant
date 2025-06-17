@@ -98,6 +98,7 @@ export class CashbackComponent implements OnInit {
   totalTrans: number = 0;
   totalAmount: number = 0;
   maxDate: any = null;
+  minDate: any = null;
 
   searchCriteria: {
     transactionNumber: string | null;
@@ -394,6 +395,10 @@ export class CashbackComponent implements OnInit {
     const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 0);
 
     this.searchCriteria.dateRange = [startDate, endDate];
+
+    const minDate = new Date();
+    minDate.setDate(today.getDate() - 365);
+    this.minDate = minDate;
 
     this.statusOptions = [
       {name: 'Thành công', code: '00'},
@@ -778,9 +783,9 @@ export class CashbackComponent implements OnInit {
       return value;
     }
 
-    const start = value.substring(0, 3);
-    const end = value.substring(value.length - 3);
-    const masked = 'x'.repeat(value.length - 6);
+    const start = value.substring(0, 6);
+    const end = value.substring(value.length - 4);
+    const masked = 'x'.repeat(value.length - 10);
 
     return `${start}${masked}${end}`;
   }

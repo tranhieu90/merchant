@@ -12,7 +12,7 @@
     <div class="d-flex">
       <p-calendar class="merchant-calendar me-2" [iconDisplay]="'input'" [showIcon]="true"
                   inputId="templatedisplay" selectionMode="range" [numberOfMonths]="2" [showTime]="true"
-                  [hourFormat]="'24'" [(ngModel)]="searchCriteria.dateRange" [maxDate]="maxDate"
+                  [hourFormat]="'24'" [(ngModel)]="searchCriteria.dateRange" [maxDate]="maxDate" [minDate]="minDate"
                   (ngModelChange)="onDateRangeSelect($event)">
         <ng-template pTemplate="inputicon">
           <i class="icon-calendar"></i>
@@ -100,7 +100,7 @@
           optionValue="code"
           optionLabel="shortName"
           placeholder="Tất cả"
-          filterPlaceHolder="Tìm kiếm ngân hàng" [filter]="true"
+          filterPlaceholder="Tìm kiếm ngân hàng" [filter]="true"
           [(ngModel)]="filterCriteria.selectedBanks"
           styleClass="custom-bank-multiselect">
           <ng-template let-bank pTemplate="item">
@@ -143,6 +143,7 @@
           [filter]="true"
           placeholder="Tất cả"
           class="merchant-treeSelect"
+          filterPlaceholder="Tìm kiếm cụm/nhóm"
           (onNodeSelect)="onGroupClick($event)"
           (onNodeUnselect)="onGroupClick($event)">
           <!-- <ng-template pTemplate="footer">

@@ -351,7 +351,7 @@ export class HumanResourceManagementComponent implements OnInit {
 
   doDetail(userDetail?: any) {
     const hasRole = this.auth.apiTracker([MERCHANT_RULES.USER_MANAGER_DETAIL]);
-    if (!hasRole || (this.userInfo.orgType === 2 && (userDetail['orgType'] === 1 || userDetail['orgType'] === 0))) {
+    if (!hasRole || !userDetail?.enableView) {
       let dataDialog: DialogConfirmModel = new DialogConfirmModel();
       dataDialog.title = 'Bạn không có quyền xem nhân sự';
       dataDialog.message =

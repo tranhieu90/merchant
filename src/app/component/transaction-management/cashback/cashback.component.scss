@@ -85,6 +85,11 @@
 
 ::ng-deep.custom-bank-multiselect {
 
+  .p-overlay {
+    left: 0 !important;
+    right: 0 !important;
+  }
+
   .bank-item {
     display: flex;
     align-items: start;

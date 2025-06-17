@@ -569,8 +569,8 @@ export class HumanResourceDetailComponent implements OnInit {
                   ? this.userInfo?.merchantId
                   : 0,
               selectedMerchant:
-                this.subMerchantList
-                  ? this.subMerchantList
+                this.subMerchantList?.length === 1
+                  ? this.subMerchantList[0].merchantId
                   : undefined,
               orgType: this.personDetail?.orgType,
             },

@@ -1,6 +1,7 @@
 import { NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatBadge } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -13,13 +14,17 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { TreeSelectModule } from 'primeng/treeselect';
 import { GridViewComponent } from '../../../base/shared/grid-view/grid-view.component';
 import { CommonUtils } from '../../../base/utils/CommonUtils';
+import { UserVerifyStatus } from '../../../common/constants/CUser';
 import { InputCommon } from '../../../common/directives/input.directive';
-import { BUSINESS_ENDPOINT, GROUP_ENDPOINT } from '../../../common/enum/EApiUrl';
+import { BUSINESS_ENDPOINT, GROUP_ENDPOINT, USER_ENDPOINT } from '../../../common/enum/EApiUrl';
 import { FetchApiService } from '../../../common/service/api/fetch-api.service';
 import { AuthenticationService } from '../../../common/service/auth/authentication.service';
+import { DialogCommonService } from '../../../common/service/dialog-common/dialog-common.service';
 import { ToastService } from '../../../common/service/toast/toast.service';
+import { DialogConfirmModel } from '../../../model/DialogConfirmModel';
 import { GridViewModel } from '../../../model/GridViewModel';
-import { MatBadge } from '@angular/material/badge';
+import { DialogRoleComponent, DialogRoleModel } from '../../role-management/dialog-role/dialog-role.component';
+import { UpdateUserComponent } from '../../user-profile/update-user/update-user.component';
 
 @Component({
   selector: 'app-business-management',
@@ -161,7 +166,8 @@ export class BusinessManagementComponent {
     private router: Router,
     private api: FetchApiService,
     private toast: ToastService,
-    private auth: AuthenticationService
+    private auth: AuthenticationService,
+    private dialogCommon: DialogCommonService,
   ) {
     this.formDropdown = this.fb.group({
       status: [''],
@@ -293,7 +299,15 @@ export class BusinessManagementComponent {
       this.router.navigate(['/business/business-detail']);
   }
 
-  changeFilter() {
+  changeFilter(buttonRef: any) {
+    const nativeButton: HTMLElement = buttonRef?.el?.nativeElement?.querySelector('button');
+    if (!nativeButton) return;
+
+    if (this.isFilter) {
+      nativeButton.blur();
+    } else {
+      nativeButton.focus();
+    }
     this.isFilter = !this.isFilter;
     this.isFilter1 = false;
   }
@@ -332,7 +346,15 @@ export class BusinessManagementComponent {
     });
   }
 
-  changeSearch() {
+  changeSearch(buttonRef: any) {
+    const nativeButton: HTMLElement = buttonRef?.el?.nativeElement?.querySelector('button');
+    if (!nativeButton) return;
+
+    if (this.isFilter1) {
+      nativeButton.blur();
+    } else {
+      nativeButton.focus();
+    }
     this.isFilter1 = !this.isFilter1;
     this.isFilter = false;
   }
@@ -448,5 +470,146 @@ export class BusinessManagementComponent {
       return val !== null && val !== undefined && val !== '';
     }).length;
     return countSearch > 0 ? countSearch : null;
+  }
+
+  getSelectedNames(selectedItems: any[]): string {
+    if (!selectedItems || selectedItems.length === 0) return '';
+    return selectedItems.map(item => item.paymentMethodName).join(', ');
+  }
+
+  isSelectAllGroup(selectedNodes: any[]): boolean {
+    const totalSelectableLeaf = this.countLeafNodes(this.groupNameOptions);
+    const selectedLeafCount = selectedNodes.filter(n => !n.children || n.children.length === 0).length;
+    return selectedLeafCount === totalSelectableLeaf;
+  }
+
+  countLeafNodes(nodes: any[]): number {
+    if (!nodes) return 0;
+    let count = 0;
+    for (const node of nodes) {
+      if (node.children && node.children.length > 0) {
+        count += this.countLeafNodes(node.children);
+      } else {
+        count += 1;
+      }
+    }
+    return count;
+  }
+
+  getSelectedGroupNames(selectedNodes: any[]): string {
+    return selectedNodes.map(n => n.label).join(', ');
+  }
+
+  isFilterActive(): boolean {
+    const formValue = this.formDropdown?.value;
+
+    const statusSelected = formValue?.status != null && formValue.status !== '';
+    const paymentSelected = formValue?.paymentMethod != null && formValue.paymentMethod.length > 0;
+    const groupNameSelected = formValue?.groupName != null && formValue.groupName.length > 0;
+    const serviceCodeFilled = this.serviceCode != null && this.serviceCode.trim() !== '';
+    const keyWordFilled = this.keyWord != null && this.keyWord.trim() !== '';
+
+    return statusSelected || paymentSelected || groupNameSelected || serviceCodeFilled || keyWordFilled;
+  }
+
+  checkOpenCreate() {
+    const verifyUser = this.auth.checkVerifyUserInfo();
+    switch (verifyUser) {
+      case UserVerifyStatus.VERIFIED:
+        this.doOpenPage();
+        break;
+      case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
+        this.openDialogUnverifiedAccountAndEmail();
+        break;
+      case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
+        this.openDialogUnverifiedAccountAndNoEmail();
+        break;
+      default:
+        console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
+        break;
+    }
+  }
+
+  openDialogUnverifiedAccountAndEmail() {
+    let dataDialog: DialogRoleModel = new DialogRoleModel();
+    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
+    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>.`;
+    dataDialog.icon = 'icon-warning';
+    dataDialog.iconColor = 'warning';
+    dataDialog.buttonLeftLabel = 'Thay đổi email';
+    dataDialog.buttonRightLabel = 'Xác thực email';
+
+    const dialogRef = this.dialog.open(DialogRoleComponent, {
+      width: '500px',
+      data: dataDialog,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.verifyEmail();
+      } else {
+        this.updateEmail();
+      }
+    });
+  }
+
+  openDialogUnverifiedAccountAndNoEmail() {
+    let dataDialog: DialogRoleModel = new DialogRoleModel();
+    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
+    dataDialog.message =
+      'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
+    dataDialog.icon = 'icon-warning';
+    dataDialog.hiddenButtonLeft = true;
+    dataDialog.iconColor = 'warning';
+    dataDialog.buttonRightLabel = 'Bổ sung email';
+
+    const dialogRef = this.dialog.open(DialogRoleComponent, {
+      width: '500px',
+      data: dataDialog,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.updateEmail();
+      } else {
+      }
+    });
+  }
+
+  updateEmail() {
+    const dialogRef = this.dialog.open(UpdateUserComponent, {
+      width: '600px',
+      data: {
+        title: 'Cập nhật email',
+        type: 'email',
+        isEmailInfo: true,
+      },
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.router.navigate(['/profile']);
+      }
+    })
+  }
+
+  verifyEmail() {
+    this.api.post(USER_ENDPOINT.SEND_VERIFY_MAIL).subscribe(res => {
+      let content = `Chúng tôi vừa gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>, vui lòng kiểm tra email và làm theo hướng dẫn để hoàn tất xác thực tài khoản.`
+      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+      dataDialog.title = 'Hệ thống đã gửi liên kết xác thực';
+      dataDialog.message = content;
+      dataDialog.buttonLabel = 'Tôi đã hiểu';
+      dataDialog.icon = 'icon-mail';
+      dataDialog.iconColor = 'icon info';
+      dataDialog.viewCancel = false;
+      const dialogRef = this.dialogCommon.openDialogInfo(dataDialog);
+      dialogRef.subscribe(res => {
+        this.router.navigate(['/profile']);
+      })
+    })
   }
 }

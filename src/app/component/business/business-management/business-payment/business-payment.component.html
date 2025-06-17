@@ -41,6 +41,9 @@
                                 @if (paymentQRFormUpdate.controls['terminalId'].hasError('NotValue')) {
                                 <span class="text-caption paragraph-m-regular">TerminalId không phải của merchant</span>
                                 }
+                                @if (paymentQRFormUpdate.controls['terminalId'].hasError('Exited')) {
+                                <span class="text-caption paragraph-m-regular">Terminal ID đã tồn tại</span>
+                                }
                             </div>
                             }
                         </div>
@@ -108,12 +111,14 @@
                 <div class="row mb-spacing-l">
                     <div class="col-3 d-flex align-items-center gap-2">
                         <p-radioButton [ngModel]="ischeck" [value]="1" name="checkOption"
-                            (ngModelChange)="setValidatorsByIsCheck($event)" inputId="radio1" [ngModelOptions]="{standalone: true}" />
+                            (ngModelChange)="setValidatorsByIsCheck($event)" inputId="radio1"
+                            [ngModelOptions]="{standalone: true}" />
                         <label for="radio1" class="paragraph-m-semibold">Nhập mã Terminal ID đã có</label>
                     </div>
                     <div class="col-3 d-flex align-items-center gap-2">
                         <p-radioButton [ngModel]="ischeck" [value]="2" name="checkOption"
-                            (ngModelChange)="setValidatorsByIsCheck($event)" inputId="radio2" [ngModelOptions]="{standalone: true}" />
+                            (ngModelChange)="setValidatorsByIsCheck($event)" inputId="radio2"
+                            [ngModelOptions]="{standalone: true}" />
                         <label for="radio2" class="paragraph-m-semibold">Tự động tạo Terminal ID</label>
                     </div>
                 </div>
@@ -143,6 +148,9 @@
                         }
                         @if (paymentQRFormInsert.controls['terminalId'].hasError('NotValue')) {
                         <span class="text-caption paragraph-m-regular">TerminalId không phải của merchant</span>
+                        }
+                        @if (paymentQRFormInsert.controls['terminalId'].hasError('Exited')) {
+                        <span class="text-caption paragraph-m-regular">Terminal ID đã tồn tại</span>
                         }
                     </div>
                     }

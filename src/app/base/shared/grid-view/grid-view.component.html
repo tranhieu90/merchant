@@ -5,13 +5,15 @@
       <th mat-header-cell *matHeaderCellDef>
       </th>
       <td class="text-center" mat-cell *matCellDef="let item">
-        <p-radioButton class="w-50 m-radio m-radio-check" [value]="item" [(ngModel)]="selectedItem" disabled="{{isDisabled}}"
-          (ngModelChange)="onRadioChange($event)" (click)="$event.stopPropagation()" />
+        <p-radioButton class="w-50 m-radio m-radio-check" [value]="item" [(ngModel)]="selectedItem"
+          disabled="{{isDisabled}}" (ngModelChange)="onRadioChange($event)" (click)="$event.stopPropagation()" />
       </td>
     </ng-container>
     <ng-container *ngIf="showCheckbox" matColumnDef="checkbox">
       <th style="width: 5%" class="text-center" mat-header-cell *matHeaderCellDef>
-        <mat-checkbox [(ngModel)]="checkAll" (change)="onCheckAll($event)"></mat-checkbox>
+        <!-- <mat-checkbox [(ngModel)]="checkAll" (change)="onCheckAll($event)"></mat-checkbox> -->
+        <mat-checkbox [(ngModel)]="checkAll" (change)="onCheckAll($event)" [indeterminate]="indeterminate">
+        </mat-checkbox>
       </th>
       <td class="text-center" mat-cell *matCellDef="let item">
         <mat-checkbox [(ngModel)]="item.checked" (change)="onCheckItem($event,item)"
@@ -26,18 +28,20 @@
         {{ pageInfo.page * pageInfo.pageSize + (i + 1) }}
       </td>
     </ng-container>
-    <ng-container
-     [matColumnDef]="column.name" *ngFor="let column of columnsView">
+    <ng-container [matColumnDef]="column.name" *ngFor="let column of columnsView">
       <th [style.min-width]="column.options && column.options.minWidth ? column.options.minWidth : 'auto'"
         [style.width]="column.options && column.options.width ? column.options.width : 'auto'"
         [ngClass]="getHeaderClass(column)" mat-header-cell *matHeaderCellDef>
         {{ column.label }}
       </th>
+
       <td mat-cell *matCellDef="let item; let i = index" [ngClass]="getClassTable(item,column)">
-        <span #spanRef class="tooltip-anchor" matTooltip="{{ spanRef.textContent }}"  matTooltipPosition="above" appShowIfTruncated >
-          <span class="text-content"  matTooltipPosition="above" matTooltip="{{ renderValue(item, column, i) }}" appShowIfTruncated [innerHTML]="renderValue(item, column, i)"></span>
+        <span class="tooltip-anchor" matTooltip="{{ renderValue(item, column, i) }}" matTooltipPosition="above"
+          appShowIfTruncated>
+          <span class="text-content" matTooltipPosition="above" matTooltip="{{ renderValue(item, column, i) }}"
+            appShowIfTruncated [innerHTML]="renderValue(item, column, i)"></span>
         </span>
-      </td>      
+      </td>
     </ng-container>
     <ng-container matColumnDef="func" frozenColumns class="p-datatable-frozen-column">
       <th style="width: 10%; text-align: right" mat-header-cell *matHeaderCellDef>

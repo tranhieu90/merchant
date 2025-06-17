@@ -121,7 +121,6 @@ export class BusinessCreateComponent implements OnInit {
   lstProvince: any = [];
   lstDistrict: any = [];
   lstCommune: any = [];
-  verifyInfo: any;
   quantity: any;
   organizationSetup: boolean = false;
   oneSuccessful: boolean = false;
@@ -159,16 +158,11 @@ export class BusinessCreateComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.verifyInfo = this.auth.checkVerifyUserInfo();
     this.buildForm();
     if (!this.organizationSetup) {
       this.getLstDataGroup();
     }
-    this.getLstPaymentMethod();
     this.doGetProvince();
-    if (this.verifyInfo == 'UN_VERIFIED_WITH_EMAIL') {
-      this.router.navigate(['/profile'])
-    }
   }
 
   buildForm() {
@@ -199,11 +193,9 @@ export class BusinessCreateComponent implements OnInit {
           case 'GROUP_ERROR_019':
             this.handleOrganizationNotSet();
             break;
-          case 'ACCOUNT_ERROR_001':
-            this.openDialogUnverifiedAccountNoEmail();
+          case 'GROUP_ERROR_007':
+            this.handleOrganizationNotSet();
             break;
-          case 'ACCOUNT_ERROR_002':
-            this.openDialogUnverifiedAccountHasEmail();
         }
       });
   }
@@ -298,19 +290,8 @@ export class BusinessCreateComponent implements OnInit {
         const outputs = res['data']['methodSubMerchantXOutputs'];
         const soaErrorCode200 = outputs.filter((item: any) => item.soaErrorCode === '200');
         const soaErrorCode = outputs.filter((item: any) => item.soaErrorCode != '200');
-        const method324Error = outputs.find((item: any) => item.methodId === 324 && item.soaErrorCode != '200' && item.soaErrorCode != '500');
-        const errorMappingKey = outputs.filter((item: any) => item.soaErrorCode === 'MAPPING_KEY_01');
-        if (method324Error) {
-          this.checkErrorQr(method324Error);
-          return;
-        }
 
-        if (errorMappingKey.length > 0) {
-          this.checkErrorKey(errorMappingKey);
-          return;
-        }
-
-        if (soaErrorCode200.length > 1 && soaErrorCode.length > 0) {
+        if (soaErrorCode200.length > 0 && soaErrorCode.length > 0) {
           this.oneSuccessful = true;
         } else {
           this.roleHr = this.auth.apiTracker("/api/v1/add-user-role");
@@ -382,31 +363,29 @@ export class BusinessCreateComponent implements OnInit {
     }
   }
 
-  checkErrorQr(method324Error: any) {
-    const errorMap: { [key: string]: { control: any, errorKey: string } } = {
-      'AC_01': { control: this.accountNumberModel?.control, errorKey: 'notCorrect' },
-      'AC_02': { control: this.accountNameModel?.control, errorKey: 'notCorrect' },
-      'MAPPING_KEY_01': { control: this.temiralIdModel?.control, errorKey: 'notCorrect' },
-      '223': { control: this.temiralIdModel?.control, errorKey: 'invalidErorr' }
-    };
-
-    const errorConfig = errorMap[method324Error.soaErrorCode];
-    if (errorConfig?.control) {
-      errorConfig.control.setErrors({ [errorConfig.errorKey]: true });
-      errorConfig.control.markAsTouched();
-    }
-  }
-
   checkErrorKey(item: any) {
     const errorQr = item.filter((item: any) => item.soaErrorCode === '223');
     const errorKey = item.filter((item: any) => item.soaErrorCode === 'MAPPING_KEY_01');
     const errorKeyPos = errorKey.find((item: any) => item.methodId === 333)?.keyAlreadyList || [];
     const errorKeyThd = errorKey.find((item: any) => item.methodId === 332)?.keyAlreadyList || [];
     const notSpCreate = item.filter((item: any) => item.soaErrorCode === '402');
+    const ac01 = item.find((item: any) => item.soaErrorCode === 'AC_01');
+    const ac02 = item.find((item: any) => item.soaErrorCode === 'AC_02');
+    const terminalKey = errorKey.find((item: any) => item.methodId === 324)
     if (errorQr.length > 0) {
       this.temiralIdModel?.control.setErrors({ invalidErorr: true });
       this.temiralIdModel?.control.markAsTouched();
+    } else if (ac01) {
+      this.accountNumberModel?.control.setErrors({ notCorrect: true });
+      this.accountNumberModel?.control.markAsTouched();
+    } else if (ac02) {
+      this.accountNameModel?.control.setErrors({ notCorrect: true });
+      this.accountNameModel?.control.markAsTouched();
+    }else if(terminalKey){
+      this.temiralIdModel?.control.setErrors({ notCorrect: true });
+      this.temiralIdModel?.control.markAsTouched();
     }
+
     notSpCreate.length > 0 ? this.toast.showError('not support create payment method!') : '';
     errorKeyPos ? this.tidPosErrorList = errorKeyPos : '';
     errorKeyThd ? this.thddErrorList = errorKeyThd : '';
@@ -424,7 +403,6 @@ export class BusinessCreateComponent implements OnInit {
       }
     }, () => {
       this.lstPaymentMethod = [];
-      this.toast.showError('Lấy phương thức thanh toán xảy ra lỗi')
     });
   }
 
@@ -510,7 +488,7 @@ export class BusinessCreateComponent implements OnInit {
 
   handleOrganizationNotSet() {
     let roleOrganizational = this.auth.apiTracker("/api/v1/group-management/save-organizational-setup");
-    if (this.verifyInfo == 'VERIFIED' && roleOrganizational && !this.lstBusiness) {
+    if (roleOrganizational && !this.lstBusiness) {
       this.router.navigate(['/business']);
       let dataDialog: DialogConfirmModel = new DialogConfirmModel();
       dataDialog.title = 'Bạn chưa thiết lập mô hình tổ chức cho doanh nghiệp';
@@ -563,7 +541,7 @@ export class BusinessCreateComponent implements OnInit {
 
   handleOrganizationSet() {
     let roleOrganizational = this.auth.apiTracker("/api/v1/group-management/save-organizational-setup");
-    if (this.verifyInfo == 'VERIFIED' && roleOrganizational) {
+    if (roleOrganizational) {
       this.roleOrganization = true;
     }
   }
@@ -616,86 +594,6 @@ export class BusinessCreateComponent implements OnInit {
     }
   }
 
-  updateEmail() {
-    const dialogRef = this.dialog.open(UpdateUserComponent, {
-      width: '600px',
-      data: {
-        title: 'Cập nhật email',
-        type: 'email',
-        isEmailInfo: true,
-      },
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.router.navigate(['/profile']);
-      }
-    })
-  }
-
-  openDialogUnverifiedAccountNoEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = 'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonRightLabel = 'Bổ sung email';
-    dataDialog.hiddenButtonLeft = true
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.updateEmail();
-      }
-    })
-  }
-
-  openDialogUnverifiedAccountHasEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>.`;
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonLeftLabel = 'Thay đổi email';
-    dataDialog.buttonRightLabel = 'Xác thực email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.verifyEmail();
-      } else {
-        this.updateEmail();
-      }
-    })
-  }
-
-  verifyEmail() {
-    this.api.post(USER_ENDPOINT.SEND_VERIFY_MAIL).subscribe(res => {
-      let content = `Chúng tôi vừa gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>, vui lòng kiểm tra email và làm theo hướng dẫn để hoàn tất xác thực tài khoản.`
-      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-      dataDialog.title = 'Hệ thống đã gửi liên kết xác thực';
-      dataDialog.message = content;
-      dataDialog.buttonLabel = 'Tôi đã hiểu';
-      dataDialog.icon = 'icon-mail';
-      dataDialog.iconColor = 'icon info';
-      dataDialog.viewCancel = false;
-      const dialogRef = this.dialogCommon.openDialogInfo(dataDialog);
-      dialogRef.subscribe(res => {
-        this.router.navigate(['/profile']);
-      })
-    })
-  }
-
   onStepOne() {
     if (this.currentStep >= 0) {
       this.currentStep = 0;
@@ -711,15 +609,15 @@ export class BusinessCreateComponent implements OnInit {
       this.filteredAreas = this.filterAreas(this.lstAreaByOrder, term);
     }
   }
-  
+
   filterAreas(areas: any[], term: string): any[] {
     const filtered = [];
-  
+
     for (const area of areas) {
       const filteredChildren = area.children ? this.filterAreas(area.children, term) : [];
       const isMatch = area.groupName?.toLowerCase().includes(term);
       const isLeaf = !area.children || area.children.length === 0;
-  
+
       if (isMatch || filteredChildren.length > 0) {
         filtered.push({
           ...area,
@@ -728,7 +626,7 @@ export class BusinessCreateComponent implements OnInit {
         });
       }
     }
-  
+
     return filtered;
   }
 
@@ -769,5 +667,10 @@ export class BusinessCreateComponent implements OnInit {
 
   hasThddError(): boolean {
     return this.thddErrorList?.length > 0;
+  }
+
+  checkStepPayment(){
+    this.doNextStep();
+    this.getLstPaymentMethod();
   }
 }

@@ -276,7 +276,7 @@
       }
 
       &::before {
-        content: "\e91d";
+         content: "\e91f";
         font-family: 'webmerchant' !important;
         color: $color-global-neutral-white;
         font-size: 24px;
@@ -341,4 +341,8 @@
     margin-right: 8px;
     margin-top: -18px;
   }
+}
+.no-underline {
+  text-decoration: none !important;
+  color: #0058F0;
 }

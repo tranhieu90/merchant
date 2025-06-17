@@ -28,7 +28,7 @@ import { ShowClearOnFocusDirective } from '../../../common/directives/showClearO
 @Component({
   selector: 'app-create-organization',
   standalone: true,
-  imports: [ButtonModule, InputTextModule, NgFor, NgIf, AreaItemComponent, AreaViewComponent, ReactiveFormsModule, TableMerchantComponent, InputSanitizeDirective, InputCommon,ShowClearOnFocusDirective],
+  imports: [ButtonModule, InputTextModule, NgFor, NgIf, AreaItemComponent, AreaViewComponent, ReactiveFormsModule, TableMerchantComponent, InputSanitizeDirective, InputCommon, ShowClearOnFocusDirective],
   templateUrl: './create-organization.component.html',
   styleUrl: './create-organization.component.scss'
 })
@@ -69,10 +69,10 @@ export class CreateOrganizationComponent {
   ngOnInit() {
     this.getLstMerchant("");
   }
-  checkValidCreate(){
+  checkValidCreate() {
     let isCreate = true;
-    if( this.lstAreaByOrder.length > 0 || (this.lstAreaByOrder.length > 0 && (this.lstMerchantsAll.length > 0 && this.lstMerchantRemain.length == 0)))
-       isCreate = false;
+    if (this.lstAreaByOrder.length > 0 || (this.lstAreaByOrder.length > 0 && (this.lstMerchantsAll.length > 0 && this.lstMerchantRemain.length == 0)))
+      isCreate = false;
     return isCreate
   }
   getLstMerchant(groupId: string) {
@@ -101,7 +101,10 @@ export class CreateOrganizationComponent {
     });
   }
 
-  addArea(level: number, parentId: number | null) {
+  addArea(level: number, parentId: number | null, areaActive: any) {
+    if (areaActive) {
+      areaActive.expanded = true;
+    }
     if (this.lstAreas.length === 1000) {
       let dataConfirm: DialogConfirmModel = new DialogConfirmModel();
       dataConfirm.title = 'Nhóm của bạn vượt quá số lượng quy định';
@@ -125,6 +128,7 @@ export class CreateOrganizationComponent {
         level: level,
         groupName: '',
         children: [],
+        expanded: true,
         lstMerchant: []
       }
       this.lstAreas.push(areaNew);
@@ -133,45 +137,42 @@ export class CreateOrganizationComponent {
     }
   }
 
-  deleteArea(idArea: number) {
-    const found = this.lstAreas.find(x=>x.id==idArea) ;
+  deleteArea(data: any) {
+    
+    const found = this.lstAreas.find(x=>x.id==data.id) ;
     if (found && (found.groupName =="" ||found.groupName ==null)) {
-      this.lstAreas = this.lstAreas.filter(x=>x.id !=idArea) ;
+      this.lstAreas = this.lstAreas.filter(x=>x.id !=data.id) ;
       this.lstAreaByOrder= this.convertLstAreaByOrder(this.lstAreas,null);
       this.isFormCreateAreaInvalid= false;
-    } else
-    {
-      if(this.isFormCreateAreaInvalid== true)
-      {
+    } else {
+      if(this.isFormCreateAreaInvalid== true) {
         return;
       }
-      let lstAreaIdsRemove = this.collectAreaIdsRemove(this.lstAreas, idArea);
+      let lstAreaIdsRemove = this.collectAreaIdsRemove(this.lstAreas, data.id);
       let lstMerchantIdsRestore: number[] = [];
-  
+
       this.lstAreas.forEach((item) => {
         if (lstAreaIdsRemove.includes(item.id) && item.lstMerchant.length > 0) {
           lstMerchantIdsRestore = lstMerchantIdsRestore.concat(item.lstMerchant);
         }
       });
       this.lstAreas = this.lstAreas.filter(item => !lstAreaIdsRemove.includes(item.id));
-  
+
       let lstMerchantIdsRemainOld = this.lstMerchantRemain.map((item: any) => item.merchantId);
       this.lstMerchantRemain = this.lstMerchantsAll.filter((item: any) => lstMerchantIdsRestore.includes(item.merchantId) || lstMerchantIdsRemainOld.includes(item.merchantId));
-  
+
       this.lstAreaByOrder = this.convertLstAreaByOrder(this.lstAreas, null);
       this.toast.showSuccess(`Xóa nhóm ${this.areaActive.groupName} thành công`);
-  
-      if (this.lstAreas.length > 0) {
-        this.areaActive = this.lstAreas[0];
-        if (this.areaActive.lstMerchant.length > 0) {
-          this.lstMerchantActive = _.cloneDeep(this.lstMerchantsAll.filter((item: any) => this.areaActive.lstMerchant.includes(item.merchantId)));
-        }
-      }
-      else {
-        this.areaActive = new AreaModel();
-        this.lstMerchantActive = [];
-      }
-     
+      this.updateActiveSubmit(data.parentId, true);
+      // if (this.lstAreas.length > 0) {
+      //   this.areaActive = this.lstAreas[0];
+      //   if (this.areaActive.lstMerchant.length > 0) {
+      //     this.lstMerchantActive = _.cloneDeep(this.lstMerchantsAll.filter((item: any) => this.areaActive.lstMerchant.includes(item.merchantId)));
+      //   }
+      // } else {
+      //   this.areaActive = new AreaModel();
+      //   this.lstMerchantActive = [];
+      // }
     }
     this.cdr.detectChanges();
   }
@@ -201,16 +202,18 @@ export class CreateOrganizationComponent {
   }
 
   onBlurCreateArea(event: any, areaId: number, isFormCreateInvalid: boolean) {
+
     let areaCreate:AreaModel = this.lstAreas.find(item => item.id == areaId) as AreaModel;
     if (areaCreate) {
-      const {target} = event;
+      const { target } = event;
       let areaName = target?.value?.trim();
-      let checkDuplicate= this.lstAreas.some(x=>x.groupName== areaName);
+      let checkDuplicate = this.lstAreas.some(x => x.groupName == areaName);
       if (!checkDuplicate) {
-        areaCreate.groupName=areaName;
+        areaCreate.groupName = areaName;
         this.lstAreaByOrder = this.convertLstAreaByOrder(this.lstAreas, null);
-        this.isFormCreateAreaInvalid=false;
+        this.isFormCreateAreaInvalid = false;
         this.toast.showSuccess(`Tạo nhóm ${areaName} thành công`)
+        this.updateActiveSubmit(areaCreate.id,true);
       }else
       {
         this.isFormCreateAreaInvalid = isFormCreateInvalid;
@@ -225,6 +228,7 @@ export class CreateOrganizationComponent {
     result.forEach(item => {
       let children = this.convertLstAreaByOrder(list, item.id);
       item.children = children;
+      item.expanded = item.expanded ? item.expanded : false;
     });
 
     return result;
@@ -284,19 +288,6 @@ export class CreateOrganizationComponent {
     }, 300);
   }
 
-
-  checkDuplicateAreaName(event: any) {
-    const {target} = event;
-    let areaName = event?.target?.value;
-    if (!areaName) return;
-    let areaExits = this.lstAreas.find(item => item.groupName?.toLowerCase() === areaName.toLowerCase());
-    if (areaExits && areaExits.id != this.areaActive.id) {
-      this.formEditArea.get('areaName')!.setErrors({ areaExists: true });
-      this.formEditArea.get('areaName')?.markAsTouched(); // Đánh dấu trường là touched để hiển thị lỗi nếu có
-      this.formEditArea.updateValueAndValidity(); // Cập nhật trạng thái valid của form
-    }
-  }
-
   updateAreaName() {
     let area = this.lstAreas.find(item => item.id === this.areaActive.id);
     if (area) {
@@ -307,7 +298,7 @@ export class CreateOrganizationComponent {
       this.formEditArea.get('areaName')!.setErrors({ areaExists: true });
       this.formEditArea.get('areaName')?.markAsTouched(); // Đánh dấu trường là touched để hiển thị lỗi nếu có
       this.formEditArea.updateValueAndValidity(); // Cập nhật trạng thái valid của form
-      return
+  
     }
 
     this.isEditArea = false;
@@ -316,24 +307,34 @@ export class CreateOrganizationComponent {
   }
 
   doMoveMerchant(lstMerchantIdMove: any) {
-    let lstAreaExistMove = this.lstAreas.filter((item) => item.id != this.areaActive.id && item.children.length == 0);
+
+    let lstAreaExistMove = this.lstAreas.filter(
+      (item) => item.id != this.areaActive.id && item.children.length == 0
+    );
 
     if (lstAreaExistMove?.length > 0) {
       let dataModel: MoveMerchantModel = new MoveMerchantModel();
       dataModel.lstAreas = this.lstAreas;
       dataModel.lstAreaByOrder = this.lstAreaByOrder;
       dataModel.areaIdActive = this.areaActive.id;
+      dataModel.lstMerchantIdSelected = lstMerchantIdMove;
 
       const dialogRef = this.dialog.open(DialogMoveMerchantComponent, {
         width: '700px',
         data: dataModel,
       });
 
-      dialogRef.afterClosed().subscribe((areaIdMove: number) => {
-        if (areaIdMove > 0) {
-          let areaMove = this.lstAreas.find(item => item.id == areaIdMove);
+      dialogRef.afterClosed().subscribe((result: { areaId: number, merchantIds: any }) => {
+
+        if (result?.areaId > 0) {
+          let areaMove = this.lstAreas.find(item => item.id == result.areaId);
+
           if (areaMove) {
-            let countMerchant = lstMerchantIdMove.length + areaMove.lstMerchant.length;
+
+            const merchantIdsArray = result.merchantIds.lstRowId;
+            let countMerchant = merchantIdsArray.length + areaMove.lstMerchant.length;
+
+
             if (countMerchant > 1000) {
               let dataConfirm: DialogConfirmModel = new DialogConfirmModel();
               dataConfirm.title = 'Số lượng điểm kinh doanh đã vượt quá số lượng tối đa (1000 điểm)';
@@ -341,31 +342,51 @@ export class CreateOrganizationComponent {
               dataConfirm.icon = 'icon-warning';
               dataConfirm.iconColor = 'warning';
               dataConfirm.viewCancel = false;
-              dataConfirm.buttonLabel = "Tôi đã hiểu"
+              dataConfirm.buttonLabel = "Tôi đã hiểu";
 
               this.dialog.open(DialogConfirmComponent, {
                 width: '500px',
                 data: dataConfirm,
                 disableClose: true,
               });
-            }
-            else {
-              this.areaActive.lstMerchant = this.areaActive.lstMerchant.filter((item: any) => !lstMerchantIdMove.includes(item));
-              this.lstMerchantActive = _.cloneDeep(this.lstMerchantsAll.filter((item: any) => this.areaActive.lstMerchant.includes(item.merchantId)));
-              areaMove.lstMerchant = areaMove.lstMerchant.concat(lstMerchantIdMove);
+            } else {
+              try {
+                this.areaActive.lstMerchant = this.areaActive.lstMerchant.filter(
+                  (id: number) => !merchantIdsArray.includes(id)
+                );
+
+              } catch (error) {
+              }
+              this.lstMerchantActive = _.cloneDeep(
+                this.lstMerchantsAll.filter((item: any) =>
+                  this.areaActive.lstMerchant.includes(item.merchantId)
+                )
+              );
+              areaMove.lstMerchant = areaMove.lstMerchant.concat(merchantIdsArray);
+
+
               this.toast.showSuccess('Chuyển điểm kinh doanh thành công');
+              this.doActiveArea(areaMove);
+              areaMove.expanded = true;
+
             }
+          } else {
+
           }
+        } else {
+
         }
-      })
-    }
-    else {
+      });
+
+    } else {
+
       let dataConfirm: DialogConfirmModel = new DialogConfirmModel();
       dataConfirm.title = 'Không tồn tại nhóm để chuyển điểm kinh doanh';
       dataConfirm.message = 'Vui lòng tạo nhóm mới để tiếp tục';
       dataConfirm.icon = 'icon-warning';
       dataConfirm.iconColor = 'warning';
-      dataConfirm.buttonLabel = "Tạo nhóm mới"
+      dataConfirm.buttonLabel = "Tạo nhóm mới";
+
       this.dialog.open(DialogConfirmComponent, {
         width: '500px',
         data: dataConfirm,
@@ -375,13 +396,19 @@ export class CreateOrganizationComponent {
   }
 
   doCreateOrg() {
-    if(this.lstAreaByOrder.length > 0 && this.lstAreaByOrder[0].groupName) {
+    if (this.lstAreaByOrder.length > 0 && this.lstAreaByOrder[0].groupName) {
       let lstParam = _.cloneDeep(this.lstAreaByOrder);
       this.removeKeys(lstParam, ['id', 'parentId']);
       this.api.post(ORGANIZATION_ENDPOINT.SAVE_ORGANIZATION, lstParam).subscribe(
         (res: any) => {
           this.createSuccess.emit();
           this.toast.showInfo('Thiết lập tổ chức thành công!');
+          //set thanh cong, update lại isconfig cho localstorage
+          const userInfo = this.auth.getUserInfo();
+          if (userInfo) {
+            userInfo.isConfig = 1;
+            localStorage.setItem(environment.userInfo, JSON.stringify(userInfo));
+          }
         }, (error: any) => {
           const errorData = error?.error || {};
           this.toast.showError(errorData?.soaErrorDesc);
@@ -406,7 +433,7 @@ export class CreateOrganizationComponent {
   doCancel() {
     let dataDialog: DialogConfirmModel = new DialogConfirmModel();
     dataDialog.title = 'Hủy thiết lập cơ cấu tổ chức';
-    dataDialog.message = `Các thông tin sẽ không được lưu lại.Bạn có chắc chắn muốn hủy thiết lập tổ chức không?`;
+    dataDialog.message = `Các thông tin sẽ không được lưu lại. Bạn có chắc chắn muốn hủy thiết lập tổ chức không?`;
     dataDialog.icon = 'icon-error';
     dataDialog.iconColor = 'error';
     dataDialog.buttonLabel = 'Xác nhận';
@@ -415,10 +442,10 @@ export class CreateOrganizationComponent {
     dataDialog.width = '500px'
     this.dialogCommon.openDialogInfo(dataDialog).subscribe((result: any) => {
       if (result) {
-         this.cancelCreate.emit();
+        this.cancelCreate.emit();
       }
     });
-   
+
   }
 
   clearValue(nameInput: string) {
@@ -432,4 +459,26 @@ export class CreateOrganizationComponent {
     this.isEditArea = false;
   }
 
+  doActiveAreaCheckbox(group: any) {
+    this.lstAreaByOrder.forEach((i: any) => {
+      if (i !== group) i.expanded = false;
+    });
+  }
+
+  updateActiveSubmit(data: any, isFirts: boolean) {
+    if (!data) {
+      return;
+    }
+    this.lstAreas.forEach((item) => {
+      if (item.id == data) {
+        if (isFirts) {
+          this.areaActive = item
+        }
+        item.expanded = true;
+        if (item.parentId != null) {
+          this.updateActiveSubmit(item, false);
+        }
+      }
+    });
+  }
 }

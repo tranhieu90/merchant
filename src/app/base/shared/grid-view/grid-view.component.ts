@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
@@ -22,8 +22,9 @@ import { PaginatorComponent } from '../../layout/paginator/paginator.component';
   templateUrl: './grid-view.component.html',
   styleUrl: './grid-view.component.scss'
 })
-export class GridViewComponent implements OnInit {
+export class GridViewComponent implements OnInit, AfterViewInit {
   assetPath = environment.assetPath;
+  @ViewChild('spanRef') spanRef!: ElementRef;
   @Input() columns: Array<GridViewModel> = [];
   @Input() action?: any;
   @Input() total: number = 0;
@@ -48,14 +49,28 @@ export class GridViewComponent implements OnInit {
   displayedColumns: string[] = [];
   @Input() selectedItem: any;
   isCheckAll: boolean = false;
+  renderedValues: string[][] = [];
+  tooltipText: string = '';
+  indeterminate?: boolean;
 
   // get selectedItemCount(): number {
   //   var count= this.dataSource.filter((item: any) => item.checked).length;
   //   this.isChecked.emit(count);
   // }
+  constructor(private cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
   }
+
+  ngAfterViewInit(): void {
+  setTimeout(() => {
+    if (this.spanRef?.nativeElement) {
+      this.tooltipText = this.spanRef.nativeElement.textContent || '';
+    }
+  });
+    this.cd.detectChanges(); // ✅ sẽ không còn lỗi NG0100
+  }
+
   doCheckAllPointSales() {
     this.isCheckAll = true;
     this.dataSource.forEach((obj: any) => {
@@ -198,10 +213,12 @@ export class GridViewComponent implements OnInit {
       });
     } else {
       this.checkAll = false;
+      
       this.dataSource.forEach((obj: any) => {
         obj["checked"] = false;
       });
     }
+    this.indeterminate = false;
     let countChecked = ob.checked === true ? this.dataSource.length : 0;
     this.isChecked.emit(countChecked);
 
@@ -214,8 +231,10 @@ export class GridViewComponent implements OnInit {
     });
     if (itemCheck && itemCheck.length === this.dataSource.length) {
       this.checkAll = true;
+      this.indeterminate = false;
     } else {
       this.checkAll = false;
+      this.indeterminate = true;
     }
     this.isChecked.emit(itemCheck.length);
     this.dataChoice.emit(item);

@@ -27,7 +27,7 @@ import { fomatAddress } from '../../../common/helpers/Ultils';
 @Component({
   selector: 'app-update-organization',
   standalone: true,
-  imports: [ButtonModule, InputTextModule, NgFor, NgIf, AreaItemComponent, AreaViewComponent, ReactiveFormsModule, TableMerchantComponent, InputSanitizeDirective, InputCommon,ShowClearOnFocusDirective],
+  imports: [ButtonModule, InputTextModule, NgFor, NgIf, AreaItemComponent, AreaViewComponent, ReactiveFormsModule, TableMerchantComponent, InputSanitizeDirective, InputCommon, ShowClearOnFocusDirective],
   templateUrl: './update-organization.component.html',
   styleUrl: './update-organization.component.scss'
 })
@@ -46,6 +46,8 @@ export class UpdateOrganizationComponent implements OnChanges {
   isMoveMerchantSuccess: boolean = false;
   assetPath = environment.assetPath;
   isCloseInput: boolean = false;
+
+  setActiveItem?: any;
 
   constructor(
     private fb: FormBuilder,
@@ -97,8 +99,10 @@ export class UpdateOrganizationComponent implements OnChanges {
       (res: any) => {
         if (res.data && res.data.length > 0) {
           this.lstAreas = res.data;
+
+          this.updateActiveSubmit(this.setActiveItem, true);
           this.lstAreaByOrder = this.convertLstAreaByOrder(this.lstAreas, null);
-          this.setAreaActive(this.lstAreaByOrder, type);
+          // this.setAreaActive(this.lstAreaByOrder, type);
         }
       }, (error: any) => {
         window.location.reload();
@@ -123,14 +127,14 @@ export class UpdateOrganizationComponent implements OnChanges {
     this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe((res: any) => {
       if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
         this.lstMerchantActive = res['data']['subInfo'].map((item: any) => ({
-              ...item,
-              formatAddress: fomatAddress([
-                item.address,
-                item.communeName,
-                item.districtName,
-                item.provinceName,
-              ]),
-            }));
+          ...item,
+          formatAddress: fomatAddress([
+            item.address,
+            item.communeName,
+            item.districtName,
+            item.provinceName,
+          ]),
+        }));
       } else {
         this.lstMerchantActive = []
       }
@@ -140,7 +144,10 @@ export class UpdateOrganizationComponent implements OnChanges {
     });
   }
 
-  addArea(level: number, parentId: number | null) {
+  addArea(level: number, parentId: number | null, areaActive: any) {
+    if (areaActive) {
+      areaActive.expanded = true;
+    }
     if (this.lstAreas.length === 1000) {
       let dataConfirm: DialogConfirmModel = new DialogConfirmModel();
       dataConfirm.title = 'Nhóm của bạn vượt quá số lượng quy định';
@@ -163,6 +170,7 @@ export class UpdateOrganizationComponent implements OnChanges {
         parentId: parentId,
         level: level,
         groupName: '',
+        expanded: true,
         children: [],
         lstMerchant: []
       }
@@ -172,9 +180,9 @@ export class UpdateOrganizationComponent implements OnChanges {
     }
   }
 
-  validateDeleteArea(id: number) {
+  validateDeleteArea(data: any) {
     let param = {
-      groupId: id,
+      groupId: data.id,
     }
     this.api.post(ORGANIZATION_ENDPOINT.VALIDATE_BEFORE_DELETE, param).subscribe(
       (res: any) => {
@@ -191,7 +199,7 @@ export class UpdateOrganizationComponent implements OnChanges {
           }
         }
         else {
-          this.deleteArea(id);
+          this.deleteArea(data);
         }
       }, (error: any) => {
         const errorData = error?.error || {};
@@ -199,26 +207,26 @@ export class UpdateOrganizationComponent implements OnChanges {
       });
   }
 
-  deleteArea(id: number) {
-    const found = this.lstAreas.find(x=>x.id==id) ;
-    if (found && (found.groupName =="" ||found.groupName ==null)) {
-      this.lstAreas = this.lstAreas.filter(x=>x.id !=id) ;
-      this.lstAreaByOrder= this.convertLstAreaByOrder(this.lstAreas,null);
-      this.isFormCreateAreaInvalid= false;
-    }
-    else{
+  deleteArea(data: any) {
+    const found = this.lstAreas.find(x => x.id == data);
+    if (found && (found.groupName == "" || found.groupName == null)) {
+      this.lstAreas = this.lstAreas.filter(x => x.id != data);
+      this.lstAreaByOrder = this.convertLstAreaByOrder(this.lstAreas, null);
+      this.isFormCreateAreaInvalid = false;
+    } else {
+      this.setActiveItem = data.parentId;
       let param = {
-        groupId: id
+        groupId: data.id
       }
       this.api.post(ORGANIZATION_ENDPOINT.DELETE_GROUP, param).subscribe(
-            (res: any) => {
-              this.toast.showSuccess(`Xóa nhóm ${this.areaActive.groupName} thành công`);
-              if (this.isMoveMerchantSuccess) this.isMoveMerchantSuccess = false;
-              this.getLstAreas(1);
-            }, (error: any) => {
-              const errorData = error?.error || {};
-              this.toast.showError(errorData?.soaErrorDesc);
-      });
+        (res: any) => {
+          this.toast.showSuccess(`Xóa nhóm ${this.areaActive.groupName} thành công`);
+          if (this.isMoveMerchantSuccess) this.isMoveMerchantSuccess = false;
+          this.getLstAreas(1);
+        }, (error: any) => {
+          const errorData = error?.error || {};
+          this.toast.showError(errorData?.soaErrorDesc);
+        });
     }
   }
 
@@ -276,14 +284,14 @@ export class UpdateOrganizationComponent implements OnChanges {
       data: dataModel,
     });
 
-     dialogRef.afterClosed().subscribe((areaIdMove: number) => {
+    dialogRef.afterClosed().subscribe((areaIdMove: number) => {
       if (areaIdMove > 0) {
         let param = {
           groupNewId: areaIdMove,
           lstMerchant: lstMerchantIdMove
         }
 
-        this.callAPIMoveLstMerchant(param,false);
+        this.callAPIMoveLstMerchant(param, false);
 
       }
     })
@@ -304,47 +312,66 @@ export class UpdateOrganizationComponent implements OnChanges {
     });
   }
 
- onBlurCreateArea(event: any, areaId: number, isFormCreateInvalid: boolean) {
-  if (!isFormCreateInvalid) {
-    let areaName = event?.target?.value;
-    let area = this.lstAreas.find((item: any) => item.id === areaId);
-    if (area) {
-      let param = {
-        parentId: area.parentId,
-        groupName: areaName
-      };
-      this.api.post(ORGANIZATION_ENDPOINT.ADD_GROUP, param).subscribe(
-        (res: any) => {
-          this.getLstAreas(2);  // Lấy lại danh sách nhóm mới nhất
-          this.toast.showSuccess(`Thêm nhóm ${areaName} thành công`);
+  onBlurCreateArea(event: any, areaId: number, isFormCreateInvalid: boolean) {
+    if (!isFormCreateInvalid) {
+      let areaName = event?.target?.value;
+      let area = this.lstAreas.find((item: any) => item.id === areaId);
+      if (area) {
+        let param = {
+          parentId: area.parentId,
+          groupName: areaName
+        };
+        this.api.post(ORGANIZATION_ENDPOINT.ADD_GROUP, param).subscribe(
+          (res: any) => {
+            this.getLstAreas(2);
+            //TODo
+            // Lấy lại danh sách nhóm mới nhất
+            this.toast.showSuccess(`Thêm nhóm ${areaName} thành công`);
 
-          // Active nhóm mới sau khi load xong
-          setTimeout(() => {
-            // Giả sử API trả về ID nhóm mới ở res.data.id
-            const newAreaId = res.data?.id;
-            if (newAreaId) {
-              const newActiveArea = this.lstAreas.find(item => item.id === newAreaId);
-              if (newActiveArea) {
-                this.doActiveArea(newActiveArea);
+            // Active nhóm mới sau khi load xong
+            setTimeout(() => {
+              // Giả sử API trả về ID nhóm mới ở res.data.id
+              const newAreaId = res.data?.id;
+              if (newAreaId) {
+                const newActiveArea = this.lstAreas.find(item => item.id === newAreaId);
+                if (newActiveArea) {
+                  this.doActiveArea(newActiveArea);
+                }
+              } else {
+                // Nếu không có ID trả về, active theo tên nhóm mới (tạm thời)
+                const newActiveAreaByName = this.lstAreas.find(item => item.groupName === areaName);
+                if (newActiveAreaByName) {
+                  this.doActiveArea(newActiveAreaByName);
+                }
               }
-            } else {
-              // Nếu không có ID trả về, active theo tên nhóm mới (tạm thời)
-              const newActiveAreaByName = this.lstAreas.find(item => item.groupName === areaName);
-              if (newActiveAreaByName) {
-                this.doActiveArea(newActiveAreaByName);
-              }
-            }
-          }, 500);
-        },
-        (error: any) => {
-          const errorData = error?.error || {};
-          this.toast.showError(errorData?.soaErrorDesc);
-        }
-      );
+            }, 500);
+          },
+          (error: any) => {
+            const errorData = error?.error || {};
+            this.toast.showError(errorData?.soaErrorDesc);
+          }
+        );
+      }
     }
+    this.isFormCreateAreaInvalid = isFormCreateInvalid;
   }
-  this.isFormCreateAreaInvalid = isFormCreateInvalid;
-}
+
+  updateActiveSubmit(data: any, isFirts: boolean) {
+    if (!data) {
+      return;
+    }
+    this.lstAreas.forEach((item) => {
+      if (item.id == data) {
+        if (isFirts) {
+          this.areaActive = item
+        }
+        item.expanded = true;
+        if (item.parentId != null) {
+          this.updateActiveSubmit(item.parentId, false);
+        }
+      }
+    });
+  }
 
 
   convertLstAreaByOrder(list: any[], parentId: number | null): any[] {
@@ -353,12 +380,14 @@ export class UpdateOrganizationComponent implements OnChanges {
     result.forEach(item => {
       let children = this.convertLstAreaByOrder(list, item.id);
       item.children = children;
+      item.expanded = item.expanded ? item.expanded : false;
     });
 
     return result;
   }
 
   doActiveArea(area: AreaModel) {
+    this.setActiveItem = area.id;
     if (this.isFormCreateAreaInvalid) {
       return;
     }
@@ -368,13 +397,11 @@ export class UpdateOrganizationComponent implements OnChanges {
       this.getLstMerchant(area.id);
     }
     this.isEditArea = false;
-
-
   }
 
   doAssignSubmerchant() {
     //chuyển về trang thêm mới điểm kinh doanh
-      this.router.navigate(['/business/business-create'],
+    this.router.navigate(['/business/business-create'],
       { queryParams: { organizationSetup: true, groupId: this.areaActive.id } });
   }
 
@@ -393,17 +420,6 @@ export class UpdateOrganizationComponent implements OnChanges {
   clearValue(nameInput: string) {
     this.formEditArea.get(nameInput)?.setValue('');
     this.isCloseInput = true
-  }
-
-  checkDuplicateAreaName(event: any) {
-    let areaName = event?.target?.value;
-    if (!areaName) return;
-    let areaExits = this.lstAreas.find(item => item.groupName?.toLowerCase() === areaName.toLowerCase());
-    if (areaExits && areaExits.id != this.areaActive.id) {
-      this.formEditArea.get('areaName')!.setErrors({ areaExists: true });
-      this.formEditArea.get('areaName')?.markAsTouched(); // Đánh dấu trường là touched để hiển thị lỗi nếu có
-      this.formEditArea.updateValueAndValidity(); // Cập nhật trạng thái valid của form
-    }
   }
 
   updateAreaName() {
@@ -441,23 +457,24 @@ export class UpdateOrganizationComponent implements OnChanges {
       dataModel.lstAreas = this.lstAreas;
       dataModel.lstAreaByOrder = this.lstAreaByOrder;
       dataModel.areaIdActive = this.areaActive.id;
+      dataModel.lstMerchantIdSelected = lstMerchantIdMove?.lstRowId || [];
 
       const dialogRef = this.dialog.open(DialogMoveMerchantComponent, {
         width: '700px',
         data: dataModel,
       });
 
-      dialogRef.afterClosed().subscribe((areaIdMove: number) => {
-        if (areaIdMove > 0) {
+      dialogRef.afterClosed().subscribe((result: { areaId: number, merchantIds: number[] }) => {
+        if (result?.areaId > 0) {
           let param = {
-            groupNewId: areaIdMove,
-            lstMerchant: lstMerchantIdMove?.lstRowId
-          }
-          this.callAPIMoveLstMerchant(param,lstMerchantIdMove?.isNotDelete);
+            groupNewId: result.areaId,
+            lstMerchant: result.merchantIds
+          };
+          this.callAPIMoveLstMerchant(param, lstMerchantIdMove?.isNotDelete);
         }
-      })
-    }
-    else {
+      });
+
+    } else {
       let dataConfirm: DialogConfirmModel = new DialogConfirmModel();
       dataConfirm.title = 'Không tồn tại nhóm để chuyển điểm kinh doanh';
       dataConfirm.message = 'Vui lòng tạo nhóm mới để tiếp tục';
@@ -472,10 +489,11 @@ export class UpdateOrganizationComponent implements OnChanges {
     }
   }
 
-  callAPIMoveLstMerchant(param: any, isNotDelete:boolean) {
+
+  callAPIMoveLstMerchant(param: any, isNotDelete: boolean) {
     this.api.post(ORGANIZATION_ENDPOINT.MOVE_LIST_MERCHANT, param).subscribe(
       (res: any) => {
-        if(isNotDelete) {
+        if (isNotDelete) {
           this.toast.showSuccess("Chuyển điểm kinh doanh thành công");
 
           // Active nhóm đích ngay sau khi lấy lại danh sách
@@ -484,7 +502,7 @@ export class UpdateOrganizationComponent implements OnChanges {
             if (newActiveArea) {
               this.doActiveArea(newActiveArea);
             }
-          }, 500);
+          }, 100);
         } else {
           this.isMoveMerchantSuccess = true;
           const newActiveArea = this.lstAreas.find(item => item.id === param.groupNewId);
@@ -527,6 +545,12 @@ export class UpdateOrganizationComponent implements OnChanges {
         this.cancelEdit();
       }
     }, 300);
+  }
+
+  doActiveAreaCheckbox(group: any) {
+    this.lstAreaByOrder.forEach((i: any) => {
+      if (i !== group) i.expanded = false;
+    });
   }
 
 }
