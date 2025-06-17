@@ -25,7 +25,7 @@ export class DialogRepayComponent {
   formRepay!: FormGroup;
   maxMoney: number = 0;
   totalNumberCanRefund: number = 0;
-  timeCanRefund: number = 0;
+  isExpireDate: any;
   traceTransfer: any;
 
   constructor(
@@ -41,9 +41,10 @@ export class DialogRepayComponent {
       description: ['Hoan tra giao dich', [Validators.required, Validators.maxLength(500)]]
     });
 
-    this.timeCanRefund = this.getDaysPassed(dataDialog?.transTime);
-    if (this.timeCanRefund > 30) {
-      this.toast.showError('Giao dịch không thể thực hiện do đã quá 30 ngày kể từ ngày phát sinh giao dịch thanh toán');
+    this.isExpireDate = this.getExpiredDate(dataDialog?.transTime);
+    console.log("this.isExpireDate", this.isExpireDate);
+    if (this.isExpireDate) {
+      this.toast.showError('Giao dịch không thể thực hiện do đã quá 6 tháng kể từ ngày phát sinh giao dịch thanh toán');
     }
 
 
@@ -107,27 +108,23 @@ export class DialogRepayComponent {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ';
   }
 
-  getDaysPassed(dateStr: string): number {
-    // Định nghĩa offset cho UTC+7 (7 giờ * 60 phút = 420 phút)
+  getExpiredDate(dateStr: string): boolean {
+
     const UTC_PLUS_7_OFFSET_MINUTES = 7 * 60;
 
     const targetMoment = moment(dateStr, 'DD/MM/YYYY HH:mm:ss');
-
     if (!targetMoment.isValid()) {
       console.error(`Lỗi: Không thể parse chuỗi ngày: '${dateStr}' với định dạng 'DD/MM/YYYY HH:mm:ss'`);
-      return NaN;
+      return true;
     }
 
     targetMoment.utcOffset(UTC_PLUS_7_OFFSET_MINUTES, true);
 
-    const targetStartOfDay = targetMoment.startOf('day');
+    const expiredMoment = targetMoment.clone().add(6, 'months').startOf('day');
 
-    const todayMoment = moment();
+    const todayMoment = moment().utcOffset(UTC_PLUS_7_OFFSET_MINUTES, true).startOf('day');
 
-    todayMoment.utcOffset(UTC_PLUS_7_OFFSET_MINUTES, true);
 
-    const todayStartOfDay = todayMoment.startOf('day');
-
-    return todayStartOfDay.diff(targetStartOfDay, 'days');
+    return todayMoment.isAfter(expiredMoment);
   }
 }
