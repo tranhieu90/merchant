@@ -266,6 +266,20 @@ export class CashbackComponent implements OnInit {
         },
 
       },
+      {
+        name: 'methodName',
+        label: 'Phương thức thanh toán',
+        options: {
+          customCss: (obj: any) => {
+            return ['text-left'];
+          },
+          customCssHeader: () => {
+            return ['text-left'];
+          },
+          width: "226px",
+          minWidth: "226px"
+        }
+      },
       ...(this.lstColumnShow.includes("refundFTCode")
           ? [
             {
@@ -295,20 +309,6 @@ export class CashbackComponent implements OnInit {
           ] : []
       ),
       {
-        name: 'methodName',
-        label: 'Phương thức thanh toán',
-        options: {
-          customCss: (obj: any) => {
-            return ['text-left'];
-          },
-          customCssHeader: () => {
-            return ['text-left'];
-          },
-          width: "226px",
-          minWidth: "226px"
-        }
-      },
-      {
         name: 'creditAccount',
         label: 'Tài khoản/Thẻ thanh toán',
         options: {
@@ -332,20 +332,6 @@ export class CashbackComponent implements OnInit {
           },
           width: "226px",
           minWidth: "226px"
-        }
-      },
-      {
-        name: 'creditName',
-        label: 'TÊN TÀI KHOẢN THANH TOÁN',
-        options: {
-          customCss: (obj: any) => {
-            return ['text-left', 'mv-180'];
-          },
-          customCssHeader: () => {
-            return ['text-left'];
-          },
-          width: "205px",
-          minWidth: "205px"
         }
       },
       ...(this.lstColumnShow.includes("feeTransaction")
