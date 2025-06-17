@@ -212,6 +212,34 @@ export class CashbackComponent implements OnInit {
         }
       },
       {
+        name: 'paymentDesc',
+        label: 'NỘI DUNG HOÀN TRẢ',
+        options: {
+          customCss: (obj: any) => {
+            return ['text-left', 'mv-180'];
+          },
+          customCssHeader: () => {
+            return ['text-left'];
+          },
+          width: "170px",
+          minWidth: "170px"
+        }
+      },
+      {
+        name: 'orderReferenceOrigin',
+        label: 'MÃ ĐỊNH DANH',
+        options: {
+          customCss: (obj: any) => {
+            return ['text-left', 'mv-180'];
+          },
+          customCssHeader: () => {
+            return ['text-left'];
+          },
+          width: "170px",
+          minWidth: "170px"
+        }
+      },
+      {
         name: 'status',
         label: 'Trạng thái',
         options: {
@@ -281,7 +309,7 @@ export class CashbackComponent implements OnInit {
         }
       },
       {
-        name: 'debitAccount',
+        name: 'creditAccount',
         label: 'Tài khoản/Thẻ thanh toán',
         options: {
           customCss: (obj: any) => {
@@ -293,8 +321,8 @@ export class CashbackComponent implements OnInit {
           customBodyRender: (obj: any, params: any) => {
 
             const bankName = params.issuerName || '';
-            const accountNumber = params.debitAccount || '';
-            const accountHolder = params.debitName || '';
+            const accountNumber = this.transform(params.creditAccount || '');
+            const accountHolder = params.creditName || '';
 
             return `
               <div class="paragraph-m-semibold mb-1">${bankName}</div>
@@ -304,6 +332,20 @@ export class CashbackComponent implements OnInit {
           },
           width: "226px",
           minWidth: "226px"
+        }
+      },
+      {
+        name: 'creditName',
+        label: 'TÊN TÀI KHOẢN THANH TOÁN',
+        options: {
+          customCss: (obj: any) => {
+            return ['text-left', 'mv-180'];
+          },
+          customCssHeader: () => {
+            return ['text-left'];
+          },
+          width: "200px",
+          minWidth: "200px"
         }
       },
       ...(this.lstColumnShow.includes("feeTransaction")
@@ -743,6 +785,18 @@ export class CashbackComponent implements OnInit {
     });
 
     return count > 0 ? count : null;
+  }
+
+  transform(value: string): string {
+    if (!value || value.length < 10) {
+      return value;
+    }
+
+    const start = value.substring(0, 3);
+    const end = value.substring(value.length - 3);
+    const masked = 'x'.repeat(value.length - 6);
+
+    return `${start}${masked}${end}`;
   }
 
 }
