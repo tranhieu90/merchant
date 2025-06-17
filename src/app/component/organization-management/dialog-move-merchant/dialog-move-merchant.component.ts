@@ -11,7 +11,7 @@ export class MoveMerchantModel {
   lstAreas: AreaModel[] = [];
   lstAreaByOrder: AreaModel[] = [];
   areaIdActive: number = 0;
-  lstMerchantIdSelected: number[] = [];  // ✅ thêm dòng này
+  lstMerchantIdSelected: number[] = [];
   isCallApi: boolean = false;
 }
 

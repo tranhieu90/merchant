@@ -60,7 +60,7 @@ export class TableMerchantComponent implements OnChanges {
       }
     },
     {
-      name: 'address',
+      name: 'formatAddress',
       label: 'ĐỊA CHỈ',
       options: {
         customCss: (obj: any) => {
