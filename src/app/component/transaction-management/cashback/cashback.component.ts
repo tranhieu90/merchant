@@ -174,8 +174,8 @@ export class CashbackComponent implements OnInit {
               options: {
                 customCss: (obj: any) => ['text-left'],
                 customCssHeader: () => ['text-left'],
-                width: "148px",
-                minWidth: "148px"
+                width: "149px",
+                minWidth: "149px"
               }
             }
           ] : []
@@ -274,8 +274,8 @@ export class CashbackComponent implements OnInit {
               options: {
                 customCss: (obj: any) => ['text-left'],
                 customCssHeader: () => ['text-left'],
-                width: "173px",
-                minWidth: "173px"
+                width: "175px",
+                minWidth: "175px"
               }
             }
           ] : []
@@ -288,8 +288,8 @@ export class CashbackComponent implements OnInit {
               options: {
                 customCss: (obj: any) => ['text-left'],
                 customCssHeader: () => ['text-left'],
-                width: "165px",
-                minWidth: "165px"
+                width: "167px",
+                minWidth: "167px"
               }
             }
           ] : []
@@ -344,8 +344,8 @@ export class CashbackComponent implements OnInit {
           customCssHeader: () => {
             return ['text-left'];
           },
-          width: "200px",
-          minWidth: "200px"
+          width: "205px",
+          minWidth: "205px"
         }
       },
       ...(this.lstColumnShow.includes("feeTransaction")
@@ -359,8 +359,8 @@ export class CashbackComponent implements OnInit {
                 customBodyRender: (value: any) => {
                   return this.formatMoney2(value);
                 },
-                width: "135px",
-                minWidth: "135px"
+                width: "136px",
+                minWidth: "136px"
               }
             }
           ] : []
