@@ -199,7 +199,7 @@ export class HumanResourceUpdateV2Component implements OnInit {
       }
     },
     {
-      name: 'address',
+      name: 'formatAddress',
       label: 'ĐỊA CHỈ',
       options: {
         customCss: (obj: any) => {

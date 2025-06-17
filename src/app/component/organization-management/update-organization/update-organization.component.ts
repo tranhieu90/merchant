@@ -1,14 +1,18 @@
 import { NgFor, NgIf } from '@angular/common';
-import { ChangeDetectorRef, Component, Input, SimpleChanges, OnChanges, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import _ from 'lodash';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { environment } from '../../../../environments/environment';
 import { DialogConfirmComponent } from '../../../base/shared/dialog-confirm/dialog-confirm.component';
+import { CommonUtils } from '../../../base/utils/CommonUtils';
+import { InputCommon } from '../../../common/directives/input.directive';
 import { InputSanitizeDirective } from '../../../common/directives/inputSanitize.directive';
+import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
 import { GROUP_ENDPOINT, ORGANIZATION_ENDPOINT } from '../../../common/enum/EApiUrl';
+import { fomatAddress } from '../../../common/helpers/Ultils';
 import { FetchApiService } from '../../../common/service/api/fetch-api.service';
 import { AuthenticationService } from '../../../common/service/auth/authentication.service';
 import { ToastService } from '../../../common/service/toast/toast.service';
@@ -16,13 +20,8 @@ import { AreaModel } from '../../../model/AreaModel';
 import { DialogConfirmModel } from '../../../model/DialogConfirmModel';
 import { AreaItemComponent } from '../area-item/area-item.component';
 import { AreaViewComponent } from '../area-view/area-view.component';
-import { TableMerchantComponent } from '../table-merchant/table-merchant.component';
 import { DialogMoveMerchantComponent, MoveMerchantModel } from '../dialog-move-merchant/dialog-move-merchant.component';
-import { environment } from '../../../../environments/environment';
-import { CommonUtils } from '../../../base/utils/CommonUtils';
-import { InputCommon } from '../../../common/directives/input.directive';
-import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
-import { fomatAddress } from '../../../common/helpers/Ultils';
+import { TableMerchantComponent } from '../table-merchant/table-merchant.component';
 
 @Component({
   selector: 'app-update-organization',
@@ -46,7 +45,7 @@ export class UpdateOrganizationComponent implements OnChanges {
   isMoveMerchantSuccess: boolean = false;
   assetPath = environment.assetPath;
   isCloseInput: boolean = false;
-
+  areaBeforeDelete: AreaModel = new AreaModel();
   setActiveItem?: any;
 
   constructor(
@@ -230,6 +229,21 @@ export class UpdateOrganizationComponent implements OnChanges {
     }
   }
 
+  deleteAreaMove(data: any) {
+    let param = {
+      groupId: data.id
+    }
+    this.api.post(ORGANIZATION_ENDPOINT.DELETE_GROUP, param).subscribe(
+      (res: any) => {
+        this.toast.showSuccess(`Xóa nhóm ${this.areaActive.groupName} thành công`);
+        if (this.isMoveMerchantSuccess) this.isMoveMerchantSuccess = false;
+        this.getLstAreas(1);
+      }, (error: any) => {
+        const errorData = error?.error || {};
+        this.toast.showError(errorData?.soaErrorDesc);
+      });
+  }
+
   openDialogChangeMerchant(lstMerchant: any) {
     let dataConfirm: DialogConfirmModel = new DialogConfirmModel();
     dataConfirm.title = `Nhóm đang được gán cho ${lstMerchant.length} điểm kinh doanh`;
@@ -278,17 +292,18 @@ export class UpdateOrganizationComponent implements OnChanges {
     dataModel.lstAreas = this.lstAreas;
     dataModel.lstAreaByOrder = this.lstAreaByOrder;
     dataModel.areaIdActive = this.areaActive.id;
+    dataModel.lstMerchantIdSelected = lstMerchantIdMove || [];
 
     const dialogRef = this.dialog.open(DialogMoveMerchantComponent, {
       width: '700px',
       data: dataModel,
     });
 
-    dialogRef.afterClosed().subscribe((areaIdMove: number) => {
-      if (areaIdMove > 0) {
+    dialogRef.afterClosed().subscribe((result: { areaId: number, merchantIds: number[] }) => {
+      if (result.areaId > 0) {
         let param = {
-          groupNewId: areaIdMove,
-          lstMerchant: lstMerchantIdMove
+          groupNewId: result.areaId,
+          lstMerchant: result.merchantIds
         }
 
         this.callAPIMoveLstMerchant(param, false);
@@ -504,6 +519,7 @@ export class UpdateOrganizationComponent implements OnChanges {
             }
           }, 100);
         } else {
+          this.areaBeforeDelete = this.areaActive;
           this.isMoveMerchantSuccess = true;
           const newActiveArea = this.lstAreas.find(item => item.id === param.groupNewId);
           if (newActiveArea) {
