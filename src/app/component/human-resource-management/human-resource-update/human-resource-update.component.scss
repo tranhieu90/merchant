@@ -253,8 +253,12 @@
   }
 
   .div-button {
-    margin-top: 50px;
+    margin-bottom: 0px;
     text-align: right;
+    position: absolute;
+    right: $spacing-l;
+    bottom: $spacing-l;
+    left: $spacing-l;
   }
 
   ::ng-deep .mat-step-icon.mat-step-icon-state-done {

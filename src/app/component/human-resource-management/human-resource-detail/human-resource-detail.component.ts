@@ -71,7 +71,7 @@ export class HumanResourceDetailComponent implements OnInit {
   readonly MERCHANT_RULES = MERCHANT_RULES;
   personDetail?: IPersonelDetail;
   rolePesonel?: any;
-  subMerchantList?: any;
+  subMerchantList: any[]=[];
   assetPath = environment.assetPath;
   listFunctionConvert: FunctionModel[] = [];
   changePassInfo: any;
@@ -296,7 +296,6 @@ export class HumanResourceDetailComponent implements OnInit {
       .subscribe(
         (res: any) => {
           if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
-            this.subMerchantList = res['data']['subInfo'];
             this.subMerchantList = res['data']['subInfo'].map((item: any) => ({
               ...item,
               formatAddress: fomatAddress([
@@ -376,7 +375,6 @@ export class HumanResourceDetailComponent implements OnInit {
               size: 10,
             })
             .subscribe((res) => {
-              this.subMerchantList = res['data']['getPushSubInfos'];
               this.subMerchantList = res['data']['getPushSubInfos'].map(
                 (item: any) => ({
                   ...item,
@@ -569,9 +567,7 @@ export class HumanResourceDetailComponent implements OnInit {
                   ? this.userInfo?.merchantId
                   : 0,
               selectedMerchant:
-                this.subMerchantList?.length === 1
-                  ? this.subMerchantList[0].merchantId
-                  : undefined,
+                this.subMerchantList,
               orgType: this.personDetail?.orgType,
             },
           },

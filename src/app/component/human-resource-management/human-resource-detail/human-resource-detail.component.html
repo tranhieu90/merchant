@@ -127,7 +127,7 @@
             </div>
           </div>
           <div class="col-9">
-            <ng-container *ngIf="subMerchantList?.length > 0; else subNodata">
+            <ng-container *ngIf="subMerchantList.length > 0; else subNodata">
               <grid-view [columns]="columns" [dataSource]="subMerchantList" [isShowPage]="false" [search]="true"
                 style="float: left; width: 100%"></grid-view>
             </ng-container>
@@ -136,7 +136,7 @@
       </ng-container>
 
       <ng-template #subtemplate>
-        <div class="col-12" *ngIf="subMerchantList?.length > 0; else subNodata">
+        <div class="col-12" *ngIf="subMerchantList.length > 0; else subNodata">
           <!-- <span
             *ngIf="this.personDetail?.orgType === 0"
             class="title-m-semibold"

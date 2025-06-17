@@ -1,8 +1,6 @@
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import {
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatStep, MatStepper } from '@angular/material/stepper';
@@ -38,7 +36,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { IPersonelUpdate } from '../../../model/ma/personel.model';
 import { environment } from '../../../../environments/environment';
-import { convertLstAreaByOrder, fomatAddress, setDisableOrNotForItemsNotAtLevel } from '../../../common/helpers/Ultils';
+import {
+  convertLstAreaByOrder,
+  fomatAddress,
+  setDisableOrNotForItemsNotAtLevel,
+} from '../../../common/helpers/Ultils';
 import { AreaViewComponent } from '../../organization-management/area-view/area-view.component';
 import { TreeViewComponent } from '../../../base/shared/tree-view/tree-view.component';
 import { MTreeCheckboxComponent } from '../../../base/shared/m-tree-checkbox/m-tree-checkbox.component';
@@ -64,7 +66,7 @@ import { MTreeCheckboxComponent } from '../../../base/shared/m-tree-checkbox/m-t
     RadioButtonModule,
     MTreeComponent,
     TreeViewComponent,
-    MTreeCheckboxComponent
+    MTreeCheckboxComponent,
   ],
   templateUrl: './human-resource-update.component.html',
   styleUrl: './human-resource-update.component.scss',
@@ -121,36 +123,40 @@ export class HumanResourceUpdateComponent implements OnInit {
     private router: Router,
     private toast: ToastService,
     private api: FetchApiService,
-    private auth: AuthenticationService,
+    private auth: AuthenticationService
   ) {
     const state = this.router.getCurrentNavigation()?.extras.state;
     const personData = state?.['dataInput'];
-    console.log("personData", personData);
+    console.log('personData', personData);
     if (personData) {
       this.personDataDetail = personData;
       this.userId = personData.userId;
-      if (personData?.selectedMerchant) {
-        if (personData?.selectedMerchant && isArray(personData?.selectedMerchant)) {
-          this.selectedMerchantDefault = personData?.selectedMerchant
-        } else {
-          this.selectedMerchantDefault.push(personData?.selectedMerchant)
-        }
-      };
-
-      this.roleIdDefault = personData.roleId;
       this.orgTypeUser = personData.orgType;
+      if (this.orgTypeUser==2 && personData?.selectedMerchant) {
+        if (
+          personData?.selectedMerchant &&
+          isArray(personData?.selectedMerchant)
+        ) {
+          this.selectedMerchantDefault = personData?.selectedMerchant;
+        } else {
+          this.selectedMerchantDefault.push(personData?.selectedMerchant);
+        }
+      }
+      this.roleIdDefault = personData.roleId;
       this.masterId = personData.masterId;
       const groupList = personData?.groupList;
-      if (groupList) {
+      if (this.orgTypeUser==1 && groupList) {
         const maxLevel = Math.min(...groupList.map((x: any) => x.level));
         this.selectedGroupDefault = groupList;
-        this.newOrganization = this.selectedGroupDefault.map((group: any) => group.id);
+        this.newOrganization = this.selectedGroupDefault.map(
+          (group: any) => group.id
+        );
       }
     }
   }
   //isConfig=0 orgType=0 pointsales==0   typeUpdate=0 => bỏ qua  vào vai trò gán vào merchant
   //isConfig=0 orgType=0 pointsales > 0  typeUpdate=1 => hiển thị opt 1 3 : 3 là radio button.
-  //isConfig=0 orgType=2 typeUpdate=2     => vào luôn vai trò => 
+  //isConfig=0 orgType=2 typeUpdate=2     => vào luôn vai trò =>
   //isConfig=1 orgType=0 typeUpdate=3=> hiển thị 3 opt
   //isConfig=1 orgType=1 typeUpdate=4 => hiện thị 2 3 3là hiển thị checkbox
   //isConfig=1 orgType=2 pointsales > 0 typeUpdate= 5
@@ -159,93 +165,102 @@ export class HumanResourceUpdateComponent implements OnInit {
     this.isSearch = true;
     this.userInfo = this.auth.getUserInfo();
     let lstPoinSales: any[] = [];
-    this.getLstMerchantWithCheckedObs(true)?.subscribe((dataPointSales: any[]) => {
-      lstPoinSales.push(...dataPointSales);
-      if (this.selectedMerchantDefault.length > 0)
-        lstPoinSales.forEach((item) => {
-          if (this.selectedMerchantDefault.some((x: any) => x.merchantId == item.merchantId)) {
-            item.checked = true;
+    this.getLstMerchantWithCheckedObs(true)?.subscribe(
+      (dataPointSales: any[]) => {
+        lstPoinSales.push(...dataPointSales);
+        if (this.selectedMerchantDefault.length > 0)
+          lstPoinSales.forEach((item) => {
+            if (
+              this.selectedMerchantDefault.some(
+                (x: any) => x.merchantId == item.merchantId
+              )
+            ) {
+              item.checked = true;
+            }
+          });
+        const orgTypeLogin = this.userInfo?.orgType;
+        this.orgTypeLogin = orgTypeLogin;
+        if (this.userInfo?.isConfig == 0) {
+          if (lstPoinSales.length == 0) {
+            if (orgTypeLogin == 0) {
+              this.typeUpdate = 0;
+              this.isChooseOrganization = false;
+            }
           }
-        })
-      const orgTypeLogin = this.userInfo?.orgType;
-      this.orgTypeLogin = orgTypeLogin;
-      if (this.userInfo?.isConfig == 0) {
-        if (lstPoinSales.length == 0) {
-          if (orgTypeLogin == 0) {
-            this.typeUpdate = 0;
-            this.isChooseOrganization = false;
+          if (lstPoinSales.length > 0) {
+            if (orgTypeLogin == 0) {
+              this.typeUpdate = 1;
+              this.isChooseOrganization = true;
+            }
+            if (orgTypeLogin == 2) {
+              this.isChooseOrganization = false;
+              this.typeUpdate = 2;
+            }
           }
-        }
-        if (lstPoinSales.length > 0) {
+        } else {
           if (orgTypeLogin == 0) {
-            this.typeUpdate = 1;
             this.isChooseOrganization = true;
+            this.doGetGroupListLogin().subscribe((data) => {
+              this.lstAreas = data;
+              if (this.selectedGroupDefault.length > 0) {
+                const _level = this.selectedGroupDefault[0].level;
+                data.forEach((item) => {
+                  if (
+                    this.selectedGroupDefault.some((x: any) => x.id == item.id)
+                  ) {
+                    item.checked = true;
+                  }
+                  if (item.level != _level) {
+                    item.disabled = true;
+                  }
+                });
+              }
+              this.lstAreaByOrder = convertLstAreaByOrder(
+                this.lstAreas,
+                this.lstAreas[0]?.parentId
+              );
+            });
+            this.typeUpdate = 3;
+          }
+          if (orgTypeLogin == 1) {
+            this.isChooseOrganization = true;
+            this.typeUpdate = 4;
+            this.doGetGroupListLogin().subscribe((data) => {
+              this.lstAreas = data;
+              if (this.selectedGroupDefault.length > 0) {
+                const _level = this.selectedGroupDefault[0].level;
+                data.forEach((item) => {
+                  if (
+                    this.selectedGroupDefault.some((x: any) => x.id == item.id)
+                  ) {
+                    item.checked = true;
+                  }
+                  if (item.level != _level) {
+                    item.disabled = true;
+                  }
+                });
+              }
+              this.lstAreaByOrder = convertLstAreaByOrder(
+                this.lstAreas,
+                this.lstAreas[0]?.parentId
+              );
+            });
           }
           if (orgTypeLogin == 2) {
-            this.isChooseOrganization = false;
-            this.typeUpdate = 2;
+            if (lstPoinSales.length == 1) {
+              this.isChooseOrganization = false;
+              this.typeUpdate = 2;
+            } else {
+              this.isChooseOrganization = true;
+              this.typeUpdate = 5;
+            }
           }
         }
-      } else {
-
-        if (orgTypeLogin == 0) {
-          this.isChooseOrganization = true;
-          this.doGetGroupListLogin().subscribe((data) => {
-            this.lstAreas = data;
-            if (this.selectedGroupDefault.length > 0) {
-              const _level = this.selectedGroupDefault[0].level;
-              data.forEach((item) => {
-                if (this.selectedGroupDefault.some((x: any) => x.id == item.id)) {
-                  item.checked = true;
-                }
-                if (item.level != _level) {
-                  item.disabled = true;
-                }
-              })
-            }
-            this.lstAreaByOrder = convertLstAreaByOrder(
-              this.lstAreas,
-              this.lstAreas[0]?.parentId
-            );
-          })
-          this.typeUpdate = 3;
-        }
-        if (orgTypeLogin == 1) {
-          this.isChooseOrganization = true;
-          this.typeUpdate = 4;
-          this.doGetGroupListLogin().subscribe((data) => {
-            this.lstAreas = data;
-            if (this.selectedGroupDefault.length > 0) {
-              const _level = this.selectedGroupDefault[0].level;
-              data.forEach((item) => {
-                if (this.selectedGroupDefault.some((x: any) => x.id == item.id)) {
-                  item.checked = true;
-                }
-                if (item.level != _level) {
-                  item.disabled = true;
-                }
-              })
-            }
-            this.lstAreaByOrder = convertLstAreaByOrder(
-              this.lstAreas,
-              this.lstAreas[0]?.parentId
-            );
-          })
-        }
-        if (orgTypeLogin == 2) {
-          if (lstPoinSales.length == 1) {
-            this.isChooseOrganization = false;
-            this.typeUpdate = 2;
-          } else {
-            this.isChooseOrganization = true;
-            this.typeUpdate = 5;
-          }
+        if (this.typeUpdate == 0 || this.typeUpdate == 2) {
+          this.getLstRole();
         }
       }
-      if (this.typeUpdate == 0 || this.typeUpdate == 2) {
-        this.getLstRole();
-      }
-    });
+    );
   }
   columns: Array<GridViewModel> = [
     {
@@ -356,110 +371,148 @@ export class HumanResourceUpdateComponent implements OnInit {
   doNextStepSubmit() {
     const param: IPersonelUpdate = {
       userId: this.userId,
-      roleId: this.roleIdDefault
+      roleId: this.roleIdDefault,
     };
     let isChangeInfo = false;
 
-    if (this.personDataDetail.orgType != this.orgTypeUser || (this.roleIdSeletecd && this.roleIdSeletecd.id == this.roleIdDefault)) {
+    if (
+      this.personDataDetail.orgType != this.orgTypeUser ||
+      (this.roleIdSeletecd && this.roleIdSeletecd.id == this.roleIdDefault)
+    ) {
       isChangeInfo = true;
     }
     if (this.orgTypeUser == 0) {
+      if (this.personDataDetail.orgType == 0) {
+        param.oraganizationInfo = {
+          masterId: this.auth.getUserInfo().merchantId,
+        };
+      }
+      if (this.personDataDetail.orgType == 1) {
+        let lstGr!: any;
+        if (
+          this.selectedGroupDefault &&
+          Array.isArray(this.selectedGroupDefault)
+        ) {
+          const lstGr = this.selectedGroupDefault.map((g: any) => g.id);
+        }
+        param.oraganizationInfo = {
+          masterId: this.auth.getUserInfo().merchantId,
+          groupIds: lstGr,
+        };
+      }
+      if (this.personDataDetail.orgType == 2) {
+        let lstPointSales!: any;
+        if (this.personDataDetail?.selectedMerchant) {
+          lstPointSales = this.personDataDetail?.selectedMerchant.map(
+            (item: any) => item.merchantId
+          );
+        }
+        param.oraganizationInfo = {
+          masterId: this.auth.getUserInfo().merchantId,
+          merchantIds: lstPointSales,
+        };
+      }
 
-      let lstPointSales!: any;
-      if (this.personDataDetail?.selectedMerchant) {
-        lstPointSales = this.personDataDetail?.selectedMerchant.map((item: any) => item.merchantId);
+      if (
+        this.selectedMerchantDefault &&
+        Array.isArray(this.selectedMerchantDefault)
+      ) {
+        lstPointSales = this.selectedMerchantDefault.map(
+          (item: any) => item.merchantId
+        );
       }
-      if (this.selectedMerchantDefault && Array.isArray(this.selectedMerchantDefault)) {
-        lstPointSales = this.selectedMerchantDefault.map((item: any) => item.merchantId);
-      }
-      param.oraganizationInfo = {
-        masterId:
-          this.auth.getUserInfo().merchantId,
-        merchantIds:
-          lstPointSales,
-        groupIds: this.newOrganization,
-      };
     }
 
     if (this.orgTypeUser == 1) {
       const selectedGroupIds = this.selectedGroupDefault.map((g: any) => g.id);
       if (this.personDataDetail.orgType == 1) {
-        const groupIdsInsert = selectedGroupIds.filter((id: any) => !this.newOrganization.includes(id));
-        const groupIdsDelete = this.newOrganization.filter((id: any) => !selectedGroupIds.includes(id));
+        const groupIdsInsert = selectedGroupIds.filter(
+          (id: any) => !this.newOrganization.includes(id)
+        );
+        const groupIdsDelete = this.newOrganization.filter(
+          (id: any) => !selectedGroupIds.includes(id)
+        );
         if (groupIdsInsert.length > 0) {
           param.oraganizationInfo = {
-            groupIds: groupIdsInsert
-          }
+            groupIds: groupIdsInsert,
+          };
         }
         if (groupIdsDelete.length > 0) {
           param.oraganizationDelete = {
-            groupIds: groupIdsDelete
-          }
+            groupIds: groupIdsDelete,
+          };
         }
-
-      }
-      else if (this.personDataDetail.orgType == 0) {
+      } else if (this.personDataDetail.orgType == 0) {
         param.oraganizationInfo = {
-          groupIds: selectedGroupIds
-        }
+          groupIds: selectedGroupIds,
+        };
         param.oraganizationDelete = {
           masterId: this.auth.getUserInfo().merchantId,
-        }
-      }
-      else {
+        };
+      } else {
         let lstPointSales!: any;
         if (this.personDataDetail?.selectedMerchant) {
-          lstPointSales = this.personDataDetail?.selectedMerchant.map((item: any) => +item.merchantId);
+          lstPointSales = this.personDataDetail?.selectedMerchant.map(
+            (item: any) => +item.merchantId
+          );
         }
         param.oraganizationInfo = {
-          groupIds: selectedGroupIds
-        }
+          groupIds: selectedGroupIds,
+        };
         param.oraganizationDelete = {
           merchantIds: lstPointSales,
-        }
+        };
       }
     }
     if (this.orgTypeUser == 2) {
-      const selectedPointSales = this.selectedMerchantDefault.map((g: any) => g.merchantId);
+      const selectedPointSales = this.selectedMerchantDefault.map(
+        (g: any) => g.merchantId
+      );
       if (this.personDataDetail.orgType == 2) {
-        var lstPointSales = this.personDataDetail?.selectedMerchant.map((item: any) => item.merchantId);
-        const pointsInsert = selectedPointSales.filter((id: number) => !lstPointSales.includes(id));
-        const pointsDelete = lstPointSales.filter((id: number) => !selectedPointSales.includes(id));
+        var lstPointSales = this.personDataDetail?.selectedMerchant.map(
+          (item: any) => item.merchantId
+        );
+        const pointsInsert = selectedPointSales.filter(
+          (id: number) => !lstPointSales.includes(id)
+        );
+        const pointsDelete = lstPointSales.filter(
+          (id: number) => !selectedPointSales.includes(id)
+        );
         if (pointsInsert.length > 0) {
           param.oraganizationInfo = {
-            merchantIds: pointsInsert
-          }
+            merchantIds: pointsInsert,
+          };
         }
         if (pointsDelete.length > 0) {
           param.oraganizationDelete = {
-            merchantIds: pointsDelete
-          }
+            merchantIds: pointsDelete,
+          };
         }
-
-      }
-      else if (this.personDataDetail.orgType == 0) {
+      } else if (this.personDataDetail.orgType == 0) {
         param.oraganizationInfo = {
-          merchantIds: selectedPointSales
-        }
+          merchantIds: selectedPointSales,
+        };
         param.oraganizationDelete = {
           masterId: this.auth.getUserInfo().merchantId,
-        }
-      }
-      else {
+        };
+      } else {
         param.oraganizationInfo = {
-          merchantIds: selectedPointSales
-        }
+          merchantIds: selectedPointSales,
+        };
         param.oraganizationDelete = {
           groupIds: this.newOrganization,
-        }
+        };
       }
     }
     this.api.post(HR_ENDPOINT.UPDATE_HR, param).subscribe(
       (res) => {
         this.isSuccess = res.data.status;
       },
-      () => {
-        this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
+      (err) => {
+        if (err) {
+          const { error } = err;
+          this.toast.showError(error.soaErrorDesc);
+        } else this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
       }
     );
     if (this.currentStep < 3) {
@@ -509,13 +562,17 @@ export class HumanResourceUpdateComponent implements OnInit {
       }
       this.selectedGroupDefault.push(group);
     } else {
-      const index = this.selectedGroupDefault.findIndex((x: any) => x.id === group.id);
+      const index = this.selectedGroupDefault.findIndex(
+        (x: any) => x.id === group.id
+      );
       if (index !== -1) {
         this.selectedGroupDefault.splice(index, 1);
       }
       if (group.children && Array.isArray(group.children)) {
         group.children.forEach((child: any) => {
-          const childIndex = this.selectedGroupDefault.findIndex((x: any) => x.id === child.id);
+          const childIndex = this.selectedGroupDefault.findIndex(
+            (x: any) => x.id === child.id
+          );
           if (childIndex !== -1) {
             this.selectedGroupDefault.splice(childIndex, 1);
           }
@@ -524,7 +581,10 @@ export class HumanResourceUpdateComponent implements OnInit {
       if (this.selectedGroupDefault.length == 0) {
         setDisableOrNotForItemsNotAtLevel(this.lstAreas, group.level, false);
       }
-      this.lstAreaByOrder = convertLstAreaByOrder(this.lstAreas, this.lstAreas[0]?.parentId);
+      this.lstAreaByOrder = convertLstAreaByOrder(
+        this.lstAreas,
+        this.lstAreas[0]?.parentId
+      );
     }
   }
 
@@ -602,17 +662,32 @@ export class HumanResourceUpdateComponent implements OnInit {
   }
   onRadioChange(event: any) {
     switch (event) {
-      case 0: this.orgTypeUser = 0;
-        this.searchGroup="";
-        this.searchPointSales=""
+      case 0:
+        this.orgTypeUser = 0;
+        this.searchGroup = '';
+        this.searchPointSales = '';
         break;
-      case 1: this.orgTypeUser = 1;
-        this.searchGroup="";
-        this.searchPointSales=""
+      case 1:
+        this.orgTypeUser = 1;
+        this.searchGroup = '';
+        this.searchPointSales = '';
         break;
-      case 2: this.orgTypeUser = 2;
-        this.searchGroup="";
-        this.searchPointSales=""
+      case 2:
+        this.orgTypeUser = 2;
+        this.searchGroup = '';
+        this.searchPointSales = '';
+        this.getLstMerchantWithCheckedObs(true)?.subscribe(
+      (dataPointSales: any[]) => {
+        if (this.selectedMerchantDefault.length > 0)
+         { dataPointSales.forEach((item) => {
+            if (
+              this.selectedMerchantDefault.some(
+                (x: any) => x.merchantId == item.merchantId
+              )
+            ) {
+              item.checked = true;
+            }
+          })}})
         break;
     }
   }
@@ -629,17 +704,24 @@ export class HumanResourceUpdateComponent implements OnInit {
 
   setRoleId(event: any) {
     this.roleIdDefault = event['id'];
-    this.roleIdSeletecd = this.dataRoles.find((p: any) => p.id === this.roleIdDefault);
+    this.roleIdSeletecd = this.dataRoles.find(
+      (p: any) => p.id === this.roleIdDefault
+    );
+    console.log(this.roleIdSeletecd)
   }
 
   getLstRole() {
     this.api
       .get(
-        HR_ENDPOINT.GET_ROLE_BY_USER_LOGIN + '?newUserOrgType=' + this.orgTypeUser
+        HR_ENDPOINT.GET_ROLE_BY_USER_LOGIN +
+          '?newUserOrgType=' +
+          this.orgTypeUser
       )
       .subscribe((res) => {
         this.dataRoles = res['data']['roleList'];
-        this.roleIdSeletecd = this.dataRoles.find((p: any) => p.id === this.roleIdDefault);
+        this.roleIdSeletecd = this.dataRoles.find(
+          (p: any) => p.id === this.roleIdDefault
+        );
       });
   }
   getSelectedItemRoleForRadio(): any {
@@ -652,13 +734,68 @@ export class HumanResourceUpdateComponent implements OnInit {
     return str;
   }
   openCreateGroups() {
-    window.open(this.assetPath + '/organization', '_blank', 'noopener,noreferrer');
+    window.open(
+      this.assetPath + '/organization',
+      '_blank',
+      'noopener,noreferrer'
+    );
   }
   doActiveAreaCheckbox(group: any) {
     this.lstAreaByOrder.forEach((i: any) => {
       if (i !== group) i.expanded = false;
     });
   }
+  checkChangeOrganization(){
+    if (
+      this.personDataDetail.orgType !== this.orgTypeUser
+    ) {
+      return true;
+    }
+    if (this.orgTypeUser === 2) {
+      const currentIds = (this.selectedMerchantDefault || []).map((m: any) => m.merchantId).sort();
+      const originalIds = (this.personDataDetail.selectedMerchant || []).map((m: any) => m.merchantId).sort();
+      if (currentIds.length !== originalIds.length) {
+        return true;
+      }
+      for (let i = 0; i < currentIds.length; i++) {
+        if (currentIds[i] !== originalIds[i]) {
+          return true;
+        }
+      }
+    }
+    if (this.orgTypeUser === 1) {
+      const currentGroupIds = (this.selectedGroupDefault || []).map((g: any) => g.id).sort();
+      const originalGroupIds = (this.personDataDetail.groupList || []).map((g: any) => g.id).sort();
+      if (currentGroupIds.length !== originalGroupIds.length) {
+        return true;
+      }
+      for (let i = 0; i < currentGroupIds.length; i++) {
+        if (currentGroupIds[i] !== originalGroupIds[i]) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  checkHasOrganzation(){
+    if (this.orgTypeUser === 2) {
+      return Array.isArray(this.selectedMerchantDefault) && this.selectedMerchantDefault.length > 0;
+    }
+    if (this.orgTypeUser === 1) {
+      return Array.isArray(this.selectedGroupDefault) && this.selectedGroupDefault.length > 0;
+    }
+    if (this.orgTypeUser === 0) {
+      return true;
+    }
+    return false;
+  }
+  checkRoleUpdate(){
+    if(this.checkChangeOrganization())
+    {
+      if (!this.dataRoles.some((role: any) => role.id === this.roleIdSeletecd?.id)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
-
-
