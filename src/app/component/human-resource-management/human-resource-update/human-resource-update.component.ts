@@ -1,5 +1,5 @@
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -47,7 +47,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { IPersonelUpdate } from '../../../model/ma/personel.model';
 import { environment } from '../../../../environments/environment';
-import { fomatAddress } from '../../../common/helpers/Ultils';
+import { convertLstAreaByOrder, fomatAddress, setDisableForItemsNotAtLevel } from '../../../common/helpers/Ultils';
 import { AreaViewComponent } from '../../organization-management/area-view/area-view.component';
 @Component({
   selector: 'app-human-resource-update',
@@ -75,7 +75,9 @@ import { AreaViewComponent } from '../../organization-management/area-view/area-
   styleUrl: './human-resource-update.component.scss',
 })
 export class HumanResourceUpdateComponent implements OnInit {
+  @ViewChild('mTreeComponent') mTreeComponent!: MTreeComponent;
   assetPath = environment.assetPath;
+  
   id!: number;
   totalItem: number = 0;
   currentStep: number = 0;
@@ -103,11 +105,10 @@ export class HumanResourceUpdateComponent implements OnInit {
   groupNameSelect!: string;
   // groupIdsDelete: any = [];
   totalSubmerchant: number = 0;
-
   isDisableCheckbox: boolean = false;
-
   pointSales: any = [];
   selectedMerchantDefault?: any;
+  selectedGroupDefault?:any;
   merchantIdsSelectedAdd: any = [];
   merchantIdsSelectedDelete: any = [];
   masterIdSelectedDefault?: number;
@@ -129,6 +130,10 @@ export class HumanResourceUpdateComponent implements OnInit {
   isShowPointSales:boolean=false;
   isShowGroup:boolean=false;
   isShowMerchant:boolean=false;
+  orgTypeLogin!:number;
+  newRoleId!:string;
+  newOrganization:any[]=[];
+  isChooseOrganization:boolean=false;
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
@@ -142,6 +147,7 @@ export class HumanResourceUpdateComponent implements OnInit {
   ) {
     const state = this.router.getCurrentNavigation()?.extras.state;
     const personData = state?.['dataInput'];
+    console.log("personData",personData);
     if (personData) {
       this.roleId = personData.roleId;
       this.userId = personData.userId;
@@ -150,62 +156,99 @@ export class HumanResourceUpdateComponent implements OnInit {
       this.orgTypeUser = personData.orgType;
       this.masterId = personData.masterId;
       const groupList = personData?.groupList;
-      if (groupList) {
-        this.masterIdSelectedDefault = this.auth.getUserInfo().merchantId;
+      const maxLevel = Math.min(...groupList.map((x:any) => x.level));
+    
+      this.selectedGroupDefault = groupList.filter((x:any) => x.level === maxLevel);
+      this.newOrganization = this.selectedGroupDefault.map((group: any) => group.id);
+        if (groupList) {
+          this.masterIdSelectedDefault = this.auth.getUserInfo().merchantId;
+        }
       }
-    }
   }
-  //isConfig=0 orgType=0 pointsales==0 typeUpdate=0
-  //isConfig=0 orgType=0 pointsales > 0 typeUpdate=1
-  //isConfig=0 orgType=2 typeUpdate=2
-  //isConfig=1 orgType=0 typeUpdate=3
-  //isConfig=1 orgType=1 typeUpdate=4
-  //isConfig=1 orgType=2 pointsales > 0 typeUpdate=5
+  //isConfig=0 orgType=0 pointsales==0   typeUpdate=0 => bỏ qua  vào vai trò gán vào merchant
+  //isConfig=0 orgType=0 pointsales > 0  typeUpdate=1 => hiển thị opt 1 3 : 3 là radio button.
+  //isConfig=0 orgType=2 typeUpdate=2     => vào luôn vai trò => 
+  //isConfig=1 orgType=0 typeUpdate=3=> hiển thị 3 opt
+  //isConfig=1 orgType=1 typeUpdate=4 => hiện thị 2 3 3là hiển thị checkbox
+  //isConfig=1 orgType=2 pointsales > 0 typeUpdate= 5
   //isConfig=1 orgType=2 pointsales == 1 typeUpdate=2
   ngOnInit(): void {
     this.userInfo = this.auth.getUserInfo();
+    let lstPoinSales:any[]=[];
+    this.getLstMerchantWithCheckedObs(true)?.subscribe((dataPointSales: any[]) => {
+      lstPoinSales= dataPointSales;
+      if(this.selectedMerchantDefault)
+        lstPoinSales.forEach((item)=>{
+          if(this.selectedMerchantDefault.some((x:any)=>x.merchantId== item.merchantId)){
+            item.checked=true;
+          }
+      })
+      this.subMerchantList = lstPoinSales;
+    });
+     this.doGetGroupListLogin().subscribe((data) => {
+        this.lstAreas = data;
+      if(this.selectedGroupDefault) {
+        const _level= this.selectedGroupDefault[0].level;
+        data.forEach((item)=>{
+          if(this.selectedGroupDefault.some((x:any)=>x.id== item.id)){
+            item.checked=true;
+          }
+          if(item.level != _level)
+          {
+            item.disabled=true;
+          }
+        })
+      }
+      this.lstAreaByOrder = convertLstAreaByOrder(
+        this.lstAreas,
+        this.lstAreas[0]?.parentId
+      );
+    })
+    const orgTypeLogin=this.userInfo?.orgType ;
+    this.orgTypeLogin = orgTypeLogin;
     if (this.userInfo?.isConfig == 0) {
-      if(this.userInfo?.orgType==2)this.typeUpdate=2;
-      if(this.userInfo?.orgType==0) {
-        this.typeUpdate = 0;
-        this.getLstMerchant();
+      if(lstPoinSales.length == 0){
+         if(orgTypeLogin==0)
+           {
+            this.typeUpdate == 0;
+            this.isChooseOrganization =false;
+           }
       }
-    } else if (this.userInfo?.isConfig == 1) {
-      if (this.userInfo?.orgType == 2) {
-        forkJoin({
-          lstMerchant: this.getLstMerchantObs(),
-          pointSales: this.doGetPointSalesObs(),
-        }).subscribe({
-          next: ({ lstMerchant, pointSales }) => {
-            this.subMerchantList = lstMerchant;
-            this.pointSales = pointSales;
-            if (this.subMerchantList?.length == 1) {
-              this.typeUpdate = 1;
-              this.groupNameSelect = this.subMerchantList[0]?.merchantBizName;
-            } else {
-              this.typeUpdate = 4;
-              this.merchantIds = new Set(
-                pointSales.map((item: any) => Number(item.merchantId))
-              );
-              this.merchantIdsClone = clone(this.merchantIds);
-              if (this.merchantIdsClone.size > 0) {
-                this.totalSelect = 0;
-                this.subMerchantList.forEach((item: any) => {
-                  item.checked = this.merchantIdsClone.has(item.merchantId);
-                  if (this.merchantIdsClone.has(item.merchantId)) {
-                    this.totalSelect++;
-                  }
-                });
-              }
+      else (lstPoinSales.length > 0)
+      {
+          if(orgTypeLogin == 0)
+          {
+            this.typeUpdate ==1;
+            this.isChooseOrganization=true;
+          }
+          if(orgTypeLogin==2)
+          {
+            this.isChooseOrganization=false;
+            this.typeUpdate ==2;
+          }
+      }
+    }else{
+    
+          if(orgTypeLogin == 0)
+          {
+            this.isChooseOrganization=true;
+            this.typeUpdate ==3;
+          }
+          if(orgTypeLogin==1)
+          {
+            this.isChooseOrganization=true;
+            this.typeUpdate ==4;
+          }
+          if(orgTypeLogin==2)
+          {
+            if(lstPoinSales.length == 1){
+              this.isChooseOrganization=false;
+            }else
+            {
+              this.isChooseOrganization=true;
+              this.typeUpdate ==5;
             }
-          },
-          error: (err) => {
-            console.error('Lỗi khi load dữ liệu:', err);
-          },
-        });
-      } else {
-        this.typeUpdate = 3;
-      }
+          }
     }
     if(this.typeUpdate== 0 || this.typeUpdate==2 )
     {
@@ -218,19 +261,19 @@ export class HumanResourceUpdateComponent implements OnInit {
     }
   }
 
-  doGetPointSales() {
-    this.api
-      .post(HR_ENDPOINT.GET_SUB, {
-        userId: this.userInfo.id,
-        page: 1,
-        size: 10,
-      })
-      .subscribe((res) => {
-        this.pointSales = res['data']['getPushSubInfos'];
-      });
-  }
+  // doGetPointSales() {
+  //   this.api
+  //     .post(HR_ENDPOINT.GET_SUB, {
+  //       userId: this.userInfo.id,
+  //       page: 1,
+  //       size: 10,
+  //     })
+  //     .subscribe((res) => {
+  //       this.pointSales = res['data']['getPushSubInfos'];
+  //     });
+  // }
 
-  doGetPointSalesObs() {
+  doGetPointSalesObs(): Observable<any[]> {
     return this.api
       .post(HR_ENDPOINT.GET_SUB, {
         userId: this.userId,
@@ -509,73 +552,31 @@ export class HumanResourceUpdateComponent implements OnInit {
       })
     );
   }
-
-  getGroupListUserUpdate(userId: number): Observable<any[]> {
-    let param = {
-      userId: userId,
-    };
-    let buildParams = CommonUtils.buildParams(param);
-
-    return this.api.get(HR_ENDPOINT.GET_GROUP_BY_USER_UPDATE, buildParams).pipe(
-      map((res: any) => {
-        if (res.data && res.data.groupList?.length > 0) {
-          this.listgroupIdInMerchant = res.data.groupList.map(
-            (item: any) => item
-          );
-          return res.data.groupList;
-        }
-        return [];
-      }),
-      catchError((error) => {
-        this.toast.showError('Lấy danh sách nhóm user xảy ra lỗi');
-        return of([]);
-      })
-    );
-  }
-
-  convertLstAreaByOrder(list: any[], parentId: number | null): any[] {
-    let result = list.filter((item) => item.parentId === parentId);
-    result.forEach((item) => {
-      let children = this.convertLstAreaByOrder(list, item.id);
-      item.children = children;
-    });
-
-    return result;
-  }
-
-  doActiveArea(group: any) {
-    this.subMerchantList = [];
-    if (group && group.children.length == 0) {
-      this.activeItemId = group.id;
-      this.groupNameSelect = group?.groupName;
-      // this.getLstMerchant();
-      this.getLstMerchantWithCheckedObs(false)?.subscribe((merchantList) => {
-        // this.subMerchantList = merchantList ? merchantList : [];
-        this.markChecked(this.lstAreas, this.listgroupIdInMerchant ?? []);
-      });
-    }
-  }
-
-  doGroup(group: any) {
+  doGroup(group: any) { console.log("group",group);
     if (group.checked) {
-      this.groupListClone.push(group?.id);
-      this.listgroupIdInMerchant?.push(group?.id);
+      if(this.selectedGroupDefault.length ==0)
+      {
+        setDisableForItemsNotAtLevel(this.lstAreas,group.level,true);    
+      }
+      this.selectedGroupDefault.push(group);
     } else {
-      this.groupListClone = this.groupListClone.filter(
-        (item: number) => item !== group?.id
-      );
-      const index = this.listgroupIdInMerchant?.indexOf(group?.id);
-        if (index !== undefined && index !== -1) {
-          this.listgroupIdInMerchant?.splice(index, 1);
-        }
+      const index = this.selectedGroupDefault.findIndex((x: any) => x.id === group.id);
+      if (index !== -1) {
+        this.selectedGroupDefault.splice(index, 1);
+      }
+      if(this.selectedGroupDefault.length ==0)
+      {
+        setDisableForItemsNotAtLevel(this.lstAreas,group.level,false);
+      }
     }
   }
 
   getLstMerchant() {
-    this.getLstMerchantWithCheckedObs(true)?.subscribe();
+    return this.getLstMerchantWithCheckedObs(true)?.subscribe();
   }
 
   getLstMerchantWithCheckedObs(isFirstLoad?: boolean): Observable<any[]> {
+    console.log("pointsales",1);
     this.isSearch = true;
     let dataReq = {
       groupIdList: [] as number[],
@@ -593,13 +594,14 @@ export class HumanResourceUpdateComponent implements OnInit {
       keySearch: this.keyWord ? this.keyWord : null,
     };
     let buildParams = CommonUtils.buildParams(param);
-
+    console.log("pointsales",2);
     return this.api
       .post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams)
       .pipe(
         map((res: any) => {
+           console.log("pointsales",2);
           if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
-            this.subMerchantList = res['data']['subInfo'].map((item: any) => ({
+             let dataGroup= res['data']['subInfo'].map((item: any) => ({
               ...item,
               formatAddress: fomatAddress([
                 item.address,
@@ -608,90 +610,19 @@ export class HumanResourceUpdateComponent implements OnInit {
                 item.provinceName,
               ]),
             }));
-            if(isFirstLoad)
-            {
-               if(this.subMerchantList.length > 0 )
-               {
-                  this.typeUpdate=1;
-               }
-              
-            }
-            //check voi nhung diem ban da tich tu truoc
-            if (this.merchantIdsClone.size > 0) {
-              this.totalSelect = 0;
-              this.subMerchantList.forEach((item: any) => {
-                item.checked = this.merchantIdsClone.has(item.merchantId);
-                // if(item.checked){
-                //   this.listgroupIdInMerchant?.push(item.groupId);
-                // }
-                if (this.merchantIdsClone.has(item.merchantId)) {
-                  this.totalSelect++;
-                }
-              });
-            }
-
-            if (this.pointSales?.length > 0 && isFirstLoad ) {
-              this.listgroupIdInMerchant = this.pointSales
-                ?.filter((item: any) =>
-                  this.merchantIdsClone.has(+item.merchantId)
-                )
-                ?.map((item: any) => +item.groupId);
-            }
-
-            return this.subMerchantList;
+            console.log("pointsales",dataGroup);
+            return dataGroup;
           } else {
-            this.subMerchantList = [];
-            return this.subMerchantList;
+            return [];
           }
         }),
         catchError((err) => {
           this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.');
           return of([]);
         })
-      );
+    );
+    return of([]);
   }
-
-  getLstMerchantObs(): Observable<any[]> {
-    console.log(3)
-    this.isSearch = true;
-    let dataReq = {
-      groupIdList: [] as number[],
-      status: '',
-      methodId: [],
-      mappingKey: '',
-    };
-
-    let param = {
-      page: 1,
-      size: 1000,
-      keySearch: this.keyWord ? this.keyWord : null,
-    };
-    let buildParams = CommonUtils.buildParams(param);
-    return this.api
-      .post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams)
-      .pipe(
-        map((res: any) => {
-          if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
-            let subList = res['data']['subInfo'].map((item: any) => ({
-              ...item,
-              formatAddress: fomatAddress([
-                item.address,
-                item.communeName,
-                item.districtName,
-                item.provinceName,
-              ]),
-            }));
-            this.subMerchantList=subList;
-          }
-          return [];
-        }),
-        catchError((error) => {
-          this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.');
-          return of([]);
-        })
-      );
-  }
-
   setUpMerchantIds(event: any) {
     if (event && Array.isArray(event)) {
       let dataChange = event.map((item) => item.merchantId);
@@ -810,21 +741,12 @@ export class HumanResourceUpdateComponent implements OnInit {
   }
 
   onRadioChange(event: any) {
-    console.log(event)
    switch(event){
     case 0:this.orgTypeUser=0;
     break;
     case 1:this.orgTypeUser=1;
-        this.doGetGroupListLogin().subscribe((data) => {
-            this.lstAreas = data;
-            this.lstAreaByOrder = this.convertLstAreaByOrder(
-              this.lstAreas,
-              this.lstAreas[0]?.parentId
-            );
-          });
     break;
     case 2: this.orgTypeUser=2;
-           this.subMerchantList = this.getLstMerchantObs();
     break;
    }
   }
@@ -884,3 +806,5 @@ export class HumanResourceUpdateComponent implements OnInit {
     return str;
   }
 }
+
+
