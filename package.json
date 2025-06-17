@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:merchantx": "node dist/merchantx/server/server.mjs",
-    "deploy": "ng build --configuration production --base-href /merchant/ && cp dist/merchant/browser/index.csr.html dist/merchant/browser/index.html && rm dist/merchant/browser/index.csr.html && npx angular-cli-ghpages --dir=dist/merchant/browser"
+     "deploy": "ng build --configuration production --base-href /merchant/ && copy dist\\merchant\\browser\\index.csr.html dist\\merchant\\browser\\index.html && del dist\\merchant\\browser\\index.csr.html && npx angular-cli-ghpages --dir=dist/merchant/browser"
   },
   "private": true,
   "dependencies": {

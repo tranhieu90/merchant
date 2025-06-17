@@ -48,6 +48,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { IPersonelUpdate } from '../../../model/ma/personel.model';
 import { environment } from '../../../../environments/environment';
 import { fomatAddress } from '../../../common/helpers/Ultils';
+import { AreaViewComponent } from '../../organization-management/area-view/area-view.component';
 @Component({
   selector: 'app-human-resource-update',
   standalone: true,
@@ -63,7 +64,7 @@ import { fomatAddress } from '../../../common/helpers/Ultils';
     ReactiveFormsModule,
     GridViewComponent,
     CalendarModule,
-    // AreaItemComponent,
+    AreaViewComponent,
     CommonModule,
     TreeModule,
     MatCheckboxModule,
@@ -125,6 +126,9 @@ export class HumanResourceUpdateComponent implements OnInit {
   masterId?: number;
   orgTypeUser!: number;
   isCheckboxMerchant: boolean = false;
+  isShowPointSales:boolean=false;
+  isShowGroup:boolean=false;
+  isShowMerchant:boolean=false;
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
@@ -139,7 +143,6 @@ export class HumanResourceUpdateComponent implements OnInit {
     const state = this.router.getCurrentNavigation()?.extras.state;
     const personData = state?.['dataInput'];
     if (personData) {
-      // this.groupList = personData.groupList;
       this.roleId = personData.roleId;
       this.userId = personData.userId;
       this.selectedMerchantDefault = personData?.selectedMerchant;
@@ -152,12 +155,21 @@ export class HumanResourceUpdateComponent implements OnInit {
       }
     }
   }
-
+  //isConfig=0 orgType=0 pointsales==0 typeUpdate=0
+  //isConfig=0 orgType=0 pointsales > 0 typeUpdate=1
+  //isConfig=0 orgType=2 typeUpdate=2
+  //isConfig=1 orgType=0 typeUpdate=3
+  //isConfig=1 orgType=1 typeUpdate=4
+  //isConfig=1 orgType=2 pointsales > 0 typeUpdate=5
+  //isConfig=1 orgType=2 pointsales == 1 typeUpdate=2
   ngOnInit(): void {
     this.userInfo = this.auth.getUserInfo();
     if (this.userInfo?.isConfig == 0) {
-      this.typeUpdate = 0;
-      this.getLstMerchant();
+      if(this.userInfo?.orgType==2)this.typeUpdate=2;
+      if(this.userInfo?.orgType==0) {
+        this.typeUpdate = 0;
+        this.getLstMerchant();
+      }
     } else if (this.userInfo?.isConfig == 1) {
       if (this.userInfo?.orgType == 2) {
         forkJoin({
@@ -192,82 +204,12 @@ export class HumanResourceUpdateComponent implements OnInit {
           },
         });
       } else {
-        this.typeUpdate = 2;
-        if (this.orgTypeUser == 2) {
-          forkJoin({
-            lstAreas: this.doGetGroupListLogin(),
-            pointSales: this.doGetPointSalesObs(),
-          }).subscribe({
-            next: ({ lstAreas, pointSales }) => {
-              this.lstAreas = lstAreas;
-              this.pointSales = pointSales;
-              const uniqueGroupIds = Array.from(
-                new Set(pointSales.map((item: any) => Number(item.groupId)))
-              );
-              if (pointSales.length > 0) {
-                this.isDisableCheckbox = true;
-              }
-              this.groupListClone = [...uniqueGroupIds];
-
-              this.merchantIds = new Set(
-                pointSales.map((item: any) => Number(item.merchantId))
-              );
-              this.merchantIdsClone = clone(this.merchantIds);
-              // this.totalMerchant = this.merchantIds.size;
-              this.activeItemId = this.groupListClone[0];
-              this.getLstMerchantWithCheckedObs(true).subscribe((merchantList) => {
-                const resultMarsk = this.markChecked(
-                  this.lstAreas,
-                  this.groupListClone
-                );
-                this.lstAreaByOrder = this.convertLstAreaByOrder(
-                  resultMarsk,
-                  resultMarsk[0]?.parentId
-                );
-              });
-              // this.getLstMerchant();
-            },
-            error: (err) => {
-              console.error('Lỗi khi load dữ liệu:', err);
-            },
-          });
-        } else if (this.orgTypeUser == 1) {
-          forkJoin({
-            lstAreas: this.doGetGroupListLogin(),
-            groupList: this.getGroupListUserUpdate(this.userId),
-          }).subscribe({
-            next: ({ lstAreas, groupList }) => {
-              this.lstAreas = lstAreas;
-              this.groupList = groupList;
-              this.groupListClone = clone(this.groupList);
-              const resultMarsk = this.markChecked(
-                this.lstAreas,
-                this.groupList
-              );
-              this.lstAreaByOrder = this.convertLstAreaByOrder(
-                resultMarsk,
-                resultMarsk[0]?.parentId
-              );
-            },
-            error: (err) => {
-              console.error('Lỗi khi load dữ liệu:', err);
-            },
-          });
-        } else {
-          this.doGetGroupListLogin().subscribe((data) => {
-            this.isCheckboxMerchant = true;
-            this.lstAreas = data;
-            this.lstAreas = data.map((item) => ({
-              ...item,
-              checked: true,
-            }));
-            this.lstAreaByOrder = this.convertLstAreaByOrder(
-              this.lstAreas,
-              this.lstAreas[0]?.parentId
-            );
-          });
-        }
+        this.typeUpdate = 3;
       }
+    }
+    if(this.typeUpdate== 0 || this.typeUpdate==2 )
+    {
+      this.getLstRole();
     }
     if (this.masterId === 0) {
       this.disableRadio = false;
@@ -631,59 +573,6 @@ export class HumanResourceUpdateComponent implements OnInit {
 
   getLstMerchant() {
     this.getLstMerchantWithCheckedObs(true)?.subscribe();
-    // this.isSearch = true;
-    // let dataReq = {
-    //   groupIdList: [] as number[],
-    //   status: '',
-    //   methodId: [],
-    //   mappingKey: '',
-    // };
-    // if (this.activeItemId) {
-    //   dataReq.groupIdList = [this.activeItemId];
-    // }
-
-    // let param = {
-    //   page: 1,
-    //   size: 1000,
-    //   keySearch: this.keyWord ? this.keyWord : null,
-    // };
-    // let buildParams = CommonUtils.buildParams(param);
-    // this.api
-    //   .post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams)
-    //   .subscribe(
-    //     (res: any) => {
-    //       if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
-    //         this.subMerchantList = res['data']['subInfo'];
-    //         this.subMerchantList = res['data']['subInfo'].map((item: any) => ({
-    //           ...item,
-    //           formatAddress: fomatAddress([
-    //             item.address,
-    //             item.communeName,
-    //             item.districtName,
-    //             item.provinceName,
-    //           ]),
-    //         }));
-    //         //check voi nhung diem ban da tich tu truoc
-    //         if (this.merchantIdsClone.size > 0) {
-    //           this.totalSelect = 0;
-    //           this.subMerchantList.forEach((item: any) => {
-    //             item.checked = this.merchantIdsClone.has(item.merchantId);
-    //             if(item.checked){
-    //               this.listgroupIdInMerchant?.push(item.groupId);
-    //             }
-    //             if (this.merchantIdsClone.has(item.merchantId)) {
-    //               this.totalSelect++;
-    //             }
-    //           });
-    //         }
-    //       } else {
-    //         this.subMerchantList = [];
-    //       }
-    //     },
-    //     (error: any) => {
-    //       this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.');
-    //     }
-    //   );
   }
 
   getLstMerchantWithCheckedObs(isFirstLoad?: boolean): Observable<any[]> {
@@ -710,7 +599,6 @@ export class HumanResourceUpdateComponent implements OnInit {
       .pipe(
         map((res: any) => {
           if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
-            this.subMerchantList = res['data']['subInfo'];
             this.subMerchantList = res['data']['subInfo'].map((item: any) => ({
               ...item,
               formatAddress: fomatAddress([
@@ -720,6 +608,14 @@ export class HumanResourceUpdateComponent implements OnInit {
                 item.provinceName,
               ]),
             }));
+            if(isFirstLoad)
+            {
+               if(this.subMerchantList.length > 0 )
+               {
+                  this.typeUpdate=1;
+               }
+              
+            }
             //check voi nhung diem ban da tich tu truoc
             if (this.merchantIdsClone.size > 0) {
               this.totalSelect = 0;
@@ -756,6 +652,7 @@ export class HumanResourceUpdateComponent implements OnInit {
   }
 
   getLstMerchantObs(): Observable<any[]> {
+    console.log(3)
     this.isSearch = true;
     let dataReq = {
       groupIdList: [] as number[],
@@ -770,7 +667,6 @@ export class HumanResourceUpdateComponent implements OnInit {
       keySearch: this.keyWord ? this.keyWord : null,
     };
     let buildParams = CommonUtils.buildParams(param);
-
     return this.api
       .post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams)
       .pipe(
@@ -785,7 +681,7 @@ export class HumanResourceUpdateComponent implements OnInit {
                 item.provinceName,
               ]),
             }));
-            return subList;
+            this.subMerchantList=subList;
           }
           return [];
         }),
@@ -914,28 +810,23 @@ export class HumanResourceUpdateComponent implements OnInit {
   }
 
   onRadioChange(event: any) {
-    if (event === this.userInfo.merchantId) {
-      this.disableRadio = true;
-      this.masterIdSelectedAdd = event;
-      if (this.masterIdSelectedAdd === this.masterIdSelectedDefault) {
-        this.masterIdSelectedAdd = undefined;
-      }
-
-      if (this.selectedMerchantDefault) {
-        this.merchantIdsSelectedDelete = Array.of(this.selectedMerchantDefault);
-      }
-      this.masterIdSelected = this.userInfo?.merchantId;
-    } else {
-      if (this.masterIdSelectedDefault) {
-        this.masterIdSelectedDelete = this.masterIdSelectedDefault;
-      }
-      this.disableRadio = false;
-      this.masterIdSelectedAdd = undefined;
-      if (this.selectedMerchantDefault) {
-        this.merchantIdsSelectedAdd = Array.of(this.selectedMerchantDefault);
-      }
-      this.masterIdSelected = null;
-    }
+    console.log(event)
+   switch(event){
+    case 0:this.orgTypeUser=0;
+    break;
+    case 1:this.orgTypeUser=1;
+        this.doGetGroupListLogin().subscribe((data) => {
+            this.lstAreas = data;
+            this.lstAreaByOrder = this.convertLstAreaByOrder(
+              this.lstAreas,
+              this.lstAreas[0]?.parentId
+            );
+          });
+    break;
+    case 2: this.orgTypeUser=2;
+           this.subMerchantList = this.getLstMerchantObs();
+    break;
+   }
   }
 
   onSelectedItemChange(event: any) {
