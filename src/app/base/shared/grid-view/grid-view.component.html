@@ -69,14 +69,15 @@
       </td>
     </tr>
   </table>
+  <paginator *ngIf="isShowPage" class="paginator-table" [totalItems]="total" (doChangePage)="onChangePage($event)">
+  </paginator>
 </div>
 <!-- <mat-paginator *ngIf="isShowPage" style="float: left;width: 100%;" [length]="total" [pageSize]="pageInfo.pageSize"
                  [pageSizeOptions]="[10, 50, 100]" [showFirstLastButtons]="true" [pageIndex]="pageInfo.page"
                  (page)="onChangePage($event)">
   </mat-paginator> -->
 
-<paginator *ngIf="isShowPage" class="paginator-table" [totalItems]="total" (doChangePage)="onChangePage($event)">
-</paginator>
+
 } @else {
 <div class="grid-empty">
   @if (search) {
