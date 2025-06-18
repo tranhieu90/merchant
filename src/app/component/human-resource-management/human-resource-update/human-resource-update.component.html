@@ -7,7 +7,7 @@
     {{ index + 1 }}
   </ng-template>
   <mat-step label="Gán tổ chức">
-    <div class="row">
+    <div class="row mb-5">
       <div class="col-2"></div>
       <div class="col-8">
         <ng-container *ngIf="!isChooseOrganization">
@@ -48,7 +48,7 @@
           </div>
           <ng-container *ngIf="isChooseOrganization">
             <div>
-              <div *ngIf="typeUpdate != 1 && orgTypeUser!=2 || (orgTypeLogin == 2 && selectedMerchantDefault.length==0)"
+              <div *ngIf="typeUpdate != 1 && orgTypeUser!=2 || (orgTypeLogin == 2 && selectedMerchantDefault.length==0)||typeUpdate==3"
                 class="paragraph-m-regular mb-spacing-s">Vui lòng chọn tổ chức đến gán cho nhân sự.
               </div>
               <div *ngIf="orgTypeLogin==2 && (selectedMerchantDefault?.length || 0)>0" class="paragraph-m-regular mb-spacing-s">
@@ -69,8 +69,8 @@
                 <p-radioButton class="m-radio m-radio-check" [value]="0" name="radioOrganization"
                   [(ngModel)]="orgTypeUser" (ngModelChange)="onRadioChange($event)"
                   (click)="$event.stopPropagation()" />
-                <span class="title-s-semibold"><b>Gán vào doanh nghiệp:
-                    {{truncateString(userInfo?.merchantName)}}</b></span>
+                  <span class="title-s-semibold"><b>Gán vào doanh nghiệp:
+                      {{truncateString(userInfo?.merchantName)}}</b></span>
               </div>
             </div>
             <div *ngIf="orgTypeLogin != 2 && lstAreaByOrder.length>0" class="d-flex mt-3">
@@ -136,11 +136,12 @@
         <div>
           <p class="title-s-regular color-040d1f">Vui lòng chọn 1 vai trò để gán cho nhân sự.</p>
         </div>
-        <div class="input-erorr rows" *ngIf="checkChangeOrganization()">
+        <div class="input-erorr rows" *ngIf="hasChangeRoleUpdate">
           <span class="icon-error_solid"></span>
           <p class="title-s-regular text-danger">Bạn cần gán vai trò mới cho nhân sự sau khi thay đổi tổ chức.</p>
         </div>
         <div class="col-12 d-flex justify-content-end mt-4">
+          {{hasChangeRoleUpdate}}
           <grid-view [columns]="columns" [dataSource]="dataRoles" (doChangePage)="doSearch($event)" [total]="totalItem"
             (selectedItemChange)="setRoleId($event)" [search]="isSearch" [showRadio]="true" [isShowPage]="false"
             [selectedItem]="getSelectedItemRoleForRadio()" style="float: left;width: 100%;" (isDisabled)="false">
@@ -152,7 +153,7 @@
     <div class="div-button">
       <p-button label="Quay lại" class="merchant-button-tertiary me-2" (click)="doPreStep()" />
       <button mat-button (click)="doNextStepSubmit()" class="merchant-button-material"
-        [disabled]="checkRoleUpdate()">
+        [disabled]="hasChangeRoleUpdate">
         Cập nhật
       </button>
     </div>

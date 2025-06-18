@@ -118,6 +118,7 @@ export class HumanResourceUpdateComponent implements OnInit {
   personDataDetail!: any;
   searchGroup!: string;
   searchPointSales!: string;
+  hasChangeRoleUpdate:boolean= false;
   constructor(
     private dialog: MatDialog,
     private router: Router,
@@ -132,7 +133,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       this.personDataDetail = personData;
       this.userId = personData.userId;
       this.orgTypeUser = personData.orgType;
-      if (this.orgTypeUser == 2 && personData?.selectedMerchant) {
+      if (this.orgTypeUser==2 && personData?.selectedMerchant) {
         if (
           personData?.selectedMerchant &&
           isArray(personData?.selectedMerchant)
@@ -160,7 +161,7 @@ export class HumanResourceUpdateComponent implements OnInit {
   //isConfig=1 orgType=0 typeUpdate=3=> hiển thị 3 opt
   //isConfig=1 orgType=1 typeUpdate=4 => hiện thị 2 3 3là hiển thị checkbox
   //isConfig=1 orgType=2 pointsales > 0 typeUpdate= 5
-  //isConfig=1 orgType=2 pointsales == 1 typeUpdate = 2
+  //isConfig=1 orgType=2 pointsales == 1 typeUpdate=6
   ngOnInit(): void {
     this.isSearch = true;
     this.userInfo = this.auth.getUserInfo();
@@ -361,6 +362,7 @@ export class HumanResourceUpdateComponent implements OnInit {
 
   doNextStep(number: number = 0) {
     if (number == 1) {
+      this.checkChangeOrganization();
       this.getLstRole();
     }
     if (this.currentStep < 3) {
@@ -598,12 +600,12 @@ export class HumanResourceUpdateComponent implements OnInit {
       groupIdList: [] as number[],
       status: '',
       methodId: [],
-      mappingKey: '',
+      mappingKey: this.searchPointSales,
     };
     let param = {
       page: 1,
       size: 1000,
-      keySearch: this.searchPointSales ? this.searchPointSales : null,
+      keySearch: this.keyWord ? this.keyWord : null,
     };
     let buildParams = CommonUtils.buildParams(param);
     return this.api
@@ -620,6 +622,12 @@ export class HumanResourceUpdateComponent implements OnInit {
                 item.provinceName,
               ]),
             }));
+            
+            if (this.selectedMerchantDefault.length > 0) {
+              dataGroup.forEach((item: any) => {
+                item.checked = this.selectedMerchantDefault.some((el)=>el.merchantId==item.merchantId);
+              });
+            }
             this.subMerchantList = dataGroup;
             return dataGroup;
           } else {
@@ -634,20 +642,21 @@ export class HumanResourceUpdateComponent implements OnInit {
       );
   }
   setUpMerchantIds(event: any) {
-    console.log("event",event)
     if (event && Array.isArray(event)) {
       if (event[0]?.checked) {
-        event.forEach((item:any)=>{
-          const exists= this.selectedMerchantDefault.some((m:any)=> m.merchantId== item.merchantId);
-          if(!exists){
-            this.selectedMerchantDefault.push(item);
+        event.forEach((item: any) => {
+          const exists = this.selectedMerchantDefault.some(
+        (m: any) => m.merchantId === item.merchantId
+          );
+          if (!exists) {
+        this.selectedMerchantDefault.push(item);
           }
-        })
+        });
       } else {
         if (Array.isArray(this.selectedMerchantDefault)) {
           event.forEach((item: any) => {
             const idx = this.selectedMerchantDefault.findIndex(
-              (m: any) => m.merchantId == item.merchantId
+              (m: any) => m.merchantId === item.merchantId
             );
             if (idx !== -1) {
               this.selectedMerchantDefault.splice(idx, 1);
@@ -672,6 +681,7 @@ export class HumanResourceUpdateComponent implements OnInit {
         this.orgTypeUser = 0;
         this.searchGroup = '';
         this.searchPointSales = '';
+         this.getLstMerchant();
         break;
       case 1:
         this.orgTypeUser = 1;
@@ -683,17 +693,17 @@ export class HumanResourceUpdateComponent implements OnInit {
         this.searchGroup = '';
         this.searchPointSales = '';
         this.getLstMerchantWithCheckedObs(true)?.subscribe(
-      (dataPointSales: any[]) => {
-        if (this.selectedMerchantDefault.length > 0)
-         { dataPointSales.forEach((item) => {
-            if (
-              this.selectedMerchantDefault.some(
-                (x: any) => x.merchantId == item.merchantId
-              )
-            ) {
-              item.checked = true;
-            }
-          })}})
+        (dataPointSales: any[]) => {
+          if (this.selectedMerchantDefault.length > 0)
+          { dataPointSales.forEach((item) => {
+              if (
+                this.selectedMerchantDefault.some(
+                  (x: any) => x.merchantId == item.merchantId
+                )
+              ) {
+                item.checked = true;
+              }
+            })}})
         break;
     }
   }
@@ -709,11 +719,12 @@ export class HumanResourceUpdateComponent implements OnInit {
   }
 
   setRoleId(event: any) {
+   
     this.roleIdDefault = event['id'];
     this.roleIdSeletecd = this.dataRoles.find(
       (p: any) => p.id === this.roleIdDefault
     );
-    console.log(this.roleIdSeletecd)
+    this.hasChangeRoleUpdate=false;
   }
 
   getLstRole() {
@@ -752,19 +763,23 @@ export class HumanResourceUpdateComponent implements OnInit {
     });
   }
   checkChangeOrganization(){
+    this.hasChangeRoleUpdate=false;
     if (
       this.personDataDetail.orgType !== this.orgTypeUser
     ) {
+      this.hasChangeRoleUpdate=true;
       return true;
     }
     if (this.orgTypeUser === 2) {
       const currentIds = (this.selectedMerchantDefault || []).map((m: any) => m.merchantId).sort();
       const originalIds = (this.personDataDetail.selectedMerchant || []).map((m: any) => m.merchantId).sort();
       if (currentIds.length !== originalIds.length) {
+         this.hasChangeRoleUpdate=true;
         return true;
       }
       for (let i = 0; i < currentIds.length; i++) {
         if (currentIds[i] !== originalIds[i]) {
+           this.hasChangeRoleUpdate=true;
           return true;
         }
       }
@@ -773,10 +788,12 @@ export class HumanResourceUpdateComponent implements OnInit {
       const currentGroupIds = (this.selectedGroupDefault || []).map((g: any) => g.id).sort();
       const originalGroupIds = (this.personDataDetail.groupList || []).map((g: any) => g.id).sort();
       if (currentGroupIds.length !== originalGroupIds.length) {
+         this.hasChangeRoleUpdate=true;
         return true;
       }
       for (let i = 0; i < currentGroupIds.length; i++) {
         if (currentGroupIds[i] !== originalGroupIds[i]) {
+           this.hasChangeRoleUpdate=true;
           return true;
         }
       }
@@ -792,15 +809,6 @@ export class HumanResourceUpdateComponent implements OnInit {
     }
     if (this.orgTypeUser === 0) {
       return true;
-    }
-    return false;
-  }
-  checkRoleUpdate(){
-    if(this.checkChangeOrganization())
-    {
-      if (!this.dataRoles.some((role: any) => role.id === this.roleIdSeletecd?.id)) {
-        return true;
-      }
     }
     return false;
   }
