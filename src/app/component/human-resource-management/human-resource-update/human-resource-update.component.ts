@@ -138,17 +138,17 @@ export class HumanResourceUpdateComponent implements OnInit {
           personData?.selectedMerchant &&
           isArray(personData?.selectedMerchant)
         ) {
-          this.selectedMerchantDefault = personData?.selectedMerchant;
+            this.selectedMerchantDefault = [...personData?.selectedMerchant];
         } else {
-          this.selectedMerchantDefault.push(personData?.selectedMerchant);
+            this.selectedMerchantDefault.push(personData?.selectedMerchant);
         }
       }
       this.roleIdDefault = personData.roleId;
       this.masterId = personData.masterId;
       const groupList = personData?.groupList;
       if (this.orgTypeUser==1 && groupList) {
-        const maxLevel = Math.min(...groupList.map((x: any) => x.level));
-        this.selectedGroupDefault = groupList;
+        // const maxLevel = Math.min(...groupList.map((x: any) => x.level));
+        this.selectedGroupDefault = [...groupList];
         this.newOrganization = this.selectedGroupDefault.map(
           (group: any) => group.id
         );
@@ -375,14 +375,14 @@ export class HumanResourceUpdateComponent implements OnInit {
       userId: this.userId,
       roleId: this.roleIdDefault,
     };
-    let isChangeInfo = false;
+     if(!this.isChangedInfo())
+     {
+      this.isSuccess=2
+     }else
+     {
 
-    if (
-      this.personDataDetail.orgType != this.orgTypeUser ||
-      (this.roleIdSeletecd && this.roleIdSeletecd.id == this.roleIdDefault)
-    ) {
-      isChangeInfo = true;
-    }
+    
+
     if (this.orgTypeUser == 0) {
       if (this.personDataDetail.orgType == 0) {
         param.oraganizationInfo = {
@@ -516,7 +516,7 @@ export class HumanResourceUpdateComponent implements OnInit {
           this.toast.showError(error.soaErrorDesc);
         } else this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
       }
-    );
+    ); }
     if (this.currentStep < 3) {
       this.currentStep++;
     }
@@ -646,10 +646,10 @@ export class HumanResourceUpdateComponent implements OnInit {
       if (event[0]?.checked) {
         event.forEach((item: any) => {
           const exists = this.selectedMerchantDefault.some(
-        (m: any) => m.merchantId === item.merchantId
+            (m: any) => m.merchantId === item.merchantId
           );
           if (!exists) {
-        this.selectedMerchantDefault.push(item);
+            this.selectedMerchantDefault.push(item);
           }
         });
       } else {
@@ -668,9 +668,11 @@ export class HumanResourceUpdateComponent implements OnInit {
       if (event.checked) {
         this.selectedMerchantDefault.push(event);
       } else {
-        const index = this.listgroupIdInMerchant?.indexOf(event?.groupId);
-        if (index !== undefined && index !== -1) {
-          this.listgroupIdInMerchant?.splice(index, 1);
+        const idx = this.selectedMerchantDefault.findIndex(
+          (m: any) => m.merchantId === event.merchantId
+        );
+        if (idx !== -1) {
+          this.selectedMerchantDefault.splice(idx, 1);
         }
       }
     }
@@ -768,19 +770,16 @@ export class HumanResourceUpdateComponent implements OnInit {
       this.personDataDetail.orgType !== this.orgTypeUser
     ) {
       this.hasChangeRoleUpdate=true;
-      return true;
     }
     if (this.orgTypeUser === 2) {
       const currentIds = (this.selectedMerchantDefault || []).map((m: any) => m.merchantId).sort();
       const originalIds = (this.personDataDetail.selectedMerchant || []).map((m: any) => m.merchantId).sort();
       if (currentIds.length !== originalIds.length) {
          this.hasChangeRoleUpdate=true;
-        return true;
       }
       for (let i = 0; i < currentIds.length; i++) {
         if (currentIds[i] !== originalIds[i]) {
            this.hasChangeRoleUpdate=true;
-          return true;
         }
       }
     }
@@ -789,16 +788,13 @@ export class HumanResourceUpdateComponent implements OnInit {
       const originalGroupIds = (this.personDataDetail.groupList || []).map((g: any) => g.id).sort();
       if (currentGroupIds.length !== originalGroupIds.length) {
          this.hasChangeRoleUpdate=true;
-        return true;
       }
       for (let i = 0; i < currentGroupIds.length; i++) {
         if (currentGroupIds[i] !== originalGroupIds[i]) {
            this.hasChangeRoleUpdate=true;
-          return true;
         }
       }
     }
-    return false;
   }
   checkHasOrganzation(){
     if (this.orgTypeUser === 2) {
@@ -808,6 +804,39 @@ export class HumanResourceUpdateComponent implements OnInit {
       return Array.isArray(this.selectedGroupDefault) && this.selectedGroupDefault.length > 0;
     }
     if (this.orgTypeUser === 0) {
+      return true;
+    }
+    return false;
+  }
+  isChangedInfo(): boolean {
+    if (this.personDataDetail.orgType !== this.orgTypeUser) {
+      return true;
+    }
+    if (this.orgTypeUser === 2) {
+      const currentIds = (this.selectedMerchantDefault || []).map((m: any) => m.merchantId).sort();
+      const originalIds = (this.personDataDetail.selectedMerchant || []).map((m: any) => m.merchantId).sort();
+      if (currentIds.length !== originalIds.length) {
+        return true;
+      }
+      for (let i = 0; i < currentIds.length; i++) {
+        if (currentIds[i] !== originalIds[i]) {
+          return true;
+        }
+      }
+    }
+    if (this.orgTypeUser === 1) {
+      const currentGroupIds = (this.selectedGroupDefault || []).map((g: any) => g.id).sort();
+      const originalGroupIds = (this.personDataDetail.groupList || []).map((g: any) => g.id).sort();
+      if (currentGroupIds.length !== originalGroupIds.length) {
+        return true;
+      }
+      for (let i = 0; i < currentGroupIds.length; i++) {
+        if (currentGroupIds[i] !== originalGroupIds[i]) {
+          return true;
+        }
+      }
+    }
+    if (this.roleIdDefault !== this.personDataDetail.roleId) {
       return true;
     }
     return false;
