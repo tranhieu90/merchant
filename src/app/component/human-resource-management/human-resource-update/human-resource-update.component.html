@@ -165,17 +165,17 @@
           Cập nhật nhân sự thành công
         </div>
         <a [href]="assetPath + '/hr'" class="mt-3">
-          <p-button label="Về trang quản lý" class="merchant-button mt-4" />
+          <p-button label="Về trang quản lý" class="merchant-button mt-4 btn-custom" />
         </a>
       </ng-container>
       <ng-container *ngIf="isSuccess === 2">
         <img [src]="assetPath + '/assets/images/image-false.svg'" alt="False" />
         <div class="mt-3"> Không có sự thay đổi thông tin nhân sự</div>
         <a [href]="assetPath + '/hr/hr-update'" class="mt-3">
-          <p-button label="Thử lại" class="merchant-button mt-4 min-w" />
+          <p-button label="Thử lại" class="merchant-button mt-4 btn-custom" />
         </a>
         <a [href]="assetPath + '/hr'" class="mt-3">
-          <p-button label="Về trang quản lý" class="merchant-button-tertiary mt-4 min-w" />
+          <p-button label="Về trang quản lý" class="merchant-button-tertiary mt-4 btn-custom" />
         </a>
       </ng-container>
       <ng-container *ngIf="isSuccess === 0">
@@ -183,10 +183,10 @@
         <div class="mt-3"> Cập nhật nhân sự không thành công</div>
         <div class="text title-s-regular mt-3">Đã có lỗi xảy ra. Vui lòng thử lại.</div>
         <a [href]="assetPath + '/hr/hr-update'" class="mt-3">
-          <p-button label="Thử lại" class="merchant-button mt-4 min-w" />
+          <p-button label="Thử lại" class="merchant-button mt-4 btn-custom" />
         </a>
         <a [href]="assetPath + '/hr'" class="mt-3">
-          <p-button label="Về trang quản lý" class="merchant-button-tertiary mt-4 min-w" />
+          <p-button label="Về trang quản lý" class="merchant-button-tertiary mt-4 min-w btn-custom" />
         </a>
       </ng-container>
     </div>

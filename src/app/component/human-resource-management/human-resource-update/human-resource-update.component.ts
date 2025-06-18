@@ -151,7 +151,7 @@ export class HumanResourceUpdateComponent implements OnInit {
         // const maxLevel = Math.min(...groupList.map((x: any) => x.level));
         this.selectedGroupDefault = [...groupList];
         this.newOrganization = this.selectedGroupDefault.map(
-          (group: any) => group.id
+          (group: any) => Number(group.id)
         );
       }
     }
@@ -424,7 +424,7 @@ export class HumanResourceUpdateComponent implements OnInit {
         let lstPointSales!: any;
         if (this.personDataDetail?.selectedMerchant) {
           lstPointSales = this.personDataDetail?.selectedMerchant.map(
-            (item: any) => item.merchantId
+            (item: any) => Number(item.merchantId)
           );
         }
         param.oraganizationInfo = {
@@ -438,13 +438,13 @@ export class HumanResourceUpdateComponent implements OnInit {
         Array.isArray(this.selectedMerchantDefault)
       ) {
         lstPointSales = this.selectedMerchantDefault.map(
-          (item: any) => item.merchantId
+          (item: any) => Number(item.merchantId)
         );
       }
     }
 
     if (this.orgTypeUser == 1) {
-      const selectedGroupIds = this.selectedGroupDefault.map((g: any) => g.id);
+      const selectedGroupIds = this.selectedGroupDefault.map((g: any) => Number( g.id));
       if (this.personDataDetail.orgType == 1) {
         const groupIdsInsert = selectedGroupIds.filter(
           (id: any) => !this.newOrganization.includes(id)
@@ -486,11 +486,11 @@ export class HumanResourceUpdateComponent implements OnInit {
     }
     if (this.orgTypeUser == 2) {
       const selectedPointSales = this.selectedMerchantDefault.map(
-        (g: any) => g.merchantId
+        (g: any) => Number(g.merchantId)
       );
       if (this.personDataDetail.orgType == 2) {
         var lstPointSales = this.personDataDetail?.selectedMerchant.map(
-          (item: any) => item.merchantId
+          (item: any) => Number(item.merchantId)
         );
         const pointsInsert = selectedPointSales.filter(
           (id: number) => !lstPointSales.includes(id)
@@ -665,6 +665,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       );
   }
   setUpMerchantIds(event: any) {
+    console.log(1,event)
     if (event && Array.isArray(event)) {
       if (event[0]?.checked) {
         event.forEach((item: any) => {
@@ -679,7 +680,7 @@ export class HumanResourceUpdateComponent implements OnInit {
         if (this.selectedMerchantDefault.length>0) {
           event.forEach((item: any) => {
             const idx = this.selectedMerchantDefault.findIndex(
-              (m: any) => Number(m.merchantId) !== Number(item.merchantId)
+              (m: any) => Number(m.merchantId) === Number(item.merchantId)
             );
             if (idx !== -1) {
               this.selectedMerchantDefault.splice(idx, 1);
@@ -695,7 +696,7 @@ export class HumanResourceUpdateComponent implements OnInit {
           (m: any) => Number(m.merchantId) !== Number(event.merchantId)
         );
       }
-    }
+    } console.log(2,this.selectedMerchantDefault)
   }
   onRadioChange(event: any) {
     switch (event) {
