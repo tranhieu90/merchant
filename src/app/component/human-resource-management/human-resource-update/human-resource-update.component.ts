@@ -138,9 +138,9 @@ export class HumanResourceUpdateComponent implements OnInit {
           personData?.selectedMerchant &&
           isArray(personData?.selectedMerchant)
         ) {
-            this.selectedMerchantDefault = [...personData?.selectedMerchant];
+            this.selectedMerchantDefault = JSON.parse(JSON.stringify(this.personDataDetail.selectedMerchant));
         } else {
-            this.selectedMerchantDefault.push(personData?.selectedMerchant);
+            this.selectedMerchantDefault = [ { ...this.personDataDetail.selectedMerchant } ];
         }
       }
       this.roleIdDefault = personData.roleId;
@@ -565,7 +565,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       this.selectedGroupDefault.push(group);
     } else {
       const index = this.selectedGroupDefault.findIndex(
-        (x: any) => x.id === group.id
+        (x: any) => Number(x.id) === Number(group.id)
       );
       if (index !== -1) {
         this.selectedGroupDefault.splice(index, 1);
@@ -573,7 +573,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       if (group.children && Array.isArray(group.children)) {
         group.children.forEach((child: any) => {
           const childIndex = this.selectedGroupDefault.findIndex(
-            (x: any) => x.id === child.id
+            (x: any) => Number(x.id) === Number(child.id)
           );
           if (childIndex !== -1) {
             this.selectedGroupDefault.splice(childIndex, 1);
@@ -656,7 +656,7 @@ export class HumanResourceUpdateComponent implements OnInit {
         if (Array.isArray(this.selectedMerchantDefault)) {
           event.forEach((item: any) => {
             const idx = this.selectedMerchantDefault.findIndex(
-              (m: any) => m.merchantId === item.merchantId
+              (m: any) => Number(m.merchantId) !== Number(item.merchantId)
             );
             if (idx !== -1) {
               this.selectedMerchantDefault.splice(idx, 1);
@@ -668,12 +668,9 @@ export class HumanResourceUpdateComponent implements OnInit {
       if (event.checked) {
         this.selectedMerchantDefault.push(event);
       } else {
-        const idx = this.selectedMerchantDefault.findIndex(
-          (m: any) => m.merchantId === event.merchantId
+        this.selectedMerchantDefault = this.selectedMerchantDefault.filter(
+          (m: any) => Number(m.merchantId) !== Number(event.merchantId)
         );
-        if (idx !== -1) {
-          this.selectedMerchantDefault.splice(idx, 1);
-        }
       }
     }
   }
