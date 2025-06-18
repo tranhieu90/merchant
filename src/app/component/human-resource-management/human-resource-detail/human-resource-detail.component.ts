@@ -373,7 +373,7 @@ export class HumanResourceDetailComponent implements OnInit {
             .post(HR_ENDPOINT.GET_SUB, {
               userId: this.userId,
               page: 1,
-              size: 10,
+              size: 1000,
             })
             .subscribe((res) => {
               this.subMerchantList = res['data']['getPushSubInfos'].map(
@@ -400,7 +400,9 @@ export class HumanResourceDetailComponent implements OnInit {
     const ids = groupList.map((data: any) => data.id);
     const parentIds = groupList.map((data: any) => data.parentId);
     const onlyInIds = parentIds.filter((id: any) => !ids.includes(id));
-    return [...new Set(onlyInIds)].values().next().value ?? null;
+    const unique = [...new Set(onlyInIds)];
+     return unique.length > 0 ? (unique[0] as number) : null;
+    // return [...new Set(onlyInIds)].values().next().value ?? null;
   }
 
   getDetailFunc(roleId: number) {

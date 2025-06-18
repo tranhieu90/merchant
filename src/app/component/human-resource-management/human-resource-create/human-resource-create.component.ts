@@ -587,6 +587,8 @@ export class HumanResourceCreateComponent implements OnInit {
       }
       if (this.pointSales?.length == 0) {
         this.getLstMerchant(true);
+      }else{
+         this.getLstMerchant();
       }
     }
 

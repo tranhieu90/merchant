@@ -23,7 +23,7 @@
                     <div class="paragraph-m-regular mb-spacing-l text title-s-regular mt-3">
                       Vui lòng chọn 1 điểm kinh doanh để gán cho nhân sự, hoặc gán trực tiếp vào doanh nghiệp. Khi gán
                       vào
-                      doanh nghiệp, nhân sự sẽ được phụ trách tất cả điểm kinh doanh
+                      doanh nghiệp, nhân sự sẽ được phụ trách tất cả điểm kinh doanh.
                     </div>
 
                     <div class="paragraph-m-regular mb-spacing-l mt-2 text title-s-regular">Nếu bạn muốn gán nhân sự
@@ -136,7 +136,7 @@
                   </div> -->
                 </ng-container>
 
-                <ng-container *ngIf="userInfo.orgType === 0">
+                <ng-container *ngIf="userInfo.orgType === 0 || userInfo.orgType === 1">
                   <div class="col-12 d-flex mt-3">
                     <div class="d-flex align-items-center gap-2">
                       <p-radioButton class="m-radio m-radio-check" [value]="'2'" name="radioOrganization"

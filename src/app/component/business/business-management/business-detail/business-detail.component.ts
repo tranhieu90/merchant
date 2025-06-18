@@ -20,11 +20,11 @@ import { UserVerifyStatus } from '../../../../common/constants/CUser';
 import { UpdateUserComponent } from '../../../user-profile/update-user/update-user.component';
 import { DialogConfirmModel } from '../../../../model/DialogConfirmModel';
 import { DialogCommonService } from '../../../../common/service/dialog-common/dialog-common.service';
-import { QRCodeModule } from 'angularx-qrcode';
+import { QRCodeComponent} from 'angularx-qrcode';
 @Component({
   selector: 'app-business-detail',
   standalone: true,
-  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, MatButtonModule, CommonModule, QRCodeModule],
+  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, MatButtonModule, CommonModule, QRCodeComponent],
   templateUrl: './business-detail.component.html',
   styleUrl: './business-detail.component.scss'
 })
