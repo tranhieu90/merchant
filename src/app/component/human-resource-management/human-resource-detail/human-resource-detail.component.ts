@@ -24,7 +24,6 @@ import { ToastService } from '../../../common/service/toast/toast.service';
 import { AreaModel } from '../../../model/AreaModel';
 import { DialogConfirmModel } from '../../../model/DialogConfirmModel';
 import { GridViewModel } from '../../../model/GridViewModel';
-import { IFuntionGroup } from '../../../model/ma/funtion-group.model';
 import {
   IGroupList,
   IPersonelDetail,
@@ -455,16 +454,6 @@ export class HumanResourceDetailComponent implements OnInit {
     }
   }
 
-  // getFuntionGroup() {
-  //   this.api.get(ROlE_ENDPOINT.GET_LIST_FUNCTION).subscribe(res => {
-  //     this.listFunctionConvert = this.convertLstFunc(res?.data, null);
-  //     this.getRoleDetail();
-
-  //   }, () => {
-  //     this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.')
-  //   });
-  // }
-
   setSelectedItem(groups: FunctionModel[]) {
     groups.forEach((g) => {
       if (g.children.length > 0) {
@@ -565,6 +554,7 @@ export class HumanResourceDetailComponent implements OnInit {
     dataDialog.iconColor = 'icon warning';
     dataDialog.width = '30%';
     this.dialogCommon.openDialogInfo(dataDialog).subscribe((result) => {
+      console.log( this.subMerchantList);
       if (result && hasRole) {
         this.router.navigate(['hr/hr-update'], {
           state: {
