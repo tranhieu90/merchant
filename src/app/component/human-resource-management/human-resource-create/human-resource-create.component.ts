@@ -12,8 +12,11 @@ import {
 import { MatButton } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatStep, MatStepper } from '@angular/material/stepper';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router } from '@angular/router';
+import moment from 'moment';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
@@ -23,7 +26,9 @@ import { PaginatorModule } from 'primeng/paginator';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { environment } from '../../../../environments/environment';
 import { GridViewComponent } from '../../../base/shared/grid-view/grid-view.component';
+import { MTreeCheckboxComponent } from '../../../base/shared/m-tree-checkbox/m-tree-checkbox.component';
 import { MTreeComponent } from '../../../base/shared/m-tree/m-tree.component';
+import { TreeViewComponent } from '../../../base/shared/tree-view/tree-view.component';
 import { CommonUtils } from '../../../base/utils/CommonUtils';
 import { InputCommon } from '../../../common/directives/input.directive';
 import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
@@ -48,11 +53,6 @@ import {
   DialogRoleComponent,
   DialogRoleModel,
 } from '../../role-management/dialog-role/dialog-role.component';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import moment from 'moment';
-import { TreeViewComponent } from '../../../base/shared/tree-view/tree-view.component';
-import { MatRadioModule } from '@angular/material/radio';
-import { MTreeCheckboxComponent } from '../../../base/shared/m-tree-checkbox/m-tree-checkbox.component';
 
 @Component({
   selector: 'app-human-resource-create',
@@ -99,6 +99,7 @@ export class HumanResourceCreateComponent implements OnInit {
   userInfo!: any;
   roles: any = [];
   pointSales: any = [];
+  pointSalesInitFirt: any = [];
   pointSales2: any = [];
   organization: any = [];
   organizationSort: any = [];
@@ -120,7 +121,8 @@ export class HumanResourceCreateComponent implements OnInit {
 
 
   // lstGroupIdMerchant: any[] = [];
-  selectedValue?: number;
+  selectedValue?: number = 0;
+  showRadioButton?: boolean = true;
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
@@ -139,6 +141,8 @@ export class HumanResourceCreateComponent implements OnInit {
     this.buildForm();
     this.userInfo = this.auth.getUserInfo();
     console.log(this.userInfo);
+    this.setDefaultSelectedRadio();
+
     if (this.userInfo?.isConfig == 0) {
       this.getLstMerchant(true);
     } else {
@@ -147,9 +151,36 @@ export class HumanResourceCreateComponent implements OnInit {
       if (this.userInfo.orgType == 2) this.getLstMerchant(true);
     }
   }
+
   ngOnChanges(): void {
     this.checkShowTextSearchPoinsales();
   }
+
+  setDefaultSelectedRadio() {
+    this.masterIdSelected = this.userInfo.merchantId;
+    if (this.userInfo.isConfig == 1 && this.userInfo.orgType == 1) {
+      this.selectedValue = 1;
+      this.masterIdSelected = null
+    }
+
+    if (this.userInfo.isConfig == 1 && this.userInfo.orgType == 2) {
+      this.selectedValue = 2;
+      this.masterIdSelected = null;
+    }
+
+    if (this.userInfo.orgType == 2) {
+      this.orgTypeInput = 2;
+    }
+
+    if (this.userInfo.orgType == 1) {
+      this.orgTypeInput = 1;
+    }
+
+    if (this.userInfo.orgType == 0) {
+      this.orgTypeInput = 0;
+    }
+  }
+
   columns: Array<GridViewModel> = [
     {
       name: 'id',
@@ -316,7 +347,6 @@ export class HumanResourceCreateComponent implements OnInit {
   // }
 
   doActiveArea(group: any) {
-    console.log("group", group)
     // this.organizationIdActive = null;
     // this.activeOrganization = '';
     // this.countSelectedPoint = 0;
@@ -378,6 +408,7 @@ export class HumanResourceCreateComponent implements OnInit {
               ]),
             }));
             if (firstSearch) {
+              this.pointSalesInitFirt = this.pointSales;
               if (this.pointSales.length == 1) {
                 this.pointSalesSelected.add(this.pointSales[0].merchantId);
                 this.typeUpdate = 1;
@@ -400,7 +431,19 @@ export class HumanResourceCreateComponent implements OnInit {
           } else {
             this.pointSales = [];
           }
-            this.checkAndSetShowView();
+          if (firstSearch) {
+            if ((this.userInfo.isConfig == 1 && this.userInfo.orgType === 2 && this.pointSales.length === 1)
+              || (this.userInfo.isConfig == 0 && this.userInfo.orgType === 2 && this.pointSales.length === 1)
+              || (this.userInfo.isConfig == 0 && this.userInfo.orgType === 0 && this.pointSales.length === 0)) {
+              this.getLstRole();
+            }
+
+            if (this.userInfo.isConfig == 0 && this.userInfo.orgType === 0 && this.pointSales.length > 0) {
+              this.orgTypeInput = 2;
+              this.showRadioButton = false;
+            }
+          }
+          this.checkAndSetShowView();
         },
         (error: any) => {
           this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.');
@@ -538,13 +581,23 @@ export class HumanResourceCreateComponent implements OnInit {
   onRadioChange(event: any) {
     this.orgTypeInput = +event;
     if (event == 2) {
+      this.searchOrganization = '';
+      if (this.userInfo.isConfig == 0 && this.userInfo.orgType === 0 && this.pointSales.length > 0) {
+        this.showRadioButton = true;
+      }
       if (this.pointSales?.length == 0) {
-        this.getLstMerchant();
+        this.getLstMerchant(true);
       }
     }
 
     if (event == 0) {
       this.masterIdSelected = this.userInfo.merchantId;
+      if (this.userInfo.isConfig == 0 && this.userInfo.orgType === 0 && this.pointSales.length > 0) {
+        this.orgTypeInput = 2;
+         this.showRadioButton = false;
+      }
+    } else {
+      this.masterIdSelected = null;
     }
 
     // this.masterIdSelected = event;
@@ -570,6 +623,7 @@ export class HumanResourceCreateComponent implements OnInit {
   onStepChange(event: StepperSelectionEvent) {
     this.currentStep = event.selectedIndex;
   }
+
   doNextStep(number: number = 0) {
     if (number == 1) {
       this.getLstRole();
@@ -578,6 +632,7 @@ export class HumanResourceCreateComponent implements OnInit {
       this.currentStep++;
     }
   }
+
   doPreStep() {
     if (this.currentStep > 0) {
       this.currentStep--;
@@ -613,7 +668,7 @@ export class HumanResourceCreateComponent implements OnInit {
   }
 
   getLstRole() {
-    let orgTypeCreate = 2;
+    let orgTypeCreate = 0;
     // if (this.masterIdSelected) {
     //   orgTypeCreate = 0;
     // }
@@ -621,11 +676,11 @@ export class HumanResourceCreateComponent implements OnInit {
     //   orgTypeCreate = 1;
     // }
 
-    if (this.orgTypeInput == 0) {
-      orgTypeCreate = 0;
-    }
     if (this.orgTypeInput == 1) {
       orgTypeCreate = 1;
+    }
+    if (this.orgTypeInput == 2) {
+      orgTypeCreate = 2;
     }
     this.api
       .get(
@@ -792,8 +847,6 @@ export class HumanResourceCreateComponent implements OnInit {
   }
 
   doActiveAreaCheckbox(group: any) {
-    console.log(group);
-
     this.organizationSort.forEach((i: any) => {
       if (i !== group) i.expanded = false;
     });
@@ -806,5 +859,12 @@ export class HumanResourceCreateComponent implements OnInit {
         this.toggleChildren(child);
       });
     }
+  }
+
+  getSelectedItemForRadioGridView(): any {
+    if (this.pointSales.length > 0)
+      return this.pointSales.find(
+        (p: any) => p.merchantId === +this.pointSalesSelected.values().next().value
+      );
   }
 }

@@ -63,11 +63,11 @@ export class GridViewComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-  setTimeout(() => {
-    if (this.spanRef?.nativeElement) {
-      this.tooltipText = this.spanRef.nativeElement.textContent || '';
-    }
-  });
+    setTimeout(() => {
+      if (this.spanRef?.nativeElement) {
+        this.tooltipText = this.spanRef.nativeElement.textContent || '';
+      }
+    });
     this.cd.detectChanges(); // ✅ sẽ không còn lỗi NG0100
   }
 
@@ -213,7 +213,7 @@ export class GridViewComponent implements OnInit, AfterViewInit {
       });
     } else {
       this.checkAll = false;
-      
+
       this.dataSource.forEach((obj: any) => {
         obj["checked"] = false;
       });
@@ -234,7 +234,12 @@ export class GridViewComponent implements OnInit, AfterViewInit {
       this.indeterminate = false;
     } else {
       this.checkAll = false;
-      this.indeterminate = true;
+
+      if (itemCheck.length > 0) {
+        this.indeterminate = true;
+      } else {
+        this.indeterminate = false;
+      }
     }
     this.isChecked.emit(itemCheck.length);
     this.dataChoice.emit(item);

@@ -60,7 +60,7 @@ export class RoleManagementComponent implements OnInit {
       label: 'ID',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left', 'mw-120'];
         },
         customCssHeader: (obj: any) => {
           return ['text-left'];
@@ -75,7 +75,7 @@ export class RoleManagementComponent implements OnInit {
       label: 'VAI TRÒ',
       options: {
         customCss: () => {
-          return ['text-left', 'mw-160'];
+          return ['text-left', 'mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -92,7 +92,7 @@ export class RoleManagementComponent implements OnInit {
       label: 'LOẠI VAI TRÒ',
       options: {
         customCss: () => {
-          return ['text-left'];
+          return ['text-left', 'mw-140'];
         },
         customBodyRender: (value: any) => {
           let msg;
@@ -115,7 +115,7 @@ export class RoleManagementComponent implements OnInit {
       label: 'NGƯỜI TẠO',
       options: {
         customCss: () => {
-          return ['text-left'];
+          return ['text-left', 'mw-120'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -127,7 +127,7 @@ export class RoleManagementComponent implements OnInit {
       label: 'NGÀY TẠO',
       options: {
         customCss: () => {
-          return ['text-left'];
+          return ['text-left', 'mw-120'];
         },
         customBodyRender: (value: any) => {
           return value ? moment(value).format('DD/MM/YYYY') : '';
@@ -142,7 +142,7 @@ export class RoleManagementComponent implements OnInit {
       label: 'NGÀY CẬP NHẬT',
       options: {
         customCss: () => {
-          return ['text-left'];
+          return ['text-left', 'mw-120'];
         },
         customBodyRender: (value: any) => {
           return value ? moment(value).format('DD/MM/YYYY') : '';

@@ -10,8 +10,18 @@
     <div class="row">
       <div class="col-2"></div>
       <div class="col-8">
-        <ng-container *ngIf="!isChooseOrganization" class="">
-          <div class="d-flex flex-column justify-content-center align-items-center" >
+        <ng-container *ngIf="!isChooseOrganization">
+          <!-- <div style="display: grid; place-items: center; height: 50vh;">
+            <div
+              class="content-thirdForm d-flex text-center justify-content-center flex-column align-items-center header-xs-bold mt-5">
+              <div class="mt-3"><b>Nhân sự đước gán vào điểm kinh doanh {{ countSelectedPoint }}</b></div>
+              <div class="text title-s-regular">
+                Bạn không thể thay đổi tổ chức cho nhân sự này. Vui lòng chuyển bước tiếp theo.
+              </div>
+            </div>
+          </div> -->
+        <div  style="display: grid; place-items: center; height: 50vh;">
+          <div class="content-thirdForm d-flex text-center justify-content-center flex-column align-items-center header-xs-bold mt-5">
             <div *ngIf="typeUpdate == 0" class="text-center paragraph-l-semibold mb-spacing-s">
               Nhân sự được gán vào doanh nghiệp {{userInfo.merchantName}}.
             </div>
@@ -22,6 +32,7 @@
               Bạn không thể thay đổi tổ chức cho nhân sự này. Vui lòng chuyển bước tiếp theo.
             </div>
           </div>
+        </div>
         </ng-container>
         <ng-container>
           <div *ngIf="typeUpdate==1">
@@ -37,13 +48,21 @@
           </div>
           <ng-container *ngIf="isChooseOrganization">
             <div>
-              <div *ngIf="typeUpdate != 1 && orgTypeUser!=2 || (orgTypeUser==2 && (selectedMerchantDefault?.length || 0)==0)" class="paragraph-m-regular mb-spacing-s">Vui lòng chọn tổ chức đến gán cho nhân sự.</div>
-              <div *ngIf="typeUpdate != 1 && (orgTypeUser==2 && (selectedMerchantDefault?.length || 0)>0)" class="paragraph-m-regular mb-spacing-s">Bạn đang gán nhân sự vào <b> {{selectedMerchantDefault.length || 0 }}</b> điểm kinh doanh.</div>
-              <div *ngIf="typeUpdate != 1 && orgTypeLogin == 0" class="paragraph-m-regular mb-spacing-s">Khi gán vào doanh nghiệp, nhân sẽ
+              <div *ngIf="typeUpdate != 1 && orgTypeUser!=2 || (orgTypeLogin == 2 && selectedMerchantDefault.length==0)"
+                class="paragraph-m-regular mb-spacing-s">Vui lòng chọn tổ chức đến gán cho nhân sự.
+              </div>
+              <div *ngIf="orgTypeLogin==2 && (selectedMerchantDefault?.length || 0)>0" class="paragraph-m-regular mb-spacing-s">
+                  Bạn đang gán nhân sự vào <b> {{selectedMerchantDefault.length || 0 }}</b> điểm kinh doanh.
+              </div>
+              <div *ngIf="typeUpdate != 1 && orgTypeLogin == 0" class="paragraph-m-regular mb-spacing-s">Khi gán vào
+                doanh nghiệp, nhân sẽ
                 phụ trách tất cả điểm kinh doanh của doanh nghiệp.</div>
-              <div *ngIf="typeUpdate != 1 && orgTypeLogin == 0 ||orgTypeLogin==1" class="paragraph-m-regular mb-spacing-s">Khi gán vào
+              <div *ngIf="typeUpdate != 1 && orgTypeLogin == 0 ||orgTypeLogin==1"
+                class="paragraph-m-regular mb-spacing-s">Khi gán vào
                 nhóm, nhân sự sẽ phụ trách tất cả điểm kinh doanh thuộc nhóm.</div>
-              <div *ngIf="typeUpdate != 1 && orgTypeLogin == 0 ||orgTypeLogin==1" class="paragraph-m-regular mb-spacing-s">Hoặc gán vào điểm kinh doanh để nhân sự phụ trách trực tiếp các điểm kinh doanh theo lựa chọn.</div>
+              <div *ngIf="typeUpdate != 1 && orgTypeLogin == 0 ||orgTypeLogin==1"
+                class="paragraph-m-regular mb-spacing-s">Hoặc gán vào điểm kinh doanh để nhân sự phụ trách trực tiếp các
+                điểm kinh doanh theo lựa chọn.</div>
             </div>
             <div *ngIf="orgTypeLogin == 0" class="d-flex mt-3">
               <div class="d-flex align-items-center gap-2">
@@ -59,7 +78,7 @@
                 <p-radioButton class="m-radio m-radio-check" [value]="1" name="radioOrganization"
                   [(ngModel)]="orgTypeUser" (ngModelChange)="onRadioChange($event)"
                   (click)="$event.stopPropagation()" />
-                <span class="title-s-semibold"><b>Gán nhân sự vào nhóm</b></span>
+                <span class="title-s-semibold"><b>Gán vào nhóm</b></span>
               </div>
             </div>
             <div *ngIf="orgTypeLogin != 2 " class="d-flex mt-3">
@@ -67,13 +86,13 @@
                 <p-radioButton class="m-radio m-radio-check" [value]="2" name="radioOrganization"
                   [(ngModel)]="orgTypeUser" (ngModelChange)="onRadioChange($event)"
                   (click)="$event.stopPropagation()" />
-                <span *ngIf="typeUpdate != 1" class="title-s-semibold"><b>Gán nhân sự vào điểm bán</b></span>
+                <span *ngIf="typeUpdate != 1" class="title-s-semibold"><b>Gán vào điểm kinh doanh</b></span>
                 <span *ngIf="typeUpdate == 1" class="title-s-semibold"><b>Gán vào 1 điểm kinh doanh</b></span>
               </div>
             </div>
           </ng-container>
-          <div *ngIf="orgTypeUser==2 && typeUpdate!=2 ||typeUpdate==1" class="col-12 mt-3">
-            <div class="p-inputgroup show-icon-left search-role me-3">
+          <div *ngIf="orgTypeUser==2 && typeUpdate!=2 || typeUpdate==1" class="col-12 mt-3">
+            <div *ngIf="orgTypeUser==2" class="p-inputgroup show-icon-left search-role me-3">
               <span class="p-input-icon-left">
                 <i class="icon-search input-icon input-icon-default"></i>
               </span>
@@ -83,23 +102,19 @@
             </div>
             <div class="mt-3 col-12">
               <div class="box-area mt-4 scroll-box">
-              <grid-view #gridViewRef [columns]="columnsMerchant" [dataSource]="subMerchantList" [isShowPage]="false"
-                [selectedItem]="getSelectedItemForRadio()" [showCheckbox]="typeUpdate!=1"
-                [showRadio]="orgTypeUser==2 && typeUpdate==1" (selectedItemChange)="radioMerchant(($event))"
-                (dataChoice)="setUpMerchantIds($event)" [search]="true"></grid-view>
+                <grid-view #gridViewRef [columns]="columnsMerchant" [dataSource]="subMerchantList" [isShowPage]="false"
+                  [selectedItem]="getSelectedItemForRadio()" [showCheckbox]="typeUpdate!=1"
+                  [showRadio]="orgTypeUser==2 && typeUpdate==1" (selectedItemChange)="radioMerchant(($event))"
+                  (dataChoice)="setUpMerchantIds($event)" [search]="true"></grid-view>
               </div>
             </div>
           </div>
           <div *ngIf="orgTypeUser==1" class="mt-3">
             <div class="box-area mt-4 scroll-box">
-               <div *ngIf="lstAreaByOrder.length > 0">
-                <m-tree-checkbox #mTreeComponent [data]="lstAreaByOrder" (groupSelect)="doGroup($event)"></m-tree-checkbox>
+              <div *ngIf="lstAreaByOrder.length > 0">
+                <m-tree-checkbox #mTreeComponent [data]="lstAreaByOrder"
+                  (groupSelect)="doGroup($event)"></m-tree-checkbox>
               </div>
-               <!-- <div *ngFor="let area of lstAreaByOrder">
-                <app-tree-view [area]="area" [isShowCountGroup]="false" [isShowCheckbox]="true"
-                  (groupSelect)="doGroup($event)" (doChangeExpand)="doActiveAreaCheckbox($event)">
-                </app-tree-view>
-              </div> -->
             </div>
           </div>
         </ng-container>
@@ -115,22 +130,29 @@
   </mat-step>
 
   <mat-step label="Gán vai trò">
-    <div>
-      <p class="title-s-regular color-040d1f">Vui lòng chọn 1 vai trò để gán cho nhân sự.</p>
-    </div>
-    <div class="input-erorr rows" *ngIf="checkChangeOrganization()">
-      <span class="icon-error_solid"></span>
-      <p class="title-s-regular text-danger">Bạn cần gán vai trò mới cho nhân sự sau khi thay đổi tổ chức.</p>
-    </div>
-    <div class="col-12 d-flex justify-content-end mt-4">
-      <grid-view [columns]="columns" [dataSource]="dataRoles" (doChangePage)="doSearch($event)" [total]="totalItem"
-        (selectedItemChange)="setRoleId($event)" [search]="isSearch" [showRadio]="true" [isShowPage]="false"
-        [selectedItem]="getSelectedItemRoleForRadio()" style="float: left;width: 100%;" (isDisabled)="false">
-      </grid-view>
+    <div class="row">
+      <div class="col-2"></div>
+      <div class="col-8">
+        <div>
+          <p class="title-s-regular color-040d1f">Vui lòng chọn 1 vai trò để gán cho nhân sự.</p>
+        </div>
+        <div class="input-erorr rows" *ngIf="checkChangeOrganization()">
+          <span class="icon-error_solid"></span>
+          <p class="title-s-regular text-danger">Bạn cần gán vai trò mới cho nhân sự sau khi thay đổi tổ chức.</p>
+        </div>
+        <div class="col-12 d-flex justify-content-end mt-4">
+          <grid-view [columns]="columns" [dataSource]="dataRoles" (doChangePage)="doSearch($event)" [total]="totalItem"
+            (selectedItemChange)="setRoleId($event)" [search]="isSearch" [showRadio]="true" [isShowPage]="false"
+            [selectedItem]="getSelectedItemRoleForRadio()" style="float: left;width: 100%;" (isDisabled)="false">
+          </grid-view>
+        </div>
+      </div>
+      <div class="col-2"></div>
     </div>
     <div class="div-button">
       <p-button label="Quay lại" class="merchant-button-tertiary me-2" (click)="doPreStep()" />
-      <button mat-button (click)="doNextStepSubmit()" class="merchant-button-material" [disabled]="checkRoleUpdate()">
+      <button mat-button (click)="doNextStepSubmit()" class="merchant-button-material"
+        [disabled]="checkRoleUpdate()">
         Cập nhật
       </button>
     </div>

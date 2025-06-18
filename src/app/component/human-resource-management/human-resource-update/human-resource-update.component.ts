@@ -132,7 +132,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       this.personDataDetail = personData;
       this.userId = personData.userId;
       this.orgTypeUser = personData.orgType;
-      if (this.orgTypeUser==2 && personData?.selectedMerchant) {
+      if (this.orgTypeUser == 2 && personData?.selectedMerchant) {
         if (
           personData?.selectedMerchant &&
           isArray(personData?.selectedMerchant)
@@ -160,7 +160,7 @@ export class HumanResourceUpdateComponent implements OnInit {
   //isConfig=1 orgType=0 typeUpdate=3=> hiển thị 3 opt
   //isConfig=1 orgType=1 typeUpdate=4 => hiện thị 2 3 3là hiển thị checkbox
   //isConfig=1 orgType=2 pointsales > 0 typeUpdate= 5
-  //isConfig=1 orgType=2 pointsales == 1 typeUpdate=6
+  //isConfig=1 orgType=2 pointsales == 1 typeUpdate = 2
   ngOnInit(): void {
     this.isSearch = true;
     this.userInfo = this.auth.getUserInfo();
@@ -598,12 +598,12 @@ export class HumanResourceUpdateComponent implements OnInit {
       groupIdList: [] as number[],
       status: '',
       methodId: [],
-      mappingKey: this.searchPointSales,
+      mappingKey: '',
     };
     let param = {
       page: 1,
       size: 1000,
-      keySearch: this.keyWord ? this.keyWord : null,
+      keySearch: this.searchPointSales ? this.searchPointSales : null,
     };
     let buildParams = CommonUtils.buildParams(param);
     return this.api
@@ -634,14 +634,20 @@ export class HumanResourceUpdateComponent implements OnInit {
       );
   }
   setUpMerchantIds(event: any) {
+    console.log("event",event)
     if (event && Array.isArray(event)) {
       if (event[0]?.checked) {
-        this.selectedMerchantDefault.push(...event);
+        event.forEach((item:any)=>{
+          const exists= this.selectedMerchantDefault.some((m:any)=> m.merchantId== item.merchantId);
+          if(!exists){
+            this.selectedMerchantDefault.push(item);
+          }
+        })
       } else {
         if (Array.isArray(this.selectedMerchantDefault)) {
           event.forEach((item: any) => {
             const idx = this.selectedMerchantDefault.findIndex(
-              (m: any) => m.merchantId === item.merchantId
+              (m: any) => m.merchantId == item.merchantId
             );
             if (idx !== -1) {
               this.selectedMerchantDefault.splice(idx, 1);

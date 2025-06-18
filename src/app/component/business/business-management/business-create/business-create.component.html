@@ -452,7 +452,7 @@
                 <a *ngIf="!oneSuccessful && roleHr" [href]="assetPath +'/hr/hr-create'" class="mt-3">
                     <p-button label="Thêm nhân sự" class="merchant-button mt-4" />
                 </a>
-                <a *ngIf="oneSuccessful" [href]="assetPath +'/business'" class="mt-3">
+                <a *ngIf="oneSuccessful || roleHr" [href]="assetPath +'/business'" class="mt-3">
                     <p-button label="Về trang quản lý" class="merchant-button-tertiary mt-4" />
                 </a>
                 <!-- Không được phân quyền thêm nhân sự -->

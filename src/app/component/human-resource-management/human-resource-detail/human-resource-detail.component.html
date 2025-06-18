@@ -84,16 +84,16 @@
     <div class="d-flex flex-column col-3 mb-4 detail-info">
       <div class="detail-info-title">Email</div>
       <div class="detail-info-value d-flex gap-1">
-        <ng-container *ngIf="personDetail?.isVerify === 1">
+        <ng-container *ngIf="personDetail?.email; else emailNoVerify">
           {{ personDetail?.email }}
           <span *ngIf="personDetail?.email" class="icon-check_circle_solid pb-1" matTooltipPosition="above"
             matTooltip="Tài khoản đã được xác thực"></span>
         </ng-container>
 
-        <ng-container *ngIf="personDetail?.isVerify === 0">
-          {{ personDetail?.email}}<span *ngIf="personDetail?.email" class="icon-warning_solid pb-1"
+        <ng-template #emailNoVerify>
+          {{ personDetail?.emailChange}}<span *ngIf="personDetail?.emailChange" class="icon-warning_solid pb-1"
             matTooltipPosition="above" matTooltip="Tài khoản chưa được xác thực"></span>
-        </ng-container>
+        </ng-template>
       </div>
     </div>
   </div>

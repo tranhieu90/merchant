@@ -35,7 +35,7 @@ import { GenPasswordComponent } from '../gen-password/gen-password.component';
 import { FunctionModel } from '../../../model/FunctionModel';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import moment from 'moment';
-import { fomatAddress } from '../../../common/helpers/Ultils';
+import { fomatAddress, convertLstAreaByOrder } from '../../../common/helpers/Ultils';
 import { TooltipModule } from 'primeng/tooltip';
 import { DirectiveModule } from '../../../base/module/directive.module';
 import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
@@ -71,7 +71,7 @@ export class HumanResourceDetailComponent implements OnInit {
   readonly MERCHANT_RULES = MERCHANT_RULES;
   personDetail?: IPersonelDetail;
   rolePesonel?: any;
-  subMerchantList: any[]=[];
+  subMerchantList: any[] = [];
   assetPath = environment.assetPath;
   listFunctionConvert: FunctionModel[] = [];
   changePassInfo: any;
@@ -103,7 +103,7 @@ export class HumanResourceDetailComponent implements OnInit {
       label: 'TÊN ĐIỂM KINH DOANH',
       options: {
         customCss: (obj: any) => {
-          return ['text-left','mw-120'];
+          return ['text-left', 'mw-120'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -115,7 +115,7 @@ export class HumanResourceDetailComponent implements OnInit {
       label: 'ĐỊA CHỈ',
       options: {
         customCss: (obj: any) => {
-          return ['text-left','mw-180'];
+          return ['text-left', 'mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -234,16 +234,16 @@ export class HumanResourceDetailComponent implements OnInit {
     return total;
   }
 
-  convertLstAreaByOrder(list: any[], parentId: number | null): any[] {
-    let result = list.filter((item) => item.parentId === parentId);
+  // convertLstAreaByOrder(list: any[], parentId: number | null): any[] {
+  //   let result = list.filter((item) => item.parentId === parentId);
 
-    result.forEach((item) => {
-      let children = this.convertLstAreaByOrder(list, item.id);
-      item.children = children;
-    });
+  //   result.forEach((item) => {
+  //     let children = this.convertLstAreaByOrder(list, item.id);
+  //     item.children = children;
+  //   });
 
-    return result;
-  }
+  //   return result;
+  // }
 
   getRoleType(type?: number | undefined) {
     switch (type) {
@@ -365,7 +365,8 @@ export class HumanResourceDetailComponent implements OnInit {
         ) {
           const treeData = this.buildGroupTree(this.personDetail.groupList);
           this.lstAreas = treeData;
-          this.lstAreaByOrder = this.convertLstAreaByOrder(this.lstAreas, null);
+          const parentId = this.findParentIdFromTree(this.personDetail.groupList);
+          this.lstAreaByOrder = convertLstAreaByOrder(this.lstAreas, parentId);
         } else {
           // if(this.personDetail?.orgType === 2) {
           this.api
@@ -393,6 +394,13 @@ export class HumanResourceDetailComponent implements OnInit {
         this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
       }
     );
+  }
+
+  findParentIdFromTree(groupList: any): number | null {
+    const ids = groupList.map((data: any) => data.id);
+    const parentIds = groupList.map((data: any) => data.parentId);
+    const onlyInIds = parentIds.filter((id: any) => !ids.includes(id));
+    return [...new Set(onlyInIds)].values().next().value ?? null;
   }
 
   getDetailFunc(roleId: number) {

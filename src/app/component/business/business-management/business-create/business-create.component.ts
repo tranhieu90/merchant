@@ -139,6 +139,7 @@ export class BusinessCreateComponent implements OnInit {
   tidPosErrorList: any = [];
   thddErrorList: any = [];
   isSearching: any;
+  errorCreate: any;
 
   constructor(
     private fb: FormBuilder,
@@ -294,42 +295,15 @@ export class BusinessCreateComponent implements OnInit {
         if (soaErrorCode200.length > 0 && soaErrorCode.length > 0) {
           this.oneSuccessful = true;
         } else {
-          this.roleHr = this.auth.apiTracker("/api/v1/add-user-role");
+          this.roleHr = this.auth.apiTracker("/api/v1/user-management/create");
         }
 
-        if (res && res.status == 200) {
-          let checkErrorMethod = 0
-          outputs.forEach((item: any) => {
-            if (item["soaErrorCode"] != 200) {
-              checkErrorMethod = 1;
-              return;
-            }
-          });
-          if (checkErrorMethod > 0) {
-            this.toast.showSuccess('Cập nhật phương thức thanh toán thành công', "Vui lòng kiểm tra lại phương thức thanh toán do có lỗi khi thiết lập");
-          } else {
-            this.toast.showSuccess('Cập nhật phương thức thanh toán thành công');
-          }
-
-          this.isSuccess = 1;
-          this.doNextStep();
-        }
+        this.isSuccess = 1;
+        this.doNextStep();
       }, (error) => {
-        const errorData = error?.error || {};
-        switch (errorData.soaErrorCode) {
-          case '213':
-            this.formBusiness.get('merchantBizName')!.setErrors({ isMerchantBizNameUsed: true });
-            this.doPreStep();
-            break;
-          case '253':
-            let outputs = errorData['data']['methodSubMerchantXOutputs'];
-            this.checkErrorKey(outputs);
-            break;
-          default:
-            this.isSuccess = 0;
-            this.doNextStep();
-            break;
-        }
+        this.errorCreate = error?.error || {};
+        this.isSuccess = 0;
+        this.doNextStep();
       });
     } else {
       this.isPayment1 = false
@@ -381,7 +355,7 @@ export class BusinessCreateComponent implements OnInit {
     } else if (ac02) {
       this.accountNameModel?.control.setErrors({ notCorrect: true });
       this.accountNameModel?.control.markAsTouched();
-    }else if(terminalKey){
+    } else if (terminalKey) {
       this.temiralIdModel?.control.setErrors({ notCorrect: true });
       this.temiralIdModel?.control.markAsTouched();
     }
@@ -598,6 +572,14 @@ export class BusinessCreateComponent implements OnInit {
     if (this.currentStep >= 0) {
       this.currentStep = 0;
     }
+
+    const errorData = this.errorCreate;
+    if (errorData.soaErrorCode == '213') {
+      this.formBusiness.get('merchantBizName')!.setErrors({ isMerchantBizNameUsed: true });
+    }else if (errorData.soaErrorCode == '253') {
+      let outputs = errorData['data']['methodSubMerchantXOutputs'];
+      this.checkErrorKey(outputs);
+    }
   }
 
   onSearchChange() {
@@ -669,7 +651,7 @@ export class BusinessCreateComponent implements OnInit {
     return this.thddErrorList?.length > 0;
   }
 
-  checkStepPayment(){
+  checkStepPayment() {
     this.doNextStep();
     this.getLstPaymentMethod();
   }

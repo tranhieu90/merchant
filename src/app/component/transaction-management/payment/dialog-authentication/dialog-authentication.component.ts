@@ -10,7 +10,7 @@ import {FetchApiService} from '../../../../common/service/api/fetch-api.service'
 import {ToastService} from '../../../../common/service/toast/toast.service';
 import {REFUND_ENDPOINT} from '../../../../common/enum/EApiUrl';
 import moment from 'moment';
-import { QRCodeComponent, QRCodeModule } from 'angularx-qrcode';
+import { QRCodeComponent } from 'angularx-qrcode';
 
 @Component({
   selector: 'app-dialog-authentication',
@@ -22,7 +22,7 @@ import { QRCodeComponent, QRCodeModule } from 'angularx-qrcode';
     CalendarModule,
     InputCommon,
     InputTextModule,
-    QRCodeModule,
+    QRCodeComponent,
     NgSwitch,
     NgSwitchCase,
     NgClass,
@@ -64,7 +64,7 @@ export class DialogAuthenticationComponent implements OnInit {
       });
     const now = new Date();
     const expireTime = moment(new Date(now.getTime() + 120 * 1000)).format('DD/MM/YYYY HH:mm:ss');
-    this.textQrCode = `${dataDialog.id}##${dataDialog.transTime}##${dataDialog.username}##${dataDialog.currentRefundMoney}##${dataDialog.txnReferenceOrigin}##${dataDialog.refundReason}##${this.deviceId || ''}##${expireTime}`
+    this.textQrCode = `${dataDialog.id}##${dataDialog.transTime}##${dataDialog.username}##${dataDialog.currentRefundMoney}##${dataDialog.txnReferenceOrigin}##${dataDialog.refundReason}##${this.deviceId || ''}##${expireTime}##${dataDialog?.merchantId || ''}`
   }
 
   ngOnInit() {

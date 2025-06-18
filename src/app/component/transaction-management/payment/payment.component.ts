@@ -859,11 +859,9 @@ export class PaymentComponent implements OnInit {
   }
 
   onReset() {
-    const today = new Date();
-    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
-    const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 0);
 
     this.searchCriteria = {
+      ...this.searchCriteria,
       transactionCode: null,
       ftCode: null,
       orderCode: null,
@@ -871,7 +869,6 @@ export class PaymentComponent implements OnInit {
       paymentAccountName: null,
       accountNumber: null,
       paymentAmount: null,
-      dateRange: [],
     };
 
     this.filterCriteria = {
@@ -881,8 +878,6 @@ export class PaymentComponent implements OnInit {
       selectedGroups: [],
       selectedMerchants: []
     };
-
-    this.searchCriteria.dateRange = [startDate, endDate];
 
     this.onSearch();
   }

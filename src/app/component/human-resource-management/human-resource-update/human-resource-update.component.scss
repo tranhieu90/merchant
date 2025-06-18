@@ -255,7 +255,7 @@
   .div-button {
     margin-bottom: 0px;
     text-align: right;
-    position: absolute;
+    position: static;
     right: $spacing-l;
     bottom: $spacing-l;
     left: $spacing-l;
@@ -349,4 +349,5 @@
 .no-underline {
   text-decoration: none !important;
   color: #0058F0;
+  cursor: pointer;
 }
