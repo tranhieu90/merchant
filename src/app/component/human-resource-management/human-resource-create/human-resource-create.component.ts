@@ -15,7 +15,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatStep, MatStepper } from '@angular/material/stepper';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import moment from 'moment';
 import { MessageService } from 'primeng/api';
 import { Button } from 'primeng/button';
@@ -53,6 +53,7 @@ import {
   DialogRoleComponent,
   DialogRoleModel,
 } from '../../role-management/dialog-role/dialog-role.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-human-resource-create',
@@ -87,6 +88,7 @@ export class HumanResourceCreateComponent implements OnInit {
   @ViewChild('gridViewRef') gridViewComponent!: GridViewComponent;
   @ViewChild('mTreeComponent') mTreeComponent!: MTreeComponent;
   id!: number;
+  _isNavigating:boolean=false;
   formInfo!: FormGroup;
   totalItem: number = 0;
   currentStep: number = 0;
@@ -136,7 +138,12 @@ export class HumanResourceCreateComponent implements OnInit {
   ) {
     this.routeActive.queryParams.subscribe((params) => { });
   }
-
+ private navigationSubscription!: Subscription;
+  ngOnDestroy(): void {
+    if (this.navigationSubscription) {
+      this.navigationSubscription.unsubscribe();
+    }
+  }
   ngOnInit(): void {
     this.buildForm();
     this.userInfo = this.auth.getUserInfo();
@@ -150,6 +157,15 @@ export class HumanResourceCreateComponent implements OnInit {
       if (this.userInfo.orgType != 2) this.doGetGroup();
       if (this.userInfo.orgType == 2) this.getLstMerchant(true);
     }
+     this.navigationSubscription = this.router.events.subscribe((event) => {
+          if (event instanceof NavigationStart) {
+            if ( !this._isNavigating) {
+              this._isNavigating = true;
+              this.onCancel(event.url);
+              this.router.navigate([], { replaceUrl: true, queryParamsHandling: 'preserve' });
+            }
+          }
+        });
   }
 
   ngOnChanges(): void {
@@ -768,7 +784,7 @@ export class HumanResourceCreateComponent implements OnInit {
     );
   }
 
-  onCancel() {
+  onCancel(url?:string) {
     let dataConfirm: DialogRoleModel = new DialogRoleModel();
     dataConfirm.title = `Hủy thêm mới nhân sự`;
     dataConfirm.message =
@@ -783,9 +799,13 @@ export class HumanResourceCreateComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
+      if (result === true) {
+        if(url) { 
+           this.router.navigateByUrl(url);
+        }
+        else{
         this.router.navigate(['/hr']);
-      }
+      }}
     });
   }
 

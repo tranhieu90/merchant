@@ -272,11 +272,11 @@ export class HumanResourceUpdateComponent implements OnInit {
     );
     this.navigationSubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
-     if (this.isChangedInfo() && !this._isNavigating) {
-  this._isNavigating = true;
-  this.onCancel(event.url);
-  this.router.navigate([], { replaceUrl: true, queryParamsHandling: 'preserve' });
-}
+        if (this.isChangedInfo() && !this._isNavigating) {
+          this._isNavigating = true;
+          this.onCancel(event.url);
+          this.router.navigate([], { replaceUrl: true, queryParamsHandling: 'preserve' });
+        }
       }
     });
 
