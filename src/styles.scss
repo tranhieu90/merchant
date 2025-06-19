@@ -82,9 +82,8 @@ body {
   @include base-icon;
   color: $color-surface-semantic-warning;
 }
-
 .mat-tooltip {
-   background: $color-surface-neutral-main;
+    background: $color-surface-neutral-main;
     border-radius: $border-radius-s;
     padding: $spacing-s;
     box-shadow: $shadow-s3;
@@ -96,7 +95,6 @@ body {
     padding: $spacing-s;
     box-shadow: $shadow-s3;
     color: $color-text-neutral-main;
-    //typo/paragraph-m/regular
     @include typo-style($typo-font-sizes-m, $typo-font-weights-regular, none, none);
     width: max-content;
     max-width: 240px;
@@ -112,4 +110,9 @@ body {
     }
 
   }
+}
+
+.mat-mdc-tooltip-surface {
+  font-family: $font-family-regular;
+  font-size: $typo-font-sizes-s;
 }
