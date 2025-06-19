@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatBadge } from '@angular/material/badge';
@@ -29,7 +29,7 @@ import { UpdateUserComponent } from '../../user-profile/update-user/update-user.
 @Component({
   selector: 'app-business-management',
   standalone: true,
-  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, GridViewComponent, MatButtonModule, InputCommon, NgIf, DropdownModule, MultiSelectModule, TreeSelectModule, MatBadge],
+  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, GridViewComponent, MatButtonModule, InputCommon, NgIf, DropdownModule, MultiSelectModule, TreeSelectModule, MatBadge,CommonModule],
   templateUrl: './business-management.component.html',
   styleUrl: './business-management.component.scss'
 })
@@ -53,6 +53,7 @@ export class BusinessManagementComponent {
     pageSize: 10,
     page: 0,
   };
+  roleBusiness: boolean = false;
 
   columns: Array<GridViewModel> = [
     {
@@ -178,6 +179,7 @@ export class BusinessManagementComponent {
 
   ngOnInit() {
     this.isConfig = this.auth.getUserInfo()?.isConfig;
+    this.roleBusiness = this.auth.apiTracker("/api/v1/subMerchant/add");
     this.getLstPaymentMethod();
     if (this.auth.getUserInfo()?.orgType != 2) {
       this.getDataGroup();

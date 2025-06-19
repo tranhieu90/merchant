@@ -80,22 +80,25 @@ export class IdleService {
 
   refreshToken(): Observable<string> {
     const refreshToken = localStorage.getItem(environment.refeshToken);
-    return this.api.post(LOGIN_ENDPOINT.REFESH_TOKEN, refreshToken).pipe(
-      map((res) => {
-        localStorage.removeItem(environment.accessToken);
-        localStorage.removeItem(environment.refeshToken);
-        localStorage.setItem(environment.accessToken, res.access_token);
-        localStorage.setItem(environment.refeshToken, res.refresh_token);
-        const decoded: any = jwtDecode(res.access_token);
-        localStorage.setItem(environment.userInfo, decoded.sub);
-        return res.access_token;
-      }),
-      catchError(err => {
-        this.toast.showError("Token không hợp lệ!");
-        console.error('Error occurred while refreshing token:', err);
-        return throwError(() => err);
-      })
-    );
+    if (refreshToken) {
+      return this.api.post(LOGIN_ENDPOINT.REFESH_TOKEN, refreshToken).pipe(
+        map((res) => {
+          localStorage.removeItem(environment.accessToken);
+          localStorage.removeItem(environment.refeshToken);
+          localStorage.setItem(environment.accessToken, res.access_token);
+          localStorage.setItem(environment.refeshToken, res.refresh_token);
+          const decoded: any = jwtDecode(res.access_token);
+          localStorage.setItem(environment.userInfo, decoded.sub);
+          return res.access_token;
+        }),
+        catchError(err => {
+          this.toast.showError("Token không hợp lệ!");
+          return throwError(() => err);
+        })
+      );
+    } else {
+      return throwError(() => new Error('No refresh token found'));
+    }
   }
 
 }

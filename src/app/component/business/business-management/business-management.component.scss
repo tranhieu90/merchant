@@ -41,3 +41,7 @@
   background-color: #4E8AF1 !important;
   opacity: 100% !important;
 }
+
+.merchant-button-icon.active ::ng-deep.p-button {
+  background: $color-surface-neutral-sub-2 !important;
+}

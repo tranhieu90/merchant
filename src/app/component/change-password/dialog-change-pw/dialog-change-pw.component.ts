@@ -119,6 +119,7 @@ export class DialogChangePwComponent implements OnInit {
       this.router.navigate(['/login']);
       this.idleService.stopIdleWatching();
       localStorage.removeItem(environment.accessToken);
+      localStorage.removeItem(environment.refeshToken);
       localStorage.removeItem(environment.userInfo);
       this.toast.showSuccess("Đổi mật khẩu thành công. Vui lòng đăng nhập lại.")
     }, (error) => {

@@ -55,16 +55,8 @@ export class AppHttpInterceptor implements HttpInterceptor {
     }
     this._totalRq++;
     this.spinner.show();
-    let modifiedRequest = this.addAuthToken(httpRequest);
 
-    if (httpRequest.url === REFUND_ENDPOINT.REFUND) {
-      modifiedRequest = modifiedRequest.clone({
-        setHeaders: {
-          transactionId: this.generateTransactionId()
-        }
-      });
-    }
-    return next.handle(modifiedRequest).pipe(
+    return next.handle(this.addAuthToken(httpRequest)).pipe(
       catchError((error: HttpErrorResponse) => {
         let errorDetail = error.error
         let message = "";
@@ -98,10 +90,10 @@ export class AppHttpInterceptor implements HttpInterceptor {
           return EMPTY;
         }
 
-        if (error['status'] === 500 || errorDetail.soaErrorCode == "SYSTEM_ERROR"|| errorDetail.soaErrorCode == "System error" || errorDetail.soaErrorCode == "002") {
+        if (error['status'] === 500 || errorDetail.soaErrorCode == "SYSTEM_ERROR" || errorDetail.soaErrorCode == "System error" || errorDetail.soaErrorCode == "002") {
           let dataDialog: DialogConfirmModel = new DialogConfirmModel();
           dataDialog.title = 'Lỗi hệ thống';
-          dataDialog.message = 'Hệ thống đang bị gián đoạn.Vui lòng thử lại hoặc liên hệ quản trị viên để được hỗ trợ.';
+          dataDialog.message = 'Hệ thống đang bị gián đoạn. Vui lòng thử lại hoặc liên hệ quản trị viên để được hỗ trợ.';
           dataDialog.buttonLabel = 'Tôi đã hiểu';
           dataDialog.icon = 'icon-error';
           dataDialog.viewCancel = false;
@@ -148,9 +140,18 @@ export class AppHttpInterceptor implements HttpInterceptor {
       url: environment.apiUrl + request.url,
     });
 
+    let currentHeaders: { [key: string]: string } = {};
+    request.headers.keys().forEach(key => {
+      const value = request.headers.get(key);
+      if (value) {
+        currentHeaders[key] = value;
+      }
+    });
+
     if (!token) {
       return reqClone.clone({
         setHeaders: {
+          ...currentHeaders,
           'Content-Type': 'application/json',
           'clientMessageId': uuidv4()
 
@@ -160,12 +161,14 @@ export class AppHttpInterceptor implements HttpInterceptor {
     if (this.lstUrlNoAuth.some(url => request.url.includes(url))) {
       return reqClone.clone({
         setHeaders: {
+          ...currentHeaders,
           clientMessageId: uuidv4()
         },
       });
     }
     return reqClone.clone({
       setHeaders: {
+        ...currentHeaders,
         Authorization: `Bearer ${token}`,
         clientMessageId: uuidv4()
       },
@@ -240,12 +243,4 @@ export class AppHttpInterceptor implements HttpInterceptor {
     return diffInMinutes < 15;
   }
 
-  generateTransactionId(): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < 12; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
-  }
 }

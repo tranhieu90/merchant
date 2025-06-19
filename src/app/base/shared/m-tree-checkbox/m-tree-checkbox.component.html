@@ -15,19 +15,27 @@
             }
           </button>
 
-          <ng-container *ngIf=" item.groupName.length > 30;else noTooltip">
+          <!-- <ng-container *ngIf=" item.groupName.length > 100;else noTooltip">
             <span class="mr-3" [ngClass]="[
               item.level === 1 ? 'title-s-semibold' : 'title-s-regular'
             ]" style="white-space: nowrap" [matTooltip]="item.groupName">{{ item.groupName | slice : 0 :
-              (isShowCheckbox ? 20 : 30) }}
-              {{ item.groupName.length > (isShowCheckbox ? 20 : 30) ? "..." : "" }}</span>
+              (isShowCheckbox ? 90 : 100) }}
+              {{ item.groupName.length > (isShowCheckbox ? 90 : 100) ? "..." : "" }}</span>
           </ng-container>
 
           <ng-template #noTooltip>
             <span class="group-name text" [class]="item.level == 1 ? 'title-s-semibold' : 'title-s-regular'">{{
               item.groupName }}</span>
-          </ng-template>
+          </ng-template> -->
 
+        <span
+          #groupNameEl
+          class="group-name text truncate-text mr-3"
+          [ngClass]="item.level === 1 ? 'title-s-semibold' : 'title-s-regular'"
+          [matTooltip]="showTooltip ? item.groupName : ''"
+          (mouseenter)="checkTooltip(groupNameEl)">
+          {{ item.groupName }}
+        </span>
 
         </div>
         <div class="d-flex align-items-center pr-5">

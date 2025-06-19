@@ -355,8 +355,9 @@ export class HumanResourceManagementComponent implements OnInit {
       let dataDialog: DialogConfirmModel = new DialogConfirmModel();
       dataDialog.title = 'Bạn không có quyền xem nhân sự';
       dataDialog.message =
-        'Nhân sự này không thuộc tổ chức mà bạn được phân quyền.';
+        'Nhân sự không thuộc tổ chức mà bạn được phân quyền.';
       dataDialog.icon = 'icon-warning';
+      dataDialog.iconClosePopup = false;
       dataDialog.viewCancel = false;
       dataDialog.iconColor = 'icon warning';
       dataDialog.buttonLabel = 'Tôi đã hiểu';

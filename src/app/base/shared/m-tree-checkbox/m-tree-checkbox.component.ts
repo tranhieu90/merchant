@@ -32,6 +32,8 @@ export class MTreeCheckboxComponent implements OnInit, OnChanges {
   @Output() groupSelect = new EventEmitter<any>();
 
   isUpdateTree: boolean = true;
+  showTooltip = false;
+
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.isUpdateTree) {
@@ -54,6 +56,12 @@ export class MTreeCheckboxComponent implements OnInit, OnChanges {
       if (i !== item) i.expanded = false;
     });
     item.expanded = !item.expanded;
+  }
+
+
+  checkTooltip(el: HTMLElement) {
+    // Nếu scrollWidth > clientWidth thì có phần bị ẩn (bị ellipsis)
+    this.showTooltip = el.scrollWidth > el.clientWidth;
   }
 
   onCheckboxChange(event: any, item?: any) {

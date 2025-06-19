@@ -1,6 +1,6 @@
 <div class="fs-3 mb-3 header-xs-bold">Tạo mới điểm kinh doanh</div>
 <mat-stepper class="step-role" [selectedIndex]="currentStep" [disableRipple]="true"
-    (selectionChange)="onStepChange($event)" [linear]="true" #stepper>
+    (selectionChange)="onStepChange($event)" [linear]="true" #stepper *ngIf="isLoaded">
     <ng-template matStepperIcon="edit" let-index="index">
         {{ currentStep +1 }}
     </ng-template>
@@ -239,9 +239,9 @@
                     <div class="col-12" *ngIf="ischeck==1">
                         <label class="paragraph-m-semibold mb-spacing-xs">Terminal ID</label>
                         <input appInputSanitize class="merchant-input" pInputText [(ngModel)]="terminalId"
-                            #temiralId="ngModel" required
+                            #temiralId="ngModel" required [pattern]="accountNumberPattern"
                             placeholder="Nhập mã Terminal ID do MB cung cấp khi tích hợp dịch vụ" />
-                        <div class="m-caption error" *ngIf="temiralId.invalid && temiralId.touched">
+                        <div class="m-caption error" *ngIf="temiralId.invalid && temiralId.dirty">
                             <div class="icon-caption">
                                 <span class="icon-error_solid"></span>
                             </div>
@@ -252,6 +252,9 @@
                                 Terminal ID đã tồn tại
                             </span>
                             <span *ngIf="temiralId.errors?.['invalidErorr']" class="text-caption paragraph-m-regular">
+                                Terminal ID không hợp lệ
+                            </span>
+                            <span *ngIf="temiralId.errors?.['pattern']" class="text-caption paragraph-m-regular">
                                 Terminal ID không hợp lệ
                             </span>
                         </div>
@@ -432,9 +435,16 @@
         <div class="content-thirdForm d-flex flex-column align-items-center header-xs-bold mt-5">
             <ng-container *ngIf="isSuccess === 1">
                 <img [src]="assetPath +'/assets/images/image-success.svg'" alt="Success" />
-                <div class="mt-3">
-                    Tạo mới điểm kinh doanh "{{ this.formBusiness.get('merchantBizName')?.value}}" thành công:
+                <!-- title -->
+                <div *ngIf="oneSuccessful" class="mt-3 text-center">
+                    Tạo mới điểm kinh doanh "{{ this.formBusiness.get('merchantBizName')?.value}}"<br>
+                    thành công
                 </div>
+                <div *ngIf="!oneSuccessful" class="mt-3 text-center">
+                    Tạo mới điểm kinh doanh thành công: <br>
+                    {{ this.formBusiness.get('merchantBizName')?.value}}
+                </div>
+                <!-- info -->
                 <div *ngIf="oneSuccessful" class="text title-s-regular mt-3">
                     Vui lòng kiểm tra lại phương thức thanh toán do có lỗi khi thiết lập
                 </div>
@@ -452,7 +462,7 @@
                 <a *ngIf="!oneSuccessful && roleHr" [href]="assetPath +'/hr/hr-create'" class="mt-3">
                     <p-button label="Thêm nhân sự" class="merchant-button mt-4" />
                 </a>
-                <a *ngIf="oneSuccessful" [href]="assetPath +'/business'" class="mt-3">
+                <a *ngIf="oneSuccessful || roleHr" [href]="assetPath +'/business'" class="mt-3">
                     <p-button label="Về trang quản lý" class="merchant-button-tertiary mt-4" />
                 </a>
                 <!-- Không được phân quyền thêm nhân sự -->
@@ -463,10 +473,10 @@
 
             <ng-container *ngIf="isSuccess === 0">
                 <img [src]="assetPath + '/assets/images/image-false.svg'" alt="False" />
-                <div class="mt-3">
-                    Tạo mới điểm kinh doanh không thành công:
+                <div class="mt-3 text-center">
+                    Tạo mới điểm kinh doanh không thành công:<br>
+                    {{ this.formBusiness.get('merchantBizName')?.value}}
                 </div>
-                <div>{{ this.formBusiness.get('merchantBizName')?.value}}</div>
                 <div class="text title-s-regular mt-3">Đã có lỗi xảy ra vui lòng thử lại</div>
                 <a class="mt-3">
                     <p-button label="Thực hiện lại" class="merchant-button mt-4" (click)="onStepOne()" />

@@ -235,7 +235,7 @@ export class UpdateOrganizationComponent implements OnChanges {
     }
     this.api.post(ORGANIZATION_ENDPOINT.DELETE_GROUP, param).subscribe(
       (res: any) => {
-        this.toast.showSuccess(`Xóa nhóm ${this.areaActive.groupName} thành công`);
+        this.toast.showSuccess(`Xóa nhóm ${this.areaBeforeDelete.groupName} thành công`);
         if (this.isMoveMerchantSuccess) this.isMoveMerchantSuccess = false;
         this.getLstAreas(1);
       }, (error: any) => {
@@ -465,7 +465,7 @@ export class UpdateOrganizationComponent implements OnChanges {
 
 
   doMoveMerchant(lstMerchantIdMove: any) {
-    let lstAreaExistMove = this.lstAreas.filter((item) => item.id != this.areaActive.id && item.children.length == 0);
+    let lstAreaExistMove = this.lstAreas.filter((item) => item.id != this.areaActive.id && item?.children?.length == 0);
 
     if (lstAreaExistMove?.length > 0) {
       let dataModel: MoveMerchantModel = new MoveMerchantModel();

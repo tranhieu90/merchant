@@ -79,7 +79,8 @@ export enum EXCEL_ENDPOINT {
   HISTORY_EXPORT = 'api/v1/excel/get-all-request',
   DOWNLOAD_EXCEL = 'api/v1/excel/download',
   EXPORT_TRANSACTION = 'api/v1/excel/export-excel-transaction',
-  EXPORT_REFUND = 'api/v1/excel/export-excel-refund'
+  EXPORT_REFUND = 'api/v1/excel/export-excel-refund',
+  EXPORT_REFUND_OLD = 'api/v1/excel/export-excel-refund-old'
 }
 
 export enum TRANSACTION_ENDPOINT {

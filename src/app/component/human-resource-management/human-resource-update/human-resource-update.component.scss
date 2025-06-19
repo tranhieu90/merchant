@@ -254,11 +254,12 @@
 
   .div-button {
     margin-bottom: 0px;
+    margin-top: 30px;
     text-align: right;
     position: absolute;
-    right: $spacing-l;
-    bottom: $spacing-l;
-    left: $spacing-l;
+    right: $spacing-l !important;
+    bottom: $spacing-l !important;
+    left: $spacing-l !important;
   }
 
   ::ng-deep .mat-step-icon.mat-step-icon-state-done {
@@ -349,4 +350,8 @@
 .no-underline {
   text-decoration: none !important;
   color: #0058F0;
+  cursor: pointer;
+}
+::ng-deep .btn-custom >button{
+  min-width: 220px
 }

@@ -260,7 +260,7 @@ export class BusinessPaymentComponent implements OnInit {
       return;
     }
     let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-    dataDialog.title = type == 1 ? "Xóa mã TID POD" : "Xóa mã THDD ID";
+    dataDialog.title = `Xóa mã ${item}`
     dataDialog.message = `Điểm kinh doanh sẽ không ghi nhận giao dịch.<br>Bạn có chắc chắn muốn xóa mã ${item} không ? `;
     dataDialog.buttonLabel = 'Xác nhận';
     dataDialog.icon = 'icon-error';
@@ -312,6 +312,7 @@ export class BusinessPaymentComponent implements OnInit {
         if (this.lstPaymentPodClone.length < 50)
           this.lstPaymentPodClone.push(control.value);
         this.paymentMethodPodId = '';
+        control.reset();
         this.isAddPodId = false;
       } else {
         control.control.setErrors({ exitErorr: true });
@@ -330,6 +331,7 @@ export class BusinessPaymentComponent implements OnInit {
         if (this.lstPaymentTHDDClone.length < 50)
           this.lstPaymentTHDDClone.push(control.value);
         this.paymentMethodTHDDId = '';
+        control.reset();
         this.isAddTHDDId = false;
       } else {
         control.control.setErrors({ exitErorr: true });
@@ -359,9 +361,13 @@ export class BusinessPaymentComponent implements OnInit {
               break;
             case 2:
               this.isSoftPos = false;
+              this.paymentMethodPodId = '';
+              this.isAddPodId = false;
               break;
             default:
               this.isPaymentTHDD = false;
+              this.paymentMethodTHDDId = '';
+              this.isAddTHDDId = false;
               break;
           }
           this.doConfirm();

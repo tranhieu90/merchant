@@ -13,7 +13,7 @@
       <p-calendar class="merchant-calendar me-2" [iconDisplay]="'input'" [showIcon]="true"
                   inputId="templatedisplay" selectionMode="range" [numberOfMonths]="2" [showTime]="true"
                   [hourFormat]="'24'" [(ngModel)]="searchCriteria.dateRange" [maxDate]="maxDate" [minDate]="minDate"
-                  (ngModelChange)="onDateRangeSelect($event)">
+                  (ngModelChange)="onDateRangeSelect($event)" [dateFormat]="'dd/mm/yy'">
         <ng-template pTemplate="inputicon">
           <i class="icon-calendar"></i>
         </ng-template>

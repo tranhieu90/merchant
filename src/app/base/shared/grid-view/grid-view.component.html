@@ -43,7 +43,7 @@
         </span>
       </td>
     </ng-container>
-    <ng-container matColumnDef="func" frozenColumns class="p-datatable-frozen-column">
+    <ng-container matColumnDef="func" frozenColumns class="p-datatable-frozen-column" stickyEnd>
       <th style="width: 10%; text-align: right" mat-header-cell *matHeaderCellDef>
         TÁC VỤ
       </th>
@@ -69,13 +69,16 @@
       </td>
     </tr>
   </table>
-  <paginator *ngIf="isShowPage" class="paginator-table" [totalItems]="total" (doChangePage)="onChangePage($event)">
-  </paginator>
+
 </div>
 <!-- <mat-paginator *ngIf="isShowPage" style="float: left;width: 100%;" [length]="total" [pageSize]="pageInfo.pageSize"
                  [pageSizeOptions]="[10, 50, 100]" [showFirstLastButtons]="true" [pageIndex]="pageInfo.page"
                  (page)="onChangePage($event)">
   </mat-paginator> -->
+<div class="mt-3">
+  <paginator *ngIf="isShowPage" class="paginator-table" [totalItems]="total" (doChangePage)="onChangePage($event)">
+  </paginator>
+</div>
 
 
 } @else {

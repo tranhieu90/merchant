@@ -13,7 +13,7 @@
       <p-calendar class="merchant-calendar me-2" [iconDisplay]="'input'" [showIcon]="true"
                   inputId="templatedisplay" selectionMode="range" [numberOfMonths]="2" [showTime]="true"
                   [hourFormat]="'24'" [(ngModel)]="searchCriteria.dateRange" [maxDate]="maxDate" [minDate]="minDate"
-                  (ngModelChange)="onDateRangeSelect($event)">
+                  (ngModelChange)="onDateRangeSelect($event)" [dateFormat]="'dd/mm/yy'">
         <ng-template pTemplate="inputicon">
           <i class="icon-calendar"></i>
         </ng-template>
@@ -73,8 +73,17 @@
       <div class="col-md-4">
         <div class="title">Trạng thái</div>
         <p-multiSelect class="merchant-multiSelect multiselect-all" [options]="statusOptions" optionValue="code"
-                       optionLabel="name" placeholder="Tất cả" [filter]="false"
-                       [(ngModel)]="filterCriteria.selectedStatuses"/>
+          optionLabel="name" placeholder="Tất cả" [filter]="false" [(ngModel)]="filterCriteria.selectedStatuses">
+          <ng-template pTemplate="selectedItems" let-selectedItems>
+              <ng-container
+                *ngIf="!selectedItems || selectedItems.length === 0 || selectedItems.length === statusOptions?.length">
+                Tất cả
+              </ng-container>
+              <ng-container *ngIf="selectedItems?.length > 0 && selectedItems.length < statusOptions.length">
+                {{ getSelectedNames(selectedItems) }}
+              </ng-container>
+            </ng-template>
+        </p-multiSelect>
       </div>
       <div class="col-md-4">
           <div class="title">Phương thức thanh toán</div>

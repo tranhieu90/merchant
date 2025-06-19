@@ -1,14 +1,14 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
   <span class="header-m-semibold">Quản lý điểm kinh doanh</span>
-  <p-button label="+ Tạo mới điểm kinh doanh" class="merchant-button ms-auto title-s-semibold" (click)="doOpenPage()" />
+  <p-button *ngIf="this.roleBusiness" label="+ Tạo mới điểm kinh doanh" class="merchant-button ms-auto title-s-semibold" (click)="checkOpenCreate()" />
 </div>
 <div class="wrapper">
   <div class="d-flex justify-content-between align-items-center">
     <span class="header-s-semibold">Danh sách điểm kinh doanh ({{this.totalItem}})</span>
     <div class="d-flex">
-      <p-button #searchBtn [matBadge]="countTotalSearch()" class="merchant-button-icon button-l button-light me-3"
+      <p-button #searchBtn [matBadge]="countTotalSearch()" [ngClass]="['merchant-button-icon button-l button-light me-3', isFilter1? 'active': '']"
         icon="icon-search" (onClick)="changeSearch(searchBtn)" />
-      <p-button #filterBtn [matBadge]="countTotalFilter()" class="merchant-button-icon button-l button-light" icon="icon-filter"
+      <p-button #filterBtn [matBadge]="countTotalFilter()" [ngClass]="['merchant-button-icon button-l button-light', isFilter? 'active': '']" icon="icon-filter"
         (onClick)="changeFilter(filterBtn)" />
     </div>
   </div>
@@ -81,13 +81,20 @@
       style="float: left;width: 100%;"></grid-view>
   </div>
 
-  @if(dataList.length == 0 && !isSearch)
+  @if(dataList.length == 0 && !isSearch && this.roleBusiness)
   {
   <div class="col-12 text-center">
     <div class="mt-4 title-l-semibold title-no-data">Doanh nghiệp chưa tồn tại điểm kinh doanh</div>
     <div class="title-s-regular summary-no-data mb-3">Tạo điểm kinh doanh giúp bạn dễ dàng theo dõi doanh số & quản
       lý hoạt động kinh doanh</div>
-    <p-button label="Tạo mới điểm kinh doanh" class="merchant-button" icon="icon-store" (click)="doOpenPage()" />
+    <p-button label="Tạo mới điểm kinh doanh" class="merchant-button" icon="icon-store" (click)="checkOpenCreate()" />
+  </div>
+  }
+  @if(!this.roleBusiness && !isSearch && dataList.length == 0)
+  {
+  <div class="col-12 text-center">
+    <div class="mt-4 title-l-semibold title-no-data">Doanh nghiệp chưa tồn tại điểm kinh doanh</div>
+    <div class="title-s-regular summary-no-data mb-3">Vui lòng thử lại sau.</div>
   </div>
   }
 </div>

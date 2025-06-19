@@ -376,7 +376,7 @@ export class DetailPaymentComponent implements OnInit {
       case '00':
         return 'THÀNH CÔNG'
       case '03':
-        return 'THÁT BẠI'
+        return 'KHÔNG THÀNH CÔNG'
       case '20':
         return 'CHỜ TRA SOÁT'
       default:

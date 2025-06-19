@@ -136,13 +136,10 @@
   font-size: 14px !important;
 }
 
-.paginator-table {
-   margin-bottom: 20px;
-    text-align: right;
-    position: absolute;
-    right: $spacing-l;
-    bottom: $spacing-l;
-    left: $spacing-l;
+.paginator-table{
+  float: left;
+  width: 100%;
+  padding-top: $spacing-l;
 }
 
 // ============================Radio=========================

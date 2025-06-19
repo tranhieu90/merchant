@@ -430,7 +430,7 @@ export class CashbackComponent implements OnInit {
 
       transactionNumber: this.searchCriteria.transactionNumber || null,
       transactionOriginNumber: this.searchCriteria.transactionOriginNumber || null,
-      orderReferenceOrigin: this.searchCriteria.orderReferenceOrigin || null,
+      originOrderRef: this.searchCriteria.orderReferenceOrigin || null,
 
       status: this.filterCriteria?.selectedStatuses || null,
       paymentMethodId: (this.filterCriteria?.selectedPaymentMethod == 'ALL' || this.filterCriteria?.selectedPaymentMethod == null) ? null : this.filterCriteria?.selectedPaymentMethod,
@@ -561,22 +561,18 @@ export class CashbackComponent implements OnInit {
       fromDate: this.searchCriteria?.dateRange[0] ? moment(this.searchCriteria?.dateRange[0]).format('DD/MM/YYYY HH:mm:ss') : null,
       toDate: this.searchCriteria?.dateRange[1] ? moment(this.searchCriteria?.dateRange[1]).format('DD/MM/YYYY HH:mm:ss') : null,
 
-      // txnReference: this.searchCriteria.txn_reference || null, // ds bo
-      // txnReferenceOrigin: this.searchCriteria.txn_reference_origin || null, //ds bo
-      // transactionNumber: this.searchCriteria.transactionNumber || null, //ds them
-      // transactionOriginNumber: this.searchCriteria.transactionOriginNumber || null, ds them
-      orderReferenceOrigin: this.searchCriteria.orderReferenceOrigin || null,
+      transactionNumber: this.searchCriteria.transactionNumber || null, 
+      transactionOriginNumber: this.searchCriteria.transactionOriginNumber || null, 
+      originOrderRef: this.searchCriteria.orderReferenceOrigin || null,
 
-      statusRefund: this.filterCriteria?.selectedStatuses ? [this.filterCriteria?.selectedStatuses] : [],
-      refundMethodID: (this.filterCriteria?.selectedPaymentMethod == 'ALL' || this.filterCriteria?.selectedPaymentMethod == null) ? null : this.filterCriteria?.selectedPaymentMethod,
+      status: this.filterCriteria?.selectedStatuses || null,
+      paymentMethodId: (this.filterCriteria?.selectedPaymentMethod == 'ALL' || this.filterCriteria?.selectedPaymentMethod == null) ? null : this.filterCriteria?.selectedPaymentMethod,
       merchantIdArray: this.filterCriteria?.selectedMerchants || [],
       issuerCode: this.filterCriteria?.selectedBanks || null,
 
-      type: 'RFN'
-
     }
 
-    this.api.post(EXCEL_ENDPOINT.EXPORT_REFUND, param).subscribe(res => {
+    this.api.post(EXCEL_ENDPOINT.EXPORT_REFUND_OLD, param).subscribe(res => {
         let dataDialog: DialogConfirmModel = new DialogConfirmModel();
         dataDialog.title = 'Xuất file excel';
         dataDialog.message = 'Yêu cầu xuất file đang được xử lý. Vui lòng truy cập Lịch sử xuất file excel để nhận kết quả.';
@@ -599,15 +595,12 @@ export class CashbackComponent implements OnInit {
   }
 
   onReset() {
-    const today = new Date();
-    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
-    const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 0);
 
     this.searchCriteria = {
+      ...this.searchCriteria,
       transactionNumber: null,
       transactionOriginNumber: null,
       orderReferenceOrigin: null,
-      dateRange: [],
     };
 
     this.filterCriteria = {
@@ -617,8 +610,6 @@ export class CashbackComponent implements OnInit {
       selectedMerchants: []
     };
 
-    this.searchCriteria.dateRange = [startDate, endDate];
-
     this.onSearch();
   }
 
@@ -626,7 +617,7 @@ export class CashbackComponent implements OnInit {
     if (range[1] == null) {
       const startDate = range[0];
       const thirtyDaysLater = new Date(startDate);
-      thirtyDaysLater.setDate(startDate.getDate() + 31);
+      thirtyDaysLater.setDate(startDate.getDate() + 30);
       this.maxDate = thirtyDaysLater;
     }
     if (range?.length === 2 && range[0] != null && range[1] != null) {

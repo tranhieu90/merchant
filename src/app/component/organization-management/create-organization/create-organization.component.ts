@@ -24,6 +24,7 @@ import { environment } from '../../../../environments/environment';
 import { InputCommon } from '../../../common/directives/input.directive';
 import { DialogCommonService } from '../../../common/service/dialog-common/dialog-common.service';
 import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
+import { fomatAddress } from '../../../common/helpers/Ultils';
 
 @Component({
   selector: 'app-create-organization',
@@ -92,8 +93,17 @@ export class CreateOrganizationComponent {
 
     this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe((res: any) => {
       if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
-        this.lstMerchantsAll = res['data']['subInfo'];
+        this.lstMerchantsAll = res['data']['subInfo'].map((item: any) => ({
+          ...item,
+          formatAddress: fomatAddress([
+            item.address,
+            item.communeName,
+            item.districtName,
+            item.provinceName,
+          ]),
+        }));
         this.lstMerchantRemain = _.cloneDeep(res['data']['subInfo']);
+        
       }
     }, (error: any) => {
       this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.')

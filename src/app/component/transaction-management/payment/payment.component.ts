@@ -749,7 +749,7 @@ export class PaymentComponent implements OnInit {
     if (range[1] == null) {
       const startDate = range[0];
       const thirtyDaysLater = new Date(startDate);
-      thirtyDaysLater.setDate(startDate.getDate() + 31);
+      thirtyDaysLater.setDate(startDate.getDate() + 30);
       this.maxDate = thirtyDaysLater;
     }
     if (range?.length === 2 && range[0] != null && range[1] != null) {
@@ -859,11 +859,9 @@ export class PaymentComponent implements OnInit {
   }
 
   onReset() {
-    const today = new Date();
-    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
-    const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 0);
 
     this.searchCriteria = {
+      ...this.searchCriteria,
       transactionCode: null,
       ftCode: null,
       orderCode: null,
@@ -871,7 +869,6 @@ export class PaymentComponent implements OnInit {
       paymentAccountName: null,
       accountNumber: null,
       paymentAmount: null,
-      dateRange: [],
     };
 
     this.filterCriteria = {
@@ -881,8 +878,6 @@ export class PaymentComponent implements OnInit {
       selectedGroups: [],
       selectedMerchants: []
     };
-
-    this.searchCriteria.dateRange = [startDate, endDate];
 
     this.onSearch();
   }
@@ -995,6 +990,11 @@ export class PaymentComponent implements OnInit {
     const masked = 'x'.repeat(value.length - 10);
 
     return `${start}${masked}${end}`;
+  }
+
+  getSelectedNames(selectedItems: any[]): string {
+    if (!selectedItems || selectedItems.length === 0) return '';
+    return selectedItems.map(item => item.name).join(', ');
   }
 
 }

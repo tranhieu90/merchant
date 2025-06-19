@@ -8,4 +8,5 @@ export class DialogConfirmModel {
   viewCancel?: boolean = true;
   cancelTitle?: string;
   width?: string;
+  iconClosePopup?: boolean = true;
 }

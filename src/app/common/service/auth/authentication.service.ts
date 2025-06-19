@@ -4,13 +4,17 @@ import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../../../environments/environment';
 import { UserVerifyStatus } from '../../constants/CUser';
 import { BehaviorSubject } from 'rxjs';
+import { ToastService } from '../toast/toast.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationService {
   isFlag: boolean = false;
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private toast: ToastService
+  ) { }
 
   private userInfoSubject = new BehaviorSubject<any>(this.getUserInfo());
   userInfo$ = this.userInfoSubject.asObservable();
@@ -79,6 +83,11 @@ export class AuthenticationService {
   }
 
   checkVerifyUserInfo() {
+    if (!this.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      this.toast.showWarn('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+      return;
+    }
     const userInfo = this.getUserInfo();
     if (userInfo?.isVerify == 1) {
       return UserVerifyStatus.VERIFIED;

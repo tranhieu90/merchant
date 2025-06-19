@@ -360,3 +360,8 @@
 .sub-title{
   margin-top: unset !important;
 }
+
+.icon-check_circle_solid {
+  @include base-icon;
+  color: $color-icon-semantic-success;
+}

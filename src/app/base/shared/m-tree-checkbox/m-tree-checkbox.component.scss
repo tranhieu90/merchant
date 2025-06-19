@@ -64,3 +64,12 @@
   border-radius: 4px;
   background-color: $color-surface-neutral-sub-2;
 }
+
+.truncate-text {
+  display: inline-block;
+  max-width: 100%; /* hoặc 100% nếu muốn giới hạn theo cha */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+}

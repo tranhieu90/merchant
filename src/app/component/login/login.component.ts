@@ -99,13 +99,16 @@ export class LoginComponent implements OnInit {
 
   buildForm() {
     this.loginForm = this.fb.group({
-      username: ['', Validators.required],
+      username: ['', [
+        Validators.required,
+        Validators.pattern(REGEX_PATTERN.USER_NAME),
+      ]],
       password: ['', Validators.required],
       remember: [false]
     });
 
     this.forgotPasswordForm = this.fb.group({
-      username: ['', Validators.required],
+      username: ['', [Validators.required,Validators.pattern(REGEX_PATTERN.USER_NAME)]],
       email: ['', [Validators.required, Validators.pattern(REGEX_PATTERN.EMAIL)]],
     });
 

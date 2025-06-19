@@ -211,11 +211,11 @@
 
     <div class="payment-form mb-spacing-l" *ngIf="doCheckPayment(333)">
         <div class="title d-flex justify-content-between align-items-center">
-            <span class="paragraph-m-semibold">Soft POD</span>
+            <span class="paragraph-m-semibold">Soft POS</span>
             <p-inputSwitch [(ngModel)]="isSoftPos" (onChange)="doCancelPayment($event.checked,2)" />
         </div>
         <div class="payment-info">
-            <label class="paragraph-m-semibold mb-spacing-xs">Mã TID POD</label>
+            <label class="paragraph-m-semibold mb-spacing-xs">Mã TID POS</label>
             <div class="row">
                 <div class="col-3 mb-spacing-l" *ngFor="let item of lstPaymentPodClone;index as i">
                     <div class="p-inputgroup show-icon-right" [ngClass]="{'disabled': !isSoftPos}">

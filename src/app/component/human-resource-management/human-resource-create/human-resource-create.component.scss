@@ -318,3 +318,35 @@
 .ellipsis-mw-250{
   max-width: 250px; 
 }
+
+.stepper-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%; // hoặc 100vh nếu full màn hình
+
+  .step-role {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .mat-horizontal-stepper-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: auto;
+    }
+
+    .step-content {
+      flex: 1;
+      overflow: auto;
+    }
+  }
+
+  .stepper-footer {
+    padding: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    background-color: white;
+  }
+}
