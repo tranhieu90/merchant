@@ -298,7 +298,7 @@ export class PaymentComponent implements OnInit {
           customBodyRender: (obj: any, params: any) => {
 
             const bankName = params.issuerName || '';
-            const accountNumber = this.transform(params.debitAccount || '');
+            const accountNumber = params.debitAccount || '';
             const accountHolder = params.debitName || '';
 
             return `

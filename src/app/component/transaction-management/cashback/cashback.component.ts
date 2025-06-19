@@ -323,7 +323,7 @@ export class CashbackComponent implements OnInit {
           customBodyRender: (obj: any, params: any) => {
 
             const bankName = params.issuerName || '';
-            const accountNumber = this.transform(params.creditAccount || '');
+            const accountNumber = params.creditAccount || '';
             const accountHolder = params.creditName || '';
 
             return `
