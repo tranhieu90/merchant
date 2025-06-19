@@ -19,9 +19,9 @@
         </ng-template>
       </p-calendar>
       <p-button [matBadge]="checkSearchNumber()" [ngClass]="['merchant-button-icon button-l button-light me-2', isSearch? 'active': '']"
-                icon="icon-search" (click)="isSearch=true"/>
-      <p-button [matBadge]="checkFilterNumber()" [ngClass]="['merchant-button-icon button-l button-light me-2', !isSearch? 'active': '']"
-                icon="icon-filter" (click)="isSearch=false"/>
+                icon="icon-search" (click)="onToggleSearch()"/>
+      <p-button [matBadge]="checkFilterNumber()" [ngClass]="['merchant-button-icon button-l button-light me-2', isFilter? 'active': '']"
+                icon="icon-filter" (click)="onToggleFilter()"/>
       <p-button class="merchant-button-icon button-l button-light" icon="icon-setting" (click)="onSetting()"/>
     </div>
   </div>
@@ -31,21 +31,21 @@
       <div class="col-md-3">
         <div class="title">Mã giao dịch gốc</div>
         <input class="merchant-input" pInputText placeholder="Nhập mã giao dịch gốc"
-               [(ngModel)]="searchCriteria.transactionOriginNumber"/>
+               [(ngModel)]="searchCriteria.transactionOriginNumber" (keydown.enter)="onSearch()"/>
       </div>
       <div class="col-md-3">
         <div class="title">Mã giao dịch hoàn trả</div>
         <input class="merchant-input" pInputText placeholder="Nhập mã giao dịch hoàn trả"
-               [(ngModel)]="searchCriteria.transactionNumber"/>
+               [(ngModel)]="searchCriteria.transactionNumber" (keydown.enter)="onSearch()"/>
       </div>
       <div class="col-md-3">
         <div class="title">Mã định danh</div>
         <input class="merchant-input" pInputText placeholder="Nhập mã định danh"
-               [(ngModel)]="searchCriteria.orderReferenceOrigin"/>
+               [(ngModel)]="searchCriteria.orderReferenceOrigin" (keydown.enter)="onSearch()"/>
       </div>
     </div>
   </div>
-  <div *ngIf="!isSearch" class="box-filter mt-4">
+  <div *ngIf="isFilter" class="box-filter mt-4">
     <div class="row mb-4">
       <div class="col-md-4">
         <div class="title">Trạng thái</div>
@@ -113,7 +113,7 @@
       </div>
     </div>
   </div>
-  <div class="d-flex justify-content-end mt-3">
+  <div *ngIf="isSearch || isFilter" class="d-flex justify-content-end mt-3">
     <p-button label="Xóa bộ lọc" class="merchant-button-tertiary me-2" (click)="onReset()" [disabled]="!checkHasSearchOrFilterData()"/>
     <p-button label="Áp dụng" class="merchant-button" (click)="onSearch()"/>
   </div>
@@ -121,7 +121,7 @@
     @if (dataTable.length > 0) {
       <grid-view class="table-transaction" [isOrder]="true" [total]="totalItem" [columns]="columns"
                  [dataSource]="dataTable"
-                 [action]="action" (doChangePage)="onSearch($event)"></grid-view>
+                 [action]="action" (doChangePage)="onSearch($event)" [pageInfo]="{pageSize: this.pageSize, page: this.pageIndex,}"></grid-view>
     } @else {
       <div class="col-12 text-center mt-5 p-5">
         <img [src]="assetPath + '/assets/images/grid-search-empty.png'">

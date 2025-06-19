@@ -56,6 +56,11 @@
 
 
 .table-transaction ::ng-deep.mat-mdc-table {
+  .custom-view {
+    .tooltip-anchor {
+      white-space: normal !important;
+    }
+  }
   .status {
     &.success {
       color: $color-text-semantic-success;

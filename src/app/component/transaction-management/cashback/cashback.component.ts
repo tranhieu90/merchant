@@ -85,6 +85,7 @@ export class CashbackComponent implements OnInit {
   merchantOptions: any = [];
   bankOptions: any = [];
   isSearch: boolean = true;
+  isFilter: boolean = false;
   dataTable: any = [];
   lstColumnShow: string[] = [
     'refundTransactionCode',
@@ -141,7 +142,7 @@ export class CashbackComponent implements OnInit {
         label: 'Ngày giao dịch',
         options: {
           customCss: (obj: any) => {
-            return ['text-left'];
+            return ['text-left', 'custom-view'];
           },
           customCssHeader: () => {
             return ['text-left'];
@@ -149,8 +150,8 @@ export class CashbackComponent implements OnInit {
           customBodyRender: (value: any) => {
             return value ? moment(value).format('DD/MM/YYYY HH:mm') : '';
           },
-          width: "131px",
-          minWidth: "131px"
+          width: "132px",
+          minWidth: "132px"
         }
       },
       ...(this.lstColumnShow.includes("refundTransactionCode")
@@ -418,10 +419,10 @@ export class CashbackComponent implements OnInit {
 
   onSearch(pageInfo?: any) {
     if (pageInfo) {
-      this.pageIndex = pageInfo["page"] ? (pageInfo["page"] + 1) : 1;
+      this.pageIndex = pageInfo["page"] ? pageInfo["page"]  : 0;
       this.pageSize = pageInfo["pageSize"]
     } else {
-      this.pageIndex = 1;
+      this.pageIndex = 0;
     }
 
     let param = {
@@ -438,7 +439,7 @@ export class CashbackComponent implements OnInit {
       // merchantIdArray: ['202852'],
       issuerCode: this.filterCriteria?.selectedBanks || null,
 
-      page: this.pageIndex,
+      page: this.pageIndex + 1,
       size: this.pageSize,
 
     }
@@ -529,12 +530,14 @@ export class CashbackComponent implements OnInit {
 
   formatMoney(value: any): string {
     if (value == null) return '0 đ';
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + 'đ';
+    const intPart = value.toString().split('.')[0];
+    return intPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + 'đ';
   }
 
   formatMoney2(value: any): string {
     if (value == null) return '0';
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const intPart = value.toString().split('.')[0];
+    return intPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
   onExport() {
@@ -561,8 +564,8 @@ export class CashbackComponent implements OnInit {
       fromDate: this.searchCriteria?.dateRange[0] ? moment(this.searchCriteria?.dateRange[0]).format('DD/MM/YYYY HH:mm:ss') : null,
       toDate: this.searchCriteria?.dateRange[1] ? moment(this.searchCriteria?.dateRange[1]).format('DD/MM/YYYY HH:mm:ss') : null,
 
-      transactionNumber: this.searchCriteria.transactionNumber || null, 
-      transactionOriginNumber: this.searchCriteria.transactionOriginNumber || null, 
+      transactionNumber: this.searchCriteria.transactionNumber || null,
+      transactionOriginNumber: this.searchCriteria.transactionOriginNumber || null,
       originOrderRef: this.searchCriteria.orderReferenceOrigin || null,
 
       status: this.filterCriteria?.selectedStatuses || null,
@@ -779,6 +782,16 @@ export class CashbackComponent implements OnInit {
     const masked = 'x'.repeat(value.length - 10);
 
     return `${start}${masked}${end}`;
+  }
+
+  onToggleSearch() {
+    this.isSearch = !this.isSearch;
+    this.isFilter = false;
+  }
+
+  onToggleFilter() {
+    this.isFilter = !this.isFilter;
+    this.isSearch = false;
   }
 
 }

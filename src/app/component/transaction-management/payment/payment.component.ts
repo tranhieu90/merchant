@@ -57,7 +57,7 @@ export class PaymentComponent implements OnInit {
     'ftCode',
     'transactionCode'
   ];
-  pageIndex = 1;
+  pageIndex = 0;
   pageSize = 10;
   totalItem: number = 0;
   totalTrans: number = 0;
@@ -119,13 +119,16 @@ export class PaymentComponent implements OnInit {
         label: 'Ngày giao dịch',
         options: {
           customCss: (obj: any) => {
-            return ['text-left'];
+            return ['text-left', 'custom-view'];
           },
           customCssHeader: () => {
             return ['text-left'];
           },
-          width: "131px",
-          minWidth: "131px"
+          customBodyRender: (value: any) => {
+            return this.formatDateTime(value);
+          },
+          width: "132px",
+          minWidth: "132px"
         }
       },
       ...(this.lstColumnShow.includes("transactionCode")
@@ -322,9 +325,6 @@ export class PaymentComponent implements OnInit {
                 },
                 width: "191px",
                 minWidth: "191px",
-                customBodyRender: (value: any) => {
-                  return this.transform(value || '');
-                },
               }
             }
           ] : []
@@ -487,10 +487,10 @@ export class PaymentComponent implements OnInit {
 
   onSearch(pageInfo?: any) {
     if (pageInfo) {
-      this.pageIndex = pageInfo["page"] ? (pageInfo["page"] + 1) : 1;
+      this.pageIndex = pageInfo["page"] ? pageInfo["page"] : 0;
       this.pageSize = pageInfo["pageSize"]
     } else {
-      this.pageIndex = 1;
+      this.pageIndex = 0;
     }
 
     let groupIdArray = this.getTopLevelGroupIds(this.filterCriteria?.selectedGroups || []);
@@ -520,7 +520,7 @@ export class PaymentComponent implements OnInit {
 
       transactionChannel: null,
 
-      page: this.pageIndex,
+      page: this.pageIndex + 1,
       size: this.pageSize,
 
       masterId: this.merchantId,
@@ -566,12 +566,14 @@ export class PaymentComponent implements OnInit {
 
   formatMoney(value: any): string {
     if (value == null) return '0 đ';
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ';
+    const intPart = value.toString().split('.')[0];
+    return intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ';
   }
 
   formatMoney2(value: any): string {
     if (value == null) return '0';
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const intPart = value.toString().split('.')[0];
+    return intPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
   onExport() {
@@ -995,6 +997,21 @@ export class PaymentComponent implements OnInit {
   getSelectedNames(selectedItems: any[]): string {
     if (!selectedItems || selectedItems.length === 0) return '';
     return selectedItems.map(item => item.name).join(', ');
+  }
+
+  formatDateTime(dateStr: string) {
+    const targetMoment = moment(dateStr, 'DD/MM/YYYY HH:mm:ss');
+    return targetMoment.format('DD/MM/YYYY HH:mm')
+  }
+
+  onToggleSearch() {
+    this.isSearch = !this.isSearch;
+    this.isFilter = false;
+  }
+
+  onToggleFilter() {
+    this.isFilter = !this.isFilter;
+    this.isSearch = false;
   }
 
 }
