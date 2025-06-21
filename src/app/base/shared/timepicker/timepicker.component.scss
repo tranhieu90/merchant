@@ -1,0 +1,62 @@
+@import "../../../../scss/mixins";
+@import "../../../../scss/variables";
+.merchant-calendar {
+  width: 100%;
+  .icon-calendar {
+    font-size: 20px;
+  }
+}
+.secondselect {
+  display:none;
+}
+::ng-deep.secondselect{
+  display: none!important;
+}
+.p-inputtext, .p-calendar, .ngx-daterangepicker-input {
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  color: #495057;
+  background: #fff;
+  transition: border-color 0.2s;
+  height: 38px;
+}
+
+.p-inputtext:focus, .p-calendar:focus, .ngx-daterangepicker-input:focus {
+  border-color: #2196f3;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(33,150,243,.25);
+}
+
+.p-inputgroup {
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #ced4da;
+  background: #fff;
+}
+
+.p-inputgroup-addon {
+  background: #f4f4f4;
+  border-left: 1px solid #ced4da;
+  padding: 0 0.75rem;
+  display: flex;
+  align-items: center;
+  color: #495057;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+.pi-calendar {
+  font-size: 1.2rem;
+  color: #2196f3; // hoặc màu bạn muốn
+  vertical-align: middle;
+}
+
+// Style khi disabled
+.p-inputtext:disabled, .ngx-daterangepicker-input:disabled {
+  background: #e9ecef;
+  color: #bdbdbd;
+  cursor: not-allowed;
+}

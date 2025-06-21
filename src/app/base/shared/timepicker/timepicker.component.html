@@ -1,0 +1,45 @@
+<div class="p-inputgroup">
+  <input
+    class="p-inputtext p-calendar ngx-daterangepicker-input"
+    type="text"
+    matInput
+    ngxDaterangepickerMd
+    [autoApply]="options.autoApply"
+    [linkedCalendars]="options.linkedCalendars"
+    [singleDatePicker]="options.singleDatePicker"
+    [locale]="locale"
+    [showDropdowns]="true"
+    startKey="start"
+    endKey="end"
+    [(ngModel)]="selected"
+    (click)="click()"
+    [minDate]="minDateDayjs"
+    [maxDate]="maxDateDayjs"
+    [showWeekNumbers]="options.showWeekNumbers"
+    [showCancel]="options.showCancel"
+    [showClearButton]="options.showClearButton"
+    [showISOWeekNumbers]="options.showISOWeekNumbers"
+    [customRangeDirection]="options.customRangeDirection"
+    [lockStartDate]="options.lockStartDate"
+    [closeOnAutoApply]="options.closeOnAutoApply"
+    firstMonthDayClass="first-day"
+    lastMonthDayClass="last-day"
+    emptyWeekRowClass="empty-week-row"
+    emptyWeekColumnClass="empty-week-column"
+    lastDayOfPreviousMonthClass="last-previous-day"
+    firstDayOfNextMonthClass="first-next-day"
+    [opens]="opens"
+    [drops]="drops"
+    [timePicker]="timePicker"
+    [dateLimit]="dateLimit"
+    name="daterange"
+    (startDateChanged)="eventClicked($event)"
+    (endDateChanged)="eventClicked($event)"
+    (clearClicked)="eventCleared()"
+    [autoApply]="true"
+    [showCancel]="false"
+  />
+   <span class="p-inputgroup-addon">
+    <i class="pi pi-calendar"></i>
+  </span>
+</div>
