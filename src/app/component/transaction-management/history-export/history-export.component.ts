@@ -206,7 +206,7 @@ export class HistoryExportComponent implements OnInit {
       const a = document.createElement('a');
       a.href = url;
       let fileName = `Giao dich - ${moment(new Date()).format('DDMMYYYYHHmm')}.xlsx`;
-      if (item?.acactionName == 'TXN') {
+      if (item?.actionName == 'TXN') {
         fileName = `Giao dich thanh toan - ${moment(new Date()).format('DDMMYYYYHHmm')}.xlsx`;
       } else if (item?.actionName == 'RFN') {
         fileName = `Giao dich hoan tra - ${moment(new Date()).format('DDMMYYYYHHmm')}.xlsx`;

@@ -26,7 +26,7 @@
                       doanh nghiệp, nhân sự sẽ được phụ trách tất cả điểm kinh doanh.
                     </div>
 
-                    <div class="paragraph-m-regular mb-spacing-l mt-2 text title-s-regular">Nếu bạn muốn gán nhân sự
+                    <div *hasRoles="[MERCHANT_RULES.ORGANIZATION_CREATE]" class="paragraph-m-regular mb-spacing-l mt-2 text title-s-regular">Nếu bạn muốn gán nhân sự
                       vào 2
                       điểm kinh doanh trở lên,
                       vui
@@ -51,7 +51,7 @@
                       <p-radioButton class="m-radio m-radio-check" [value]="'2'" name="radioOrganization"
                         [(ngModel)]="selectedValue" (ngModelChange)="onRadioChange($event)"
                         (click)="$event.stopPropagation()" />
-                      <span class="title-s-semibold"><b>Gán vào điểm kinh doanh</b></span>
+                      <span class="title-s-semibold"><b>Gán vào 1 điểm kinh doanh</b></span>
                     </div>
                   </div>
                 </ng-container>

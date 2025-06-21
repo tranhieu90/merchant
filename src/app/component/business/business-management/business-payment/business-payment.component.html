@@ -12,8 +12,6 @@
             <form [formGroup]="paymentQRFormUpdate">
                 <div class="row">
                     <div class="d-flex gap-2 mb-spacing-l">
-                        <!-- <p-radioButton class="align-self-start mt-1" [ngModel]="ischeck" [value]="1" name="checkOption"
-                            (ngModelChange)="ischeck = $event" /> -->
                         <div class="w-100">
                             <label class="paragraph-m-semibold mb-spacing-xs">Terminal ID</label>
                             <input class="merchant-input" appInputSanitize pInputText formControlName="terminalId"
@@ -32,8 +30,8 @@
                                 <span class="text-caption paragraph-m-regular">Terminal ID không hợp lệ</span>
                                 }
                                 @if (paymentQRFormUpdate.controls['terminalId'].hasError('ExitErorr')) {
-                                <span class="text-caption paragraph-m-regular">Lấy thông tin termianl thất bại hoặc
-                                    termianlId không tồn tại</span>
+                                <span class="text-caption paragraph-m-regular">Lấy thông tin terminal thất bại hoặc
+                                    terminalId không tồn tại</span>
                                 }
                                 @if (paymentQRFormUpdate.controls['terminalId'].hasError('Invalid')) {
                                 <span class="text-caption paragraph-m-regular">Terminal ID không hợp lệ</span>
@@ -50,8 +48,6 @@
                     </div>
 
                     <div class="d-flex gap-2 mb-spacing-l" *ngIf="paymentQR.paymentType==0  && !changedTerminalId">
-                        <!-- <p-radioButton class="align-self-start mt-1" [ngModel]="ischeck" [value]="2" name="checkOption"
-                            (ngModelChange)="ischeck = $event" /> -->
                         <div class="w-100">
                             <div class="col-12 mb-spacing-l">
                                 <label class="paragraph-m-semibold mb-spacing-xs">Số tài khoản MB</label>
@@ -140,7 +136,7 @@
                         <span class="text-caption paragraph-m-regular">Chưa nhập Terminal ID</span>
                         }
                         @if (paymentQRFormInsert.controls['terminalId'].hasError('ExitErorr')) {
-                        <span class="text-caption paragraph-m-regular">Lấy thông tin termianl thất bại hoặc termianlId
+                        <span class="text-caption paragraph-m-regular">Lấy thông tin terminal thất bại hoặc terminalId
                             không tồn tại</span>
                         }
                         @if (paymentQRFormInsert.controls['terminalId'].hasError('Invalid')) {

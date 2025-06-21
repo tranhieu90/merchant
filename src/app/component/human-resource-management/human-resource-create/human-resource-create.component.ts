@@ -54,6 +54,8 @@ import {
   DialogRoleModel,
 } from '../../role-management/dialog-role/dialog-role.component';
 import { Subscription } from 'rxjs';
+import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
+import { DirectiveModule } from '../../../base/module/directive.module';
 
 @Component({
   selector: 'app-human-resource-create',
@@ -73,6 +75,7 @@ import { Subscription } from 'rxjs';
     CommonModule,
     ShowClearOnFocusDirective,
     MTreeComponent,
+    DirectiveModule,
     TreeViewComponent,
     MatCheckboxModule,
     RadioButtonModule,
@@ -84,6 +87,7 @@ import { Subscription } from 'rxjs';
   styleUrl: './human-resource-create.component.scss',
 })
 export class HumanResourceCreateComponent implements OnInit {
+  readonly MERCHANT_RULES = MERCHANT_RULES;
   assetPath = environment.assetPath;
   @ViewChild('gridViewRef') gridViewComponent!: GridViewComponent;
   @ViewChild('mTreeComponent') mTreeComponent!: MTreeComponent;
@@ -119,7 +123,7 @@ export class HumanResourceCreateComponent implements OnInit {
   isShowSearchPointSales: boolean = false;
   checkGroupHasPoinSales: boolean = false;
   orgTypeInput?: number;
-  _isNavigating: boolean = true;
+  _isNavigating: boolean = false;
 
   // lstGroupIdMerchant: any[] = [];
   selectedValue?: number = 0;
@@ -491,10 +495,14 @@ export class HumanResourceCreateComponent implements OnInit {
       this.organization[0].parentId
     );
   }
-  doCheckUnDisableAnotherlevel(level: number) {
+  doCheckUnDisableAnotherlevel(level: number, parentId?: any) {
     if (this.organizationSelected.length == 0) {
       this.organization.forEach((item: any) => {
         if (item.level != level) {
+          item.disabled = false;
+        }
+
+        if (item.level == level && item?.parentId != parentId) {
           item.disabled = false;
         }
       });
@@ -542,7 +550,7 @@ export class HumanResourceCreateComponent implements OnInit {
         this.countSelectedPoint = 0;
         this.pointSales = [];
       }
-      this.doCheckUnDisableAnotherlevel(event.level);
+      this.doCheckUnDisableAnotherlevel(event.level, event.parentId);
     }
   }
   setUpMerchantIds(event: any) {
@@ -905,7 +913,7 @@ export class HumanResourceCreateComponent implements OnInit {
       return true;
     }
 
-    if (this.orgTypeInput == 2 && this.totalPointSalesSelected == 0 && this.pointSalesSelected.size === 0) {
+    if (!this.masterIdSelected && this.orgTypeInput == 2 && this.totalPointSalesSelected == 0 && this.pointSalesSelected.size === 0) {
       return true;
     }
     return false;

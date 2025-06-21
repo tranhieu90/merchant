@@ -12,6 +12,7 @@ export class DialogRoleModel {
   buttonRightColor!: string;
   hiddenButtonLeft!: boolean;
   hiddenButtonRight!: boolean;
+  showClose?: boolean = false;
 }
 
 @Component({

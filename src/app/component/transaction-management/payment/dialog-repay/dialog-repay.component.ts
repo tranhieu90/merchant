@@ -60,7 +60,7 @@ export class DialogRepayComponent {
 
     this.api.post(REFUND_ENDPOINT.GET_INFO_REFUND, param).subscribe(res => {
         this.totalNumberCanRefund = res['data']['totalNumberCanRefund'];
-        const amountRefund = res['data']['amount'] || 0;
+        const amountRefund = res['data']['totalAmountRefund'] || 0;
         this.traceTransfer = res['data']['traceTransfer'];
         this.maxMoney = this.dataDialog.amount - Number(amountRefund);
         this.formRepay.controls['money'].setValue(this.maxMoney);

@@ -13,7 +13,7 @@ import { clone } from 'lodash';
 import { isEqual } from 'lodash';
 import { FetchApiService } from '../../../../common/service/api/fetch-api.service';
 import { ToastService } from '../../../../common/service/toast/toast.service';
-import { BUSINESS_ENDPOINT } from '../../../../common/enum/EApiUrl';
+import { BUSINESS_ENDPOINT, USER_ENDPOINT } from '../../../../common/enum/EApiUrl';
 import { CommonUtils } from '../../../../base/utils/CommonUtils';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { distinctUntilChanged } from 'rxjs';
@@ -22,6 +22,10 @@ import { ShowClearOnFocusDirective } from '../../../../common/directives/showCle
 import { REGEX_PATTERN } from '../../../../common/enum/RegexPattern';
 import { InputCommon } from '../../../../common/directives/input.directive';
 import { InputSanitizeDirective } from '../../../../common/directives/inputSanitize.directive';
+import { DialogRoleComponent, DialogRoleModel } from '../../../role-management/dialog-role/dialog-role.component';
+import { AuthenticationService } from '../../../../common/service/auth/authentication.service';
+import { MatDialog } from '@angular/material/dialog';
+import { UpdateUserComponent } from '../../../user-profile/update-user/update-user.component';
 
 @Component({
   selector: 'app-business-payment',
@@ -83,6 +87,8 @@ export class BusinessPaymentComponent implements OnInit {
     private router: Router,
     private api: FetchApiService,
     private toast: ToastService,
+    private auth: AuthenticationService,
+    private dialog: MatDialog,
   ) {
     const state = this.router.getCurrentNavigation()?.extras.state;
     const merchantData = state?.['dataInput'];
@@ -444,6 +450,9 @@ export class BusinessPaymentComponent implements OnInit {
         case '203':
           this.toast.showError(errorData.soaErrorDesc);
           break;
+        case '5010':
+          this.openDialogUnverifiedAccountAndEmail();
+          break;
         default:
           this.toast.showError('Đã xảy ra lỗi, vui lòng thử lại');
           break;
@@ -619,5 +628,64 @@ export class BusinessPaymentComponent implements OnInit {
       this.router.navigate(['/business/business-detail'], { queryParams: { merchantId: merchantId } });
     else
       this.router.navigate(['/business/business-detail']);
+  }
+
+  openDialogUnverifiedAccountAndEmail() {
+    let dataDialog: DialogRoleModel = new DialogRoleModel();
+    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
+    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>.`;
+    dataDialog.icon = 'icon-warning';
+    dataDialog.iconColor = 'warning';
+    dataDialog.buttonLeftLabel = 'Thay đổi email';
+    dataDialog.buttonRightLabel = 'Xác thực email';
+
+    const dialogRef = this.dialog.open(DialogRoleComponent, {
+      width: '500px',
+      data: dataDialog,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.verifyEmail();
+      } else {
+        this.updateEmail();
+      }
+    });
+  }
+
+  updateEmail() {
+    const dialogRef = this.dialog.open(UpdateUserComponent, {
+      width: '600px',
+      data: {
+        title: 'Cập nhật email',
+        type: 'email',
+        isEmailInfo: true,
+      },
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.router.navigate(['/profile']);
+      }
+    })
+  }
+
+  verifyEmail() {
+    this.api.post(USER_ENDPOINT.SEND_VERIFY_MAIL).subscribe(res => {
+      let content = `Chúng tôi vừa gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>, vui lòng kiểm tra email và làm theo hướng dẫn để hoàn tất xác thực tài khoản.`
+      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+      dataDialog.title = 'Hệ thống đã gửi liên kết xác thực';
+      dataDialog.message = content;
+      dataDialog.buttonLabel = 'Tôi đã hiểu';
+      dataDialog.icon = 'icon-mail';
+      dataDialog.iconColor = 'icon info';
+      dataDialog.viewCancel = false;
+      const dialogRef = this.dialogCommon.openDialogInfo(dataDialog);
+      dialogRef.subscribe(res => {
+        this.router.navigate(['/profile']);
+      })
+    })
   }
 }

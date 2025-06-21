@@ -490,7 +490,7 @@ export class BusinessCreateComponent implements OnInit {
 
   doCheckQuantity() {
     this.quantity = this.dataGroup.find((item: any) => item.id == this.areaIdMove)
-    if (this.quantity['pointSaleCount'] > 1000) {
+    if (this.quantity['pointSaleCount'] == 1000) {
       let dataDialog: DialogConfirmModel = new DialogConfirmModel();
       dataDialog.title = 'Số lượng điểm kinh doanh thuộc nhóm vượt quá số lượng quy định';
       dataDialog.message = 'Vui lòng chọn nhóm khác.';

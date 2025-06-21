@@ -80,8 +80,12 @@ export class AppHttpInterceptor implements HttpInterceptor {
             return EMPTY;
           } else {
             // call api refresh
-            return this.handle401Error(httpRequest, next);
-            return EMPTY;
+            return this.handle401Error(httpRequest, next).pipe(
+              catchError(() => {
+                // Nếu refresh fail → cũng không propagate lỗi
+                return EMPTY;
+              })
+            );
           }
         }
 
@@ -202,7 +206,9 @@ export class AppHttpInterceptor implements HttpInterceptor {
           this.refreshTokenSubject.next(newToken);
           return next.handle(this.addAuthToken(request)).pipe(
             catchError(err => {
-              return throwError(() => err);
+              // Ngăn propagate lỗi sau khi retry token
+              this.handleSessionLogout(true);
+              return EMPTY;
             })
           );
         }),
@@ -224,6 +230,8 @@ export class AppHttpInterceptor implements HttpInterceptor {
     localStorage.removeItem(environment.accessToken);
     localStorage.removeItem(environment.refeshToken);
     localStorage.removeItem(environment.userInfo);
+    localStorage.removeItem(environment.settingPayment);
+    localStorage.removeItem(environment.settingCashback);
     this.router.navigate(['/login']);
     if (isToast) {
       this.toast.showWarn('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');

@@ -177,7 +177,7 @@ export class CreateRoleComponent implements OnInit {
   doUpdate() {
     let lstAddFunctionIds = this.listFunctionIdsSelected.filter((item: any) => !this.listFunctionIdsSelectedOld.includes(item));
     let lstDeleteFunctionIds = this.listFunctionIdsSelectedOld.filter((item: any) => !this.listFunctionIdsSelected.includes(item));
-    if(lstAddFunctionIds.length == 0 && lstDeleteFunctionIds.length == 0) {
+    if (lstAddFunctionIds.length == 0 && lstDeleteFunctionIds.length == 0) {
       this.isSuccess = 2;
       this.doNextStep();
       return
@@ -388,6 +388,7 @@ export class CreateRoleComponent implements OnInit {
     dataConfirm.icon = 'icon-error';
     dataConfirm.iconColor = 'error';
     dataConfirm.buttonRightColor = 'error';
+    dataConfirm.showClose = true;
 
     const dialogRef = this.dialog.open(DialogRoleComponent, {
       width: '500px',
@@ -411,7 +412,7 @@ export class CreateRoleComponent implements OnInit {
     dataConfirm.iconColor = 'warning';
     dataConfirm.hiddenButtonLeft = true;
     dataConfirm.buttonRightLabel = 'Tôi đã hiểu';
-
+    dataConfirm.showClose = true;
     const dialogRef = this.dialog.open(DialogRoleComponent, {
       width: '600px',
       data: dataConfirm,

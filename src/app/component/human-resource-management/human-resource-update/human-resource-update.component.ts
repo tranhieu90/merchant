@@ -148,9 +148,9 @@ export class HumanResourceUpdateComponent implements OnInit {
       this.masterId = personData.masterId;
       const groupList = personData?.groupList;
       if (this.orgTypeUser == 1 && groupList) {
-        // const maxLevel = Math.min(...groupList.map((x: any) => x.level));
+        const maxLevel = Math.min(...groupList.map((x: any) => x.level));
         this.selectedGroupDefault = [...groupList];
-        this.newOrganization = this.selectedGroupDefault.map(
+        this.newOrganization = this.selectedGroupDefault.filter((it: any) => it.level == maxLevel).map(
           (group: any) => Number(group.id)
         );
       }
@@ -438,13 +438,18 @@ export class HumanResourceUpdateComponent implements OnInit {
       }
 
       if (this.orgTypeUser == 1) {
-        const selectedGroupIds = this.selectedGroupDefault.map((g: any) => Number(g.id));
+        const maxLevel = Math.min(...this.selectedGroupDefault.map((x: any) => x.level));
+        const selectedGroupIds = this.selectedGroupDefault.filter((it: any) => it.level == maxLevel).map(
+          (group: any) => Number(group.id)
+        );
+        console.log(selectedGroupIds)
         if (this.personDataDetail.orgType == 1) {
           const groupIdsInsert = selectedGroupIds.filter(
-            (id: any) => !this.newOrganization.includes(id)
+            (id: any) => !this.newOrganization.includes(Number(id))
           );
+          console.log(groupIdsInsert)
           const groupIdsDelete = this.newOrganization.filter(
-            (id: any) => !selectedGroupIds.includes(id)
+            (id: any) => !selectedGroupIds.includes(Number(id))
           );
           if (groupIdsInsert.length > 0) {
             param.oraganizationInfo = {
@@ -575,11 +580,11 @@ export class HumanResourceUpdateComponent implements OnInit {
     );
   }
   doGroup(group: any) {
+
     if (group.checked) {
-      if (this.selectedGroupDefault.length == 0) {
-        setDisableOrNotForItemsNotAtLevel(this.lstAreas, group.level, true);
-      }
-      this.selectedGroupDefault.push(group);
+        this.selectedGroupDefault.push(group);
+        setDisableOrNotForItemsNotAtLevel(this.lstAreas, group.level, true, group.parentId);
+      
     } else {
       const index = this.selectedGroupDefault.findIndex(
         (x: any) => Number(x.id) === Number(group.id)
@@ -597,8 +602,10 @@ export class HumanResourceUpdateComponent implements OnInit {
           }
         });
       }
-      if (this.selectedGroupDefault.length == 0) {
-        setDisableOrNotForItemsNotAtLevel(this.lstAreas, group.level, false);
+
+      const unCheckGroup = this.selectedGroupDefault.filter((item: any) => item.level == group.level);
+      if (unCheckGroup.length == 0) {
+        setDisableOrNotForItemsNotAtLevel(this.lstAreas, group.level, false, group.parentId);
       }
       this.lstAreaByOrder = convertLstAreaByOrder(
         this.lstAreas,
@@ -617,12 +624,12 @@ export class HumanResourceUpdateComponent implements OnInit {
       groupIdList: [] as number[],
       status: '',
       methodId: [],
-      mappingKey: this.searchPointSales,
+      mappingKey: '',
     };
     let param = {
       page: 1,
       size: 1000,
-      keySearch: this.keyWord ? this.keyWord : null,
+      keySearch: this.searchPointSales ? this.searchPointSales : null,
     };
     let buildParams = CommonUtils.buildParams(param);
     return this.api

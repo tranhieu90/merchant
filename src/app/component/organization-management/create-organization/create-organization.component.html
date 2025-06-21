@@ -17,7 +17,7 @@
                 <div *ngFor="let area of lstAreaByOrder">
                     <app-area-item [lstAreas]="lstAreas" [area]="area" [areaActive]="areaActive"
                         (activeArea)="doActiveArea($event)" (deleteArea)="deleteArea($event)"
-                        (addArea)="addArea($event.level, $event.parentId, $event)"
+                        (addArea)="addArea($event.level, $event.parentId, $event.areaActive)"
                         (blurAreaName)="onBlurCreateArea($event.event, $event.areaId, $event.isFormCreateInvalid)"
                         (doChangeExpand)="doActiveAreaCheckbox($event)" [isShowButton]="isPermission">
                     </app-area-item>
@@ -29,7 +29,7 @@
                     <div class="title-s-semibold">Hướng dẫn</div>
                     <div class="list-item" *ngIf="this.lstMerchantsAll.length==0">
                         <div class="title">1. Tạo nhóm chứa điểm kinh doanh</div>
-                        <div class="item">Chọn nút "Tạo nhóm" và nhập thông tin nhóm</div>
+                        <div class="item">Chọn "Tạo nhóm" và nhập thông tin nhóm</div>
                         <div class="item">Tạo nhóm cùng cấp hoặc nhóm con, tối đa 5 cấp</div>
                         <div class="item">Nhóm không tồn tại nhóm con sẽ được gán điểm kinh doanh</div>
                         <div class="title">2. Lưu thiết lập</div>
@@ -39,7 +39,7 @@
 
                     <div class="list-item" *ngIf="this.lstMerchantsAll.length>0">
                         <div class="title">1. Tạo nhóm chứa điểm kinh doanh</div>
-                        <div class="item">Chọn nút "Tạo nhóm" và nhập thông tin nhóm</div>
+                        <div class="item">Chọn "Tạo nhóm" và nhập thông tin nhóm</div>
                         <div class="item">Tạo nhóm cùng cấp hoặc nhóm con, tối đa 5 cấp</div>
                         <div class="title">2. Gán điểm kinh doanh vào nhóm</div>
                         <div class="item">Gán điểm kinh doanh vào nhóm không tồn tại nhóm con</div>

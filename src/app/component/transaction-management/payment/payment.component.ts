@@ -400,7 +400,10 @@ export class PaymentComponent implements OnInit {
     private toast: ToastService,
     private auth: AuthenticationService,
   ) {
-
+    const columnsShow = localStorage.getItem(environment.settingPayment)?.split(',').map(api => api.trim());
+    if (columnsShow) {
+      this.lstColumnShow = columnsShow;
+    }
   }
 
   ngOnInit(): void {
@@ -550,6 +553,7 @@ export class PaymentComponent implements OnInit {
     dialogRef.afterClosed().subscribe((lstColumnShow: any) => {
       if (lstColumnShow != undefined) {
         this.lstColumnShow = lstColumnShow;
+        localStorage.setItem(environment.settingPayment, lstColumnShow);
       }
     })
   }
@@ -828,7 +832,7 @@ export class PaymentComponent implements OnInit {
 
   onChangeGroup() {
     const selected = this.filterCriteria.selectedGroups || [];
-    if (!this.lastClickedGroup || selected.length === 0) return;
+    // if (!this.lastClickedGroup || selected.length === 0) return;
 
     const topLevelIds = this.getTopLevelGroupIds(selected);
     const groupIdList = topLevelIds.filter(id => id !== this.merchantId).join(',');

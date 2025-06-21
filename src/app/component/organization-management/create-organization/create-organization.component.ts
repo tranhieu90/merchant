@@ -72,7 +72,7 @@ export class CreateOrganizationComponent {
   }
   checkValidCreate() {
     let isCreate = true;
-    if (this.lstAreaByOrder.length > 0 || (this.lstAreaByOrder.length > 0 && (this.lstMerchantsAll.length > 0 && this.lstMerchantRemain.length == 0)))
+    if (this.lstAreaByOrder.length > 0 && this.lstMerchantRemain.length == 0 || (this.lstAreaByOrder.length > 0 && (this.lstMerchantsAll.length > 0 && this.lstMerchantRemain.length == 0)))
       isCreate = false;
     return isCreate
   }
@@ -149,9 +149,9 @@ export class CreateOrganizationComponent {
 
   deleteArea(data: any) {
     
-    const found = this.lstAreas.find(x=>x.id==data.id) ;
+    const found = this.lstAreas.find(x=>x.id==data) ;
     if (found && (found.groupName =="" ||found.groupName ==null)) {
-      this.lstAreas = this.lstAreas.filter(x=>x.id !=data.id) ;
+      this.lstAreas = this.lstAreas.filter(x=>x.id !=data) ;
       this.lstAreaByOrder= this.convertLstAreaByOrder(this.lstAreas,null);
       this.isFormCreateAreaInvalid= false;
     } else {
@@ -174,15 +174,9 @@ export class CreateOrganizationComponent {
       this.lstAreaByOrder = this.convertLstAreaByOrder(this.lstAreas, null);
       this.toast.showSuccess(`Xóa nhóm ${this.areaActive.groupName} thành công`);
       this.updateActiveSubmit(data.parentId, true);
-      // if (this.lstAreas.length > 0) {
-      //   this.areaActive = this.lstAreas[0];
-      //   if (this.areaActive.lstMerchant.length > 0) {
-      //     this.lstMerchantActive = _.cloneDeep(this.lstMerchantsAll.filter((item: any) => this.areaActive.lstMerchant.includes(item.merchantId)));
-      //   }
-      // } else {
-      //   this.areaActive = new AreaModel();
-      //   this.lstMerchantActive = [];
-      // }
+    }
+    if(this.lstAreas.length == 0) {
+      this.areaActive =  {} as AreaModel;
     }
     this.cdr.detectChanges();
   }
@@ -486,7 +480,7 @@ export class CreateOrganizationComponent {
         }
         item.expanded = true;
         if (item.parentId != null) {
-          this.updateActiveSubmit(item, false);
+          this.updateActiveSubmit(item.parentId, false);
         }
       }
     });

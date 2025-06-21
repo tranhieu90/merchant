@@ -4,4 +4,7 @@ export const MERCHANT_RULES = {
   USER_MANAGER_CREATE: '/api/v1/user-management/create',
   USER_MANAGER_UPDATE_PASS: '/api/v1/user-management/change-pass-personel',
   USER_MANAGER_UPDATE: '/api/v1/user-management/update-personel',
+
+  // =================== Quyền thiết lập cơ cấu tổ chức ===================
+  ORGANIZATION_CREATE: '/api/v1/group-management/save-organizational-setup',
 };

@@ -27,7 +27,7 @@ export function convertLstAreaByOrder(list: any[], parentId: number | null): any
   });
   return result;
 }
-export function fomatAddress(list: string[]):string {
+export function fomatAddress(list: string[]): string {
   return list.filter(part => part?.trim())
     .map(part => part.trim())
     .join(', ');
@@ -38,10 +38,13 @@ export function disableItemsNotAtLevel(list: any[], level: number): any[] {
     disabled: item.level !== level
   }));
 }
-export function setDisableOrNotForItemsNotAtLevel(list: any[], level: number, disable: boolean): any {
- return list.forEach(item => {
+export function setDisableOrNotForItemsNotAtLevel(list: any[], level: number, disable: boolean, parentId?: number): any {
+  return list.forEach(item => {
     if (item.level !== level) {
       item.disabled = disable;
+    }
+    if (item.level == level && item?.parentId != parentId) {
+      item.disabled = true;
     }
   });
 }

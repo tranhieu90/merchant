@@ -69,6 +69,8 @@ export class IdleService {
         if (res.status === 200) {
           localStorage.removeItem(environment.accessToken);
           localStorage.removeItem(environment.userInfo);
+          localStorage.removeItem(environment.settingPayment);
+          localStorage.removeItem(environment.settingCashback);
           this.router.navigate(['/login']);
         }
       }, () => {

@@ -385,7 +385,10 @@ export class CashbackComponent implements OnInit {
     private toast: ToastService,
     private auth: AuthenticationService,
   ) {
-
+    const columnsShow = localStorage.getItem(environment.settingCashback)?.split(',').map(api => api.trim());
+    if (columnsShow) {
+      this.lstColumnShow = columnsShow;
+    }
   }
 
   ngOnInit(): void {
@@ -514,6 +517,7 @@ export class CashbackComponent implements OnInit {
     dialogRef.afterClosed().subscribe((lstColumnShow: any) => {
       if (lstColumnShow != undefined) {
         this.lstColumnShow = lstColumnShow;
+        localStorage.setItem(environment.settingCashback, lstColumnShow);
       }
     })
   }

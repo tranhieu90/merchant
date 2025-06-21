@@ -434,8 +434,13 @@ export class UpdateOrganizationComponent implements OnChanges {
 
   clearValue(nameInput: string) {
     this.formEditArea.get(nameInput)?.setValue('');
-    this.isCloseInput = true
+    this.isCloseInput = true;
+  
+    setTimeout(() => {
+      this.areaNameInput?.nativeElement.focus();
+    });
   }
+  
 
   updateAreaName() {
     let areaName = this.formEditArea.get("areaName")?.value;

@@ -15,10 +15,22 @@
   <div *ngIf="isFilter || isFilter1">
     <form *ngIf="isFilter" [formGroup]="formDropdown" (ngSubmit)="onEnterSearch()" class="row mb-4">
       <div class="row" *ngIf="isFilter">
-        <div class="col-md-4 mt-4">
-          <label class="form-label title-s-semibold">Trạng thái</label>
-          <p-dropdown class="merchant-dropdown" formControlName="status" [options]="statusOptions" optionValue="code"
-            optionLabel="name" placeholder="Tất cả" />
+        <div *ngIf="isConfig != 0" class="col-md-4 mt-4 ">
+          <label class="form-label title-s-semibold">Tên nhóm</label>
+          <p-treeSelect [options]="groupNameOptions" formControlName="groupName" optionLabel="label" optionValue="key"
+            selectionMode="checkbox" display="comma" [metaKeySelection]="false" [filter]="true"
+            [emptyMessage]="'Không tìm thấy dữ liệu'" placeholder="Tất cả" class="merchant-treeSelect"
+            (onNodeSelect)="onGroupClick($event)" (onNodeUnselect)="onGroupClick($event)"
+            filterPlaceholder="Tìm kiếm cụm/nhóm">
+            <ng-template pTemplate="value" let-selectedNodes>
+              <span *ngIf="!selectedNodes || selectedNodes.length === 0 || isSelectAllGroup(selectedNodes)">
+                Tất cả
+              </span>
+              <span *ngIf="selectedNodes?.length > 0 && !isSelectAllGroup(selectedNodes)">
+                {{ getSelectedGroupNames(selectedNodes) }}
+              </span>
+            </ng-template>
+          </p-treeSelect>
         </div>
         <div class="col-md-4 mt-4">
           <label class="form-label title-s-semibold">Phương thức thanh toán</label>
@@ -36,22 +48,10 @@
             </ng-template>
           </p-multiSelect>
         </div>
-        <div *ngIf="isConfig != 0" class="col-md-4 mt-4 ">
-          <label class="form-label title-s-semibold">Tên nhóm</label>
-          <p-treeSelect [options]="groupNameOptions" formControlName="groupName" optionLabel="label" optionValue="key"
-            selectionMode="checkbox" display="comma" [metaKeySelection]="false" [filter]="true"
-            [emptyMessage]="'Không tìm thấy dữ liệu'" placeholder="Tất cả" class="merchant-treeSelect"
-            (onNodeSelect)="onGroupClick($event)" (onNodeUnselect)="onGroupClick($event)"
-            filterPlaceholder="Tìm kiếm cụm/nhóm">
-            <ng-template pTemplate="value" let-selectedNodes>
-              <span *ngIf="!selectedNodes || selectedNodes.length === 0 || isSelectAllGroup(selectedNodes)">
-                Tất cả
-              </span>
-              <span *ngIf="selectedNodes?.length > 0 && !isSelectAllGroup(selectedNodes)">
-                {{ getSelectedGroupNames(selectedNodes) }}
-              </span>
-            </ng-template>
-          </p-treeSelect>
+        <div class="col-md-4 mt-4">
+          <label class="form-label title-s-semibold">Trạng thái</label>
+          <p-dropdown class="merchant-dropdown" formControlName="status" [options]="statusOptions" optionValue="code"
+            optionLabel="name" placeholder="Tất cả" />
         </div>
       </div>
     </form>

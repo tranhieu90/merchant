@@ -65,7 +65,7 @@ export class HumanResourceManagementComponent implements OnInit {
   keyword: string = '';
   isFilter: boolean = false;
   pageIndex = 0;
-  pageSize = 10;
+  pageSize = 1000;
   totalItem: number = 0;
   dataList: any = [];
   isSearch: boolean = false;
@@ -397,7 +397,7 @@ export class HumanResourceManagementComponent implements OnInit {
 
     let buildParams = CommonUtils.buildParams(param);
     this.api
-      .get(ROlE_ENDPOINT.SEARCH_LIST_ROLE, buildParams)
+      .get(ROlE_ENDPOINT.AUTO_COMPLETE, buildParams)
       .subscribe((res) => {
         this.lstRole = res['data']['list'];
         this.lstRole.unshift({
