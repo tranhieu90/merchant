@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { MatBadge } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { MatTooltip } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import moment from 'moment';
 import { AutoCompleteModule } from 'primeng/autocomplete';
@@ -11,6 +12,7 @@ import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { TooltipModule } from 'primeng/tooltip';
 import { TreeSelectModule } from 'primeng/treeselect';
 import { GridViewComponent } from '../../../base/shared/grid-view/grid-view.component';
 import { CommonUtils } from '../../../base/utils/CommonUtils';
@@ -25,11 +27,29 @@ import { DialogConfirmModel } from '../../../model/DialogConfirmModel';
 import { GridViewModel } from '../../../model/GridViewModel';
 import { DialogRoleComponent, DialogRoleModel } from '../../role-management/dialog-role/dialog-role.component';
 import { UpdateUserComponent } from '../../user-profile/update-user/update-user.component';
+import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
 
 @Component({
-  selector: 'app-business-management',
+  selector: '[app-business-management]',
   standalone: true,
-  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, GridViewComponent, MatButtonModule, InputCommon, NgIf, DropdownModule, MultiSelectModule, TreeSelectModule, MatBadge,CommonModule],
+  imports: [
+    ButtonModule,
+    FormsModule,
+    InputTextModule,
+    ReactiveFormsModule,
+    AutoCompleteModule,
+    GridViewComponent,
+    MatButtonModule,
+    InputCommon,
+    NgIf,
+    DropdownModule,
+    MultiSelectModule,
+    TreeSelectModule,
+    MatBadge,
+    CommonModule,
+    TooltipModule,
+    MatTooltip,
+  ],
   templateUrl: './business-management.component.html',
   styleUrl: './business-management.component.scss'
 })
@@ -54,7 +74,8 @@ export class BusinessManagementComponent {
     page: 0,
   };
   roleBusiness: boolean = false;
-
+  searchBusiness: boolean = false;
+  isClear: boolean = false;
   columns: Array<GridViewModel> = [
     {
       name: 'merchantId',
@@ -78,7 +99,7 @@ export class BusinessManagementComponent {
       options: {
         width: '25%',
         customCss: () => {
-          return ['text-left'];
+          return ['text-left', 'mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -91,7 +112,7 @@ export class BusinessManagementComponent {
       options: {
         width: '25%',
         customCss: () => {
-          return ['text-left', 'mw-160'];
+          return ['text-left', 'mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -104,7 +125,7 @@ export class BusinessManagementComponent {
       options: {
         width: '15%',
         customCss: () => {
-          return ['text-left'];
+          return ['text-left', 'mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -157,7 +178,7 @@ export class BusinessManagementComponent {
 
   statusOptions: any[] = [
     { name: 'Tất cả', code: '' },
-    { name: 'Khóa', code: 'inactive' },
+    { name: 'Đã khóa', code: 'inactive' },
     { name: 'Hoạt động', code: 'active' }
   ];
 
@@ -179,7 +200,7 @@ export class BusinessManagementComponent {
 
   ngOnInit() {
     this.isConfig = this.auth.getUserInfo()?.isConfig;
-    this.roleBusiness = this.auth.apiTracker("/api/v1/subMerchant/add");
+    this.roleBusiness = this.auth.apiTracker([MERCHANT_RULES.BUSINESS_CREATE]);
     this.getLstPaymentMethod();
     if (this.auth.getUserInfo()?.orgType != 2) {
       this.getDataGroup();
@@ -193,6 +214,7 @@ export class BusinessManagementComponent {
 
   doSearch(pageInfo?: any) {
     this.isSearch = this.isFirst == 0 ? false : true;
+    this.searchBusiness = this.isFirst == 0 ? false : true;
     this.isFirst = 1;
     if (pageInfo) {
       this.pageIndex = pageInfo["page"] + 1;
@@ -253,6 +275,7 @@ export class BusinessManagementComponent {
 
   onEnterSearch(): void {
     this.isSearch = true;
+    this.searchBusiness = true;
     this.pageIndex = 1;
     this.pageInfo = {
       pageSize: this.pageSize,
@@ -280,11 +303,14 @@ export class BusinessManagementComponent {
 
     return result.map(item => {
       let children = this.convertLstAreaByOrder(list, item.id);
+      const shortLabel = this.shortenLabel(item.groupName);
       return {
         ...item,
-        label: item.groupName,
+        label: shortLabel,
+        fullLabel: item.groupName,
         key: item.id,
-        children: children
+        children: children,
+        showTooltip: shortLabel.includes('...')
       };
     });
   }
@@ -367,6 +393,7 @@ export class BusinessManagementComponent {
 
     setTimeout(() => {
       const selected = this.formDropdown.controls['groupName']?.value || [];
+      this.isClear = selected.length > 0
       const clickedFullNode = this.findItemById(this.groupNameOptions, clickedNode.id);
       if (!clickedFullNode) return;
 
@@ -514,6 +541,10 @@ export class BusinessManagementComponent {
     return statusSelected || paymentSelected || groupNameSelected || serviceCodeFilled || keyWordFilled;
   }
 
+  setValueFormDefault() {
+    this.formDropdown.controls['groupName']?.setValue([]);
+    this.isClear = false;
+  }
   checkOpenCreate() {
     const verifyUser = this.auth.checkVerifyUserInfo();
     switch (verifyUser) {
@@ -613,5 +644,22 @@ export class BusinessManagementComponent {
         this.router.navigate(['/profile']);
       })
     })
+  }
+
+  shortenLabel(label: string): string {
+    if (!label) return '';
+    return label.length > 30 ? label.slice(0, 30) + '...' : label;
+  }
+
+  blockPercent(event: KeyboardEvent) {
+    if (event.key === '%') {
+      event.preventDefault();
+    }
+  }
+
+  onPaste(event: ClipboardEvent) {
+    event.preventDefault();
+    const pasted = event.clipboardData?.getData('text') || '';
+    document.execCommand('insertText', false, pasted.replace(/%/g, ''));
   }
 }

@@ -66,7 +66,7 @@ import { MTreeCheckboxComponent } from '../../../base/shared/m-tree-checkbox/m-t
     RadioButtonModule,
     MTreeComponent,
     TreeViewComponent,
-    MTreeCheckboxComponent,
+    MTreeCheckboxComponent
   ],
   templateUrl: './human-resource-update.component.html',
   styleUrl: './human-resource-update.component.scss',
@@ -88,6 +88,7 @@ export class HumanResourceUpdateComponent implements OnInit {
   lstAreaByOrder: AreaModel[] = [];
   areaActive: AreaModel = new AreaModel();
   subMerchantList: any[] = [];
+  subMerchantListTemp: any[] = [];
   treeNodes?: any;
   keyWord!: string;
   groupList: any = [];
@@ -120,6 +121,8 @@ export class HumanResourceUpdateComponent implements OnInit {
   searchGroup!: string;
   searchPointSales!: string;
   hasChangeRoleUpdate: boolean = false;
+  roleTypePersonel?: number;
+
   constructor(
     private dialog: MatDialog,
     private router: Router,
@@ -134,6 +137,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       this.personDataDetail = personData;
       this.userId = personData.userId;
       this.orgTypeUser = personData.orgType;
+      this.roleTypePersonel = personData.roleTypePersonel;
       if (this.orgTypeUser == 2 && personData?.selectedMerchant) {
         if (
           personData?.selectedMerchant &&
@@ -209,51 +213,57 @@ export class HumanResourceUpdateComponent implements OnInit {
         } else {
           if (orgTypeLogin == 0) {
             this.isChooseOrganization = true;
-            this.doGetGroupListLogin().subscribe((data) => {
-              this.lstAreas = data;
-              if (this.selectedGroupDefault.length > 0) {
-                const _level = this.selectedGroupDefault[0].level;
-                data.forEach((item) => {
-                  if (
-                    this.selectedGroupDefault.some((x: any) => x.id == item.id)
-                  ) {
-                    item.checked = true;
-                  }
-                  if (item.level != _level) {
-                    item.disabled = true;
-                  }
-                });
-              }
-              this.lstAreaByOrder = convertLstAreaByOrder(
-                this.lstAreas,
-                this.lstAreas[0]?.parentId
-              );
-            });
+            if (this.orgTypeUser == 1) {
+              this.doGetGroupListLogin().subscribe((data) => {
+                this.lstAreas = data;
+                if (this.selectedGroupDefault.length > 0) {
+                  const _level = this.selectedGroupDefault[0].level;
+                  data.forEach((item) => {
+                    if (
+                      this.selectedGroupDefault.some((x: any) => x.id == item.id)
+                    ) {
+                      item.checked = true;
+                    }
+                    if (item.level != _level) {
+                      item.disabled = true;
+                    }
+                  });
+                }
+                this.lstAreaByOrder = convertLstAreaByOrder(
+                  this.lstAreas,
+                  this.lstAreas[0]?.parentId
+                );
+              });
+            }
+
             this.typeUpdate = 3;
           }
           if (orgTypeLogin == 1) {
             this.isChooseOrganization = true;
             this.typeUpdate = 4;
-            this.doGetGroupListLogin().subscribe((data) => {
-              this.lstAreas = data;
-              if (this.selectedGroupDefault.length > 0) {
-                const _level = this.selectedGroupDefault[0].level;
-                data.forEach((item) => {
-                  if (
-                    this.selectedGroupDefault.some((x: any) => x.id == item.id)
-                  ) {
-                    item.checked = true;
-                  }
-                  if (item.level != _level) {
-                    item.disabled = true;
-                  }
-                });
-              }
-              this.lstAreaByOrder = convertLstAreaByOrder(
-                this.lstAreas,
-                this.lstAreas[0]?.parentId
-              );
-            });
+            if (this.orgTypeUser == 1) {
+              this.doGetGroupListLogin().subscribe((data) => {
+                this.lstAreas = data;
+                if (this.selectedGroupDefault.length > 0) {
+                  const _level = this.selectedGroupDefault[0].level;
+                  data.forEach((item) => {
+                    if (
+                      this.selectedGroupDefault.some((x: any) => x.id == item.id)
+                    ) {
+                      item.checked = true;
+                    }
+                    if (item.level != _level) {
+                      item.disabled = true;
+                    }
+                  });
+                }
+                this.lstAreaByOrder = convertLstAreaByOrder(
+                  this.lstAreas,
+                  this.lstAreas[0]?.parentId
+                );
+              });
+            }
+
           }
           if (orgTypeLogin == 2) {
             if (lstPoinSales.length == 1) {
@@ -272,10 +282,12 @@ export class HumanResourceUpdateComponent implements OnInit {
     );
     this.navigationSubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
-        if (this.isChangedInfo() && !this._isNavigating) {
-          this._isNavigating = true;
-          this.onCancel(event.url);
-          this.router.navigate([], { replaceUrl: true, queryParamsHandling: 'preserve' });
+        if (!this._isNavigating) {
+          // this._isNavigating = true;
+          if (event.url !== '/login') {
+            this.onCancel(event.url);
+            this.router.navigate([], { replaceUrl: true, queryParamsHandling: 'preserve' });
+          }
         }
       }
     });
@@ -374,7 +386,12 @@ export class HumanResourceUpdateComponent implements OnInit {
   }
 
   doPreStep() {
-    this.currentStep--;
+    if (this.currentStep > 0) {
+      this.currentStep--;
+    } else {
+      this.onCancel();
+    }
+    // this.currentStep--;
   }
 
   doNextStep(number: number = 0) {
@@ -396,7 +413,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       this.isSuccess = 2
     } else {
       if (this.orgTypeUser == 0) {
-        if (this.personDataDetail.orgType == 0) {
+        if (this.personDataDetail.orgType != 0) {
           param.oraganizationInfo = {
             masterId: this.auth.getUserInfo().merchantId,
           };
@@ -409,8 +426,8 @@ export class HumanResourceUpdateComponent implements OnInit {
           ) {
             const lstGr = this.selectedGroupDefault.map((g: any) => g.id);
           }
-          param.oraganizationInfo = {
-            masterId: this.auth.getUserInfo().merchantId,
+          param.oraganizationDelete = {
+            // masterId: this.auth.getUserInfo().merchantId,
             groupIds: lstGr,
           };
         }
@@ -421,8 +438,8 @@ export class HumanResourceUpdateComponent implements OnInit {
               (item: any) => Number(item.merchantId)
             );
           }
-          param.oraganizationInfo = {
-            masterId: this.auth.getUserInfo().merchantId,
+          param.oraganizationDelete = {
+            // masterId: this.auth.getUserInfo().merchantId,
             merchantIds: lstPointSales,
           };
         }
@@ -526,12 +543,24 @@ export class HumanResourceUpdateComponent implements OnInit {
       this.api.post(HR_ENDPOINT.UPDATE_HR, param).subscribe(
         (res) => {
           this.isSuccess = res.data.status;
+          this._isNavigating = true;
         },
-        (err) => {
-          if (err) {
-            const { error } = err;
-            this.toast.showError(error.soaErrorDesc);
-          } else this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
+        (error) => {
+          // if (err) {
+          //   const { error } = err;
+          //   this.toast.showError(error.soaErrorDesc);
+          // } else this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
+
+          const errorData = error?.error || {};
+          switch (errorData.soaErrorCode) {
+            case '203':
+              this.toast.showError("Danh sách cập nhật, hủy cơ cấu tổ chức cho nhân sự không hợp lệ.");
+              break;
+            default:
+              this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
+
+              break;
+          }
         }
       );
     }
@@ -554,6 +583,7 @@ export class HumanResourceUpdateComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === true) {
+        this._isNavigating = true;
         if (url) {
           this.router.navigateByUrl(url);
         }
@@ -582,9 +612,9 @@ export class HumanResourceUpdateComponent implements OnInit {
   doGroup(group: any) {
 
     if (group.checked) {
-        this.selectedGroupDefault.push(group);
-        setDisableOrNotForItemsNotAtLevel(this.lstAreas, group.level, true, group.parentId);
-      
+      this.selectedGroupDefault.push(group);
+      setDisableOrNotForItemsNotAtLevel(this.lstAreas, group.level, true, group.parentId);
+
     } else {
       const index = this.selectedGroupDefault.findIndex(
         (x: any) => Number(x.id) === Number(group.id)
@@ -605,6 +635,7 @@ export class HumanResourceUpdateComponent implements OnInit {
 
       const unCheckGroup = this.selectedGroupDefault.filter((item: any) => item.level == group.level);
       if (unCheckGroup.length == 0) {
+        this.selectedGroupDefault = [];
         setDisableOrNotForItemsNotAtLevel(this.lstAreas, group.level, false, group.parentId);
       }
       this.lstAreaByOrder = convertLstAreaByOrder(
@@ -615,17 +646,18 @@ export class HumanResourceUpdateComponent implements OnInit {
   }
 
   getLstMerchant() {
-    return this.getLstMerchantWithCheckedObs(true)?.subscribe();
+    return this.getLstMerchantWithCheckedObs(false)?.subscribe();
   }
 
   getLstMerchantWithCheckedObs(isFirstLoad?: boolean): Observable<any[]> {
     this.isSearch = true;
     let dataReq = {
       groupIdList: [] as number[],
-      status: '',
+      status: 'active',
       methodId: [],
       mappingKey: '',
     };
+    this.searchPointSales = this.searchPointSales?.trim();
     let param = {
       page: 1,
       size: 1000,
@@ -653,6 +685,9 @@ export class HumanResourceUpdateComponent implements OnInit {
               });
             }
             this.subMerchantList = dataGroup;
+            if (isFirstLoad) {
+              this.subMerchantListTemp = dataGroup;
+            }
             return dataGroup;
           } else {
             this.subMerchantList = [];
@@ -705,12 +740,34 @@ export class HumanResourceUpdateComponent implements OnInit {
         this.orgTypeUser = 0;
         this.searchGroup = '';
         this.searchPointSales = '';
-        this.getLstMerchant();
+        if (this.userInfo.isConfig == 0 && this.userInfo.orgType == 0 && this.subMerchantListTemp.length > 0) {
+          this.getLstMerchant();
+        }
         break;
       case 1:
         this.orgTypeUser = 1;
         this.searchGroup = '';
         this.searchPointSales = '';
+        this.doGetGroupListLogin().subscribe((data) => {
+          this.lstAreas = data;
+          if (this.selectedGroupDefault.length > 0) {
+            const _level = this.selectedGroupDefault[0].level;
+            data.forEach((item) => {
+              if (
+                this.selectedGroupDefault.some((x: any) => x.id == item.id)
+              ) {
+                item.checked = true;
+              }
+              if (item.level != _level) {
+                item.disabled = true;
+              }
+            });
+          }
+          this.lstAreaByOrder = convertLstAreaByOrder(
+            this.lstAreas,
+            this.lstAreas[0]?.parentId
+          );
+        });
         break;
       case 2:
         this.orgTypeUser = 2;
@@ -777,11 +834,7 @@ export class HumanResourceUpdateComponent implements OnInit {
     return str;
   }
   openCreateGroups() {
-    window.open(
-      this.assetPath + '/organization',
-      '_blank',
-      'noopener,noreferrer'
-    );
+    this.router.navigate(['organization'], {});
   }
   doActiveAreaCheckbox(group: any) {
     this.lstAreaByOrder.forEach((i: any) => {
@@ -790,35 +843,45 @@ export class HumanResourceUpdateComponent implements OnInit {
   }
   checkChangeOrganization() {
     this.hasChangeRoleUpdate = false;
+    // if (
+    //   this.personDataDetail.orgType !== this.orgTypeUser
+    // ) {
+    //   this.hasChangeRoleUpdate = true;
+    // }
+    // if (this.orgTypeUser === 2) {
+    //   const currentIds = (this.selectedMerchantDefault || []).map((m: any) => m.merchantId).sort();
+    //   const originalIds = (this.personDataDetail.selectedMerchant || []).map((m: any) => m.merchantId).sort();
+    //   if (currentIds.length !== originalIds.length) {
+    //     this.hasChangeRoleUpdate = true;
+    //   }
+    //   for (let i = 0; i < currentIds.length; i++) {
+    //     if (currentIds[i] !== originalIds[i]) {
+    //       this.hasChangeRoleUpdate = true;
+    //     }
+    //   }
+    // }
+    // if (this.orgTypeUser === 1) {
+    //   const currentGroupIds = (this.selectedGroupDefault || []).map((g: any) => g.id).sort();
+    //   const originalGroupIds = (this.personDataDetail.groupList || []).map((g: any) => g.id).sort();
+    //   if (currentGroupIds.length !== originalGroupIds.length) {
+    //     this.hasChangeRoleUpdate = true;
+    //   }
+    //   for (let i = 0; i < currentGroupIds.length; i++) {
+    //     if (currentGroupIds[i] !== originalGroupIds[i]) {
+    //       this.hasChangeRoleUpdate = true;
+    //     }
+    //   }
+    // }
+
     if (
       this.personDataDetail.orgType !== this.orgTypeUser
     ) {
-      this.hasChangeRoleUpdate = true;
-    }
-    if (this.orgTypeUser === 2) {
-      const currentIds = (this.selectedMerchantDefault || []).map((m: any) => m.merchantId).sort();
-      const originalIds = (this.personDataDetail.selectedMerchant || []).map((m: any) => m.merchantId).sort();
-      if (currentIds.length !== originalIds.length) {
+      if (this.roleTypePersonel == 1) {
         this.hasChangeRoleUpdate = true;
       }
-      for (let i = 0; i < currentIds.length; i++) {
-        if (currentIds[i] !== originalIds[i]) {
-          this.hasChangeRoleUpdate = true;
-        }
-      }
     }
-    if (this.orgTypeUser === 1) {
-      const currentGroupIds = (this.selectedGroupDefault || []).map((g: any) => g.id).sort();
-      const originalGroupIds = (this.personDataDetail.groupList || []).map((g: any) => g.id).sort();
-      if (currentGroupIds.length !== originalGroupIds.length) {
-        this.hasChangeRoleUpdate = true;
-      }
-      for (let i = 0; i < currentGroupIds.length; i++) {
-        if (currentGroupIds[i] !== originalGroupIds[i]) {
-          this.hasChangeRoleUpdate = true;
-        }
-      }
-    }
+
+
   }
   checkHasOrganzation() {
     if (this.orgTypeUser === 2) {

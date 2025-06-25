@@ -34,11 +34,14 @@ import {UserVerifyStatus} from '../../../common/constants/CUser';
 import {InputCommon} from '../../../common/directives/input.directive';
 import {MatBadge} from '@angular/material/badge';
 import {BANK_IMAGE_DATA} from '../../../../assets/bank-map';
+import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
+import { TooltipModule } from 'primeng/tooltip';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-payment',
   standalone: true,
-  imports: [ButtonModule, CalendarModule, InputTextModule, MultiSelectModule, NgIf, NgClass, GridViewComponent, InputNumberModule, FormsModule, DropdownModule, ReactiveFormsModule, TreeSelectModule, InputCommon, MatBadge],
+  imports: [ButtonModule, CalendarModule, InputTextModule, MultiSelectModule, NgIf, NgClass, GridViewComponent, InputNumberModule, FormsModule, DropdownModule, ReactiveFormsModule, TreeSelectModule, InputCommon, MatBadge, TooltipModule, MatTooltip],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.scss'
 })
@@ -66,7 +69,11 @@ export class PaymentComponent implements OnInit {
   maxDate: any = null;
   minDate: any = null;
   merchantId: any = null;
-
+  previousValidRange: Date[] = [];
+  pendingRange: Date[] = [];
+  cachedSearchParam: any = null;
+  hasRoleExport: boolean = true;
+  isClear: boolean = false;
   searchCriteria: {
     transactionCode: string | null;
     ftCode: string | null;
@@ -150,7 +157,7 @@ export class PaymentComponent implements OnInit {
         label: 'Điểm kinh doanh',
         options: {
           customCss: (obj: any) => {
-            return ['text-left'];
+            return ['text-left', 'mw-180'];
           },
           customCssHeader: () => {
             return ['text-left'];
@@ -412,13 +419,16 @@ export class PaymentComponent implements OnInit {
 
     const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
 
-    const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 0);
+    const endDate = today;
 
     this.searchCriteria.dateRange = [startDate, endDate];
+
+    this.previousValidRange = [...this.searchCriteria.dateRange];
 
     const minDate = new Date();
     minDate.setDate(today.getDate() - 365);
     this.minDate = minDate;
+    this.maxDate = today;
 
     this.statusOptions = [
       {name: 'Thành công', code: '00'},
@@ -436,6 +446,7 @@ export class PaymentComponent implements OnInit {
 
     this.onSearch();
 
+    this.hasRoleExport = this.auth.apiTracker([MERCHANT_RULES.TRANS_EXPORT_EXCEL]);
   }
 
   getLstPaymentMethod() {
@@ -530,6 +541,8 @@ export class PaymentComponent implements OnInit {
 
     }
 
+    this.cachedSearchParam = param;
+
     this.api.post(TRANSACTION_ENDPOINT.GET_LIST_TRANSACTION, param).subscribe(res => {
         this.dataTable = res['data']['content'];
         this.totalItem = res['data']['paging']['total'];
@@ -600,33 +613,32 @@ export class PaymentComponent implements OnInit {
   }
 
   exportExcel() {
-    let groupIdArray = this.getTopLevelGroupIds(this.filterCriteria?.selectedGroups || []);
-    groupIdArray = groupIdArray?.filter(item => item !== this.merchantId)?.map(item => item);
+    if (!this.cachedSearchParam) {
+      this.toast.showWarn('Vui lòng thực hiện tìm kiếm trước khi xuất Excel.');
+      return;
+    }
 
-    let param = {
-      fromDate: this.searchCriteria?.dateRange[0] ? moment(this.searchCriteria?.dateRange[0]).format('DD/MM/YYYY HH:mm:ss') : null,
-      toDate: this.searchCriteria?.dateRange[1] ? moment(this.searchCriteria?.dateRange[1]).format('DD/MM/YYYY HH:mm:ss') : null,
+    const param = {
+      fromDate: this.cachedSearchParam.fromDate,
+      toDate: this.cachedSearchParam.toDate,
 
-      transactionReference: this.searchCriteria.ftCode || null,
-      orderId: this.searchCriteria?.orderCode || null,
-      amount: this.searchCriteria?.paymentAmount || null,
-      debitName: this.searchCriteria?.paymentAccountName || null,
-      debitAccount: this.searchCriteria?.accountNumber || null,
-      orderReference: this.searchCriteria?.identifierCode || null,
-      transactionNumber: this.searchCriteria?.transactionCode || null,
+      transactionReference: this.cachedSearchParam.txnReference,
+      orderId: this.cachedSearchParam.orderId,
+      amount: this.cachedSearchParam.amount,
+      debitName: this.cachedSearchParam.debitName,
+      debitAccount: this.cachedSearchParam.debitAccount,
+      orderReference: this.cachedSearchParam.orderReference,
+      transactionNumber: this.cachedSearchParam.transactionNumber,
 
-      statusTransaction: this.filterCriteria?.selectedStatuses || [],
-      transactionMethodID: (this.filterCriteria?.selectedPaymentMethod == 'ALL' || this.filterCriteria?.selectedPaymentMethod == null) ? null : this.filterCriteria?.selectedPaymentMethod,
-      merchantIdArray: this.filterCriteria?.selectedMerchants || [],
-
-      groupId: groupIdArray,
-      issuerCode: this.filterCriteria?.selectedBanks || null,
+      statusTransaction: this.cachedSearchParam.status,
+      transactionMethodID: this.cachedSearchParam.paymentMethodId,
+      merchantIdArray: this.cachedSearchParam.merchantIdArray,
+      groupId: this.cachedSearchParam.groupIdArray,
+      issuerCode: this.cachedSearchParam.issuerCode,
 
       type: 'TXN',
-
-      masterId: null,
-
-    }
+      masterId: null
+    };
 
     this.api.post(EXCEL_ENDPOINT.EXPORT_TRANSACTION, param).subscribe(res => {
         let dataDialog: DialogConfirmModel = new DialogConfirmModel();
@@ -751,17 +763,75 @@ export class PaymentComponent implements OnInit {
     })
   }
 
-  onDateRangeSelect(range: any): void {
-    if (range[1] == null) {
-      const startDate = range[0];
-      const thirtyDaysLater = new Date(startDate);
-      thirtyDaysLater.setDate(startDate.getDate() + 30);
-      this.maxDate = thirtyDaysLater;
+  onDateRangeSelect(range: Date[]): void {
+    this.pendingRange = [...range]; // luôn lưu lại
+
+    if (range?.[0]) {
+      const fromDate = new Date(range[0]);
+
+      const maxLimit = new Date(fromDate);
+      maxLimit.setDate(fromDate.getDate() + 30);
+
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
+
+      // Chặn từ ngày hiện tại về sau 30 ngày
+      this.maxDate = maxLimit > todayEnd ? todayEnd : maxLimit;
     }
-    if (range?.length === 2 && range[0] != null && range[1] != null) {
-      this.onSearch();
-      this.maxDate = null;
+
+  }
+
+  onDatePickerClose(): void {
+    const range = this.pendingRange;
+    if (!range || range.length !== 2) return;
+
+    const [fromRaw, toRaw] = range;
+    const now = new Date();
+
+    const fromDate = new Date(fromRaw);
+    const toDate = new Date(toRaw);
+
+    // fromDate luôn về 00:00:00
+    fromDate.setHours(0, 0, 0, 0);
+
+    // Nếu toDate < fromDate thì không hợp lệ
+    if (toDate < fromDate) {
+      this.searchCriteria.dateRange = [...this.previousValidRange];
+      return;
     }
+
+    // --- Xử lý chuẩn hóa toDate ---
+    const selected = new Date(toDate);
+    const nowDate = new Date(now);
+
+    const selectedDateOnly = new Date(selected.getFullYear(), selected.getMonth(), selected.getDate());
+    const nowDateOnly = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate());
+
+    if (selectedDateOnly.getTime() > nowDateOnly.getTime()) {
+      // Trường hợp toDate > ngày hôm nay → lấy chính xác thời điểm hiện tại
+      selected.setTime(now.getTime());
+    } else if (selectedDateOnly.getTime() === nowDateOnly.getTime()) {
+      // Cùng ngày hiện tại → so sánh giờ phút
+      const selectedHM = selected.getHours() * 60 + selected.getMinutes();
+      const nowHM = nowDate.getHours() * 60 + nowDate.getMinutes();
+
+      if (selectedHM > nowHM) {
+        selected.setTime(now.getTime());
+      } else if (selectedHM === nowHM) {
+        selected.setSeconds(now.getSeconds(), 0);
+      } else {
+        selected.setSeconds(59, 0);
+      }
+    } else {
+      // Trường hợp nhỏ hơn ngày hôm nay → giữ nguyên giờ phút, set giây = 59
+      selected.setSeconds(59, 0);
+    }
+
+    this.searchCriteria.dateRange = [fromDate, selected];
+    this.previousValidRange = [fromDate, selected];
+    this.maxDate = null;
+
+    this.onSearch();
   }
 
   onGroupClick(event: any) {
@@ -770,6 +840,7 @@ export class PaymentComponent implements OnInit {
 
     setTimeout(() => {
       const selected = this.filterCriteria.selectedGroups || [];
+       this.isClear = selected.length > 0
       const clickedFullNode = this.findItemById(this.groupOptions, clickedNode.id);
       if (!clickedFullNode) return;
 
@@ -935,13 +1006,21 @@ export class PaymentComponent implements OnInit {
 
     return result.map(item => {
       let children = this.convertLstAreaByOrder(list, item.id);
+      const shortLabel = this.shortenLabel(item.groupName);
       return {
         ...item,
-        label: item.groupName,
+        label: shortLabel,
+        fullLabel: item.groupName,
         key: item.id,
-        children: children
+        children: children,
+        showTooltip: shortLabel.includes('...')
       };
     });
+  }
+
+  shortenLabel(label: string): string {
+    if (!label) return '';
+    return label.length > 30 ? label.slice(0, 30) + '...' : label;
   }
 
   checkHasSearchOrFilterData(): boolean {
@@ -1016,6 +1095,11 @@ export class PaymentComponent implements OnInit {
   onToggleFilter() {
     this.isFilter = !this.isFilter;
     this.isSearch = false;
+  }
+
+    setValueFormDefault() {
+    this.filterCriteria.selectedGroups=[];
+    this.isClear = false;
   }
 
 }

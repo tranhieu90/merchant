@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { environment } from '../../../../environments/environment';
+import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
 import { DialogConfirmComponent } from '../../../base/shared/dialog-confirm/dialog-confirm.component';
 import { CommonUtils } from '../../../base/utils/CommonUtils';
 import { InputCommon } from '../../../common/directives/input.directive';
@@ -47,6 +48,7 @@ export class UpdateOrganizationComponent implements OnChanges {
   isCloseInput: boolean = false;
   areaBeforeDelete: AreaModel = new AreaModel();
   setActiveItem?: any;
+  hasRoleSetup: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -63,7 +65,7 @@ export class UpdateOrganizationComponent implements OnChanges {
   }
 
   ngOnInit() {
-
+    this.hasRoleSetup = this.auth.apiTracker([MERCHANT_RULES.ORGANIZATION_CREATE]);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -214,6 +216,7 @@ export class UpdateOrganizationComponent implements OnChanges {
       this.isFormCreateAreaInvalid = false;
     } else {
       this.setActiveItem = data.parentId;
+     
       let param = {
         groupId: data.id
       }
@@ -222,6 +225,9 @@ export class UpdateOrganizationComponent implements OnChanges {
           this.toast.showSuccess(`Xóa nhóm ${this.areaActive.groupName} thành công`);
           if (this.isMoveMerchantSuccess) this.isMoveMerchantSuccess = false;
           this.getLstAreas(1);
+          if(data.parentId == null) {
+            this.areaActive = this.lstAreas[0]
+          }
         }, (error: any) => {
           const errorData = error?.error || {};
           this.toast.showError(errorData?.soaErrorDesc);
@@ -279,10 +285,9 @@ export class UpdateOrganizationComponent implements OnChanges {
       disableClose: true,
     });
 
-
     dialogRef.afterClosed().subscribe((result: any) => {
       if (result) {
-        this.deleteArea(this.areaActive.id);
+        this.deleteArea(this.areaActive);
       }
     })
   }

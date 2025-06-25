@@ -25,6 +25,7 @@ import { InputCommon } from '../../../common/directives/input.directive';
 import { DialogCommonService } from '../../../common/service/dialog-common/dialog-common.service';
 import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
 import { fomatAddress } from '../../../common/helpers/Ultils';
+import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
 
 @Component({
   selector: 'app-create-organization',
@@ -34,6 +35,7 @@ import { fomatAddress } from '../../../common/helpers/Ultils';
   styleUrl: './create-organization.component.scss'
 })
 export class CreateOrganizationComponent {
+  private MERCHANT_RULES = MERCHANT_RULES;
   assetPath = environment.assetPath;
   @Input() merchantName: any;
   @Output() cancelCreate = new EventEmitter();
@@ -52,6 +54,8 @@ export class CreateOrganizationComponent {
   lstMerchantActive: any = [];
   isCloseInput: boolean = false;
 
+  hasRole?: boolean;
+
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
@@ -68,6 +72,7 @@ export class CreateOrganizationComponent {
   }
 
   ngOnInit() {
+     this.hasRole = this.auth.apiTracker([MERCHANT_RULES.ORGANIZATION_CREATE]);
     this.getLstMerchant("");
   }
   checkValidCreate() {

@@ -68,7 +68,6 @@ import { MTreeComponent } from '../../../base/shared/m-tree/m-tree.component';
 })
 export class HumanResourceDetailComponent implements OnInit {
   readonly MERCHANT_RULES = MERCHANT_RULES;
-  personDetail?: IPersonelDetail;
   rolePesonel?: any;
   subMerchantList: any[] = [];
   assetPath = environment.assetPath;
@@ -127,6 +126,9 @@ export class HumanResourceDetailComponent implements OnInit {
   areaActive: AreaModel = new AreaModel();
   userId: any;
   changePasswordStatus: number = 0;
+
+  personDetail?: IPersonelDetail;
+
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
@@ -144,6 +146,9 @@ export class HumanResourceDetailComponent implements OnInit {
       } else {
       }
     });
+
+    const state = this.router.getCurrentNavigation()?.extras.state;
+    this.personDetail = state?.['personDetail'];
   }
 
   ngOnInit() {
@@ -354,45 +359,79 @@ export class HumanResourceDetailComponent implements OnInit {
   }
 
   getDetail() {
-    this.api.get(HR_ENDPOINT.DETAIL, { userId: this.userId }).subscribe(
-      (res) => {
-        this.personDetail = res?.data;
-        this.getDetailFunc(this.personDetail?.roleId!);
-        if (
-          !!this.personDetail?.groupList &&
-          this.personDetail?.groupList?.length > 0
-        ) {
-          const treeData = this.buildGroupTree(this.personDetail.groupList);
-          this.lstAreas = treeData;
-          const parentId = this.findParentIdFromTree(this.personDetail.groupList);
-          this.lstAreaByOrder = convertLstAreaByOrder(this.lstAreas, parentId);
-        } else {
-          // if(this.personDetail?.orgType === 2) {
-          this.api
-            .post(HR_ENDPOINT.GET_SUB, {
-              userId: this.userId,
-              page: 1,
-              size: 1000,
+    // this.api.get(HR_ENDPOINT.DETAIL, { userId: this.userId }).subscribe(
+    //   (res) => {
+    //     this.personDetail = res?.data;
+    //     this.getDetailFunc(this.personDetail?.roleId!);
+    //     if (
+    //       !!this.personDetail?.groupList &&
+    //       this.personDetail?.groupList?.length > 0
+    //     ) {
+    //       const treeData = this.buildGroupTree(this.personDetail.groupList);
+    //       this.lstAreas = treeData;
+    //       const parentId = this.findParentIdFromTree(this.personDetail.groupList);
+    //       this.lstAreaByOrder = convertLstAreaByOrder(this.lstAreas, parentId);
+    //     } else {
+    //       // if (this.personDetail?.orgType === 2) {
+    //         this.api
+    //           .post(HR_ENDPOINT.GET_SUB, {
+    //             userId: this.userId,
+    //             page: 1,
+    //             size: 1000,
+    //           })
+    //           .subscribe((res) => {
+    //             this.subMerchantList = res['data']['getPushSubInfos'].map(
+    //               (item: any) => ({
+    //                 ...item,
+    //                 formatAddress: fomatAddress([
+    //                   item.address,
+    //                   item.communeName,
+    //                   item.districtName,
+    //                   item.provinceName,
+    //                 ]),
+    //               })
+    //             );
+    //           });
+    //       // }
+    //     }
+    //   },
+    //   () => {
+    //     this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
+    //   }
+    // );
+
+    this.getDetailFunc(this.personDetail?.roleId!);
+    if (
+      !!this.personDetail?.groupList &&
+      this.personDetail?.groupList?.length > 0
+    ) {
+      const treeData = this.buildGroupTree(this.personDetail.groupList);
+      this.lstAreas = treeData;
+      const parentId = this.findParentIdFromTree(this.personDetail.groupList);
+      this.lstAreaByOrder = convertLstAreaByOrder(this.lstAreas, parentId);
+    } else {
+      // if (this.personDetail?.orgType === 2) {
+      this.api
+        .post(HR_ENDPOINT.GET_SUB, {
+          userId: this.userId,
+          page: 1,
+          size: 1000,
+        })
+        .subscribe((res) => {
+          this.subMerchantList = res['data']['getPushSubInfos'].map(
+            (item: any) => ({
+              ...item,
+              formatAddress: fomatAddress([
+                item.address,
+                item.communeName,
+                item.districtName,
+                item.provinceName,
+              ]),
             })
-            .subscribe((res) => {
-              this.subMerchantList = res['data']['getPushSubInfos'].map(
-                (item: any) => ({
-                  ...item,
-                  formatAddress: fomatAddress([
-                    item.address,
-                    item.communeName,
-                    item.districtName,
-                    item.provinceName,
-                  ]),
-                })
-              );
-            });
-        }
-      },
-      () => {
-        this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
-      }
-    );
+          );
+        });
+      // }
+    }
   }
 
   findParentIdFromTree(groupList: any): number | null {
@@ -400,7 +439,7 @@ export class HumanResourceDetailComponent implements OnInit {
     const parentIds = groupList.map((data: any) => data.parentId);
     const onlyInIds = parentIds.filter((id: any) => !ids.includes(id));
     const unique = [...new Set(onlyInIds)];
-     return unique.length > 0 ? (unique[0] as number) : null;
+    return unique.length > 0 ? (unique[0] as number) : null;
     // return [...new Set(onlyInIds)].values().next().value ?? null;
   }
 
@@ -554,7 +593,7 @@ export class HumanResourceDetailComponent implements OnInit {
     dataDialog.iconColor = 'icon warning';
     dataDialog.width = '30%';
     this.dialogCommon.openDialogInfo(dataDialog).subscribe((result) => {
-      console.log( this.subMerchantList);
+      console.log(this.subMerchantList);
       if (result && hasRole) {
         this.router.navigate(['hr/hr-update'], {
           state: {
@@ -562,6 +601,7 @@ export class HumanResourceDetailComponent implements OnInit {
               groupList: this.personDetail?.groupList,
               roleId: this.personDetail?.roleId,
               userId: this.personDetail?.id,
+              roleTypePersonel: this.rolePesonel?.type,
               masterId:
                 this.personDetail?.orgType === 0
                   ? this.userInfo?.merchantId

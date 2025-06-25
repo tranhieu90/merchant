@@ -28,7 +28,7 @@ import { UserProfileComponent } from './component/user-profile/user-profile.comp
 import { HistoryExportComponent } from './component/transaction-management/history-export/history-export.component';
 import { CashbackDetailComponent } from './component/transaction-management/cashback-detail/cashback-detail.component';
 import { HumanResourceUpdateComponent } from './component/human-resource-management/human-resource-update/human-resource-update.component';
-import { TimepickerComponent } from './base/shared/timepicker/timepicker.component';
+import { DownloadExcel } from './component/transaction-management/download-excel/download-excel';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -62,10 +62,6 @@ export const routes: Routes = [
   },
   {
     path: 'demo-checkbox', component: MCheckboxComponent,
-    // canActivate: [authGuard]
-  },
-    {
-    path: 'demo-timepicker', component: TimepickerComponent,
     // canActivate: [authGuard]
   },
   {
@@ -128,7 +124,7 @@ export const routes: Routes = [
         component: BusinessDetailComponent,
         canActivate: [authGuard],
         data: {
-          breadcrumb: 'Xem chi tiết điểm kinh doanh',
+          breadcrumb: 'Chi tiết điểm kinh doanh',
         },
       },
       {
@@ -189,7 +185,7 @@ export const routes: Routes = [
     data: { breadcrumb: 'Giao dịch' },
     children: [
       {
-        path: 'payment', 
+        path: 'payment',
         component: PaymentComponent,
         data: {
           breadcrumb: 'Thanh toán',
@@ -204,7 +200,7 @@ export const routes: Routes = [
         //canActivate: [authGuard]
       },
       {
-        path: 'cashback', 
+        path: 'cashback',
         component: CashbackComponent,
         data: {
           breadcrumb: 'Hoàn trả',
@@ -219,7 +215,7 @@ export const routes: Routes = [
         //canActivate: [authGuard]
       },
       {
-        path: 'history-export', 
+        path: 'history-export',
         component: HistoryExportComponent,
         data: {
           breadcrumb: 'Lịch sử xuất file excel',
@@ -233,6 +229,11 @@ export const routes: Routes = [
     path: 'dashboard', component: DashboardComponent,
     data: { breadcrumb: 'Trang chủ' },
     canActivate: [authGuard]
+  },
+  {
+    path: 'download/excel/:requestKey/:fileName', component: DownloadExcel,
+    data: { breadcrumb: 'Download' },
+    // canActivate: [authGuard]
   },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' },

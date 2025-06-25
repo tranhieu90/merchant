@@ -21,6 +21,8 @@ import { DialogConfirmModel } from '../../model/DialogConfirmModel';
 import { DialogCommonService } from '../../common/service/dialog-common/dialog-common.service';
 import { UpdateUserComponent } from '../user-profile/update-user/update-user.component';
 import { PermissionDirective } from '../../common/directives/permissionDirective';
+import { MERCHANT_RULES } from '../../base/constants/authority.constants';
+import { firstValueFrom } from 'rxjs';
 
 export type Role = {
   id: number,
@@ -187,15 +189,36 @@ export class RoleManagementComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.isShowUpdate = this.auth.apiTracker("/api/v1/role-management/update");
+    this.isShowUpdate = this.auth.apiTracker([MERCHANT_RULES.ROLE_UPDATE]);
     this.doSearch();
   }
 
-  doOpenPage(roleId?: any) {
+  async doOpenPage(roleId?: any) {
     const verifyUser = this.auth.checkVerifyUserInfo();
     switch (verifyUser) {
       case UserVerifyStatus.VERIFIED:
-        this.router.navigate(['/role/create-role'], roleId ? { queryParams: { roleId } } : {});
+        if(roleId) {
+          const totalUsers =  await this.getLstUsers(roleId);
+          if (totalUsers > 0) {
+            let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+            dataDialog.title =
+              'Vai trò đang gán cho ' + totalUsers + ' nhân sự';
+            dataDialog.message =
+              'Việc thay đổi thông tin vai trò sẽ ảnh hưởng đến danh sách tính năng được sử dụng của nhân sự. Bạn có chắc chắn muốn tiếp tục cập nhật vai trò không?';
+            dataDialog.buttonLabel = 'Xác nhận';
+            dataDialog.icon = 'icon-warning';
+            dataDialog.viewCancel = true;
+            dataDialog.iconColor = 'icon warning';
+            this.dialogCommon.openDialogInfo(dataDialog).subscribe((result) => {
+              if (result) {
+                this.router.navigate(['/role/create-role'], roleId ? { queryParams: { roleId } } : {});
+              }
+            });
+            return;
+          }
+        } else {
+          this.router.navigate(['/role/create-role'], roleId ? { queryParams: { roleId } } : {});
+        }
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
         this.openDialogUnverifiedAccountHasEmail();
@@ -209,22 +232,14 @@ export class RoleManagementComponent implements OnInit {
     }
   }
 
-  doOpenPageClone(roleId?: any) {
-    const verifyUser = this.auth.checkVerifyUserInfo();
-    switch (verifyUser) {
-      case UserVerifyStatus.VERIFIED:
-        this.router.navigate(['/role/clone-role'], { queryParams: { roleId } });
-        break;
-      case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
-        this.openDialogUnverifiedAccountHasEmail();
-        break;
-      case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
-        this.openDialogUnverifiedAccountNoEmail();
-        break;
-      default:
-        console.warn("Trạng thái xác minh không hợp lệ:", verifyUser);
-        break;
-    }
+  getLstUsers(roleId?: number): Promise<number> {
+    const param = {
+      roleId: roleId,
+      pageIndex: 0,
+      pageSize: 1000,
+    };
+    return firstValueFrom(this.api.get(ROlE_ENDPOINT.SEARCH_LIST_USER_ROLE, param))
+      .then(res => res['data']['count']);
   }
 
   doDetail(roleId?: any) {

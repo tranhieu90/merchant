@@ -34,8 +34,15 @@
     color: $color-icon-action-main;
     font-size: 19px;
     top: 46%;
+    pointer-events: none;
+  }
+
+  ::ng-deep .p-highlight {
+    color: #ffffff !important;
+    background-color: $color-surface-action-main !important;
   }
 }
+
 
 .box-search,
 .box-filter {
@@ -275,4 +282,31 @@
   top: 50%;
   transform: translateY(-50%);
   left: 90%; // giữ nếu bạn muốn nó sát mép phải
+}
+
+::ng-deep .ellipsis-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 460px;
+}
+
+::ng-deep .custom-mutil-option {
+  .p-overlay {
+    left: 0 !important;
+    right: 0 !important;
+  }
+}
+
+::ng-deep .cdk-overlay-container {
+  z-index: 9999 !important;
+}
+
+.node-label-ellipsis {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
 }

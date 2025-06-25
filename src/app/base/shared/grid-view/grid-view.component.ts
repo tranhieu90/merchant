@@ -41,6 +41,7 @@ export class GridViewComponent implements OnInit, AfterViewInit {
   @Input() isShowPage?: boolean = true;
   @Input() isOrder?: boolean = false;
   @Input() showRadio?: boolean = false;
+  @Input() isWhitespace?: boolean = false;
   @Input() selectedItems?: boolean = false;
   @Output() selectedItemChange: EventEmitter<any> = new EventEmitter();
   @Output() dataChoice: EventEmitter<any> = new EventEmitter();
@@ -52,6 +53,7 @@ export class GridViewComponent implements OnInit, AfterViewInit {
   renderedValues: string[][] = [];
   tooltipText: string = '';
   indeterminate?: boolean;
+  @Input() searchBusiness?: boolean = false;
 
   // get selectedItemCount(): number {
   //   var count= this.dataSource.filter((item: any) => item.checked).length;

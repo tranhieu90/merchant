@@ -113,6 +113,54 @@ body {
 }
 
 .mat-mdc-tooltip-surface {
-  font-family: $font-family-regular;
-  font-size: $typo-font-sizes-s;
+  font-family: $font-family-regular !important;
+  font-size: $typo-font-sizes-s !important;
+  font-weight:  $typo-font-weights-regular !important;
+  padding: $spacing-xs !important;
+  color: $color-global-neutral-neutral-12 !important;
+}
+
+//=====================custom p-tree-select====================
+.p-treeselect-close {
+  display: none !important;
+}
+ /* chọn panel dropdown của p-treeSelect */
+.p-treeselect-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.custom-tree-header {
+  order: 2;
+}
+
+
+.ui-treeselect-filter-container {
+  order: 1;
+}
+
+.p-treeselect-items-wrapper {
+  order: 3;
+}
+
+.p-tree-container {
+    padding: 0 !important;
+}
+
+.custom-tree-header {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.5rem 0;
+  color: $color-text-action-main;
+}
+
+.clear-all-link {
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.icon-clear {
+  color: $color-text-action-main;
 }

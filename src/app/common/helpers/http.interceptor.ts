@@ -227,6 +227,8 @@ export class AppHttpInterceptor implements HttpInterceptor {
 
   handleSessionLogout(isToast?: boolean) {
     // localStorage.clear();
+    const currentUrl = this.router.url;
+    sessionStorage.setItem('redirectUrlAfterLogin', currentUrl);
     localStorage.removeItem(environment.accessToken);
     localStorage.removeItem(environment.refeshToken);
     localStorage.removeItem(environment.userInfo);

@@ -169,3 +169,10 @@
 .ml-16{
     margin-left: 16px;
 }
+
+::ng-deep .p-tabview-panels {
+    overflow-y: auto;
+    height: 200px;
+    min-height: calc(100vh - 342px);
+    overflow-x: hidden;
+}

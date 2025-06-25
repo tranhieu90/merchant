@@ -36,7 +36,6 @@ export class AreaItemComponent implements OnChanges {
   constructor(
     private fb: FormBuilder,
   ) {
-    console.log(this.areaActive)
     this.formCreateArea = this.fb.group({
       areaName: ['', [Validators.required, Validators.maxLength(50)]],
     });
@@ -56,9 +55,7 @@ export class AreaItemComponent implements OnChanges {
   }
 
   onActiveArea(area: AreaModel): void {
-    if (this.isActionDelte || this.isActionAdd) {
-      return;
-    }
+   
     this.activeItem = area;
     this.activeArea.emit(area);
   }

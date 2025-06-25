@@ -2,7 +2,7 @@
     <div class="header-m-semibold">Cơ cấu tổ chức</div>
     <div class="d-flex">
         <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="doCancel()" />
-        <p-button label="Lưu thiết lập" class="merchant-button" [disabled]="checkValidCreate()"
+        <p-button [disabled]="!hasRole" label="Lưu thiết lập" class="merchant-button" [disabled]="checkValidCreate()"
             (click)="doCreateOrg()" />
     </div>
 </div>
@@ -122,9 +122,9 @@
                         <div *ngIf="areaActive.lstMerchant.length === 0" class="no-data">
                             <img [src]="assetPath + '/assets/images/grid-search-empty.png'">
                             <div class="mt-4 title-l-semibold title-no-data">Nhóm chưa có điểm kinh doanh</div>
-                            <div class="title-s-regular summary-no-data mb-3">Vui lòng thêm các điểm kinh doanh vào nhóm
+                            <div *ngIf="hasRole" class="title-s-regular summary-no-data mb-3">Vui lòng thêm các điểm kinh doanh vào nhóm
                                 để quản lý các điểm kinh doanh của bạn hiệu quả hơn</div>
-                            <p-button label="Gán điểm kinh doanh" class="merchant-button" icon="icon-Folder"
+                            <p-button *ngIf="hasRole" label="Gán điểm kinh doanh" class="merchant-button" icon="icon-Folder"
                                 (click)="doAssignSubmerchant()" />
                         </div>
                     </div>

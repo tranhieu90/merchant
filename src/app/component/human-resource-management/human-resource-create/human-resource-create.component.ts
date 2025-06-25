@@ -163,9 +163,11 @@ export class HumanResourceCreateComponent implements OnInit {
     this.navigationSubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         if (!this._isNavigating) {
-          this._isNavigating = true;
-          this.onCancel(event.url);
-          this.router.navigate([], { replaceUrl: true, queryParamsHandling: 'preserve' });
+          // this._isNavigating = true;
+          if (event.url !== '/login') {
+            this.onCancel(event.url);
+            this.router.navigate([], { replaceUrl: true, queryParamsHandling: 'preserve' });
+          }
         }
       }
     });
@@ -402,10 +404,11 @@ export class HumanResourceCreateComponent implements OnInit {
     this.isSearch = true;
     let dataReq = {
       groupIdList: this.activeOrganization ? [this.organizationIdActive] : [],
-      status: '',
+      status: 'active',
       methodId: [],
       mappingKey: '',
     };
+    this.searchOrganization = this.searchOrganization?.trim();
     let param = {
       size: 1000,
       keySearch: this.searchOrganization ? this.searchOrganization : null,
@@ -748,10 +751,14 @@ export class HumanResourceCreateComponent implements OnInit {
         pattern = REGEX_PATTERN.USER_NAME_EXT;
         maxLength = 50;
         break;
+      case "fullName":
+        pattern = REGEX_PATTERN.FULL_NAME_EXT;
+        maxLength = 50;
+        break;
     }
     if (
       !pattern.test(event.key) ||
-      event.key === " " ||
+      (event.key === " " && target?.id !== "fullName") ||
       target.value.length >= maxLength
     ) {
       event.preventDefault();
@@ -777,6 +784,7 @@ export class HumanResourceCreateComponent implements OnInit {
           this.isHaveEmail = true;
         }
         this.isSuccess = 1;
+        this._isNavigating = true;
         this.doNextStep();
       },
       (error) => {
@@ -817,8 +825,14 @@ export class HumanResourceCreateComponent implements OnInit {
       data: dataConfirm,
     });
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.router.navigate(['/hr']);
+      if (result === true) {
+        this._isNavigating = true;
+        if (url) {
+          this.router.navigateByUrl(url);
+        }
+        else {
+          this.router.navigate(['/hr']);
+        }
       }
     });
   }

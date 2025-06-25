@@ -21,6 +21,7 @@ import { UpdateUserComponent } from '../../../user-profile/update-user/update-us
 import { DialogConfirmModel } from '../../../../model/DialogConfirmModel';
 import { DialogCommonService } from '../../../../common/service/dialog-common/dialog-common.service';
 import { QRCodeComponent} from 'angularx-qrcode';
+import { MERCHANT_RULES } from '../../../../base/constants/authority.constants';
 @Component({
   selector: 'app-business-detail',
   standalone: true,
@@ -39,6 +40,8 @@ export class BusinessDetailComponent implements OnInit {
   subId!: number
   isShowAllPos: boolean = false;
   isShowAllThd: boolean = false;
+  hasRoleUpdate?: boolean
+  readonly MERCHANT_RULES = MERCHANT_RULES;
 
   constructor(
     private fb: FormBuilder,
@@ -58,6 +61,7 @@ export class BusinessDetailComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+     this.hasRoleUpdate = this.auth.apiTracker([MERCHANT_RULES.BUSINESS_UPDATE]);
   }
 
   getDataDetail(subId: number) {

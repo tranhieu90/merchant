@@ -1,7 +1,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="header-m-semibold">Cơ cấu tổ chức</div>
     <div class="d-flex">
-        <p-button *ngIf="!isMoveMerchantSuccess" label="Thêm nhóm chính" class="merchant-button" icon="icon-Folder-plus" (click)="addArea(1, null, null)" />
+        <p-button *ngIf="!isMoveMerchantSuccess && hasRoleSetup" label="Thêm nhóm chính" class="merchant-button" icon="icon-Folder-plus" (click)="addArea(1, null, null)" />
     </div>
 </div>
 
@@ -71,14 +71,14 @@
                 <div *ngIf="!isEditArea" class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
                         <span class="header-m-semibold me-3">{{areaActive.groupName}}</span>
-                        <p-button class="merchant-button-icon button-l button-light btn-edit" icon="icon-edit"
+                        <p-button *ngIf="hasRoleSetup" class="merchant-button-icon button-l button-light btn-edit" icon="icon-edit"
                             (click)="doEditArea()" />
                     </div>
                     <div>
-                        <p-button *ngIf="areaActive.level < 5 && lstMerchantActive.length == 0" label="Thêm nhóm mới"
+                        <p-button *ngIf="areaActive.level < 5 && lstMerchantActive.length == 0 && hasRoleSetup" label="Thêm nhóm mới"
                             class="merchant-button-secondary" icon="icon-Folder-plus"
                             (click)="addArea(areaActive.level + 1, areaActive.id, areaActive)" />
-                        <p-button *ngIf="areaActive.children.length === 0"
+                        <p-button *ngIf="areaActive.children.length === 0 && hasRoleSetup"
                             class="merchant-button-icon button-l button-light button-trash ms-2" icon="icon-trash"
                             (click)="validateDeleteArea(areaActive)" />
                     </div>
@@ -93,15 +93,15 @@
 
                 <div *ngIf="areaActive.children.length == 0"  style="max-height: 80vh; overflow-y: auto;">
                     <div *ngIf="lstMerchantActive.length > 0" class="mt-4">
-                        <app-table-merchant [dataSource]="lstMerchantActive" [isShowCheckbox]="true"
+                        <app-table-merchant [dataSource]="lstMerchantActive" [isShowCheckbox]="hasRoleSetup"
                             [isShowMoveMerchant]="true" (doMoveMerchant)="doMoveMerchant($event)" [groupId]="areaActive.id"></app-table-merchant>
                     </div>
-                    <div *ngIf="lstMerchantActive.length === 0" class="no-data">
+                    <div *ngIf="lstMerchantActive.length === 0 " class="no-data">
                         <img [src]="assetPath +'/assets/images/grid-search-empty.png'">
                         <div class="mt-4 title-l-semibold title-no-data">Nhóm chưa có điểm kinh doanh</div>
-                        <div class="title-s-regular summary-no-data mb-3">Vui lòng thêm các điểm kinh doanh vào nhóm
+                        <div *ngIf="hasRoleSetup" class="title-s-regular summary-no-data mb-3">Vui lòng thêm các điểm kinh doanh vào nhóm
                             để quản lý các điểm kinh doanh của bạn hiệu quả hơn</div>
-                        <p-button label="Gán điểm kinh doanh" class="merchant-button" icon="icon-Folder"
+                        <p-button *ngIf="hasRoleSetup" label="Gán điểm kinh doanh" class="merchant-button" icon="icon-Folder"
                             (click)="doAssignSubmerchant()" />
                     </div>
                 </div>

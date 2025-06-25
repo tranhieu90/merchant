@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <div class="subject-page">Giao dịch thanh toán</div>
-  <p-button label="Xuất file" class="merchant-button" icon="icon-download" (click)="onExport()"/>
+  <div class="header-m-semibold">Giao dịch thanh toán</div>
+  <p-button *ngIf="hasRoleExport" label="Xuất file" class="merchant-button ms-auto title-s-semibold" icon="icon-download" (click)="onExport()" [disabled]="dataTable.length <= 0"/>
 </div>
 
 <div class="wrapper">
@@ -10,10 +10,10 @@
       <div>Tổng tiền: <span>{{ formatMoney(totalAmount) }}</span></div>
     </div>
     <div class="d-flex">
-      <p-calendar class="merchant-calendar me-2" [iconDisplay]="'input'" [showIcon]="true"
+      <p-calendar class="merchant-calendar me-2" [iconDisplay]="'input'" [showIcon]="true" readonlyInput="true"
                   inputId="templatedisplay" selectionMode="range" [numberOfMonths]="2" [showTime]="true"
                   [hourFormat]="'24'" [(ngModel)]="searchCriteria.dateRange" [maxDate]="maxDate" [minDate]="minDate"
-                  (ngModelChange)="onDateRangeSelect($event)" [dateFormat]="'dd/mm/yy'">
+        (ngModelChange)="onDateRangeSelect($event)" (onClose)="onDatePickerClose()" [dateFormat]="'dd/mm/yy'">
         <ng-template pTemplate="inputicon">
           <i class="icon-calendar"></i>
         </ng-template>
@@ -133,15 +133,10 @@
       </div>
     </div>
     <div class="row">
-<!--      <div class="col-md-4">-->
-<!--        <div class="title">Tên nhóm</div>-->
-<!--        <p-multiSelect class="merchant-multiSelect multiselect-all" [options]="groupOptions" optionValue="code"-->
-<!--                       optionLabel="name" placeholder="Tất cả" [filter]="false"-->
-<!--                       [(ngModel)]="filterCriteria.selectedGroups"/>-->
-<!--      </div>-->
       <div class="col-md-4">
         <label class="form-label title-s-semibold">Tên nhóm</label>
         <p-treeSelect
+          appendTo="body"
           [options]="groupOptions"
           [(ngModel)]="filterCriteria.selectedGroups"
           optionLabel="label"
@@ -151,24 +146,36 @@
           [metaKeySelection]="false"
           [filter]="true"
           placeholder="Tất cả"
-          class="merchant-treeSelect"
+          class="merchant-treeSelect merchant-multiSelect"
           filterPlaceholder="Tìm kiếm cụm/nhóm"
           (onNodeSelect)="onGroupClick($event)"
           (onNodeUnselect)="onGroupClick($event)">
-          <!-- <ng-template pTemplate="footer">
-            <div class=container-btn-cf>
-              <p-button label="Xác nhận" class="merchant-button btn-cf" (click)="confirmGroup()"/>
+          <ng-template pTemplate="header">
+            <div class="custom-tree-header" *ngIf="isClear" (click)="setValueFormDefault()">
+              <span class="icon-close_small icon-clear"> </span>
+              <span class="clear-all-link"> Bỏ chọn tất cả</span>
             </div>
-          </ng-template> -->
+          </ng-template>
+          <ng-template let-node pTemplate="default">
+            <span [matTooltip]="node.fullLabel" [matTooltipDisabled]="!node.showTooltip" class="node-label-ellipsis"
+              matTooltipPosition="above">
+              {{ node.label }}
+            </span>
+          </ng-template>
         </p-treeSelect>
       </div>
       <div class="col-md-4">
         <div class="title">Điểm kinh doanh</div>
-        <p-multiSelect class="merchant-multiSelect" [options]="merchantOptions" optionValue="merchantId"
-                       optionLabel="merchantName" placeholder="Tất cả" filterPlaceHolder="Tìm kiếm điểm kinh doanh"
-                       [filter]="true" [(ngModel)]="filterCriteria.selectedMerchants"
-                       selectedItemsLabel="{0} điểm kinh doanh đang chọn"
-                       emptyFilterMessage="Không tìm thấy kết quả"/>
+        <p-multiSelect class="merchant-multiSelect custom-mutil-option" [options]="merchantOptions" optionValue="merchantId"
+          optionLabel="merchantName" placeholder="Tất cả" filterPlaceHolder="Tìm kiếm điểm kinh doanh" [filter]="true"
+          [(ngModel)]="filterCriteria.selectedMerchants" selectedItemsLabel="{0} điểm kinh doanh đang chọn"
+          emptyFilterMessage="Không tìm thấy kết quả">
+          <ng-template let-option pTemplate="item">
+            <div class="ellipsis-item" [title]="option.merchantName">
+              {{ option.merchantName }}
+            </div>
+          </ng-template>
+        </p-multiSelect>
       </div>
     </div>
   </div>

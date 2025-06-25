@@ -49,7 +49,7 @@
       </ng-container>
 
       <ng-container *hasRoles="[MERCHANT_RULES.USER_MANAGER_UPDATE]">
-        <p-button *ngIf="this.userId !== this.userInfo.id" label="Cập nhật nhân sự" class="merchant-button"
+        <p-button *ngIf="this.userId !== this.userInfo.id && this.personDetail?.enableUpdate === 'YES'" label="Cập nhật nhân sự" class="merchant-button"
           (onClick)="doUpdateHuman()" />
       </ng-container>
     </div>

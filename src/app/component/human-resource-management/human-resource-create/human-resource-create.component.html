@@ -197,8 +197,8 @@
             <div class="col-6 mb-4">
               <label class="form-label title-m-semibold">Họ và tên <span class="required">*</span></label>
               <div class="p-inputgroup">
-                <input type="text" pInputText maxlength="50" class="merchant-input" formControlName="fullName"
-                  placeholder="Nhập họ và tên" (blur)="trimValue('fullName')" />
+                <input type="text" pInputText maxlength="50" id="fullName" class="merchant-input" formControlName="fullName"
+                  placeholder="Nhập họ và tên" (blur)="trimValue('fullName')" (keypress)="allowPattern($event)" />
                 <span *ngIf="formInfo.get('fullName')?.value" class="p-input-icon-right clear-icon"
                   (click)="clearValue('fullName')">
                   <i class="icon-close_circle_solid input-icon input-icon-close"></i>
@@ -293,7 +293,7 @@
                   <span class="icon-error_solid"></span>
                 </div>
                 <span *ngIf="formInfo.controls['phoneNumber'].hasError('pattern')"
-                  class="text-caption paragraph-m-regular">Số điện thoại không hợp lệ</span>
+                  class="text-caption paragraph-m-regular">Số điện thoại không đúng định dạng</span>
                 <span *ngIf="
                   formInfo.controls['phoneNumber'].hasError('phoneNumberExist')
                 " class="text-caption paragraph-m-regular">Số điện thoại đã tồn tại</span>
@@ -321,7 +321,7 @@
             <div class="col-6 mb-4">
               <label class="form-label title-m-semibold">Tên đăng nhập <span class="required">*</span></label>
               <div class="p-inputgroup">
-                <input appShowClearOnFocus=".clear-icon" type="text" pInputText maxlength="100" id="userName"
+                <input type="text" pInputText maxlength="100" id="userName"
                   class="merchant-input" formControlName="userName" placeholder="Nhập tên đăng nhập"
                   (blur)="trimValue('userName')" (keypress)="allowPattern($event)" />
                 <span *ngIf="formInfo.get('userName')?.value" class="p-input-icon-right clear-icon"

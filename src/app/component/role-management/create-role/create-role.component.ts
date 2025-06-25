@@ -30,6 +30,7 @@ import { environment } from '../../../../environments/environment';
 import { REGEX_PATTERN } from '../../../common/enum/RegexPattern';
 import { InputSanitizeDirective } from '../../../common/directives/inputSanitize.directive';
 import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
+import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
 
 @Component({
   selector: 'app-create-role',
@@ -57,7 +58,7 @@ export class CreateRoleComponent implements OnInit {
   listFunctionIdsSelected: any = [];
   listFunctionIdsSelectedOld: any = [];
   userInfo: any;
-
+  dataOld: any;
   currentStep: number = 0;
   roleId!: number;
   countUserInRole: number = 0;
@@ -94,7 +95,7 @@ export class CreateRoleComponent implements OnInit {
       description: ['', [Validators.maxLength(150)]]
     });
     this.userInfo = this.auth.getUserInfo();
-    this.hasRoleAddUser();
+    this.isHasRoleAddUser = this.auth.apiTracker([MERCHANT_RULES.ROLE_CREATE_USER]);
   }
 
   removeRoleExistsError() {
@@ -124,7 +125,7 @@ export class CreateRoleComponent implements OnInit {
 
   doSaveRole() {
     if (this.roleId != null) {
-      this.updateRole()
+      this.doUpdate()
     } else {
       this.createRole();
     }
@@ -155,29 +156,11 @@ export class CreateRoleComponent implements OnInit {
       });
   }
 
-  updateRole() {
-    if (this.countUserInRole > 0) {
-      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-      dataDialog.title = 'Vai trò đang gán cho ' + this.countUserInRole + ' nhân sự';
-      dataDialog.message = 'Việc thay đổi thông tin vai trò sẽ ảnh hưởng đến danh sách tính năng được sử dụng của nhân sự. Bạn có chắc chắn muốn tiếp tục cập nhật vai trò không?';
-      dataDialog.buttonLabel = 'Tiếp tục';
-      dataDialog.icon = 'icon-warning';
-      dataDialog.viewCancel = true;
-      dataDialog.iconColor = 'icon warning';
-      this.dialogCommon.openDialogInfo(dataDialog).subscribe(result => {
-        if (result) {
-          this.doUpdate();
-        }
-      });
-      return;
-    }
-    this.doUpdate();
-  }
-
   doUpdate() {
     let lstAddFunctionIds = this.listFunctionIdsSelected.filter((item: any) => !this.listFunctionIdsSelectedOld.includes(item));
     let lstDeleteFunctionIds = this.listFunctionIdsSelectedOld.filter((item: any) => !this.listFunctionIdsSelected.includes(item));
-    if (lstAddFunctionIds.length == 0 && lstDeleteFunctionIds.length == 0) {
+    if (lstAddFunctionIds.length == 0 && lstDeleteFunctionIds.length == 0 && 
+      this.formNameRole.get('roleName')?.value === this.dataOld?.name && this.formNameRole.get('description')?.value === this.dataOld?.description) {
       this.isSuccess = 2;
       this.doNextStep();
       return
@@ -241,6 +224,7 @@ export class CreateRoleComponent implements OnInit {
     this.api.get(ROlE_ENDPOINT.GET_DETAILS_FUNC + this.roleId).subscribe(res => {
       this.formNameRole.get('roleName')?.setValue(res['data']['name']);
       this.formNameRole.get('description')?.setValue(res['data']['description']);
+      this.dataOld = res['data'];
       this.listFunction = res['data']['functionGroupModels'];
       this.listFunctionConvert = this.getListFuncConvert(res['data']['functionGroupModels'], null);
       this.listFunctionIdsSelected = this.getSelectedIds(this.listFunctionConvert);
@@ -422,10 +406,6 @@ export class CreateRoleComponent implements OnInit {
 
   clearValue(nameInput: string) {
     this.formNameRole.get(nameInput)?.setValue('');
-  }
-
-  hasRoleAddUser() {
-    return this.isHasRoleAddUser = this.auth.apiTracker("/api/v1/add-user-role");;
   }
 
   getNumberUserInRole() {

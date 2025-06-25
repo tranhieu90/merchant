@@ -43,7 +43,7 @@
             </div>
             <div class="div-button">
                 <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="onCancel()" />
-                <button [disabled]="areaIdMove == 0" mat-button class="merchant-button-material"
+                <button [disabled]="areaIdMove == null" mat-button class="merchant-button-material"
                     (click)="doCheckQuantity()">
                     Tiếp tục
                 </button>
@@ -104,6 +104,9 @@
                         </div>
                         @if (formBusiness.controls['merchantName'].hasError('required')) {
                         <span class="text-caption paragraph-m-regular">Vui lòng nhập tên diễn giải</span>
+                        }
+                        @if (formBusiness.controls['merchantName'].hasError('isMerchantNameUsed')) {
+                        <span class="text-caption paragraph-m-regular">Tên diễn giải đã tồn tại</span>
                         }
                     </div>
                     }

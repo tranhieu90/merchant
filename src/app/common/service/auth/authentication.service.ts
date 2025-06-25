@@ -31,9 +31,17 @@ export class AuthenticationService {
     let userInfoParse = this.getUserInfo();
     this.userInfoSubject.next(userInfoParse);
     let userInfor = JSON.parse(decoded.sub);
-    if (userInfor['firstChangePassword'] === 0)
-      this.router.navigate(['/change-password']);
-    else this.router.navigate(['/dashboard']);
+    const redirectUrl = sessionStorage.getItem('redirectUrlAfterLogin');
+    sessionStorage.removeItem('redirectUrlAfterLogin');
+    if (userInfor['firstChangePassword'] === 0) {
+      if (this.router.url !== '/change-password') {
+        this.router.navigate(['/change-password']);
+      }
+    } else if (redirectUrl && redirectUrl !== '/login' && redirectUrl !== this.router.url) {
+      this.router.navigateByUrl(redirectUrl);
+    } else if (this.router.url !== '/dashboard') {
+      this.router.navigate(['/dashboard']);
+    }
   }
 
   getToken() {
