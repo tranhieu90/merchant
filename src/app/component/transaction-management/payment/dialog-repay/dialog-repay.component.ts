@@ -25,7 +25,7 @@ export class DialogRepayComponent {
   formRepay!: FormGroup;
   maxMoney: number = 0;
   totalNumberCanRefund: number = 0;
-  timeCanRefund: number = 0;
+  isExpireDate: any;
   traceTransfer: any;
 
   constructor(
@@ -38,12 +38,13 @@ export class DialogRepayComponent {
 
     this.formRepay = this.fb.group({
       money: [null, [Validators.required]],
-      description: ['Hoan tra giao dich', [Validators.required, Validators.maxLength(500)]]
+      description: ['Hoan tra giao dich', [Validators.required, Validators.maxLength(50)]]
     });
 
-    this.timeCanRefund = this.getDaysPassed(dataDialog?.transTime);
-    if (this.timeCanRefund > 30) {
-      this.toast.showError('Giao dịch không thể thực hiện do đã quá 30 ngày kể từ ngày phát sinh giao dịch thanh toán');
+    this.isExpireDate = this.getExpiredDate(dataDialog?.transTime);
+    console.log("this.isExpireDate", this.isExpireDate);
+    if (this.isExpireDate) {
+      this.toast.showError('Giao dịch không thể thực hiện do đã quá 6 tháng kể từ ngày phát sinh giao dịch thanh toán');
     }
 
 
@@ -59,7 +60,7 @@ export class DialogRepayComponent {
 
     this.api.post(REFUND_ENDPOINT.GET_INFO_REFUND, param).subscribe(res => {
         this.totalNumberCanRefund = res['data']['totalNumberCanRefund'];
-        const amountRefund = res['data']['amount'] || 0;
+        const amountRefund = res['data']['totalAmountRefund'] || 0;
         this.traceTransfer = res['data']['traceTransfer'];
         this.maxMoney = this.dataDialog.amount - Number(amountRefund);
         this.formRepay.controls['money'].setValue(this.maxMoney);
@@ -87,6 +88,11 @@ export class DialogRepayComponent {
   }
 
   doAction() {
+    if (this.formRepay.invalid || this.totalNumberCanRefund <= 0 || this.isExpireDate) {
+      this.formRepay.markAllAsTouched();
+      this.formRepay.markAsDirty();
+      return;
+    }
     let refundData = {
       currentRefundMoney: this.formRepay.get('money')?.value,
       refundReason: this.formRepay.get('description')?.value,
@@ -107,27 +113,42 @@ export class DialogRepayComponent {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ';
   }
 
-  getDaysPassed(dateStr: string): number {
-    // Định nghĩa offset cho UTC+7 (7 giờ * 60 phút = 420 phút)
+  getExpiredDate(dateStr: string): boolean {
+
     const UTC_PLUS_7_OFFSET_MINUTES = 7 * 60;
 
     const targetMoment = moment(dateStr, 'DD/MM/YYYY HH:mm:ss');
-
     if (!targetMoment.isValid()) {
       console.error(`Lỗi: Không thể parse chuỗi ngày: '${dateStr}' với định dạng 'DD/MM/YYYY HH:mm:ss'`);
-      return NaN;
+      return true;
     }
 
     targetMoment.utcOffset(UTC_PLUS_7_OFFSET_MINUTES, true);
 
-    const targetStartOfDay = targetMoment.startOf('day');
+    const expiredMoment = targetMoment.clone().add(6, 'months').startOf('day');
 
-    const todayMoment = moment();
+    const todayMoment = moment().utcOffset(UTC_PLUS_7_OFFSET_MINUTES, true).startOf('day');
 
-    todayMoment.utcOffset(UTC_PLUS_7_OFFSET_MINUTES, true);
 
-    const todayStartOfDay = todayMoment.startOf('day');
+    return todayMoment.isAfter(expiredMoment);
+  }
 
-    return todayStartOfDay.diff(targetStartOfDay, 'days');
+  onEnterSubmit(event: any) {
+    event.preventDefault();
+
+    const inputEl = (event.target as HTMLElement);
+    if (inputEl && inputEl.id === 'integeronly') {
+      const fakeEvent = { target: { value: this.formRepay.get('money')?.value?.toString() || '' } };
+      this.onBlurMoney(fakeEvent);
+    }
+
+    Object.keys(this.formRepay.controls).forEach(field => {
+      const control = this.formRepay.get(field);
+      control?.markAsTouched({ onlySelf: true });
+    });
+
+    if (this.formRepay.valid && this.totalNumberCanRefund > 0 && !this.isExpireDate) {
+      this.doAction();
+    }
   }
 }

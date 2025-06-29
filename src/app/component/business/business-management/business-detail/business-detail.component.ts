@@ -11,11 +11,17 @@ import { FetchApiService } from '../../../../common/service/api/fetch-api.servic
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { BusinessDialogComponent } from '../business-dialog/business-dialog.component';
-import { BUSINESS_ENDPOINT } from '../../../../common/enum/EApiUrl';
+import { BUSINESS_ENDPOINT, USER_ENDPOINT } from '../../../../common/enum/EApiUrl';
 import { CommonUtils } from '../../../../base/utils/CommonUtils';
 import { CommonModule } from '@angular/common';
 import moment from 'moment';
-import { QRCodeComponent, QRCodeModule } from 'angularx-qrcode';
+import { DialogRoleComponent, DialogRoleModel } from '../../../role-management/dialog-role/dialog-role.component';
+import { UserVerifyStatus } from '../../../../common/constants/CUser';
+import { UpdateUserComponent } from '../../../user-profile/update-user/update-user.component';
+import { DialogConfirmModel } from '../../../../model/DialogConfirmModel';
+import { DialogCommonService } from '../../../../common/service/dialog-common/dialog-common.service';
+import { QRCodeComponent, QRCodeModule} from 'angularx-qrcode';
+import { MERCHANT_RULES } from '../../../../base/constants/authority.constants';
 @Component({
   selector: 'app-business-detail',
   standalone: true,
@@ -34,6 +40,8 @@ export class BusinessDetailComponent implements OnInit {
   subId!: number
   isShowAllPos: boolean = false;
   isShowAllThd: boolean = false;
+  hasRoleUpdate?: boolean
+  readonly MERCHANT_RULES = MERCHANT_RULES;
 
   constructor(
     private fb: FormBuilder,
@@ -42,7 +50,8 @@ export class BusinessDetailComponent implements OnInit {
     private api: FetchApiService,
     private toast: ToastService,
     private routeActive: ActivatedRoute,
-    private auth: AuthenticationService
+    private auth: AuthenticationService,
+    private dialogCommon: DialogCommonService,
   ) {
     this.routeActive.queryParams.subscribe(params => {
       if (params['merchantId']) {
@@ -52,6 +61,7 @@ export class BusinessDetailComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+     this.hasRoleUpdate = this.auth.apiTracker([MERCHANT_RULES.BUSINESS_UPDATE]);
   }
 
   getDataDetail(subId: number) {
@@ -171,5 +181,106 @@ export class BusinessDetailComponent implements OnInit {
   }
   toggleShowThd() {
     this.isShowAllThd = !this.isShowAllThd;
+  }
+
+  checkOpenUpdate(type: number) {
+    const verifyUser = this.auth.checkVerifyUserInfo();
+    switch (verifyUser) {
+      case UserVerifyStatus.VERIFIED:
+        type == 1 ? this.doEdit() : this.doEditBusinessPayment();
+        break;
+      case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
+        this.openDialogUnverifiedAccountAndEmail();
+        break;
+      case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
+        this.openDialogUnverifiedAccountAndNoEmail();
+        break;
+      default:
+        console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
+        break;
+    }
+  }
+
+  openDialogUnverifiedAccountAndEmail() {
+    let dataDialog: DialogRoleModel = new DialogRoleModel();
+    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
+    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>.`;
+    dataDialog.icon = 'icon-warning';
+    dataDialog.iconColor = 'warning';
+    dataDialog.buttonLeftLabel = 'Thay đổi email';
+    dataDialog.buttonRightLabel = 'Xác thực email';
+
+    const dialogRef = this.dialog.open(DialogRoleComponent, {
+      width: '500px',
+      data: dataDialog,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.verifyEmail();
+      } else {
+        this.updateEmail();
+      }
+    });
+  }
+
+  openDialogUnverifiedAccountAndNoEmail() {
+    let dataDialog: DialogRoleModel = new DialogRoleModel();
+    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
+    dataDialog.message =
+      'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
+    dataDialog.icon = 'icon-warning';
+    dataDialog.hiddenButtonLeft = true;
+    dataDialog.iconColor = 'warning';
+    dataDialog.buttonRightLabel = 'Bổ sung email';
+
+    const dialogRef = this.dialog.open(DialogRoleComponent, {
+      width: '500px',
+      data: dataDialog,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.updateEmail();
+      } else {
+      }
+    });
+  }
+
+  updateEmail() {
+    const dialogRef = this.dialog.open(UpdateUserComponent, {
+      width: '600px',
+      data: {
+        title: 'Cập nhật email',
+        type: 'email',
+        isEmailInfo: true,
+      },
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.router.navigate(['/profile']);
+      }
+    })
+  }
+
+  verifyEmail() {
+    this.api.post(USER_ENDPOINT.SEND_VERIFY_MAIL).subscribe(res => {
+      let content = `Chúng tôi vừa gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>, vui lòng kiểm tra email và làm theo hướng dẫn để hoàn tất xác thực tài khoản.`
+      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+      dataDialog.title = 'Hệ thống đã gửi liên kết xác thực';
+      dataDialog.message = content;
+      dataDialog.buttonLabel = 'Tôi đã hiểu';
+      dataDialog.icon = 'icon-mail';
+      dataDialog.iconColor = 'icon info';
+      dataDialog.viewCancel = false;
+      const dialogRef = this.dialogCommon.openDialogInfo(dataDialog);
+      dialogRef.subscribe(res => {
+        this.router.navigate(['/profile']);
+      })
+    })
   }
 }

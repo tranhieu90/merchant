@@ -14,10 +14,10 @@
 
 .status {
     position: relative;
-    padding-left: 15px;
+    padding-left: $spacing-m;
     padding: $spacing-2xs $spacing-xs $spacing-2xs $spacing-m;
     text-transform: uppercase;
-    border-radius: 15px;
+    border-radius: $border-radius-l;
     //typo/paragraph-xs-semibold-Capital
     @include typo-style($typo-font-sizes-xs, $typo-font-weights-semibold, none, none, $font-family-semiBold);
     ;
@@ -26,7 +26,7 @@
         content: '•';
         position: absolute;
         left: 5px;
-        font-size: 20px;
+        font-size: $typo-font-sizes-2xl;
         top: 2px;
     }
 
@@ -59,13 +59,13 @@
     color: $color-text-neutral-sub-2;
 
     .icon {
-        font-size: 24px;
-        line-height: 24px;
+        font-size: $typo-font-sizes-3xl;
+        line-height: $typo-line-heights-l;
     }
 }
 
 .business-info {
-    padding: $spacing-l 0px;
+    padding: $spacing-l $spacing-none;
     border-top: 1px solid $color-border-neutral-main;
     border-bottom: 1px solid $color-border-neutral-main;
 
@@ -88,25 +88,25 @@
 
 .payment-form {
     border: 1px solid $color-border-neutral-main;
-    border-radius: 4px;
+    border-radius: $border-radius-xs;
 
     .title {
-        padding: 16px;
+        padding: $spacing-m;
         background-color: $color-surface-action-sub;
     }
 
     .payment-info {
-        padding: 24px;
+        padding: $spacing-l;
 
         .qr-code {
-            padding: 8px;
+            padding: $spacing-xs;
         }
     }
 }
 
 .user-form {
     border: 1px solid $color-border-neutral-main;
-    border-radius: 4px;
+    border-radius: $border-radius-xs;
     height: 100px;
 }
 

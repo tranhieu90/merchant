@@ -2,13 +2,14 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {DialogConfirmModel} from '../../../model/DialogConfirmModel';
 import {NgClass} from '@angular/common';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'dialog-confirm',
   standalone: true,
   imports: [
-    NgClass
+    NgClass,
+    NgIf
   ],
   templateUrl: './dialog-confirm.component.html',
   styleUrl: './dialog-confirm.component.scss'

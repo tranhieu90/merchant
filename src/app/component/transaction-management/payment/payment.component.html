@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
-  <div class="subject-page">Giao dịch thanh toán</div>
-  <p-button label="Xuất file" class="merchant-button" icon="icon-download" (click)="onExport()"/>
+  <div class="header-m-semibold">Giao dịch thanh toán</div>
+  <p-button *ngIf="hasRoleExport" label="Xuất file" class="merchant-button ms-auto title-s-semibold" icon="icon-download" (click)="onExport()" [disabled]="dataTable.length <= 0"/>
 </div>
 
 <div class="wrapper">
@@ -10,18 +10,18 @@
       <div>Tổng tiền: <span>{{ formatMoney(totalAmount) }}</span></div>
     </div>
     <div class="d-flex">
-      <p-calendar class="merchant-calendar me-2" [iconDisplay]="'input'" [showIcon]="true"
+      <p-calendar class="merchant-calendar me-2" [iconDisplay]="'input'" [showIcon]="true" readonlyInput="true"
                   inputId="templatedisplay" selectionMode="range" [numberOfMonths]="2" [showTime]="true"
-                  [hourFormat]="'24'" [(ngModel)]="searchCriteria.dateRange" [maxDate]="maxDate"
-                  (ngModelChange)="onDateRangeSelect($event)">
+                  [hourFormat]="'24'" [(ngModel)]="searchCriteria.dateRange" [maxDate]="maxDate" [minDate]="minDate"
+        (ngModelChange)="onDateRangeSelect($event)" (onClose)="onDatePickerClose()" [dateFormat]="'dd/mm/yy'">
         <ng-template pTemplate="inputicon">
           <i class="icon-calendar"></i>
         </ng-template>
       </p-calendar>
       <p-button [matBadge]="checkSearchNumber()" [ngClass]="['merchant-button-icon button-l button-light me-2', isSearch? 'active': '']"
-                icon="icon-search" (click)="isSearch=true"/>
-      <p-button [matBadge]="checkFilterNumber()" [ngClass]="['merchant-button-icon button-l button-light me-2', !isSearch? 'active': '']"
-                icon="icon-filter" (click)="isSearch=false"/>
+                icon="icon-search" (click)="onToggleSearch()"/>
+      <p-button [matBadge]="checkFilterNumber()" [ngClass]="['merchant-button-icon button-l button-light me-2', isFilter? 'active': '']"
+                icon="icon-filter" (click)="onToggleFilter()"/>
       <p-button class="merchant-button-icon button-l button-light" icon="icon-setting" (click)="onSetting()"/>
     </div>
   </div>
@@ -30,51 +30,110 @@
     <div class="row mb-4">
       <div class="col-md-3">
         <div class="title">Mã giao dịch</div>
-        <input class="merchant-input" pInputText placeholder="Nhập mã giao dịch"
-               [(ngModel)]="searchCriteria.transactionCode"/>
+        <div class="p-inputgroup">
+          <input appShowClearOnFocus=".clear-icon" class="merchant-input" pInputText placeholder="Nhập mã giao dịch" [(ngModel)]="searchCriteria.transactionCode"
+            (keydown.enter)="onSearch()" />
+          @if (searchCriteria.transactionCode != null && searchCriteria.transactionCode != '') {
+          <span class="p-input-icon-right clear-icon" (click)="searchCriteria.transactionCode = null">
+            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+          </span>
+          }
+        </div>
       </div>
       <div class="col-md-3">
         <div class="title">Mã FT giao dịch</div>
-        <input class="merchant-input" pInputText placeholder="Nhập mã FT giao dịch"
-               [(ngModel)]="searchCriteria.ftCode"/>
+        <div class="p-inputgroup">
+          <input appShowClearOnFocus=".clear-icon" class="merchant-input" pInputText placeholder="Nhập mã FT giao dịch"
+            [(ngModel)]="searchCriteria.ftCode" (keydown.enter)="onSearch()" />
+          @if (searchCriteria.ftCode != null && searchCriteria.ftCode != '') {
+          <span class="p-input-icon-right clear-icon" (click)="searchCriteria.ftCode = null">
+            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+          </span>
+          }
+        </div>
       </div>
       <div class="col-md-3">
         <div class="title">Mã đơn hàng</div>
-        <input class="merchant-input" pInputText placeholder="Nhập mã đơn hàng" [(ngModel)]="searchCriteria.orderCode"/>
+        <div class="p-inputgroup">
+          <input appShowClearOnFocus=".clear-icon" class="merchant-input" pInputText placeholder="Nhập mã đơn hàng"
+            [(ngModel)]="searchCriteria.orderCode" (keydown.enter)="onSearch()" />
+          @if (searchCriteria.orderCode != null && searchCriteria.orderCode != '') {
+          <span class="p-input-icon-right clear-icon" (click)="searchCriteria.orderCode = null">
+            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+          </span>
+          }
+        </div>
       </div>
       <div class="col-md-3">
         <div class="title">Mã định danh</div>
-        <input class="merchant-input" pInputText placeholder="Nhập mã định danh"
-               [(ngModel)]="searchCriteria.identifierCode"/>
+        <div class="p-inputgroup">
+          <input appShowClearOnFocus=".clear-icon" class="merchant-input" pInputText placeholder="Nhập mã định danh" [(ngModel)]="searchCriteria.identifierCode"
+            (keydown.enter)="onSearch()" />
+          @if (searchCriteria.identifierCode != null && searchCriteria.identifierCode != '') {
+          <span class="p-input-icon-right clear-icon" (click)="searchCriteria.identifierCode = null">
+            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+          </span>
+          }
+        </div>
       </div>
     </div>
     <div class="row">
       <div class="col-md-3">
         <div class="title">Tên tài khoản thanh toán</div>
-        <input class="merchant-input" pInputText placeholder="Nhập tên tài khoản thanh toán"
-               [(ngModel)]="searchCriteria.paymentAccountName"/>
+        <div class="p-inputgroup">
+          <input appShowClearOnFocus=".clear-icon" class="merchant-input" pInputText placeholder="Nhập tên tài khoản thanh toán"
+            [(ngModel)]="searchCriteria.paymentAccountName" (keydown.enter)="onSearch()" />
+          @if (searchCriteria.paymentAccountName != null && searchCriteria.paymentAccountName != '') {
+          <span class="p-input-icon-right clear-icon" (click)="searchCriteria.paymentAccountName = null">
+            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+          </span>
+          }
+        </div>
       </div>
       <div class="col-md-3">
         <div class="title">Số tài khoản/số thẻ</div>
-        <input class="merchant-input" pInputText placeholder="Nhập số tài khoản/số thẻ"
-               [(ngModel)]="searchCriteria.accountNumber"/>
+        <div class="p-inputgroup">
+          <input appShowClearOnFocus=".clear-icon" class="merchant-input" pInputText placeholder="Nhập số tài khoản/số thẻ"
+            [(ngModel)]="searchCriteria.accountNumber" (keydown.enter)="onSearch()" />
+          @if (searchCriteria.accountNumber != null && searchCriteria.accountNumber != '') {
+          <span class="p-input-icon-right clear-icon" (click)="searchCriteria.accountNumber = null">
+            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+          </span>
+          }
+        </div>
       </div>
       <div class="col-md-3">
         <div class="title">Số tiền thanh toán</div>
-        <p-inputNumber class="merchant-inputNumber" inputId="integeronly" [locale]="'en-US'" suffix=" ₫" [min]="0"
-                       [showClear]="true" placeholder="Nhập số tiền thanh toán"
-                       [(ngModel)]="searchCriteria.paymentAmount"/>
+        <div class="p-inputgroup">
+          <p-inputNumber appShowClearOnFocus=".clear-icon" class="merchant-inputNumber" inputId="integeronly" [locale]="'en-US'"
+            suffix=" ₫" [min]="0" [showClear]="false" placeholder="Nhập số tiền thanh toán"
+            [(ngModel)]="searchCriteria.paymentAmount" (keydown.enter)="onSearch()" />
+          @if (searchCriteria.paymentAmount != null ) {
+          <span class="p-input-icon-right clear-icon" (click)="searchCriteria.paymentAmount = null">
+            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+          </span>
+          }
+        </div>
       </div>
     </div>
   </div>
 
-  <div *ngIf="!isSearch" class="box-filter mt-4">
+  <div *ngIf="isFilter" class="box-filter mt-4">
     <div class="row mb-4">
       <div class="col-md-4">
         <div class="title">Trạng thái</div>
         <p-multiSelect class="merchant-multiSelect multiselect-all" [options]="statusOptions" optionValue="code"
-                       optionLabel="name" placeholder="Tất cả" [filter]="false"
-                       [(ngModel)]="filterCriteria.selectedStatuses"/>
+          optionLabel="name" placeholder="Tất cả" [filter]="false" [(ngModel)]="filterCriteria.selectedStatuses">
+          <ng-template pTemplate="selectedItems" let-selectedItems>
+              <ng-container
+                *ngIf="!selectedItems || selectedItems.length === 0 || selectedItems.length === statusOptions?.length">
+                Tất cả
+              </ng-container>
+              <ng-container *ngIf="selectedItems?.length > 0 && selectedItems.length < statusOptions.length">
+                {{ getSelectedNames(selectedItems) }}
+              </ng-container>
+            </ng-template>
+        </p-multiSelect>
       </div>
       <div class="col-md-4">
           <div class="title">Phương thức thanh toán</div>
@@ -100,7 +159,7 @@
           optionValue="code"
           optionLabel="shortName"
           placeholder="Tất cả"
-          filterPlaceHolder="Tìm kiếm ngân hàng" [filter]="true"
+          filterPlaceholder="Tìm kiếm ngân hàng" [filter]="true"
           [(ngModel)]="filterCriteria.selectedBanks"
           styleClass="custom-bank-multiselect">
           <ng-template let-bank pTemplate="item">
@@ -124,15 +183,10 @@
       </div>
     </div>
     <div class="row">
-<!--      <div class="col-md-4">-->
-<!--        <div class="title">Tên nhóm</div>-->
-<!--        <p-multiSelect class="merchant-multiSelect multiselect-all" [options]="groupOptions" optionValue="code"-->
-<!--                       optionLabel="name" placeholder="Tất cả" [filter]="false"-->
-<!--                       [(ngModel)]="filterCriteria.selectedGroups"/>-->
-<!--      </div>-->
       <div class="col-md-4">
         <label class="form-label title-s-semibold">Tên nhóm</label>
         <p-treeSelect
+          appendTo="body"
           [options]="groupOptions"
           [(ngModel)]="filterCriteria.selectedGroups"
           optionLabel="label"
@@ -142,27 +196,46 @@
           [metaKeySelection]="false"
           [filter]="true"
           placeholder="Tất cả"
-          class="merchant-treeSelect"
+          class="merchant-treeSelect merchant-multiSelect"
+          filterPlaceholder="Tìm kiếm cụm/nhóm"
           (onNodeSelect)="onGroupClick($event)"
           (onNodeUnselect)="onGroupClick($event)">
-          <!-- <ng-template pTemplate="footer">
-            <div class=container-btn-cf>
-              <p-button label="Xác nhận" class="merchant-button btn-cf" (click)="confirmGroup()"/>
+          <ng-template pTemplate="header">
+            <div class="custom-tree-header" *ngIf="isClear" (click)="setValueFormDefault()">
+              <span class="icon-close_small icon-clear"> </span>
+              <span class="clear-all-link"> Bỏ chọn tất cả</span>
             </div>
-          </ng-template> -->
+          </ng-template>
+          <ng-template let-node pTemplate="default">
+            <span [matTooltip]="node.fullLabel" [matTooltipDisabled]="!node.showTooltip" class="node-label-ellipsis"
+              matTooltipPosition="above">
+              {{ node.label }}
+            </span>
+          </ng-template>
         </p-treeSelect>
       </div>
       <div class="col-md-4">
         <div class="title">Điểm kinh doanh</div>
-        <p-multiSelect class="merchant-multiSelect" [options]="merchantOptions" optionValue="merchantId"
-                       optionLabel="merchantName" placeholder="Tất cả" filterPlaceHolder="Tìm kiếm điểm kinh doanh"
-                       [filter]="true" [(ngModel)]="filterCriteria.selectedMerchants"
-                       selectedItemsLabel="{0} điểm kinh doanh đang chọn"
-                       emptyFilterMessage="Không tìm thấy kết quả"/>
+        <p-multiSelect class="merchant-multiSelect custom-mutil-option" [options]="merchantOptions" optionValue="merchantId"
+          optionLabel="merchantBizName" placeholder="Tất cả" filterPlaceHolder="Tìm kiếm điểm kinh doanh" [filter]="true"
+          [(ngModel)]="filterCriteria.selectedMerchants" selectedItemsLabel="{0} điểm kinh doanh đang chọn"
+          emptyFilterMessage="Không tìm thấy kết quả">
+          <ng-template pTemplate="header">
+            <div class="custom-multi-header" *ngIf="this.filterCriteria.selectedMerchants?.length" (click)="setValueMerchantDefault()">
+              <span class="icon-close_small icon-clear"> </span>
+              <span class="clear-all-link"> Bỏ chọn tất cả</span>
+            </div>
+          </ng-template>
+          <ng-template let-option pTemplate="item">
+            <div class="ellipsis-item" [title]="option.merchantBizName">
+              {{ option.merchantBizName }}
+            </div>
+          </ng-template>
+        </p-multiSelect>
       </div>
     </div>
   </div>
-  <div class="d-flex justify-content-end mt-3">
+  <div *ngIf="isSearch || isFilter" class="d-flex justify-content-end mt-3">
     <p-button label="Xóa bộ lọc" class="merchant-button-tertiary me-2" (click)="onReset()" [disabled]="!checkHasSearchOrFilterData()" />
     <p-button label="Áp dụng" class="merchant-button" (click)="onSearch()" />
   </div>
@@ -170,7 +243,7 @@
     @if (dataTable.length > 0) {
       <grid-view class="table-transaction" [isOrder]="true" [total]="totalItem" [columns]="columns"
                  [dataSource]="dataTable" [action]="action"
-                 (doChangePage)="onSearch($event)"></grid-view>
+                 (doChangePage)="onSearch($event)" [pageInfo]="{pageSize: this.pageSize, page: this.pageIndex,}"></grid-view>
     } @else {
       <div class="col-12 text-center mt-5 p-5">
         <img [src]="assetPath + '/assets/images/grid-search-empty.png'">

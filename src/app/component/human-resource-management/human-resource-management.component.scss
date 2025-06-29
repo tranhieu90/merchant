@@ -3,8 +3,8 @@
 
 .wrapper {
   background: $color-global-neutral-white;
-  height: calc(100vh - 240px);
-  // padding: 24px 24px 10px 24px;
+  min-height: calc(100vh - 260px);
+  padding: $spacing-l;
   border-radius: $border-radius-xs;
 }
 
@@ -40,7 +40,7 @@
 
   ::ng-deep .p-checkbox {
     order: 0;
-    margin-right: 0.5rem;
+    margin-right: $spacing-xs;
   }
 
   ::ng-deep .p-treenode-label {
@@ -92,4 +92,14 @@
 
 .color-count {
   color: $color-text-action-main;
+}
+
+.merchant-button-icon.active ::ng-deep.p-button {
+  background: $color-surface-neutral-sub-2 !important;
+}
+
+::ng-deep .mat-badge-content {
+  color: $color-surface-neutral-main !important;
+  background-color: $color-global-primary-primary-4 !important;
+  opacity: 100% !important;
 }

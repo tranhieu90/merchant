@@ -1,3 +1,5 @@
+import { TextboxItem } from "../../base/shared/models/item-form.model";
+
 export function generatePassword(length: number = 8): string {
   const uppercaseChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz';
@@ -27,8 +29,46 @@ export function convertLstAreaByOrder(list: any[], parentId: number | null): any
   });
   return result;
 }
-export function fomatAddress(list: string[]):string {
+export function fomatAddress(list: string[]): string {
   return list.filter(part => part?.trim())
     .map(part => part.trim())
     .join(', ');
 }
+export function disableItemsNotAtLevel(list: any[], level: number): any[] {
+  return list.map(item => ({
+    ...item,
+    disabled: item.level !== level
+  }));
+}
+
+export function setDisableOrNotForItemsNotAtLevel(list: any[], level: number, disable: boolean, parentId?: number): any {
+  return list.forEach(item => {
+    if (item.level !== level) {
+      item.disabled = disable;
+    }
+    if (item.level == level && item?.parentId != parentId) {
+      item.disabled = true;
+    }
+  });
+}
+
+
+export const createTextboxItem = (
+  formFields: any,
+  key: string,
+  label: string,
+  placeholder: string,
+  isReadOnly?: boolean,
+  maxLength?: string,
+  type?: string
+) =>
+  new TextboxItem({
+    key: formFields[key],
+    label: label,
+    placeholder: placeholder,
+    value: `formInfo.get(${formFields[key]})`,
+    required: true,
+    readOnly: isReadOnly,
+    maxLength: maxLength,
+    type: type
+  });

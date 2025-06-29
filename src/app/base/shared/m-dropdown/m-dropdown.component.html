@@ -9,17 +9,17 @@
                         <i class="icon-information_solid input-icon"></i>
                     </span>
                 </div>
-                <p-dropdown class="merchant-dropdown" formControlName="valueDropdown" [options]="countryOptions"
+                <p-dropdown [emptyMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown" formControlName="valueDropdown" [options]="countryOptions"
                     optionValue="code" optionLabel="name" placeholder="Select a country" [filter]="true"/>
             </div>
             <div class="col-3">
                 <label class="form-label title-s-semibold">Disabled</label>
-                <p-dropdown class="merchant-dropdown" formControlName="valueDisabled" [options]="countryOptions"
+                <p-dropdown [emptyMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown" formControlName="valueDisabled" [options]="countryOptions"
                     optionValue="code" optionLabel="name" placeholder="Select a country" />
             </div>
             <div class="col-3">
                 <label class="form-label title-s-semibold">Error</label>
-                <p-dropdown class="merchant-dropdown" formControlName="valueDropdownError" [options]="countryOptions"
+                <p-dropdown [emptyMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown" formControlName="valueDropdownError" [options]="countryOptions"
                     optionValue="code" optionLabel="name" placeholder="Select a country" />
 
                 @if(formDropdown.controls['valueDropdownError'].hasError('required')&&
@@ -38,7 +38,7 @@
                     <span class="p-input-icon-left">
                         <i class="icon-default input-icon input-icon-default"></i>
                     </span>
-                    <p-dropdown class="merchant-dropdown" formControlName="valueDropdown" [options]="countryOptions"
+                    <p-dropdown [emptyMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown" formControlName="valueDropdown" [options]="countryOptions"
                         optionValue="code" optionLabel="name" placeholder="Select a country" showClear="true" />
                 </div>
             </div>
@@ -47,7 +47,7 @@
                     <span class="p-input-icon-left">
                         <i class="icon-default input-icon input-icon-default"></i>
                     </span>
-                    <p-dropdown class="merchant-dropdown" [options]="countryOptions" formControlName="valueDisabled"
+                    <p-dropdown [emptyMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown" [options]="countryOptions" formControlName="valueDisabled"
                         optionValue="code" optionLabel="name" placeholder="Select a country" />
                 </div>
             </div>
@@ -56,7 +56,7 @@
                     <span class="p-input-icon-left">
                         <i class="icon-default input-icon input-icon-default"></i>
                     </span>
-                    <p-dropdown class="merchant-dropdown" formControlName="valueDropdownShowIconLeftError"
+                    <p-dropdown [emptyMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown" formControlName="valueDropdownShowIconLeftError"
                         [options]="countryOptions" optionValue="code" optionLabel="name" placeholder="Select a country"
                         showClear="true" />
                 </div>
@@ -80,17 +80,17 @@
                         <i class="icon-information_solid input-icon"></i>
                     </span>
                 </div>
-                <p-multiSelect class="merchant-multiSelect" [options]="countryOptions" formControlName="valueMultiSelect"
+                <p-multiSelect [emptyMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect" [options]="countryOptions" formControlName="valueMultiSelect"
                     optionValue="code" optionLabel="name" placeholder="Select countries" />
             </div>
             <div class="col-3">
                 <label class="form-label title-s-semibold">Disabled</label>
-                <p-multiSelect class="merchant-multiSelect" [options]="countryOptions" formControlName="valueMultiSelectDisabled"
+                <p-multiSelect [emptyMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect" [options]="countryOptions" formControlName="valueMultiSelectDisabled"
                     optionValue="code" optionLabel="name" placeholder="Select countries" />
             </div>
             <div class="col-3">
                 <label class="form-label title-s-semibold">Error</label>
-                <p-multiSelect class="merchant-multiSelect" [options]="countryOptions" formControlName="valueMultiSelectError"
+                <p-multiSelect [emptyMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect" [options]="countryOptions" formControlName="valueMultiSelectError"
                     optionValue="code" optionLabel="name" placeholder="Select countries" />
 
                 @if(formDropdown.controls['valueMultiSelectError'].hasError('required')&&
@@ -109,7 +109,7 @@
                     <span class="p-input-icon-left">
                         <i class="icon-default input-icon input-icon-default"></i>
                     </span>
-                    <p-multiSelect class="merchant-multiSelect" [options]="countryOptions" formControlName="valueMultiSelect"
+                    <p-multiSelect [emptyMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect" [options]="countryOptions" formControlName="valueMultiSelect"
                     optionValue="code" optionLabel="name" placeholder="Select countries" />
                 </div>
             </div>
@@ -118,7 +118,7 @@
                     <span class="p-input-icon-left">
                         <i class="icon-default input-icon input-icon-default"></i>
                     </span>
-                    <p-multiSelect class="merchant-multiSelect" [options]="countryOptions" formControlName="valueMultiSelectDisabled"
+                    <p-multiSelect [emptyMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect" [options]="countryOptions" formControlName="valueMultiSelectDisabled"
                     optionValue="code" optionLabel="name" placeholder="Select countries" />
                 </div>
             </div>
@@ -127,7 +127,7 @@
                     <span class="p-input-icon-left">
                         <i class="icon-default input-icon input-icon-default"></i>
                     </span>
-                    <p-multiSelect class="merchant-multiSelect" [options]="countryOptions" formControlName="valueMultiSelectShowIconLeftError"
+                    <p-multiSelect [emptyMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect" [options]="countryOptions" formControlName="valueMultiSelectShowIconLeftError"
                     optionValue="code" optionLabel="name" placeholder="Select countries" />
                 </div>
 
@@ -143,7 +143,7 @@
         </div>
         <div class="row gap-5 mt-3">
             <div class="col-3">
-                <p-multiSelect class="merchant-multiSelect multiselect-all" [options]="countryOptions" formControlName="valueMultiSelect"
+                <p-multiSelect [emptyMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect multiselect-all" [options]="countryOptions" formControlName="valueMultiSelect"
                 optionValue="code" optionLabel="name" placeholder="Tất cả" [filter]="false" />
             </div>
         </div>

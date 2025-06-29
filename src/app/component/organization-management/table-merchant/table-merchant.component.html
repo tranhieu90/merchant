@@ -11,9 +11,9 @@
                         <input appShowClearOnFocus=".clear-icon" type="text" pInputText class="merchant-input search" formControlName="keyWord"
                             placeholder="Tìm theo tên, địa chỉ điểm kinh doanh..." (keydown.enter)="doSearch($event)" />
                         @if(this.formSearch.get('keyWord')?.value){
-                        <span class="p-input-icon-right clear-icon" (click)="clearValue('keyWord')">
+                          <span *ngIf="formSearch.get('keyWord')?.value" class="p-input-icon-right clear-icon" (click)="clearAndSearch()">
                             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
-                        </span>
+                          </span>
                         }
                     </div>
                 </div>

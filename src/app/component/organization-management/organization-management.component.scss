@@ -94,11 +94,11 @@
     color: $color-text-neutral-sub;
 }
 
-::ng-deep.merchant-button .p-button {
-    width: 100%;
-    justify-content: center;
+:host ::ng-deep .merchant-button .p-button {
+  width: 100%;
+  justify-content: center;
 
-    .p-button-label {
-        flex: none;
-    }
+  .p-button-label {
+    flex: none;
+  }
 }

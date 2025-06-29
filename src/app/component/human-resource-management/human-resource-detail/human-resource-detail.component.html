@@ -49,7 +49,7 @@
       </ng-container>
 
       <ng-container *hasRoles="[MERCHANT_RULES.USER_MANAGER_UPDATE]">
-        <p-button *ngIf="this.userId !== this.userInfo.id" label="Cập nhật nhân sự" class="merchant-button"
+        <p-button *ngIf="this.userId !== this.userInfo.id && this.personDetail?.enableUpdate === 'YES'" label="Cập nhật nhân sự" class="merchant-button"
           (onClick)="doUpdateHuman()" />
       </ng-container>
     </div>
@@ -84,16 +84,16 @@
     <div class="d-flex flex-column col-3 mb-4 detail-info">
       <div class="detail-info-title">Email</div>
       <div class="detail-info-value d-flex gap-1">
-        <ng-container *ngIf="personDetail?.isVerify === 1">
+        <ng-container *ngIf="personDetail?.email; else emailNoVerify">
           {{ personDetail?.email }}
           <span *ngIf="personDetail?.email" class="icon-check_circle_solid pb-1" matTooltipPosition="above"
             matTooltip="Tài khoản đã được xác thực"></span>
         </ng-container>
 
-        <ng-container *ngIf="personDetail?.isVerify === 0">
-          {{ personDetail?.email}}<span *ngIf="personDetail?.email" class="icon-warning_solid pb-1"
+        <ng-template #emailNoVerify>
+          {{ personDetail?.emailChange}}<span *ngIf="personDetail?.emailChange" class="icon-warning_solid pb-1"
             matTooltipPosition="above" matTooltip="Tài khoản chưa được xác thực"></span>
-        </ng-container>
+        </ng-template>
       </div>
     </div>
   </div>
@@ -127,7 +127,7 @@
             </div>
           </div>
           <div class="col-9">
-            <ng-container *ngIf="subMerchantList?.length > 0; else subNodata">
+            <ng-container *ngIf="subMerchantList.length > 0; else subNodata">
               <grid-view [columns]="columns" [dataSource]="subMerchantList" [isShowPage]="false" [search]="true"
                 style="float: left; width: 100%"></grid-view>
             </ng-container>
@@ -136,7 +136,7 @@
       </ng-container>
 
       <ng-template #subtemplate>
-        <div class="col-12" *ngIf="subMerchantList?.length > 0; else subNodata">
+        <div class="col-12" *ngIf="subMerchantList.length > 0; else subNodata">
           <!-- <span
             *ngIf="this.personDetail?.orgType === 0"
             class="title-m-semibold"

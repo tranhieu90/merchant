@@ -1,8 +1,10 @@
-import { NgIf } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatBadge } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { MatTooltip } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import moment from 'moment';
 import { AutoCompleteModule } from 'primeng/autocomplete';
@@ -10,21 +12,46 @@ import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { TooltipModule } from 'primeng/tooltip';
 import { TreeSelectModule } from 'primeng/treeselect';
 import { GridViewComponent } from '../../../base/shared/grid-view/grid-view.component';
 import { CommonUtils } from '../../../base/utils/CommonUtils';
+import { UserVerifyStatus } from '../../../common/constants/CUser';
 import { InputCommon } from '../../../common/directives/input.directive';
-import { BUSINESS_ENDPOINT, GROUP_ENDPOINT } from '../../../common/enum/EApiUrl';
+import { BUSINESS_ENDPOINT, GROUP_ENDPOINT, USER_ENDPOINT } from '../../../common/enum/EApiUrl';
 import { FetchApiService } from '../../../common/service/api/fetch-api.service';
 import { AuthenticationService } from '../../../common/service/auth/authentication.service';
+import { DialogCommonService } from '../../../common/service/dialog-common/dialog-common.service';
 import { ToastService } from '../../../common/service/toast/toast.service';
+import { DialogConfirmModel } from '../../../model/DialogConfirmModel';
 import { GridViewModel } from '../../../model/GridViewModel';
-import { MatBadge } from '@angular/material/badge';
+import { DialogRoleComponent, DialogRoleModel } from '../../role-management/dialog-role/dialog-role.component';
+import { UpdateUserComponent } from '../../user-profile/update-user/update-user.component';
+import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
+import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
 
 @Component({
-  selector: 'app-business-management',
+  selector: '[app-business-management]',
   standalone: true,
-  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, GridViewComponent, MatButtonModule, InputCommon, NgIf, DropdownModule, MultiSelectModule, TreeSelectModule, MatBadge],
+  imports: [
+    ButtonModule,
+    FormsModule,
+    InputTextModule,
+    ReactiveFormsModule,
+    AutoCompleteModule,
+    GridViewComponent,
+    MatButtonModule,
+    InputCommon,
+    NgIf,
+    DropdownModule,
+    MultiSelectModule,
+    TreeSelectModule,
+    MatBadge,
+    CommonModule,
+    TooltipModule,
+    MatTooltip,
+    ShowClearOnFocusDirective
+  ],
   templateUrl: './business-management.component.html',
   styleUrl: './business-management.component.scss'
 })
@@ -48,7 +75,9 @@ export class BusinessManagementComponent {
     pageSize: 10,
     page: 0,
   };
-
+  roleBusiness: boolean = false;
+  searchBusiness: boolean = false;
+  isClear: boolean = false;
   columns: Array<GridViewModel> = [
     {
       name: 'merchantId',
@@ -72,7 +101,7 @@ export class BusinessManagementComponent {
       options: {
         width: '25%',
         customCss: () => {
-          return ['text-left'];
+          return ['text-left', 'mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -85,7 +114,7 @@ export class BusinessManagementComponent {
       options: {
         width: '25%',
         customCss: () => {
-          return ['text-left', 'mw-160'];
+          return ['text-left', 'mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -98,7 +127,7 @@ export class BusinessManagementComponent {
       options: {
         width: '15%',
         customCss: () => {
-          return ['text-left'];
+          return ['text-left', 'mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -151,7 +180,7 @@ export class BusinessManagementComponent {
 
   statusOptions: any[] = [
     { name: 'Tất cả', code: '' },
-    { name: 'Khóa', code: 'inactive' },
+    { name: 'Đã khóa', code: 'inactive' },
     { name: 'Hoạt động', code: 'active' }
   ];
 
@@ -161,7 +190,8 @@ export class BusinessManagementComponent {
     private router: Router,
     private api: FetchApiService,
     private toast: ToastService,
-    private auth: AuthenticationService
+    private auth: AuthenticationService,
+    private dialogCommon: DialogCommonService,
   ) {
     this.formDropdown = this.fb.group({
       status: [''],
@@ -172,6 +202,7 @@ export class BusinessManagementComponent {
 
   ngOnInit() {
     this.isConfig = this.auth.getUserInfo()?.isConfig;
+    this.roleBusiness = this.auth.apiTracker([MERCHANT_RULES.BUSINESS_CREATE]);
     this.getLstPaymentMethod();
     if (this.auth.getUserInfo()?.orgType != 2) {
       this.getDataGroup();
@@ -185,6 +216,7 @@ export class BusinessManagementComponent {
 
   doSearch(pageInfo?: any) {
     this.isSearch = this.isFirst == 0 ? false : true;
+    this.searchBusiness = this.isFirst == 0 ? false : true;
     this.isFirst = 1;
     if (pageInfo) {
       this.pageIndex = pageInfo["page"] + 1;
@@ -245,6 +277,7 @@ export class BusinessManagementComponent {
 
   onEnterSearch(): void {
     this.isSearch = true;
+    this.searchBusiness = true;
     this.pageIndex = 1;
     this.pageInfo = {
       pageSize: this.pageSize,
@@ -272,11 +305,14 @@ export class BusinessManagementComponent {
 
     return result.map(item => {
       let children = this.convertLstAreaByOrder(list, item.id);
+      const shortLabel = this.shortenLabel(item.groupName);
       return {
         ...item,
-        label: item.groupName,
+        label: shortLabel,
+        fullLabel: item.groupName,
         key: item.id,
-        children: children
+        children: children,
+        showTooltip: shortLabel.includes('...')
       };
     });
   }
@@ -293,7 +329,15 @@ export class BusinessManagementComponent {
       this.router.navigate(['/business/business-detail']);
   }
 
-  changeFilter() {
+  changeFilter(buttonRef: any) {
+    const nativeButton: HTMLElement = buttonRef?.el?.nativeElement?.querySelector('button');
+    if (!nativeButton) return;
+
+    if (this.isFilter) {
+      nativeButton.blur();
+    } else {
+      nativeButton.focus();
+    }
     this.isFilter = !this.isFilter;
     this.isFilter1 = false;
   }
@@ -332,7 +376,15 @@ export class BusinessManagementComponent {
     });
   }
 
-  changeSearch() {
+  changeSearch(buttonRef: any) {
+    const nativeButton: HTMLElement = buttonRef?.el?.nativeElement?.querySelector('button');
+    if (!nativeButton) return;
+
+    if (this.isFilter1) {
+      nativeButton.blur();
+    } else {
+      nativeButton.focus();
+    }
     this.isFilter1 = !this.isFilter1;
     this.isFilter = false;
   }
@@ -341,41 +393,45 @@ export class BusinessManagementComponent {
     const clickedNode = event.node;
     this.lastClickedGroup = clickedNode;
 
-    setTimeout(() => {
-      const selected = this.formDropdown.controls['groupName']?.value || [];
-      const clickedFullNode = this.findItemById(this.groupNameOptions, clickedNode.id);
-      if (!clickedFullNode) return;
+    const selected = this.formDropdown.controls['groupName']?.value || [];
+    this.isClear = selected.length > 0
+    const clickedFullNode = this.findItemById(this.groupNameOptions, clickedNode.id);
+    if (!clickedFullNode) return;
 
-      const targetLevel = clickedFullNode.level;
-      const targetParentId = clickedFullNode.parentId;
+    const targetLevel = clickedFullNode.level;
+    const targetParentId = clickedFullNode.parentId;
 
-      // Lọc các node cùng level và cùng parentId
-      const sameLevelNodes = selected.filter((item: any) => {
-        const fullItem = this.findItemById(this.groupNameOptions, item.id);
-        return fullItem?.level === targetLevel && fullItem?.parentId === targetParentId;
-      });
+    // Lọc các node cùng level và cùng parentId
+    const sameLevelNodes = selected.filter((item: any) => {
+      const fullItem = this.findItemById(this.groupNameOptions, item.id);
+      return fullItem?.level === targetLevel && fullItem?.parentId === targetParentId;
+    });
 
-      // Lấy toàn bộ con (mọi cấp) của các node này
-      const allWithChildren: any[] = [];
+    // Lấy toàn bộ con (mọi cấp) của các node này
+    const allWithChildren: any[] = [];
 
-      for (const node of sameLevelNodes) {
-        const fullNode = this.findItemById(this.groupNameOptions, node.id);
-        if (fullNode) {
-          allWithChildren.push(fullNode);
-          const children = this.getAllChildNodes(fullNode);
-          allWithChildren.push(...children);
-        }
+    for (const node of sameLevelNodes) {
+      const fullNode = this.findItemById(this.groupNameOptions, node.id);
+      if (fullNode) {
+        allWithChildren.push(fullNode);
+        const children = this.getAllChildNodes(fullNode);
+        allWithChildren.push(...children);
       }
+    }
 
-      // Loại bỏ trùng ID
-      const uniqueById = Array.from(new Map(allWithChildren.map(item => [item.id, item])).values());
+    // Loại bỏ trùng ID
+    const uniqueById = Array.from(new Map(allWithChildren.map(item => [item.id, item])).values());
 
-      // Gán lại cho ngModel
-      this.formDropdown.controls['groupName']?.setValue(uniqueById);
+    // Gán lại cho ngModel
+    const groupControl = this.formDropdown.get('groupName');
+    if (groupControl && Array.isArray(groupControl.value)) {
+      groupControl.value.length = 0;
+      groupControl.value.push(...uniqueById);
+      groupControl.updateValueAndValidity();
+    }
 
-      // Gọi logic tiếp theo
-      this.onChangeGroup();
-    }, 0);
+    // Gọi logic tiếp theo
+    this.onChangeGroup();
   }
 
   onChangeGroup() {
@@ -448,5 +504,167 @@ export class BusinessManagementComponent {
       return val !== null && val !== undefined && val !== '';
     }).length;
     return countSearch > 0 ? countSearch : null;
+  }
+
+  getSelectedNames(selectedItems: any[]): string {
+    if (!selectedItems || selectedItems.length === 0) return '';
+    return selectedItems.map(item => item.paymentMethodName).join(', ');
+  }
+
+  isSelectAllGroup(selectedNodes: any[]): boolean {
+    const totalSelectableLeaf = this.countLeafNodes(this.groupNameOptions);
+    const selectedLeafCount = selectedNodes.filter(n => !n.children || n.children.length === 0).length;
+    return selectedLeafCount === totalSelectableLeaf;
+  }
+
+  countLeafNodes(nodes: any[]): number {
+    if (!nodes) return 0;
+    let count = 0;
+    for (const node of nodes) {
+      if (node.children && node.children.length > 0) {
+        count += this.countLeafNodes(node.children);
+      } else {
+        count += 1;
+      }
+    }
+    return count;
+  }
+
+  getSelectedGroupNames(selectedNodes: any[]): string {
+    return selectedNodes.map(n => n.label).join(', ');
+  }
+
+  isFilterActive(): boolean {
+    const formValue = this.formDropdown?.value;
+
+    const statusSelected = formValue?.status != null && formValue.status !== '';
+    const paymentSelected = formValue?.paymentMethod != null && formValue.paymentMethod.length > 0;
+    const groupNameSelected = formValue?.groupName != null && formValue.groupName.length > 0;
+    const serviceCodeFilled = this.serviceCode != null && this.serviceCode.trim() !== '';
+    const keyWordFilled = this.keyWord != null && this.keyWord.trim() !== '';
+
+    return statusSelected || paymentSelected || groupNameSelected || serviceCodeFilled || keyWordFilled;
+  }
+
+  setValueFormDefault() {
+    this.formDropdown.controls['groupName']?.setValue([]);
+    this.isClear = false;
+  }
+  checkOpenCreate() {
+    const verifyUser = this.auth.checkVerifyUserInfo();
+    switch (verifyUser) {
+      case UserVerifyStatus.VERIFIED:
+        this.doOpenPage();
+        break;
+      case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
+        this.openDialogUnverifiedAccountAndEmail();
+        break;
+      case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
+        this.openDialogUnverifiedAccountAndNoEmail();
+        break;
+      default:
+        console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
+        break;
+    }
+  }
+
+  openDialogUnverifiedAccountAndEmail() {
+    let dataDialog: DialogRoleModel = new DialogRoleModel();
+    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
+    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>.`;
+    dataDialog.icon = 'icon-warning';
+    dataDialog.iconColor = 'warning';
+    dataDialog.buttonLeftLabel = 'Thay đổi email';
+    dataDialog.buttonRightLabel = 'Xác thực email';
+
+    const dialogRef = this.dialog.open(DialogRoleComponent, {
+      width: '500px',
+      data: dataDialog,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.verifyEmail();
+      } else {
+        this.updateEmail();
+      }
+    });
+  }
+
+  openDialogUnverifiedAccountAndNoEmail() {
+    let dataDialog: DialogRoleModel = new DialogRoleModel();
+    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
+    dataDialog.message =
+      'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
+    dataDialog.icon = 'icon-warning';
+    dataDialog.hiddenButtonLeft = true;
+    dataDialog.iconColor = 'warning';
+    dataDialog.buttonRightLabel = 'Bổ sung email';
+
+    const dialogRef = this.dialog.open(DialogRoleComponent, {
+      width: '500px',
+      data: dataDialog,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.updateEmail();
+      } else {
+      }
+    });
+  }
+
+  updateEmail() {
+    const dialogRef = this.dialog.open(UpdateUserComponent, {
+      width: '600px',
+      data: {
+        title: 'Cập nhật email',
+        type: 'email',
+        isEmailInfo: true,
+      },
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.router.navigate(['/profile']);
+      }
+    })
+  }
+
+  verifyEmail() {
+    this.api.post(USER_ENDPOINT.SEND_VERIFY_MAIL).subscribe(res => {
+      let content = `Chúng tôi vừa gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>, vui lòng kiểm tra email và làm theo hướng dẫn để hoàn tất xác thực tài khoản.`
+      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+      dataDialog.title = 'Hệ thống đã gửi liên kết xác thực';
+      dataDialog.message = content;
+      dataDialog.buttonLabel = 'Tôi đã hiểu';
+      dataDialog.icon = 'icon-mail';
+      dataDialog.iconColor = 'icon info';
+      dataDialog.viewCancel = false;
+      const dialogRef = this.dialogCommon.openDialogInfo(dataDialog);
+      dialogRef.subscribe(res => {
+        this.router.navigate(['/profile']);
+      })
+    })
+  }
+
+  shortenLabel(label: string): string {
+    if (!label) return '';
+    return label.length > 30 ? label.slice(0, 30) + '...' : label;
+  }
+
+  blockPercent(event: KeyboardEvent) {
+    if (event.key === '%') {
+      event.preventDefault();
+    }
+  }
+
+  onPaste(event: ClipboardEvent) {
+    event.preventDefault();
+    const pasted = event.clipboardData?.getData('text') || '';
+    document.execCommand('insertText', false, pasted.replace(/%/g, ''));
   }
 }

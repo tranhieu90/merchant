@@ -99,13 +99,16 @@ export class LoginComponent implements OnInit {
 
   buildForm() {
     this.loginForm = this.fb.group({
-      username: ['', Validators.required],
+      username: ['', [
+        Validators.required,
+        Validators.pattern(REGEX_PATTERN.USER_NAME),
+      ]],
       password: ['', Validators.required],
       remember: [false]
     });
 
     this.forgotPasswordForm = this.fb.group({
-      username: ['', Validators.required],
+      username: ['', [Validators.required,Validators.pattern(REGEX_PATTERN.USER_NAME)]],
       email: ['', [Validators.required, Validators.pattern(REGEX_PATTERN.EMAIL)]],
     });
 
@@ -138,7 +141,6 @@ export class LoginComponent implements OnInit {
     let params = this.loginForm.value;
     this.api.postEncrypted(LOGIN_ENDPOINT.LOGIN, params).subscribe(
       (res) => {
-        console.log("Login response: ", res);
         if (params["remember"]) {
           localStorage.setItem('userName', params["username"]);
           localStorage.setItem('password', this.encryptPassword(params["password"]));

@@ -12,7 +12,7 @@
             Mã FT giao dịch: <span>{{ traceTransfer }}</span>
         </div>
       <div>
-        Số lần hoàn còn lại: <span>{{ totalNumberCanRefund }}</span>
+        Số lần hoàn còn lại: {{ totalNumberCanRefund }} lần
       </div>
       @if (totalNumberCanRefund < 1) {
         <div class="m-caption error">
@@ -26,10 +26,10 @@
 
     <form [formGroup]="formRepay">
         <div class="col-12 mb-4">
-            <label class="form-label title-m-semibold">Số tiền hoàn trả</label>
+            <label class="form-label title-m-semibold">Số tiền hoàn trả (₫)</label>
             <div class="col-12">
                 <p-inputNumber formControlName="money" inputId="integeronly" class="merchant-inputNumber"
-                    [locale]="'en-US'" suffix=" ₫" [min]="0" [showClear]="true"
+                    [locale]="'en-US'" [min]="0" [showClear]="true"
                     placeholder="Số tiền hoàn trả phải lớn hơn 2,000 ₫" (onBlur)="onBlurMoney($event)" />
             </div>
             @if (formRepay.controls['money'].touched
@@ -54,9 +54,9 @@
             <label class="form-label title-m-semibold">Nội dung hoàn trả</label>
             <div class="p-inputgroup p-textaregroup">
                 <textarea rows="2" pInputTextarea appInputSanitize2 formControlName="description" class="merchant-input"
-                    placeholder="Nhập lý do hoàn tiền không dấu & không ký tự đặc biệt" maxlength="500">
+                    placeholder="Nhập lý do hoàn tiền không dấu & không ký tự đặc biệt" maxlength="50">
                            </textarea>
-                <span class="count-length">{{ this.formRepay.get("description")?.value?.length }}/500</span>
+                <span class="count-length">{{ this.formRepay.get("description")?.value?.length }}/50</span>
                 @if(this.formRepay.get('description')?.value){
                 <span class="p-input-icon-right" (click)="clearValue('description')">
                     <i class="icon-close_circle_solid input-icon input-icon-close"></i>
@@ -73,7 +73,7 @@
                 <span class="text-caption paragraph-m-regular">Vui lòng nhập thông tin</span>
                 }
                 @if(formRepay.controls['description'].hasError('maxlength')){
-                <span class="text-caption paragraph-m-regular">Tối đa 500 ký tự</span>
+                <span class="text-caption paragraph-m-regular">Tối đa 50 ký tự</span>
                 }
             </div>
             }
@@ -83,5 +83,5 @@
 </div>
 <div class="modal-footer">
     <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="onClose()" />
-    <p-button label="Hoàn tiền" class="merchant-button" (click)="doAction()" [disabled]="formRepay.invalid || totalNumberCanRefund < 1 || timeCanRefund > 30" />
+    <p-button label="Hoàn tiền" class="merchant-button" (click)="doAction()" [disabled]="formRepay.invalid || totalNumberCanRefund < 1 || isExpireDate" />
 </div>

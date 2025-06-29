@@ -35,7 +35,7 @@ export class DialogSubmerchantComponent {
       }
     },
     {
-      name: 'address',
+      name: 'formatAddress',
       label: 'ĐỊA CHỈ',
       options: {
         customCss: (obj: any) => {

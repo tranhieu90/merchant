@@ -12,9 +12,9 @@
         <img [src]="assetPath + '/assets/images/grid-search-empty.png'">
         <div *ngIf="isPermission">
             <div class="mt-4 title-l-semibold title-no-data">Doanh nghiệp chưa thiết lập tổ chức</div>
-            <div class="title-s-regular summary-no-data mb-3">Vui lòng tạo cơ cấu tổ chức để quản lý các nhóm điểm kinh
-                doanh của bạn hiệu quả hơn</div>
-            <p-button label="Thiết lập tổ chức" class="merchant-button" icon="icon-setting" (click)="doCreateOrg()" />
+            <div *ngIf="hasRole" class="title-s-regular summary-no-data mb-3">Vui lòng tạo cơ cấu tổ chức để quản lý các nhóm điểm kinh
+                doanh của bạn hiệu quả hơn.</div>
+            <p-button *ngIf="hasRole"  label="Thiết lập tổ chức" class="merchant-button" icon="icon-setting" (click)="doCreateOrg()" />
         </div>
         <div *ngIf="!isPermission">
             <div class="mt-4 title-l-semibold title-no-data">Cơ cấu tổ chức</div>

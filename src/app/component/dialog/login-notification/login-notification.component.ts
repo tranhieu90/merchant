@@ -78,6 +78,8 @@ export class LoginNotificationComponent implements OnInit {
           localStorage.removeItem(environment.accessToken);
           localStorage.removeItem(environment.refeshToken);
           localStorage.removeItem(environment.userInfo);
+          localStorage.removeItem(environment.settingPayment);
+          localStorage.removeItem(environment.settingCashback);
           sessionStorage.removeItem('verify');
           this.navigate.navigateAndBlockBack(['/login']);
           this.idleService.stopIdleWatching();

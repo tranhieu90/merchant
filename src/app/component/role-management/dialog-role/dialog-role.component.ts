@@ -12,6 +12,7 @@ export class DialogRoleModel {
   buttonRightColor!: string;
   hiddenButtonLeft!: boolean;
   hiddenButtonRight!: boolean;
+  showClose?: boolean = false;
 }
 
 @Component({
@@ -36,5 +37,8 @@ export class DialogRoleComponent {
 
   doAction(actionType: boolean) {
     this.dialogRef.close(actionType);
+  }
+  onclose() {
+    this.dialogRef.close();
   }
 }
