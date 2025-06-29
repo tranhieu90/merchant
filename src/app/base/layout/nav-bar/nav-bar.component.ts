@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, OnChanges, SimpleChanges, signal, ElementRef, ViewChild } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { AuthenticationService } from '../../../common/service/auth/authentication.service';
 @Component({
@@ -20,10 +20,17 @@ import { AuthenticationService } from '../../../common/service/auth/authenticati
 export class NavBarComponent implements OnInit, OnChanges {
   assetPath = environment.assetPath;
   @Input() isCollapsed!: boolean;
-  menuItems=signal<any>([])
+  menuItems = signal<any>([])
+  currentUrl: string = '';
   constructor(
-    private auth: AuthenticationService
-  ) {}
+    private auth: AuthenticationService,
+    private router: Router
+  ) {
+    this.currentUrl = this.router.url;
+    this.router.events.subscribe(() => {
+      this.currentUrl = this.router.url;
+    });
+  }
 
   ngOnInit(): void {
     const structuredMenu = this.buildAndSortMenuTree(this.auth.getMenuInfo().sort((a: any, b: any) => a.index - b.index));
@@ -66,5 +73,18 @@ export class NavBarComponent implements OnInit, OnChanges {
 
   trackMenu(index: number, item: any): any {
     return item.menuId;
+  }
+
+  isExpanded(item: any): boolean {
+    if (!item.subMenus) return false;
+    return this.hasMatchingSubMenu(item.subMenus, this.currentUrl);
+  }
+
+  private hasMatchingSubMenu(menus: any[], url: string): boolean {
+    for (const menu of menus) {
+      if (menu.menuPathUrl === url) return true;
+      if (menu.subMenus && this.hasMatchingSubMenu(menu.subMenus, url)) return true;
+    }
+    return false;
   }
 }

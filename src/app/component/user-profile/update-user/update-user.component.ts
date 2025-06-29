@@ -15,6 +15,7 @@ import { InputCommon } from '../../../common/directives/input.directive';
 import { AuthenticationService } from '../../../common/service/auth/authentication.service';
 import { InputSanitizeDirective } from '../../../common/directives/inputSanitize.directive';
 import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-update-user',
@@ -126,7 +127,13 @@ export class UpdateUserComponent implements OnInit {
         this.api.put(USER_ENDPOINT.UPDATE_MAIL, params).subscribe(res => {
           if (res && res.data.isVerify === 0) {
             this.toast.showSuccess("Cập nhật email thành công",'Vui lòng kiểm tra email và làm theo hướng dẫn để xác thực tài khoản.')
+            let userInfo = this.auth.getUserInfo();
+            if (userInfo) {
+              userInfo.emailChange = this.formEmail.get('email')?.value;
+            }
+            localStorage.setItem(environment.userInfo, JSON.stringify(userInfo));
             this.dialogRef.close(true);
+            
           } else {
             this.dialogRef.close(false);
             const dialogRef = this.dialog.open(LoginNotificationComponent, {

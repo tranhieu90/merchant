@@ -27,6 +27,10 @@
     width: 8px;
     height: 8px;
   }
+
+  ::ng-deep .p-radiobutton-icon{
+    background-color: $color-global-neutral-white;
+  }
 }
 
 .m-radio-check{
@@ -55,6 +59,12 @@
   background: $color-surface-action-main;
 }
 
+::ng-deep .p-inputswitch-slider{
+  &:hover{
+    background: $color-surface-action-main;
+    opacity: 0.8;
+  }
+}
 // ::ng-deep.p-inputswitch.p-focus .p-inputswitch-slider {
 //   background: $color-surface-action-main-pressed;
 // }
@@ -75,14 +85,17 @@
     @include typo-style($typo-font-sizes-l);
     padding: 0px $spacing-3xs 0px $spacing-2xs;
   }
-  .badge {
+  .badge-x {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     @include typo-style($typo-font-sizes-xs);
     border-radius: $border-radius-l;
-    padding: 0px $spacing-4xs;
+    padding: $spacing-4xs;
     background-color: $color-surface-highlight-sub;
     color: $color-text-action-main;
     width: 16px;
-    height: 14px;
+    height: 16px;
   }
 }
 

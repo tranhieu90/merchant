@@ -18,7 +18,7 @@ export class InputSanitizeDirective {
 
   @HostListener('input')
   onInput(): void {
-    this.cleanValue();
+    setTimeout(() => this.cleanValue(), 0);
   }
 
   public cleanValue(): void {

@@ -59,7 +59,7 @@
     />
   </div>
 
-  <div class="text-center text-sm mb-4">
+  <div class="text-center text-sm mb-4 mt-2">
     <ng-container [ngSwitch]="otpStatus">
       <div *ngSwitchCase="'error'" class="paragraph-m-regular color-error">
         Mã OTP không hợp lệ. Vui lòng thử lại.
@@ -77,8 +77,8 @@
 <div class="modal-footer">
   <p-button label="Hủy" class="merchant-button-tertiary" (click)="onclose()"/>
   @if (otpStatus === 'expired' || otpStatus === 'locked') {
-    <p-button label="Thực hiện lại" class="merchant-button" [disabled]="false" (click)="doAction(true)"/>
+    <p-button label="Thực hiện lại" class="merchant-button" [disabled]="false" (click)="doAction(false)"/>
   } @else {
-    <p-button label="Xác thực" class="merchant-button" [disabled]="false" (click)="doAction(false)"/>
+    <p-button label="Xác thực" class="merchant-button" [disabled]="isDisable()" (click)="doAction(true)"/>
   }
 </div>

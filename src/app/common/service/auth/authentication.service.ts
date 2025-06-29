@@ -4,13 +4,18 @@ import { jwtDecode } from 'jwt-decode';
 import { environment } from '../../../../environments/environment';
 import { UserVerifyStatus } from '../../constants/CUser';
 import { BehaviorSubject } from 'rxjs';
+import { ToastService } from '../toast/toast.service';
+import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationService {
   isFlag: boolean = false;
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private toast: ToastService
+  ) { }
 
   private userInfoSubject = new BehaviorSubject<any>(this.getUserInfo());
   userInfo$ = this.userInfoSubject.asObservable();
@@ -27,9 +32,22 @@ export class AuthenticationService {
     let userInfoParse = this.getUserInfo();
     this.userInfoSubject.next(userInfoParse);
     let userInfor = JSON.parse(decoded.sub);
-    if (userInfor['firstChangePassword'] === 0)
-      this.router.navigate(['/change-password']);
-    else this.router.navigate(['/dashboard']);
+    const redirectUrl = sessionStorage.getItem('redirectUrlAfterLogin');
+    sessionStorage.removeItem('redirectUrlAfterLogin');
+    if (userInfor['firstChangePassword'] === 0) {
+      if (this.router.url !== '/change-password') {
+        this.router.navigate(['/change-password']);
+      }
+    } else if (redirectUrl && redirectUrl !== '/login' && redirectUrl !== this.router.url) {
+      this.router.navigateByUrl(redirectUrl);
+    } else if (this.router.url !== '/dashboard') {
+      const hasRole = this.apiTracker([MERCHANT_RULES.TRANS_LIST]);
+      if (hasRole) {
+        this.router.navigate(['/transaction/payment']);
+      } else {
+        this.router.navigate(['/dashboard']);
+      }
+    }
   }
 
   getToken() {
@@ -79,6 +97,11 @@ export class AuthenticationService {
   }
 
   checkVerifyUserInfo() {
+    if (!this.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      this.toast.showWarn('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+      return;
+    }
     const userInfo = this.getUserInfo();
     if (userInfo?.isVerify == 1) {
       return UserVerifyStatus.VERIFIED;

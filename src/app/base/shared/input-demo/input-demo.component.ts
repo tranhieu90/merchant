@@ -13,6 +13,7 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import {AutoCompleteModule } from 'primeng/autocomplete';
+import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
 
 interface AutoCompleteCompleteEvent {
   originalEvent: Event;
@@ -23,7 +24,7 @@ interface AutoCompleteCompleteEvent {
   standalone: true,
   imports: [
     MaterialModule, ButtonModule, InputTextModule, FormsModule, InputNumberModule, InputGroupModule, InputGroupAddonModule, IconFieldModule,
-    InputIconModule, InputTextareaModule, TooltipModule, AutoCompleteModule
+    InputIconModule, InputTextareaModule, TooltipModule, AutoCompleteModule,ShowClearOnFocusDirective
   ],
   templateUrl: './input-demo.component.html',
   styleUrl: './input-demo.component.scss'
@@ -74,6 +75,10 @@ export class InputDemoComponent {
     this.suggestions = [...Array(10).keys()].map(item => event.query + '-' + item);
   }
 
+  checkValue(){
+    console.log(this.formInput.get('valueInputSearch')?.value);
+  }
+
 }
 export const touchAndDirtyForm = (form: FormGroup) => {
   Object.keys(form.controls).forEach(field => {
@@ -82,3 +87,6 @@ export const touchAndDirtyForm = (form: FormGroup) => {
     control?.markAsDirty({ onlySelf: true });
   });
 }
+
+
+

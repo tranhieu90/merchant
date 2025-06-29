@@ -14,6 +14,8 @@
 @import 'scss/mtab';
 @import 'scss/material';
 @import 'material-icons/iconfont/material-icons.css';
+@import 'scss/mlabel';
+
 @font-face {
   font-family: "webmerchant";
   src: url("./assets/fonts/webmerchant.eot");
@@ -68,7 +70,7 @@ body {
 
 .icon-close_large,
 .icon-more,
-.icon-edit{
+.icon-edit {
   @include base-icon;
   color: $color-global-neutral-neutral-9;
 }
@@ -84,19 +86,18 @@ body {
 }
 
 .mat-tooltip {
-   background: $color-surface-neutral-main;
-    border-radius: $border-radius-s;
-    padding: $spacing-s;
-    box-shadow: $shadow-s3;
-    color: $color-text-neutral-main;
+  background: $color-surface-neutral-main;
+  border-radius: $border-radius-s;
+  padding: $spacing-s;
+  box-shadow: $shadow-s3;
+  color: $color-text-neutral-main;
 
-    .p-tooltip-text {
+  .p-tooltip-text {
     background: $color-surface-neutral-main;
     border-radius: $border-radius-s;
     padding: $spacing-s;
     box-shadow: $shadow-s3;
     color: $color-text-neutral-main;
-    //typo/paragraph-m/regular
     @include typo-style($typo-font-sizes-m, $typo-font-weights-regular, none, none);
     width: max-content;
     max-width: 240px;
@@ -111,5 +112,91 @@ body {
       }
     }
 
+  }
+}
+
+.mat-mdc-tooltip-surface {
+  font-family: $font-family-regular !important;
+  font-size: $typo-font-sizes-s !important;
+  font-weight: $typo-font-weights-regular !important;
+  padding: $spacing-xs !important;
+  color: $color-global-neutral-neutral-12 !important;
+}
+
+//=====================custom p-tree-select====================
+.p-treeselect-close {
+  display: none !important;
+}
+
+/* chọn panel dropdown của p-treeSelect */
+.p-treeselect-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.custom-tree-header {
+  order: 2;
+}
+
+
+.ui-treeselect-filter-container {
+  order: 1;
+}
+
+.p-treeselect-items-wrapper {
+  order: 3;
+}
+
+.p-tree-container {
+  padding: 0 !important;
+}
+
+.custom-tree-header {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.5rem 0;
+  color: $color-text-action-main;
+}
+
+.clear-all-link {
+  cursor: pointer;
+}
+
+.icon-clear {
+  color: $color-text-action-main;
+}
+
+// ===========================custom multiselect=====================================
+
+.p-multiselect-panel .p-multiselect-header .p-multiselect-close {
+  display: none !important;
+}
+
+.custom-mutil-option {
+
+  .p-multiselect-panel .p-multiselect-header .p-checkbox {
+    display: none !important;
+  }
+
+  // .p-multiselect-panel .p-multiselect-header .p-multiselect-filter-container .p-inputtext {
+  //   background-color: $color-surface-action-sub-2;
+  // }
+
+  .custom-multi-header {
+    display: flex;
+    padding-top: 0.5rem;
+    color: $color-text-action-main;
+    order: 2;
+    width: 100%;
+  }
+
+  .p-multiselect-header {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .p-multiselect-filter-container {
+    width: 100%;
   }
 }

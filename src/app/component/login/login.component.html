@@ -11,101 +11,113 @@
       <!-- Tiêu đề -->
       <div class="form-defualt" *ngIf="!isFormMail">
         <div class="title">
-          <h1 class="header-xl-bold">{{isForgotPassword ? titleHeaderForgot : (isVerify ? titleHeaderVerify : titleHeaderLogin) }}</h1>
+          <h1 class="header-xl-bold">{{isForgotPassword ? titleHeaderForgot : (isVerify ? titleHeaderVerify :
+            titleHeaderLogin) }}</h1>
           <p class="title-m-regular">
             {{ isForgotPassword ? titleTextForgot : (isVerify ? titleTextVerify : titleTextLogin)}}
           </p>
         </div>
 
-      <!-- Form đăng nhập -->
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" *ngIf="!isForgotPassword">
-        <!-- Tên đăng nhập -->
-        <div class="form-group">
-          <label class="title-s-semibold" for="username">Tên đăng nhập</label>
-          <div class="p-inputgroup">
-            <input appShowClearOnFocus=".clear-icon" #usernameInput class="merchant-input" pInputText type="text" formControlName="username"
-              placeholder="Nhập tên đăng nhập" (focus)="isUsernameFocusedLogin = true" (blur)="isUsernameFocusedLogin = false" />
-            @if (loginForm.get('username')?.value && isUsernameFocusedLogin) {
-            <span class="p-input-icon-right clear-icon" (mousedown)="clearValue('username')">
-              <i class="icon-close_circle_solid input-icon input-icon-close"></i>
-            </span>
-            }
-          </div>
-          @if (loginForm.controls['username'].touched
-          && loginForm.controls['username'].invalid) {
-          <div class="m-caption error">
-            <div class="icon-caption">
-              <span class="icon-error_solid"></span>
+        <!-- Form đăng nhập -->
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" *ngIf="!isForgotPassword">
+          <!-- Tên đăng nhập -->
+          <div class="form-group">
+            <label class="title-s-semibold" for="username">Tên đăng nhập</label>
+            <div class="p-inputgroup">
+              <input appShowClearOnFocus=".clear-icon" #usernameInput class="merchant-input" pInputText type="text"
+                formControlName="username" placeholder="Nhập tên đăng nhập" (focus)="isUsernameFocusedLogin = true"
+                (blur)="isUsernameFocusedLogin = false" />
+              @if (loginForm.get('username')?.value && isUsernameFocusedLogin) {
+              <span class="p-input-icon-right clear-icon" (mousedown)="clearValue('username')">
+                <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+              </span>
+              }
             </div>
-            @if (loginForm.controls['username'].hasError('required')) {
-            <span class="text-caption paragraph-s-regular">Vui lòng nhập thông tin</span>
-            }
-          </div>
-          }
-        </div>
-
-        <!-- Mật khẩu -->
-        <div class="form-group password-group">
-          <label class="title-m-semibold">Mật khẩu</label>
-          <div class="p-inputgroup show-icon-right">
-            <input appShowClearOnFocus=".clear-icon" class="merchant-input" pInputText type="text" formControlName="password"
-              [type]="showPassword ? 'text' : 'password'" id="password" autocomplete="password"
-              placeholder="Nhập mật khẩu" (focus)="isPasswordFocused = true" (blur)="isPasswordFocused = false" />
-            @if (this.loginForm.get('password')?.value && isPasswordFocused) {
-            <span class="p-input-icon-right clear-icon" (mousedown)="clearValue('password')">
-              <i class="icon-close_circle_solid input-icon input-icon-close"></i>
-            </span>
-            }
-            <span class="p-input-icon-right clear-icon" (click)="showPassword=!showPassword">
-              <i [class]="showPassword ? 'icon-eye_off' : 'icon-eye_on'" class="input-icon eye-icon"></i>
-            </span>
-          </div>
-
-          @if (loginForm.controls['password'].touched
-          && loginForm.controls['password'].invalid) {
-          <div class="m-caption error">
-            <div class="icon-caption">
-              <span class="icon-error_solid"></span>
+            @if (loginForm.controls['username'].dirty
+            && loginForm.controls['username'].invalid) {
+            <div class="m-caption error">
+              <div class="icon-caption">
+                <span class="icon-error_solid"></span>
+              </div>
+              @if (loginForm.controls['username'].hasError('required')) {
+              <span class="text-caption paragraph-s-regular">Vui lòng nhập thông tin</span>
+              }
+              @if (loginForm.controls['username'].hasError('pattern')) {
+              <span class="text-caption paragraph-s-regular">Định dạng tên đăng nhập không hợp lệ</span>
+              }
             </div>
-            @if (loginForm.controls['password'].hasError('required')) {
-            <span class="text-caption paragraph-s-regular">Vui lòng nhập thông tin</span>
-            }
-            @else if(loginForm.controls['password'].hasError('passwordFail')){
-            <span class="text-caption paragraph-s-regular">Tên đăng nhập hoặc mật khẩu không chính xác</span>
             }
           </div>
-          }
-        </div>
 
-        <div class="checkbox-group">
-          <p-checkbox formControlName="remember" [binary]="true" inputId="binary" class="m-checkbox me-2" />
-          <label class="paragraph-m-regular" for="remember">Ghi nhớ tài khoản</label>
-        </div>
-        <p-button label="Đăng nhập" class="merchant-button" [disabled]="loginForm.invalid" type="submit"/>
-        <a class="title-s-semibold" (click)="isForgotPassword=!isForgotPassword" style="cursor: pointer;">Quên mật
-          khẩu?</a>
-      </form>
-      <form [formGroup]="forgotPasswordForm" (ngSubmit)="resetPassword()" *ngIf="isForgotPassword">
+          <!-- Mật khẩu -->
+          <div class="form-group password-group">
+            <label class="title-m-semibold">Mật khẩu</label>
+            <div class="p-inputgroup show-icon-right">
+              <input appShowClearOnFocus=".clear-icon" class="merchant-input" pInputText type="text"
+                formControlName="password" [type]="showPassword ? 'text' : 'password'" id="password"
+                autocomplete="password" placeholder="Nhập mật khẩu" (focus)="isPasswordFocused = true"
+                (blur)="isPasswordFocused = false" />
+              @if (this.loginForm.get('password')?.value && isPasswordFocused) {
+              <span class="p-input-icon-right clear-icon" (mousedown)="clearValue('password')">
+                <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+              </span>
+              }
+              <span class="p-input-icon-right clear-icon" (click)="showPassword=!showPassword">
+                <i [class]="showPassword ? 'icon-eye_off' : 'icon-eye_on'" class="input-icon eye-icon"></i>
+              </span>
+            </div>
+
+            @if (loginForm.controls['password'].touched
+            && loginForm.controls['password'].invalid) {
+            <div class="m-caption error">
+              <div class="icon-caption">
+                <span class="icon-error_solid"></span>
+              </div>
+              @if (loginForm.controls['password'].hasError('required')) {
+              <span class="text-caption paragraph-s-regular">Vui lòng nhập thông tin</span>
+              }
+              @else if(loginForm.controls['password'].hasError('passwordFail')){
+              <span class="text-caption paragraph-s-regular">Tên đăng nhập hoặc mật khẩu không chính xác</span>
+              }
+            </div>
+            }
+          </div>
+
+          <div class="checkbox-group">
+            <p-checkbox formControlName="remember" [binary]="true" inputId="binary" class="m-checkbox me-2" />
+            <label class="paragraph-m-regular" for="remember">Ghi nhớ tài khoản</label>
+          </div>
+          <p-button label="Đăng nhập" class="merchant-button" [disabled]="loginForm.invalid" type="submit" />
+          <a class="title-s-semibold" (click)="isForgotPassword=!isForgotPassword" style="cursor: pointer;">Quên mật
+            khẩu?</a>
+        </form>
+        <form [formGroup]="forgotPasswordForm" (ngSubmit)="resetPassword()" *ngIf="isForgotPassword">
 
           <div class="form-group password-group">
             <label class="title-m-semibold">Tên đăng nhập</label>
             <div class="p-inputgroup">
-              <input appShowClearOnFocus=".clear-icon" class="merchant-input" pInputText type="text" formControlName="username"
-                placeholder="Nhập tên đăng nhập" (focus)="isUsernameFocusedForgot = true" (blur)="isUsernameFocusedForgot = false" />
+              <input appShowClearOnFocus=".clear-icon" class="merchant-input" pInputText type="text"
+                formControlName="username" placeholder="Nhập tên đăng nhập" (focus)="isUsernameFocusedForgot = true"
+                (blur)="isUsernameFocusedForgot = false" />
               @if (this.forgotPasswordForm.get('username')?.value && isUsernameFocusedForgot) {
               <span class="p-input-icon-right clear-icon" (mousedown)="clearValue1('username')">
                 <i class="icon-close_circle_solid input-icon input-icon-close"></i>
               </span>
               }
             </div>
-            @if (forgotPasswordForm.controls['username'].hasError('required') &&
-            forgotPasswordForm.controls['username'].touched &&
+            @if (
+            forgotPasswordForm.controls['username'].dirty &&
             forgotPasswordForm.controls['username'].invalid) {
             <div class="m-caption error">
               <div class="icon-caption">
                 <span class="icon-error_solid"></span>
               </div>
+              @if (forgotPasswordForm.controls['username'].hasError('required')) {
               <span class="text-caption paragraph-s-regular">Vui lòng nhập thông tin</span>
+              }
+              @if (forgotPasswordForm.controls['username'].hasError('pattern')) {
+              <span class="text-caption paragraph-s-regular">Định dạng tên đăng nhập không hợp lệ</span>
+              }
             </div>
             }
           </div>
@@ -125,28 +137,29 @@
               </ng-template>
             </div>
             <div class="p-inputgroup">
-              <input appShowClearOnFocus=".clear-icon" class="merchant-input" pInputText type="text" formControlName="email"
-                placeholder="name@company.com" (focus)="isEmail = true" (blur)="isEmail = false"  />
+              <input appShowClearOnFocus=".clear-icon" class="merchant-input" pInputText type="text"
+                formControlName="email" placeholder="name@company.com" (focus)="isEmail = true"
+                (blur)="isEmail = false" />
               @if (this.forgotPasswordForm.get('email')?.value && isEmail) {
               <span class="p-input-icon-right clear-icon" (mousedown)="clearValue1('email')">
                 <i class="icon-close_circle_solid input-icon input-icon-close"></i>
               </span>
               }
             </div>
-            @if (forgotPasswordForm.controls['email'].touched &&
+            @if (forgotPasswordForm.controls['email'].dirty &&
             forgotPasswordForm.controls['email'].invalid) {
             <div class="m-caption error">
               <div class="icon-caption">
                 <span class="icon-error_solid"></span>
               </div>
               @if(forgotPasswordForm.controls['email'].hasError('required')){
-                <span class="text-caption paragraph-s-regular">Vui lòng nhập thông tin</span>
+              <span class="text-caption paragraph-s-regular">Vui lòng nhập thông tin</span>
               }
               @if(forgotPasswordForm.controls['email'].hasError('pattern')){
-                <span class="text-caption paragraph-s-regular">Email không đúng định dạng</span>
+              <span class="text-caption paragraph-s-regular">Email không đúng định dạng</span>
               }
               @if(forgotPasswordForm.controls['email'].hasError('valueFail')){
-                <span class="text-caption paragraph-s-regular">Thông tin tài khoản không chính xác</span>
+              <span class="text-caption paragraph-s-regular">Thông tin tài khoản không chính xác</span>
               }
             </div>
             }
@@ -169,7 +182,7 @@
           <p class="title-l-regular" [innerHTML]="titleTextMail">
           </p>
         </div>
-        <p-button label="Về trang đăng nhập" class="merchant-button" (click)="onChangeLogin()"/>
+        <p-button label="Về trang đăng nhập" class="merchant-button" (click)="onChangeLogin()" />
       </div>
     </div>
 

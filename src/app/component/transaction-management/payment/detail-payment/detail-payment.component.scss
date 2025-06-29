@@ -27,26 +27,14 @@
 
 .info {
     &-subject {
-        font-weight: $typo-font-weights-semibold;
-        font-size: $typo-font-sizes-2xl;
-        letter-spacing: 0%;
-        vertical-align: middle;
         color: $color-text-neutral-main;
     }
 
     &-label {
-        font-weight: $typo-font-weights-regular;
-        font-size: $typo-font-sizes-s;
-        letter-spacing: 0%;
-        vertical-align: middle;
         color: $color-text-neutral-sub;
     }
 
     &-value {
-        font-weight: $typo-font-weights-semibold;
-        font-size: $typo-font-sizes-m;
-        letter-spacing: 0%;
-        vertical-align: middle;
         color: $color-text-neutral-main;
     }
 }

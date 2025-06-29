@@ -7,4 +7,6 @@ export class AreaModel {
     children: AreaModel[] = [];
     lstMerchant: number[] =[];
     isLeaf?: boolean=false;
+
+    expanded?: boolean;
   }

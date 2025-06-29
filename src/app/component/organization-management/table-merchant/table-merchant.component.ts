@@ -15,7 +15,7 @@ import { fomatAddress } from '../../../common/helpers/Ultils';
 @Component({
   selector: 'app-table-merchant',
   standalone: true,
-  imports: [InputTextModule, GridViewComponent, NgIf, ReactiveFormsModule,ShowClearOnFocusDirective],
+  imports: [InputTextModule, GridViewComponent, NgIf, ReactiveFormsModule, ShowClearOnFocusDirective],
   templateUrl: './table-merchant.component.html',
   styleUrl: './table-merchant.component.scss'
 })
@@ -52,7 +52,7 @@ export class TableMerchantComponent implements OnChanges {
       label: 'TÊN ĐIỂM KINH DOANH',
       options: {
         customCss: (obj: any) => {
-          return ['text-left','mw-160'];
+          return ['text-left', 'mw-160'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -64,7 +64,7 @@ export class TableMerchantComponent implements OnChanges {
       label: 'ĐỊA CHỈ',
       options: {
         customCss: (obj: any) => {
-          return ['text-left','mw-180'];
+          return ['text-left', 'mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -132,40 +132,81 @@ export class TableMerchantComponent implements OnChanges {
     }
 
   }
+  clearAndSearch() {
+    // Xóa giá trị ô input
+    this.formSearch.get('keyWord')?.setValue('');
+
+    // Gọi lại API để load dữ liệu mặc định
+    this.loadDefaultData();
+  }
+
+  loadDefaultData() {
+    this.isSearch = false;
+    let dataReq = {
+      groupIdList: Array.isArray(this.groupId) ? this.groupId : [this.groupId],
+      status: "",
+      methodId: [],
+      mappingKey: ""
+    };
+    let param = {
+      page: 1,
+      size: 1000,
+      keySearch: ''  // không tìm từ khóa, lấy toàn bộ
+    };
+    let buildParams = CommonUtils.buildParams(param);
+    this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe((res: any) => {
+      if (res?.data?.subInfo?.length > 0) {
+        this.dataTable = res.data.subInfo.map((item: any) => ({
+          ...item,
+          formatAddress: fomatAddress([
+            item.address,
+            item.communeName,
+            item.districtName,
+            item.provinceName,
+          ]),
+        }));
+      } else {
+        this.dataTable = [];
+      }
+    }, (error: any) => {
+      this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.');
+      this.dataTable = [];
+    });
+  }
 
   doSearch(event: any) {
     this.isSearch = true;
     let dataReq = {
-          groupIdList: [this.groupId],
-          status: "",
-          methodId: [],
-          mappingKey: ""
-        }
-    
-        let param = {
-          page: 1,
-          size: 1000,
-          keySearch: event?.target?.value?.trim()
-        };
-        let buildParams = CommonUtils.buildParams(param);
-        this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe((res: any) => {
-          if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
-            this.dataTable = res['data']['subInfo'].map((item: any) => ({
-                          ...item,
-                          formatAddress: fomatAddress([
-                            item.address,
-                            item.communeName,
-                            item.districtName,
-                            item.provinceName,
-                          ]),
-                        }));
-          } else {
-            this.dataTable = []
-          }
-        }, (error: any) => {
-          this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.')
-          this.dataTable = [];
-        });
+      groupIdList: Array.isArray(this.groupId) ? this.groupId : [this.groupId],
+      status: "",
+      methodId: [],
+      mappingKey: ""
+    }
+
+    let param = {
+      page: 1,
+      size: 1000,
+      keySearch: event?.target?.value?.trim()
+    };
+    let buildParams = CommonUtils.buildParams(param);
+    this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe((res: any) => {
+      if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
+        this.dataTable = res['data']['subInfo'].map((item: any) => ({
+          ...item,
+          formatAddress: fomatAddress([
+            item.address,
+            item.communeName,
+            item.districtName,
+            item.provinceName,
+          ]),
+        }));
+      } else {
+        this.dataTable = []
+      }
+    }, (error: any) => {
+      this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.')
+      this.dataTable = [];
+    });
   }
 
   clearValue(nameInput: string) {

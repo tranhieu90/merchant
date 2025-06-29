@@ -1,0 +1,76 @@
+@import "../../../../scss/variables";
+@import "../../../../scss/mixins";
+
+.level {
+    margin: 8px 0px;
+    
+    .content-group {
+        border-radius: $border-radius-s;
+        background: $color-surface-neutral-sub;
+        color: $color-text-neutral-main;
+        padding: 8px 12px;
+
+        .box-button {
+            color: $color-icon-action-main;
+            cursor: pointer;
+        }
+
+        .count {
+            //typo-title-xs-regular
+            @include typo-style($typo-font-sizes-s, $typo-font-weights-regular, none, none);
+            background: $color-surface-neutral-sub-2;
+            border-radius: 6px;
+            padding: 2px 8px;
+        }
+    }
+
+    &.active .content-group{
+        background: $color-surface-action-sub-pressed;
+        padding: 7px 12px;
+    }
+
+}
+
+.level-2 {
+    margin-left: 15px;
+}
+
+.level-3 {
+    margin-left: 30px;
+}
+
+.level-4 {
+    margin-left: 45px;
+}
+
+.level-5 {
+    margin-left: 60px;
+}
+
+.input-name-group {
+    height: 38px;
+    background: $color-surface-neutral-sub;
+    border: 1px solid $color-border-action-main !important;
+    outline: none;
+    padding-left: 42px !important;
+}
+
+.icon-plus_small{
+   color: $color-icon-action-main;
+}
+
+.ellipsis {
+//   white-space: nowrap;        /* Không xuống dòng */
+//   overflow: hidden;           /* Ẩn phần vượt quá khung */
+//   text-overflow: ellipsis;    /* Hiển thị dấu ... */
+//   width: 130px;               /* Đặt chiều rộng cụ thể */
+    display: inline-block; 
+    max-width: 150px; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+}
+
+.text-content {
+  display: inline;             
+}

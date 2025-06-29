@@ -22,9 +22,9 @@
 .sub-title {
     padding: $spacing-2xs $spacing-xs;
     height: 26px;
-    margin-top: 6px;
-    margin-left: 12px;
-    border-radius: 2px;
+    margin-top: $spacing-xs;
+    margin-left: $spacing-s;
+    border-radius: $border-radius-xs;
 
     &.config {
         color: $color-text-decoration-color-3;
@@ -50,7 +50,7 @@
     .item {
         background: $color-surface-action-sub-2;
         padding: $spacing-l;
-        border-radius: 8px;
+        border-radius: $border-radius-s;
         color: $color-text-neutral-main;
         height: 100%;
 
@@ -65,7 +65,7 @@
         }
 
         ::ng-deep.mat-internal-form-field > label {
-            padding-left: 0px;
+            padding-left: $spacing-none;
         }
 
         ::ng-deep.mdc-checkbox--disabled .mdc-checkbox__background {
@@ -82,12 +82,12 @@
                 content: "\e91e";
                 font-family: "webmerchant" !important;
                 color: $color-icon-neutral-sub-3;
-                font-size: 24px;
+                font-size: $typo-font-sizes-3xl;
                 position: absolute;
-                left: 0;
-                top: 0;
-                right: 0;
-                bottom: 0;
+                left: $spacing-none;
+                top: $spacing-none;
+                right: $spacing-none;
+                bottom: $spacing-none;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -109,7 +109,7 @@
         }
 
         .level-2 {
-            margin-left: 29px;
+            margin-left: $spacing-xl;
         }
 
         .title {
@@ -125,7 +125,7 @@
 
     .description {
         color: $color-text-neutral-sub;
-        margin-bottom: 24px;
+        margin-bottom: $spacing-l;
     }
 
     .merchant-button ::ng-deep.p-button {
@@ -163,9 +163,16 @@
 }
 
 .mb-24{
-    margin-bottom: 24px;
+    margin-bottom: $spacing-l;
 }
 
 .ml-16{
-    margin-left: 16px;
+    margin-left: $spacing-m;
+}
+
+::ng-deep .p-tabview-panels {
+    overflow-y: auto;
+    height: 200px;
+    min-height: calc(100vh - 330px);
+    overflow-x: hidden;
 }

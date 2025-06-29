@@ -2,11 +2,11 @@
 @import "../../../../scss/mixins";
 
 .mat-stepper-horizontal {
-  margin-top: 8px;
+  margin-top: $spacing-xs;
 }
 
 .mat-mdc-form-field {
-  margin-top: 16px;
+  margin-top: $spacing-m;
 }
 
 .step-role {
@@ -63,10 +63,13 @@
     border-radius: $border-radius-s;
     background: $color-surface-neutral-main;
     padding: $spacing-l;
-    margin-top: 24px;
+    margin-top: $spacing-l;
     min-height: calc(100vh - 342px);
     position: relative;
     padding-bottom: 90px;
+    overflow-y: auto;
+    height: 650px;
+    overflow-x: hidden;
   }
 
   .content-first {
@@ -76,8 +79,8 @@
 
   .div-button {
     position: absolute;
-    bottom: 24px;
-    right: 24px;
+    bottom: $spacing-l;
+    right: $spacing-l;
     width: 100%;
     text-align: right;
   }
@@ -104,12 +107,12 @@
         content: "\e91e";
         font-family: 'webmerchant' !important;
         color: $color-global-neutral-white;
-        font-size: 24px;
+        font-size: $typo-font-sizes-3xl;
         position: absolute;
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
+        left: $spacing-none;
+        top: $spacing-none;
+        right: $spacing-none;
+        bottom: $spacing-none;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -125,7 +128,7 @@
   .item {
     background: $color-surface-action-sub-2;
     padding: $spacing-l;
-    border-radius: 8px;
+    border-radius: $border-radius-s;
     color: $color-text-neutral-main;
     height: 100%;
 
@@ -148,12 +151,12 @@
         content: "\e91e";
         font-family: 'webmerchant' !important;
         color: $color-global-neutral-white;
-        font-size: 24px;
+        font-size: $typo-font-sizes-3xl;
         position: absolute;
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
+        left: $spacing-none;
+        top: $spacing-none;
+        right: $spacing-none;
+        bottom: $spacing-none;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -166,7 +169,7 @@
     }
 
     ::ng-deep.mat-internal-form-field>label {
-      padding-left: 0px;
+      padding-left: $spacing-none;
     }
 
     .level-0 {
@@ -175,7 +178,7 @@
     }
 
     .level-2 {
-      margin-left: 29px;
+      margin-left: $spacing-xl;
     }
 
     .title {
@@ -207,15 +210,15 @@
 }
 
 .mr-16{
-  margin-right: 16px;
+  margin-right: $spacing-m;
 }
 
 .mb-24{
-  margin-bottom: 24px;
+  margin-bottom: $spacing-l;
 }
 
 .mt-40{
-  margin-top: 40px;
+  margin-top: $spacing-3xl;
 }
 @media (max-width: 1230px) {
   .step-role {

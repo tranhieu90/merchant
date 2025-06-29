@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from "rxjs";
 import { environment } from '../../../../environments/environment';
@@ -31,6 +31,15 @@ export class FetchApiService {
     return this.http.post(strUrl, paramBody, {
       params: param,
       responseType: "json",
+    });
+  }
+
+  postV2(strUrl: string, paramBody?: any, param?: any, customHeaders?: { [key: string]: string }): Observable<any> {
+    const headers = customHeaders ? new HttpHeaders(customHeaders) : undefined;
+    return this.http.post(strUrl, paramBody, {
+      params: param,
+      headers: headers,
+      responseType: "json"
     });
   }
 

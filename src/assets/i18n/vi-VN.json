@@ -1,0 +1,5 @@
+{
+   "validations": {
+      "requiredfullName": "Vui lòng nhập họ và tên của nhân sự"
+   }
+}

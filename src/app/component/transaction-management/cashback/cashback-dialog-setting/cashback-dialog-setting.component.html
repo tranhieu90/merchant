@@ -20,6 +20,10 @@
                 <label>Số tiền hoàn</label>
             </div>
             <div>
+              <p-checkbox [(ngModel)]="checked" [binary]="true" disabled="true" class="m-checkbox me-2" />
+              <label>Mã định danh</label>
+            </div>
+            <div>
                 <p-checkbox [(ngModel)]="lstChecked" class="m-checkbox me-2" value="refundFTCode" />
                 <label>Mã FT giao dịch hoàn</label>
             </div>
@@ -28,8 +32,8 @@
                 <label>Phương thức thanh toán</label>
             </div>
             <div>
-                <p-checkbox [(ngModel)]="lstChecked" class="m-checkbox me-2" value="feeTransaction" />
-                <label>Phí giao dịch</label>
+              <p-checkbox [(ngModel)]="lstChecked" class="m-checkbox me-2" value="feeTransaction" />
+              <label>Phí giao dịch</label>
             </div>
         </div>
         <div class="content">
@@ -40,6 +44,10 @@
             <div>
                 <p-checkbox [(ngModel)]="checked" [binary]="true" disabled="true" class="m-checkbox me-2" />
                 <label>Điểm kinh doanh</label>
+            </div>
+            <div>
+              <p-checkbox [(ngModel)]="checked" [binary]="true" disabled="true" class="m-checkbox me-2" />
+              <label>Nội dung hoàn trả</label>
             </div>
             <div>
                 <p-checkbox [(ngModel)]="checked" [binary]="true" disabled="true" class="m-checkbox me-2" />
@@ -54,8 +62,8 @@
                 <label>Tài khoản/thẻ thanh toán</label>
             </div>
             <div>
-                <p-checkbox [(ngModel)]="lstChecked" class="m-checkbox me-2" value="vat" />
-                <label>VAT</label>
+              <p-checkbox [(ngModel)]="lstChecked" class="m-checkbox me-2" value="vat" />
+              <label>VAT</label>
             </div>
         </div>
     </div>
@@ -63,3 +71,4 @@
 <div class="modal-footer">
     <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="onClose()" />
     <p-button label="Áp dụng" class="merchant-button" (click)="doAction()" />
+</div>

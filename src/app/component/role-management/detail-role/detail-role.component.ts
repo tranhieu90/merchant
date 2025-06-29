@@ -25,6 +25,7 @@ import { DialogCommonService } from '../../../common/service/dialog-common/dialo
 import { DialogConfirmModel } from '../../../model/DialogConfirmModel';
 import { ToastService } from '../../../common/service/toast/toast.service';
 import { environment } from '../../../../environments/environment';
+import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
 
 @Component({
   selector: 'app-detail-role',
@@ -59,6 +60,8 @@ export class DetailRoleComponent {
   roleNameChange: any;
 
   dataUsers: any = [];
+  hasRoleUpdate: boolean = false;
+  hasRoleCreateUser: boolean = false;
 
   columnsUser: Array<GridViewModel> = [
     {
@@ -70,6 +73,9 @@ export class DetailRoleComponent {
         },
         customCssHeader: (obj: any) => {
           return ['text-left'];
+        },
+        customBodyRender: (value: any) => {
+          return "#" + value;
         },
         width: '150px',
       },
@@ -130,6 +136,8 @@ export class DetailRoleComponent {
   }
 
   ngOnInit(): void {
+    this.hasRoleUpdate = this.auth.apiTracker([MERCHANT_RULES.ROLE_UPDATE]);
+    this.hasRoleCreateUser = this.auth.apiTracker([MERCHANT_RULES.ROLE_CREATE_USER]);
     this.userInfo = this.auth.getUserInfo();
   }
 

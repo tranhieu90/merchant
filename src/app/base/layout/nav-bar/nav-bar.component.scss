@@ -308,3 +308,12 @@
 ::ng-deep .mat-expansion-panel-body{
     padding: 0 !important;
 }
+
+.dot-icon::before {
+  content: "●"
+}
+
+.dot-icon {
+    font-size: 12px !important;
+    padding: 0 0 3px 5px;
+}

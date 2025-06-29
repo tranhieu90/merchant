@@ -2,20 +2,13 @@
 @import "../../../scss/variables";
 @import "../../../scss/mbutton";
 
-body {
-  background-color: #ececec;
-}
-
 .container-profile {
   width: 100%;
   background: $color-surface-neutral-main;
-  padding: $spacing-l;
-  border-radius: $border-radius-l;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .alert {
-  border-radius: 8px;
+  border-radius: $border-radius-s;
 }
 
 .rounded-circle {
@@ -24,23 +17,19 @@ body {
   object-fit: cover;
 }
 
-.btn-light {
-  border: 1px solid #dee2e6;
-}
-
 .color-4f5562 {
   color: $color-text-neutral-sub;
 }
 
 .bg-email {
-  padding: 16px;
+  padding: $spacing-m;
   border-radius: $border-radius-s;
-  border: 1px solid #f7b26a;
-  background-color: #fff5e6;
+  border: 1px solid $color-global-orange-orange-4;
+  background-color: $color-global-orange-orange-1;
 }
 
 .icon-edit {
-  margin-right: 4px;
+  margin-right: $spacing-2xs;
 }
 
 .color-df7202 {
@@ -58,7 +47,7 @@ body {
 
 .border-profile {
   border: 1px solid $color-border-neutral-main;
-  margin-bottom: 32px;
+  margin-bottom: $spacing-2xl;
 }
 
 .container-history {
@@ -66,7 +55,6 @@ body {
   background: $color-surface-neutral-main;
   padding: $spacing-l;
   border-radius: $border-radius-s;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .ic-step {
@@ -80,7 +68,7 @@ body {
 }
 
 .mb-12 {
-  margin-bottom: 12px;
+  margin-bottom: $spacing-s;
 }
 
 .mh-500 {
@@ -101,9 +89,10 @@ body {
 ::ng-deep.p-menu.p-menu-overlay {
   margin-top: $spacing-xs !important;
 
-  ul, li {
-    margin: 0;
-    padding: 0;
+  ul,
+  li {
+    margin: $spacing-none;
+    padding: $spacing-none;
   }
 
   a {
@@ -113,24 +102,24 @@ body {
   .p-menuitem-link {
     display: flex;
     max-width: 180px;
-    padding: 12px;
-    gap: 4px;
+    padding: $spacing-s;
+    gap: $spacing-2xs;
   }
 
-  .p-menuitem-icon{
+  .p-menuitem-icon {
     @include base-icon;
-    font-size: 24px;
+    font-size: $typo-font-sizes-3xl;
     color: $color-global-red-red-6;
-    margin: 0 !important;
+    margin: $spacing-none !important;
   }
 
-  .p-menuitem-text{
+  .p-menuitem-text {
     color: $color-global-red-red-6;
-    font-size: 16px;
+    font-size: $typo-font-sizes-l;
     line-height: $typo-line-heights-l;
   }
 
-  .p-menuitem-content{
+  .p-menuitem-content {
     background-color: $color-global-primary-primary-1;
     border-radius: $border-radius-xs;
   }
@@ -142,6 +131,6 @@ body {
   border-radius: $border-radius-s !important;
 }
 
-.gap-12{
-  gap: 12px;
+.gap-12 {
+  gap: $spacing-s;
 }

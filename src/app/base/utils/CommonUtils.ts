@@ -66,3 +66,18 @@ class CustomEncoder implements HttpParameterCodec {
         return decodeURIComponent(value);
     }
 }
+
+export function disableItemsNotAtLevel(list: any[], level: number): any[] {
+    return list.map(item => ({
+        ...item,
+        disabled: item.level !== level
+    }));
+}
+
+export function setDisableForItemsNotAtLevel(list: any[], level: number, disable: boolean): any {
+    return list.forEach(item => {
+        if (item.level !== level) {
+            item.disabled = disable;
+        }
+    });
+}

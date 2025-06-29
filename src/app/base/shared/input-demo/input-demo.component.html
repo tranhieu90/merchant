@@ -15,9 +15,9 @@
         </ng-template>
         </div>
         <div class="p-inputgroup">
-          <input type="text" pInputText class="merchant-input" formControlName="valueInput" placeholder="Text" />
+          <input appShowClearOnFocus=".clear-icon" type="text" pInputText class="merchant-input" formControlName="valueInput" placeholder="Text" />
           @if(this.formInput.get('valueInput')?.value){
-          <span class="p-input-icon-right" (click)="clearValue('valueInput')">
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('valueInput')">
             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
           </span>
           }
@@ -39,15 +39,15 @@
       <div class="col-3">
         <label class="form-label title-m-semibold">Error</label>
         <div class="p-inputgroup">
-          <input type="text" pInputText class="merchant-input" formControlName="valueInputError" placeholder="Text" />
+          <input type="text" appShowClearOnFocus=".clear-icon" pInputText class="merchant-input" formControlName="valueInputError" placeholder="Text" />
           @if(this.formInput.get('valueInputError')?.value){
-          <span class="p-input-icon-right" (click)="clearValue('valueInputError')">
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('valueInputError')">
             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
           </span>
           }
         </div>
         @if(formInput.controls['valueInputError'].hasError('required')&&
-        formInput.controls['valueInputError'].touched &&
+        formInput.controls['valueInputError'].dirty&&
         formInput.controls['valueInputError'].invalid){
         <div class="input-erorr">
           <span class="icon-error_solid"></span>
@@ -60,10 +60,10 @@
           <span class="p-input-icon-left">
             <i class="icon-default input-icon input-icon-default"></i>
           </span>
-          <input type="text" pInputText class="merchant-input" formControlName="valueInputShowIconLeft"
+          <input appShowClearOnFocus=".clear-icon" type="text" pInputText class="merchant-input" formControlName="valueInputShowIconLeft"
             placeholder="Text" />
           @if(this.formInput.get('valueInputShowIconLeft')?.value){
-          <span class="p-input-icon-right" (click)="clearValue('valueInputShowIconLeft')">
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('valueInputShowIconLeft')">
             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
           </span>
           }
@@ -74,7 +74,7 @@
           <span class="p-input-icon-left">
             <i class="icon-default input-icon input-icon-default"></i>
           </span>
-          <input type="text" pInputText class="merchant-input" value="Text" [disabled]="true" />
+          <input  type="text" pInputText class="merchant-input" value="Text" [disabled]="true" />
         </div>
       </div>
       <div class="col-3">
@@ -82,7 +82,7 @@
           <span class="p-input-icon-left">
             <i class="icon-default input-icon input-icon-default"></i>
           </span>
-          <input class="merchant-input" pInputText [readOnly]="true" value="Text" />
+          <input  class="merchant-input" pInputText [readOnly]="true" value="Text" />
         </div>
       </div>
 
@@ -91,16 +91,16 @@
           <span class="p-input-icon-left">
             <i class="icon-default input-icon input-icon-default"></i>
           </span>
-          <input class="merchant-input" pInputText value="Text" formControlName="valueInputShowIconLeftError"
+          <input appShowClearOnFocus=".clear-icon" class="merchant-input" pInputText value="Text" formControlName="valueInputShowIconLeftError"
             placeholder="Text" />
           @if(this.formInput.get('valueInputShowIconLeftError')?.value){
-          <span class="p-input-icon-right" (click)="clearValue('valueInputShowIconLeftError')">
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('valueInputShowIconLeftError')">
             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
           </span>
           }
         </div>
         @if(formInput.controls['valueInputShowIconLeftError'].hasError('required')&&
-        formInput.controls['valueInputShowIconLeftError'].touched &&
+        formInput.controls['valueInputShowIconLeftError'].dirty&&
         formInput.controls['valueInputShowIconLeftError'].invalid){
         <div class="input-erorr">
           <span class="icon-error_solid"></span>
@@ -110,10 +110,10 @@
       </div>
       <div class="col-3">
         <div class="p-inputgroup show-icon-right mt-3">
-          <input type="text" pInputText class="merchant-input" formControlName="valueInputShowIconRight"
+          <input appShowClearOnFocus=".clear-icon" type="text" pInputText class="merchant-input" formControlName="valueInputShowIconRight"
             placeholder="Text" />
           @if(this.formInput.get('valueInputShowIconRight')?.value){
-          <span class="p-input-icon-right" (click)="clearValue('valueInputShowIconRight')">
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('valueInputShowIconRight')">
             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
           </span>
           }
@@ -124,7 +124,7 @@
       </div>
       <div class="col-3">
         <div class="p-inputgroup show-icon-right disabled mt-3">
-          <input type="text" pInputText class="merchant-input" value="Text" [disabled]="true" />
+          <input  type="text" pInputText class="merchant-input" value="Text" [disabled]="true" />
           <span class="p-input-icon-right">
             <i class="icon-default input-icon input-icon-default"></i>
           </span>
@@ -132,7 +132,7 @@
       </div>
       <div class="col-3">
         <div class="p-inputgroup show-icon-right mt-3">
-          <input class="merchant-input" pInputText [readOnly]="true" value="Text" />
+          <input  class="merchant-input" pInputText [readOnly]="true" value="Text" />
           <span class="p-input-icon-right">
             <i class="icon-default input-icon input-icon-default"></i>
           </span>
@@ -140,10 +140,10 @@
       </div>
       <div class="col-3">
         <div class="p-inputgroup show-icon-right mt-3">
-          <input type="text" pInputText class="merchant-input" formControlName="valueInputShowIconRightError"
+          <input  type="text" pInputText class="merchant-input" formControlName="valueInputShowIconRightError"
             placeholder="Text" />
           @if(this.formInput.get('valueInputShowIconRightError')?.value){
-          <span class="p-input-icon-right" (click)="clearValue('valueInputShowIconRightError')">
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('valueInputShowIconRightError')">
             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
           </span>
           }
@@ -152,7 +152,7 @@
           </span>
         </div>
         @if(formInput.controls['valueInputShowIconRightError'].hasError('required')&&
-        formInput.controls['valueInputShowIconRightError'].touched &&
+        formInput.controls['valueInputShowIconRightError'].dirty&&
         formInput.controls['valueInputShowIconRightError'].invalid){
         <div class="input-erorr">
           <span class="icon-error_solid"></span>
@@ -165,10 +165,10 @@
           <span class="p-input-icon-left">
             <i class="icon-default input-icon input-icon-default"></i>
           </span>
-          <input type="text" pInputText class="merchant-input" formControlName="valueInputShowIconLeftRight"
+          <input appShowClearOnFocus=".clear-icon" type="text" pInputText class="merchant-input" formControlName="valueInputShowIconLeftRight"
             placeholder="Text" />
           @if(this.formInput.get('valueInputShowIconLeftRight')?.value){
-          <span class="p-input-icon-right" (click)="clearValue('valueInputShowIconLeftRight')">
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('valueInputShowIconLeftRight')">
             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
           </span>
           }
@@ -182,7 +182,7 @@
           <span class="p-input-icon-left">
             <i class="icon-default input-icon input-icon-default"></i>
           </span>
-          <input type="text" pInputText class="merchant-input" [disabled]="true" value="Text" />
+          <input  type="text" pInputText class="merchant-input" [disabled]="true" value="Text" />
           <span class="p-input-icon-right">
             <i class="icon-default input-icon input-icon-default"></i>
           </span>
@@ -193,7 +193,7 @@
           <span class="p-input-icon-left">
             <i class="icon-default input-icon input-icon-default"></i>
           </span>
-          <input type="text" pInputText class="merchant-input" [readOnly]="true" value="Text" />
+          <input  type="text" pInputText class="merchant-input" [readOnly]="true" value="Text" />
           <span class="p-input-icon-right">
             <i class="icon-default input-icon input-icon-default"></i>
           </span>
@@ -204,10 +204,10 @@
           <span class="p-input-icon-left">
             <i class="icon-default input-icon input-icon-default"></i>
           </span>
-          <input type="text" pInputText class="merchant-input" formControlName="valueInputShowIconLeftRightError"
+          <input appShowClearOnFocus=".clear-icon" type="text" pInputText class="merchant-input" formControlName="valueInputShowIconLeftRightError"
             placeholder="Text" />
           @if(this.formInput.get('valueInputShowIconLeftRightError')?.value){
-          <span class="p-input-icon-right" (click)="clearValue('valueInputShowIconLeftRightError')">
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('valueInputShowIconLeftRightError')">
             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
           </span>
           }
@@ -216,7 +216,7 @@
           </span>
         </div>
         @if(formInput.controls['valueInputShowIconLeftRightError'].hasError('required')&&
-        formInput.controls['valueInputShowIconLeftRightError'].touched &&
+        formInput.controls['valueInputShowIconLeftRightError'].dirty&&
         formInput.controls['valueInputShowIconLeftRightError'].invalid){
         <div class="input-erorr">
           <span class="icon-error_solid"></span>
@@ -231,10 +231,10 @@
           <span class="p-input-icon-left">
             <i class="icon-search input-icon input-icon-default"></i>
           </span>
-          <input type="text" pInputText class="merchant-input search" formControlName="valueInputSearch_Input"
+          <input appShowClearOnFocus=".clear-icon" type="text" pInputText class="merchant-input search" formControlName="valueInputSearch_Input"
             placeholder="Text" />
           @if(this.formInput.get('valueInputSearch_Input')?.value){
-          <span class="p-input-icon-right" (click)="clearValue('valueInputSearch_Input')">
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('valueInputSearch_Input')">
             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
           </span>
           }
@@ -248,14 +248,14 @@
       <div class="col-3">
         <label class="form-label title-m-semibold">Default, Hover, Focus</label>
         <div class="p-inputgroup p-textaregroup">
-          <textarea rows="2" pInputTextarea formControlName="valueTextArea" class="merchant-input" placeholder="Text..."
+          <textarea rows="2" appShowClearOnFocus=".clear-icon" pInputTextarea formControlName="valueTextArea" class="merchant-input" placeholder="Text..."
             [maxlength]="maxLength">
           </textarea>
           <span class="count-length">{{ this.formInput.get("valueTextArea")?.value?.length }}/{{
             maxLength
             }}</span>
           @if(this.formInput.get('valueTextArea')?.value){
-          <span class="p-input-icon-right" (click)="clearValue('valueTextArea')">
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('valueTextArea')">
             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
           </span>
           }
@@ -264,34 +264,34 @@
       <div class="col-3">
         <label class="form-label title-m-semibold">Disabled</label>
         <div class="p-inputgroup p-textaregroup">
-          <textarea rows="2" class="merchant-input" pInputTextarea [disabled]="true" [value]="textArea"></textarea>
+          <textarea rows="2"  class="merchant-input" pInputTextarea [disabled]="true" [value]="textArea"></textarea>
           <span class="count-length">{{ this.textArea.length }}/{{ maxLength }}</span>
         </div>
       </div>
       <div class="col-3">
         <label class="form-label title-m-semibold">Information</label>
         <div class="p-inputgroup p-textaregroup">
-          <textarea rows="2" class="merchant-input" pInputTextarea [readOnly]="true" [value]="textArea"></textarea>
+          <textarea rows="2"  class="merchant-input" pInputTextarea [readOnly]="true" [value]="textArea"></textarea>
           <span class="count-length">{{ this.textArea.length }}/{{ maxLength }}</span>
         </div>
       </div>
       <div class="col-3">
         <label class="form-label title-m-semibold">Error</label>
         <div class="p-inputgroup p-textaregroup">
-          <textarea rows="2" pInputTextarea formControlName="valueTextAreaError" class="merchant-input"
+          <textarea rows="2" appShowClearOnFocus=".clear-icon" pInputTextarea formControlName="valueTextAreaError" class="merchant-input"
             placeholder="Text..." [maxlength]="maxLength">
           </textarea>
           <span class="count-length">{{ this.formInput.get("valueTextAreaError")?.value?.length }}/{{
             maxLength
             }}</span>
           @if(this.formInput.get('valueTextAreaError')?.value){
-          <span class="p-input-icon-right" (click)="clearValue('valueTextAreaError')">
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('valueTextAreaError')">
             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
           </span>
           }
         </div>
         @if(formInput.controls['valueTextAreaError'].hasError('required')&&
-        formInput.controls['valueTextAreaError'].touched &&
+        formInput.controls['valueTextAreaError'].dirty&&
         formInput.controls['valueTextAreaError'].invalid){
         <div class="input-erorr">
           <span class="icon-error_solid"></span>
@@ -305,7 +305,7 @@
       <div class="col-3">
         <div class="p-inputgroup show-icon-infomation">
           <label class="form-label title-m-semibold">Default, Hover, Focus</label>
-          <span class="p-input-icon-right" pTooltip="Information" tooltipPosition="right">
+          <span class="p-input-icon-right" pTooltip="Information" tooltipPosition="right" tooltipStyleClass="merchant-tooltip">
             <i class="icon-information_solid input-icon"></i>
           </span>
         </div>
@@ -313,9 +313,9 @@
           <span class="p-input-icon-left">
             <i class="icon-search input-icon input-icon-default"></i>
           </span>
-          <p-autoComplete class="merchant-input-search" formControlName="valueInputSearch" [suggestions]="suggestions" (completeMethod)="search($event)" placeholder="Text"/>
+          <p-autoComplete appShowClearOnFocus=".clear-icon" class="merchant-input-search" formControlName="valueInputSearch" [suggestions]="suggestions" (completeMethod)="search($event)" placeholder="Text"/>
           @if(this.formInput.get('valueInputSearch')?.value){
-          <span class="p-input-icon-right" (click)="clearValue('valueInputSearch')">
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('valueInputSearch')">
             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
           </span>
           }
@@ -336,15 +336,15 @@
           <span class="p-input-icon-left">
             <i class="icon-search input-icon input-icon-default"></i>
           </span>
-          <p-autoComplete class="merchant-input-search" formControlName="valueInputSearchError" [suggestions]="suggestions" (completeMethod)="search($event)" placeholder="Text"/>
+          <p-autoComplete appShowClearOnFocus=".clear-icon" class="merchant-input-search" formControlName="valueInputSearchError" [suggestions]="suggestions" (completeMethod)="search($event)" placeholder="Text"/>
           @if(this.formInput.get('valueInputSearchError')?.value){
-          <span class="p-input-icon-right" (click)="clearValue('valueInputSearchError')">
+          <span class="p-input-icon-right clear-icon" (click)="clearValue('valueInputSearchError')">
             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
           </span>
           }
         </div>
         @if(formInput.controls['valueInputSearchError'].hasError('required')&&
-        formInput.controls['valueInputSearchError'].touched &&
+        formInput.controls['valueInputSearchError'].dirty&&
         formInput.controls['valueInputSearchError'].invalid){
         <div class="input-erorr">
           <span class="icon-error_solid"></span>
@@ -359,9 +359,9 @@
               <span class="p-input-icon-left">
                 <i class="icon-search input-icon input-icon-default"></i>
               </span>
-              <p-autoComplete class="merchant-input-search" formControlName="valueInputSearchShowIconRight" [suggestions]="suggestions" (completeMethod)="search($event)" placeholder="Text"/>
+              <p-autoComplete appShowClearOnFocus=".clear-icon" class="merchant-input-search" formControlName="valueInputSearchShowIconRight" [suggestions]="suggestions" (completeMethod)="search($event)" placeholder="Text"/>
               @if(this.formInput.get('valueInputSearchShowIconRight')?.value){
-              <span class="p-input-icon-right" (click)="clearValue('valueInputSearchShowIconRight')">
+              <span class="p-input-icon-right clear-icon" (click)="clearValue('valueInputSearchShowIconRight')">
                 <i class="icon-close_circle_solid input-icon input-icon-close"></i>
               </span>
               }
@@ -375,7 +375,7 @@
               <span class="p-input-icon-left">
                 <i class="icon-search input-icon input-icon-default"></i>
               </span>
-              <p-autoComplete class="merchant-input-search" [suggestions]="suggestions" (completeMethod)="search($event)" disabled="true" placeholder="Text"/>
+              <p-autoComplete  class="merchant-input-search" [suggestions]="suggestions" (completeMethod)="search($event)" disabled="true" placeholder="Text"/>
               <span class="p-input-icon-right">
                 <i class="icon-default input-icon input-icon-default"></i>
               </span>
@@ -386,9 +386,9 @@
               <span class="p-input-icon-left">
                 <i class="icon-search input-icon input-icon-default"></i>
               </span>
-              <p-autoComplete class="merchant-input-search" formControlName="valueInputSearchShowIconRightError" [suggestions]="suggestions" (completeMethod)="search($event)" placeholder="Text"/>
+              <p-autoComplete appShowClearOnFocus=".clear-icon" class="merchant-input-search" formControlName="valueInputSearchShowIconRightError" [suggestions]="suggestions" (completeMethod)="search($event)" placeholder="Text"/>
               @if(this.formInput.get('valueInputSearchShowIconRightError')?.value){
-              <span class="p-input-icon-right" (click)="clearValue('valueInputSearchShowIconRightError')">
+              <span class="p-input-icon-right clear-icon" (click)="clearValue('valueInputSearchShowIconRightError')">
                 <i class="icon-close_circle_solid input-icon input-icon-close"></i>
               </span>
               }
@@ -397,7 +397,7 @@
               </span>
             </div>
             @if(formInput.controls['valueInputSearchShowIconRightError'].hasError('required')&&
-            formInput.controls['valueInputSearchShowIconRightError'].touched &&
+            formInput.controls['valueInputSearchShowIconRightError'].dirty&&
             formInput.controls['valueInputSearchShowIconRightError'].invalid){
             <div class="input-erorr">
               <span class="icon-error_solid"></span>

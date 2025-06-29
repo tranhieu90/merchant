@@ -2,11 +2,11 @@
 @import "../../../../scss/mixins";
 
 .mat-stepper-horizontal {
-  margin-top: 8px;
+  margin-top: $spacing-xs;
 }
 
 .mat-mdc-form-field {
-  margin-top: 16px;
+  margin-top: $spacing-m;
 }
 
 .step-role {
@@ -63,7 +63,7 @@
     border-radius: $border-radius-s;
     background: $color-surface-neutral-main;
     padding: $spacing-l;
-    margin-top: 15px;
+    margin-top: $spacing-m;
     min-height: calc(100vh - 280px);
     position: relative;
   }
@@ -75,8 +75,8 @@
 
   .div-button {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
+    bottom: $spacing-l;
+    right: $spacing-l;
     width: 100%;
     text-align: right;
   }
@@ -86,7 +86,7 @@
   .item {
     background: $color-surface-action-sub-2;
     padding: $spacing-l;
-    border-radius: 8px;
+    border-radius: $border-radius-s;
     color: $color-text-neutral-main;
     height: 100%;
 
@@ -101,7 +101,7 @@
     }
 
     ::ng-deep.mat-internal-form-field>label {
-      padding-left: 0px;
+      padding-left: $spacing-none;
     }
 
     .level-0 {
@@ -109,7 +109,7 @@
     }
 
     .level-2 {
-      margin-left: 29px;
+      margin-left: $spacing-xl;
     }
 
     .title {

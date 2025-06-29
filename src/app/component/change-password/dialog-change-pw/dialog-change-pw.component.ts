@@ -117,10 +117,13 @@ export class DialogChangePwComponent implements OnInit {
     this.api.postEncrypted(USER_ENDPOINT.CHANGE_NEW_PW, params).subscribe(() => {
       this.onClose();
       this.router.navigate(['/login']);
-      this.idleService.stopIdleWatching();
       localStorage.removeItem(environment.accessToken);
+      localStorage.removeItem(environment.refeshToken);
       localStorage.removeItem(environment.userInfo);
+      localStorage.removeItem(environment.settingPayment);
+      localStorage.removeItem(environment.settingCashback);
       this.toast.showSuccess("Đổi mật khẩu thành công. Vui lòng đăng nhập lại.")
+      this.idleService.stopIdleWatching();
     }, (error) => {
       const errorData = error?.error || {};
       let dataDialog: DialogConfirmModel = new DialogConfirmModel();

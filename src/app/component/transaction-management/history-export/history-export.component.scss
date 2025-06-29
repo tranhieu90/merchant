@@ -3,7 +3,7 @@
 
 .wrapper {
     background: $color-global-neutral-white;
-    min-height: fit-content;
+    min-height: calc(100vh - 260px);
     padding: $spacing-l;
     border-radius: $border-radius-xs;
     color: $color-text-neutral-main;

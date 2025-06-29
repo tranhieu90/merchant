@@ -60,10 +60,6 @@
 }
 
 .ellipsis {
-//   white-space: nowrap;        /* Không xuống dòng */
-//   overflow: hidden;           /* Ẩn phần vượt quá khung */
-//   text-overflow: ellipsis;    /* Hiển thị dấu ... */
-//   width: 130px;               /* Đặt chiều rộng cụ thể */
     display: inline-block; 
     max-width: 150px; 
     white-space: nowrap; 
@@ -73,4 +69,9 @@
 
 .text-content {
   display: inline;             
+}
+
+.me-2 {
+    color: $color-global-blue-blue-6;
+    font-size: 20px;
 }

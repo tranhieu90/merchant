@@ -13,21 +13,25 @@ import { MatTooltip } from '@angular/material/tooltip';
   templateUrl: './area-item.component.html',
   styleUrl: './area-item.component.scss'
 })
-export class AreaItemComponent implements OnChanges{
+export class AreaItemComponent implements OnChanges {
 
   @Input() area: any;
   @Input() lstAreas: AreaModel[] = [];
   @Input() areaActive: AreaModel = new AreaModel();
   @Input() isShowButton: boolean = false;
- //@Input() isShowChild: boolean = false;
 
   @Output() activeArea = new EventEmitter<AreaModel>();
   @Output() deleteArea = new EventEmitter<number>();
-  @Output() addArea = new EventEmitter<{ level: number, parentId: number }>();
+  @Output() addArea = new EventEmitter<{ level: number, parentId: number, areaActive: any}>();
   @Output() blurAreaName = new EventEmitter<{ event: any, areaId: number, isFormCreateInvalid: boolean }>();
+  @Output() doChangeExpand = new EventEmitter<any>();
+
   formCreateArea!: FormGroup;
-  isShowChildren: boolean = true;
   @ViewChild('areaNameInput') areaNameInput!: ElementRef;
+
+  activeItem?: any;
+  isActionDelte?: boolean;
+  isActionAdd?: boolean;
 
   constructor(
     private fb: FormBuilder,
@@ -38,27 +42,32 @@ export class AreaItemComponent implements OnChanges{
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-      //this.isShowChildren = this.isShowChild;
-      let areaNew =this.lstAreas.find((item : any) =>  item.groupName == "");
-      if(areaNew)
-      {
-        setTimeout(() => {
-          this.areaNameInput.nativeElement.focus();
-        });
-      }
+    let areaNew = this.lstAreas.find((item: any) => item.groupName == "");
+    if (areaNew) {
+      setTimeout(() => {
+        this.areaNameInput.nativeElement.focus();
+      });
+    }
+
+    if (changes['areaActive'] && this.areaActive && this.areaActive.id) {
+      this.expandParents(this.lstAreas, this.areaActive.id);
+    }
   }
 
   onActiveArea(area: AreaModel): void {
+   
+    this.activeItem = area;
     this.activeArea.emit(area);
   }
 
-  onDeleteArea(id: number): void {
-    this.deleteArea.emit(id);
+  onDeleteArea(data: any): void {
+    this.isActionDelte = true;
+    this.deleteArea.emit(data);
   }
 
-  onAddArea(level: number, parentId: number): void {
-    this.addArea.emit({ level, parentId });
-    this.isShowChildren = true;
+  onAddArea(level: number, parentId: number, areaActive: any): void {
+    this.isActionAdd = true;
+    this.addArea.emit({ level, parentId, areaActive });
   }
 
   onBlurAreaName(event: any, areaId: number): void {
@@ -84,15 +93,44 @@ export class AreaItemComponent implements OnChanges{
     if (this.formCreateArea.controls['areaName'].value === areaName) {
       isFormCreateInvalid = this.formCreateArea.invalid;
     }
-    else{
-        isFormCreateInvalid = areaExits ? true : false;
+    else {
+      isFormCreateInvalid = areaExits ? true : false;
     }
 
     this.blurAreaName.emit({ event, areaId, isFormCreateInvalid });
   }
 
-  onOpenChildren() {
-    this.isShowChildren = !this.isShowChildren;
+  onOpenChildren(item: any) {
+    if (this.isActionDelte || this.isActionAdd) {
+      return;
+    }
+    item.expanded = !item.expanded;
+    this.activeItem = item;
+    this.doChangeExpand.emit(item);
   }
 
+  getItem(): any {
+    return this.activeItem;
+  }
+
+  /**
+   * Đệ quy tìm nhóm có id targetId trong lstAreas,
+   * và mở rộng các nhóm cha trên đường đi (set expanded = true)
+   * Trả về true nếu tìm thấy nhóm
+   */
+  private expandParents(lstAreas: AreaModel[], targetId: number): boolean {
+    for (let area of lstAreas) {
+      if (area.id === targetId) {
+        return true; 
+      }
+      if (area.children && area.children.length > 0) {
+        const foundInChild = this.expandParents(area.children, targetId);
+        if (foundInChild) {
+          area.expanded = true;
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 }

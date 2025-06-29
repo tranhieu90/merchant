@@ -13,8 +13,12 @@
     </div>
 
     <!-- Hiển thị số nhóm nếu có (lớn hơn 0) hoặc không chọn area -->
-    <div *ngIf="!isSelectArea || area.children.length > 0" class="count">
-      {{ area.children.length }} nhóm
+    <div *ngIf="!isSelectArea || area.children.length > 0">
+      @if(area.children.length > 0){
+        <div class="count">
+          {{ area.children.length }} nhóm
+        </div>
+      }
     </div>
 
     <!-- Nếu đang chọn area và có con, không hiển thị icon tick -->

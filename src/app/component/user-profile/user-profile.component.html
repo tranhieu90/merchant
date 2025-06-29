@@ -7,7 +7,8 @@
       <span class="icon-warning_solid me-1 align-self-start"></span>
       <div class="flex-fill w-75">
         <!-- Title -->
-        <strong *ngIf="(isUnverifiedEmail || isPendingEmailVerification) && dataInfo?.isExpire==1" class="title-s-semibold color-040d1f">
+        <strong *ngIf="(isUnverifiedEmail || isPendingEmailVerification) && dataInfo?.isExpire==1"
+          class="title-s-semibold color-040d1f">
           Tài khoản chưa được xác thực
         </strong>
         <strong *ngIf="dataInfo?.isVerify==0 && dataInfo?.isExpire==0" class="title-s-semibold color-040d1f">
@@ -69,7 +70,7 @@
       <div class="row mb-4 w-100">
         <div class="col-md-4 d-flex flex-column gap-1">
           <span class="title-xs-regular color-4f5562">Mã nhân sự</span>
-          <strong class="paragraph-l-semibold color-040d1f">#{{ dataInfo?.userId }}</strong>
+          <strong class="paragraph-l-semibold color-040d1f">{{ dataInfo?.userId ? '#' + dataInfo.userId : '' }}</strong>
         </div>
         <div class="col-md-4 d-flex flex-column gap-1">
           <span class="title-xs-regular color-4f5562">Tên đăng nhập</span>
@@ -81,7 +82,7 @@
         </div>
       </div>
       <div class="row w-100">
-         <div class="col-md-4 d-flex flex-column gap-1">
+        <div class="col-md-4 d-flex flex-column gap-1">
           <span class="title-xs-regular color-4f5562">Ngày sinh</span>
           <strong class="paragraph-l-semibold color-040d1f">{{ formatDate(dataInfo?.dateOfBirth) }}</strong>
         </div>
@@ -103,11 +104,11 @@
             </strong>
             <span *ngIf="(isVerifiedEmail && !dataInfo.emailChange) || (isPendingEmailVerification && isExpire)"
               class="icon-check_circle_solid" [pTooltip]="tooltipTemplate" tooltipPosition="top"
-                tooltipStyleClass="merchant-tooltip">
+              tooltipStyleClass="merchant-tooltip">
               <ng-template #tooltipTemplate>
                 <div class="tooltip-content">&nbsp;
-                  <span  class="icon-check_circle_solid"></span>
-                  Email đã được xác thực 
+                  <span class="icon-check_circle_solid"></span>
+                  Email đã được xác thực
                 </div>
               </ng-template>
             </span>

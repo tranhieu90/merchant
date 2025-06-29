@@ -11,7 +11,8 @@ export class MoveMerchantModel {
   lstAreas: AreaModel[] = [];
   lstAreaByOrder: AreaModel[] = [];
   areaIdActive: number = 0;
-  //lstMerchantIdMove: number[] = [];
+  lstMerchantIdSelected: number[] = [];
+  isCallApi: boolean = false;
 }
 
 @Component({
@@ -44,33 +45,9 @@ export class DialogMoveMerchantComponent implements OnInit {
   }
 
   doAction() {
-    this.dialogRef.close(this.areaIdMove);
-    // let areaActive = this.data.lstAreas.find(item => item.id == this.data.areaIdActive);
-    // let areaMove = this.data.lstAreas.find(item => item.id == this.areaIdMove);
-    // if (areaActive && areaMove) {
-    //   let countMerchant = this.data.lstMerchantIdMove.length + areaMove.lstMerchant.length;
-    //   if (countMerchant > 1000) {
-    //     let dataConfirm: DialogConfirmModel = new DialogConfirmModel();
-    //     dataConfirm.title = 'Số lượng điểm kinh doanh đã vượt quá số lượng tối đa (1000 điểm)';
-    //     dataConfirm.message = 'Vui lòng chuyển điểm kinh doanh sang nhóm khác';
-    //     dataConfirm.icon = 'icon-warning';
-    //     dataConfirm.iconColor = 'warning';
-    //     dataConfirm.viewCancel = false;
-    //     dataConfirm.buttonLabel = "Tôi đã hiểu"
-
-    //     this.dialog.open(DialogConfirmComponent, {
-    //       width: '500px',
-    //       data: dataConfirm,
-    //       disableClose: true,
-    //     });
-    //   }
-    //   else{
-    //     areaActive.lstMerchant = areaActive.lstMerchant.filter((item: any) => !this.data.lstMerchantIdMove.includes(item));
-    //     areaMove.lstMerchant = areaMove.lstMerchant.concat(this.data.lstMerchantIdMove);
-        
-    //     this.dialogRef.close(true);
-    //   }
-    // }
-
+    this.dialogRef.close({
+      areaId: this.areaIdMove,
+      merchantIds: this.data.lstMerchantIdSelected
+    });
   }
 }

@@ -14,11 +14,11 @@ export class InputSanitizeDirective2 {
   constructor(
     private el: ElementRef<HTMLInputElement>,
     @Optional() private control: NgControl
-  ) {}
+  ) { }
 
   @HostListener('input')
   onInput(): void {
-    this.cleanValue();
+    setTimeout(() => this.cleanValue(), 0);
   }
 
   public cleanValue(): void {

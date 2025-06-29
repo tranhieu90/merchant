@@ -18,6 +18,7 @@ export interface IPersonelDetail {
     isVerify?: number;
     groupList?: IGroupList[];
     roleId?: number;
+    enableUpdate?: string;
 }
 
 export interface IGroupList {

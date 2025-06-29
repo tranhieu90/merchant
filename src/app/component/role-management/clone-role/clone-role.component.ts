@@ -271,7 +271,7 @@ export class CloneRoleComponent {
     dataConfirm.icon = 'icon-error';
     dataConfirm.iconColor = 'error';
     dataConfirm.buttonRightColor = 'error';
-
+    dataConfirm.showClose = true;
     const dialogRef = this.dialog.open(DialogRoleComponent, {
       width: '600px',
       data: dataConfirm,
