@@ -217,3 +217,68 @@ body {
     color: $color-text-semantic-error !important;
   }
 }
+
+//=====================rangepiker=============
+.ant-picker {
+  border-radius: $border-radius-s;
+  color: $color-text-neutral-main !important;
+}
+
+.ant-picker-input > input {
+  font-weight: $typo-font-weights-regular;
+  font-size: $typo-font-sizes-m;
+}
+
+.ant-picker-suffix  {
+  color: $color-icon-action-main;
+}
+
+.ant-picker-focused, .ant-picker:hover {
+  border-color: $color-border-action-main-hover;
+}
+
+/* Tùy chỉnh button OK */
+.ant-picker-ok button,
+.ant-picker-footer .ant-btn-primary {
+  background-color: $color-icon-action-main !important;
+  color: $color-surface-neutral-main !important;
+  border-radius: $border-radius-xs;
+}
+
+.ant-picker-ok button:hover,
+.ant-picker-footer .ant-btn-primary:hover {
+  opacity: 0.8;
+}
+
+/* Ô ngày bình thường */
+.ant-picker-cell-inner {
+
+}
+
+/* Ô ngày được chọn (selected) */
+.ant-picker-cell-selected .ant-picker-cell-inner {
+  background-color: $color-surface-action-main !important;
+}
+
+/* Ô ngày trong khoảng được chọn (range) */
+.ant-picker-cell-in-range:not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end) {
+
+  &::before {
+    background: $color-surface-action-sub-2 !important;
+  }
+
+  .ant-picker-cell-inner {
+    background: transparent !important;
+  }
+}
+
+/* Ngày bắt đầu và kết thúc của range */
+.ant-picker-cell-range-start .ant-picker-cell-inner,
+.ant-picker-cell-range-end .ant-picker-cell-inner {
+  background-color: $color-surface-action-main !important;
+}
+
+/* Border cho từng ô ngày */
+.ant-picker-cell {
+  border-radius: $border-radius-xs !important;
+}

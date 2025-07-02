@@ -10,14 +10,21 @@
       <div>Tổng tiền: <span>{{ formatMoney(totalAmount) }}</span></div>
     </div>
     <div class="d-flex">
-      <p-calendar class="merchant-calendar me-2" [iconDisplay]="'input'" [showIcon]="true" readonlyInput="true"
-                  inputId="templatedisplay" selectionMode="range" [numberOfMonths]="2" [showTime]="true"
-                  [hourFormat]="'24'" [(ngModel)]="searchCriteria.dateRange" [maxDate]="maxDate" [minDate]="minDate"
-                  (ngModelChange)="onDateRangeSelect($event)"  (onClose)="onDatePickerClose()" [dateFormat]="'dd/mm/yy'">
-        <ng-template pTemplate="inputicon">
-          <i class="icon-calendar"></i>
-        </ng-template>
-      </p-calendar>
+      <nz-range-picker
+        class="me-2"
+        [nzShowTime]="{ nzFormat: 'HH:mm' }"
+        nzFormat="dd/MM/yyyy HH:mm"
+        [(ngModel)]="dateRange"
+        [nzDisabledDate]="disabledDate"
+        [nzDisabledTime]="disabledRangeTime"
+        [nzAllowClear]="false"
+        [nzInputReadOnly]="true"
+        [nzPlaceHolder]="['Từ ngày', 'Đến ngày']"
+        (nzOnCalendarChange)="onCalendarSelect($event)"
+        (ngModelChange)="onDateRangeChange($event)"
+        (nzOnOpenChange)="onCalendarOpenChange($event)"
+      >
+      </nz-range-picker>
       <p-button [matBadge]="checkSearchNumber()" [ngClass]="['merchant-button-icon button-l button-light me-2', isSearch? 'active': '']"
                 icon="icon-search" (click)="onToggleSearch()"/>
       <p-button [matBadge]="checkFilterNumber()" [ngClass]="['merchant-button-icon button-l button-light me-2', isFilter? 'active': '']"
