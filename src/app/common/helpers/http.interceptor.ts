@@ -111,7 +111,7 @@ export class AppHttpInterceptor implements HttpInterceptor {
         }
 
         if (error['status'] === 403) {
-          this.handleSessionLogout(isToast);
+          this.handelError403();
           return EMPTY;
         }
 
@@ -288,6 +288,19 @@ export class AppHttpInterceptor implements HttpInterceptor {
     }
     this.dialogRef.closeAll();
     this.idleService.stopIdleWatching();
+  }
+
+  handelError403(){
+    let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+    dataDialog.title = 'Quyền thao tác';
+    dataDialog.message = 'Bạn không có quyền thao tác chức năng này.';
+    dataDialog.buttonLabel = 'Thử lại';
+    dataDialog.icon = 'icon-warning';
+    dataDialog.width = '500px'
+    dataDialog.iconColor = 'icon warning';
+    dataDialog.viewCancel = false ;
+    dataDialog.buttonLabel='Tôi đã hiểu'
+    this.dialogCommon.openDialogInfo(dataDialog)
   }
 
   diffrentTime(preTime: string | null, curentTime: string | null): boolean {

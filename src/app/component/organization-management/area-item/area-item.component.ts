@@ -98,6 +98,7 @@ export class AreaItemComponent implements OnChanges {
     }
 
     this.blurAreaName.emit({ event, areaId, isFormCreateInvalid });
+    this.isActionAdd = false;
   }
 
   onOpenChildren(item: any) {

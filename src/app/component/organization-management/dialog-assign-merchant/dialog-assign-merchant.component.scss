@@ -30,7 +30,7 @@
     padding: $spacing-l;
     color: $color-text-neutral-main;
     max-height: calc(100vh - 230px);
-    overflow: scroll;
+    // overflow: scroll;
     .infor-warn {
         background: $color-surface-semantic-information-sub;
         border: 1px solid $color-border-semantic-information-sub;

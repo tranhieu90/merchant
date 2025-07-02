@@ -16,6 +16,8 @@ import { AuthenticationService } from '../../../common/service/auth/authenticati
 import { InputSanitizeDirective } from '../../../common/directives/inputSanitize.directive';
 import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
 import { environment } from '../../../../environments/environment';
+import { DialogConfirmModel } from '../../../model/DialogConfirmModel';
+import { DialogCommonService } from '../../../common/service/dialog-common/dialog-common.service';
 
 @Component({
   selector: 'app-update-user',
@@ -49,7 +51,8 @@ export class UpdateUserComponent implements OnInit {
     private api: FetchApiService,
     private toast: ToastService,
     private dialog: MatDialog,
-    private auth: AuthenticationService
+    private auth: AuthenticationService,
+    private dialogCommon: DialogCommonService
   ) {
   }
 
@@ -70,9 +73,9 @@ export class UpdateUserComponent implements OnInit {
   buildForm() {
     this.formUser = this.fb.group({
       userName: ['', [Validators.required]],
-      fullName: ['', [Validators.required, Validators.maxLength(50),Validators.pattern(REGEX_PATTERN.SPECIAL_CHARACTERS)]],
+      fullName: ['', [Validators.required, Validators.maxLength(50), Validators.pattern(REGEX_PATTERN.SPECIAL_CHARACTERS)]],
       dateOfBirth: ['', [Validators.required]],
-      phoneNumber: ['', [Validators.required,Validators.pattern(REGEX_PATTERN.PHONE)]],
+      phoneNumber: ['', [Validators.required, Validators.pattern(REGEX_PATTERN.PHONE)]],
     })
     this.formEmail = this.fb.group({
       email: ['', [Validators.required, Validators.maxLength(50), Validators.pattern(REGEX_PATTERN.EMAIL)]],
@@ -114,11 +117,13 @@ export class UpdateUserComponent implements OnInit {
         if (errorData.soaErrorCode == 'UPDATE_USER_ERROR_001') {
           this.formUser.get('phoneNumber')!.setErrors({ isPhoneNumberUsed: true });
         }
-        if(errorData.soaErrorCode=='203'){
+        if (errorData.soaErrorCode == '203') {
           this.toast.showError(errorData.soaErrorDesc);
         }
       })
     } else {
+      this.handleDevelopAfter()
+      return;
       if (this.formEmail.valid) {
         let params: any = {}
         params['emailChange'] = this.formEmail.get('email')?.value;
@@ -126,14 +131,14 @@ export class UpdateUserComponent implements OnInit {
 
         this.api.put(USER_ENDPOINT.UPDATE_MAIL, params).subscribe(res => {
           if (res && res.data.isVerify === 0) {
-            this.toast.showSuccess("Cập nhật email thành công",'Vui lòng kiểm tra email và làm theo hướng dẫn để xác thực tài khoản.')
+            this.toast.showSuccess("Cập nhật email thành công", 'Vui lòng kiểm tra email và làm theo hướng dẫn để xác thực tài khoản.')
             let userInfo = this.auth.getUserInfo();
             if (userInfo) {
               userInfo.emailChange = this.formEmail.get('email')?.value;
             }
             localStorage.setItem(environment.userInfo, JSON.stringify(userInfo));
             this.dialogRef.close(true);
-            
+
           } else {
             this.dialogRef.close(false);
             const dialogRef = this.dialog.open(LoginNotificationComponent, {
@@ -141,7 +146,7 @@ export class UpdateUserComponent implements OnInit {
               data: {
                 title: 'Thay đổi email',
                 message: 'Hệ thống đã gửi liên kết xác thực qua email mới, yêu cầu thay đổi sẽ có hiệu lực khi bạn kiểm tra hộp thư và xác thực tài khoản.',
-                lockText:'Tôi đã hiểu',
+                lockText: 'Tôi đã hiểu',
                 icon: 'icon-mail',
                 typeClass: 'info',
                 type: 'confirm',
@@ -151,7 +156,7 @@ export class UpdateUserComponent implements OnInit {
               disableClose: true,
             })
             dialogRef.afterClosed().subscribe((result) => {
-                window.location.reload();       
+              window.location.reload();
             })
           }
         }, (error) => {
@@ -176,5 +181,18 @@ export class UpdateUserComponent implements OnInit {
     if (sanitizedValue !== rawValue) {
       control.setValue(sanitizedValue, { emitEvent: false });
     }
+  }
+
+  handleDevelopAfter() {
+    let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+    dataDialog.title = 'Lỗi tính năng';
+    dataDialog.message = 'Tính năng đang trong giai đoạn phát triển.';
+    dataDialog.buttonLabel = 'Thử lại';
+    dataDialog.icon = 'icon-warning';
+    dataDialog.width = '500px'
+    dataDialog.iconColor = 'icon warning';
+    dataDialog.viewCancel = false;
+    dataDialog.buttonLabel = 'Tôi đã hiểu'
+    this.dialogCommon.openDialogInfo(dataDialog)
   }
 }

@@ -33,7 +33,8 @@ export class MbDropdown implements ControlValueAccessor {
   @Input() placeholder: string = 'Chọn';
   @Input() disabled = false;
   @Input() filter: boolean = false;
- 
+  @Input() showIcon: boolean = false;
+  @Input() iconClass: string = 'icon-default';
   // Template cho custom item
   @Input() showCheckmark: boolean = false;
  

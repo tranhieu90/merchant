@@ -3,71 +3,189 @@
 
 // ==============================Checkbox=======================
 .m-checkbox {
-  //   ::ng-deep.p-checkbox .p-checkbox-box {
-  //     border-color: $color-icon-neutral-sub-2;
-  //   }
+  ::ng-deep.p-checkbox .p-checkbox-box {
+    position: relative;
+  }
 
   ::ng-deep.p-checkbox .p-checkbox-box.p-highlight {
     border: $color-surface-action-main;
     background: $color-surface-action-main;
   }
+
+  ::ng-deep .p-checkbox .p-checkbox-box.p-highlight::before {
+    content: "\e91e";
+    font-family: "webmerchant";
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    font-size: $typo-font-sizes-3xl;
+    color: $color-global-neutral-white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
   ::ng-deep.p-disabled {
     border-color: $color-surface-action-main;
   }
+
+  ::ng-deep .p-checkbox .p-checkbox-icon {
+    display: none !important;
+  }
+
+  &.indeterminate {
+    ::ng-deep .p-checkbox .p-checkbox-box.p-highlight::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 24px;
+      height: 24px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      background-image: url('../../../../assets/images/icon-square-checked-minus.svg');
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+  }
+
+  &.hover {
+    ::ng-deep .p-checkbox .p-checkbox-box:hover {
+      border-color: $color-global-blue-blue-5;
+      background: transparent;
+    }
+
+    ::ng-deep .p-checkbox .p-checkbox-box.p-highlight:hover {
+      background: $color-global-blue-blue-5;
+    }
+  }
+
+  &.pressed {
+    ::ng-deep .p-checkbox .p-checkbox-box {
+      border-color: $color-icon-action-main;
+      background: transparent;
+      box-shadow: 0 0 0 0.2rem $color-global-primary-primary-3;
+    }
+
+    ::ng-deep .p-checkbox .p-checkbox-box.p-highlight {
+      background: $color-icon-action-main;
+      outline: 0 none;
+      outline-offset: 0;
+      border-color: $color-global-primary-primary-6;
+      box-shadow: 0 0 0 0.2rem $color-global-primary-primary-3;
+      transition: box-shadow 0.2s ease;
+    }
+  }
 }
+
 // ============================Radio=========================
 .m-radio {
-  ::ng-deep.p-radiobutton .p-radiobutton-box {
+  ::ng-deep .p-radiobutton .p-radiobutton-box {
     border-color: $color-icon-action-main;
+    background: transparent;
   }
-  ::ng-deep.p-radiobutton .p-radiobutton-box.p-highlight {
+
+  ::ng-deep .p-radiobutton .p-radiobutton-box.p-highlight {
     background: $color-icon-action-main;
   }
-  ::ng-deep.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
+
+  ::ng-deep .p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
     width: 8px;
     height: 8px;
   }
 
-  ::ng-deep .p-radiobutton-icon{
+  ::ng-deep .p-radiobutton-icon {
     background-color: $color-global-neutral-white;
   }
+
+  &.pressed {
+    ::ng-deep .p-radiobutton .p-radiobutton-box {
+      border-color: $color-icon-action-main;
+      background: transparent;
+      box-shadow: 0 0 0 0.2rem $color-global-primary-primary-3;
+    }
+
+    ::ng-deep .p-radiobutton .p-radiobutton-box.p-highlight {
+      background: $color-icon-action-main;
+      outline: 0 none;
+      outline-offset: 0;
+      border-color: $color-global-primary-primary-6;
+      box-shadow: 0 0 0 0.2rem $color-global-primary-primary-3;
+      transition: box-shadow 0.2s ease;
+    }
+  }
+
+  &.hover {
+    ::ng-deep .p-radiobutton .p-radiobutton-box:hover {
+      border-color: $color-global-blue-blue-5;
+      background: transparent;
+    }
+
+    ::ng-deep .p-radiobutton .p-radiobutton-box.p-highlight:hover {
+      background: $color-global-blue-blue-5;
+    }
+  }
 }
 
-.m-radio-check{
-  ::ng-deep.p-radiobutton .p-radiobutton-box.p-highlight {
-    background: $color-icon-action-main;
-    background-image: url("../../../../assets/images/icon-check.svg");
-    background-size: cover;
+.m-radio-check {
+  ::ng-deep .p-radiobutton-box {
+    position: relative;
   }
-  ::ng-deep.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
-    width: 0px;
-    height: 0px;
+
+  ::ng-deep .p-radiobutton-icon {
+    display: none !important;
+  }
+
+  ::ng-deep .p-radiobutton-box.p-highlight::before {
+    content: "\e91e";
+    font-family: "webmerchant";
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    font-size: $typo-font-sizes-3xl;
+    color: $color-global-neutral-white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    border-radius: 50%;
   }
 }
 
-// ::ng-deep.p-radiobutton-checked .p-radiobutton-box::after {
-//   content: "";
-//   background-image: url("../../../../assets/images/icon-check.svg");
-//   background-size: cover;
-//   display: block;
-//   width: 16px;
-//   height: 16px;
-//   }
+.m-radio-pressed {
+  ::ng-deep .p-radiobutton-box:active {
+    outline: 0 none;
+    box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.3);
+    border-color: #2196f3;
+  }
+}
 
 // =============================m-toggle-switch============================
 ::ng-deep.p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
   background: $color-surface-action-main;
 }
 
-::ng-deep .p-inputswitch-slider{
-  &:hover{
+::ng-deep .p-inputswitch-slider {
+  &:hover {
     background: $color-surface-action-main;
     opacity: 0.8;
   }
 }
-// ::ng-deep.p-inputswitch.p-focus .p-inputswitch-slider {
-//   background: $color-surface-action-main-pressed;
-// }
 
 //==============================m-chip=====================================
 .m-chip {
@@ -78,6 +196,7 @@
   padding: $spacing-xs;
   width: fit-content;
   cursor: pointer;
+
   .text-chip {
     vertical-align: middle;
     letter-spacing: 0;
@@ -85,6 +204,7 @@
     @include typo-style($typo-font-sizes-l);
     padding: 0px $spacing-3xs 0px $spacing-2xs;
   }
+
   .badge-x {
     display: flex;
     align-items: center;
@@ -110,12 +230,15 @@
   background-color: $color-surface-neutral-sub;
   color: $color-text-action-main;
 }
+
 .m-chip-l {
   height: 40px;
 }
+
 .m-chip-m {
   height: 30px;
 }
+
 .m-chip-s {
   height: 24px;
 }

@@ -106,7 +106,7 @@ export class TableMerchantComponent implements OnChanges {
     this.updateCountRowChecked();
   }
   updateCountRowChecked() {
-    this.countRowChecked = this.fullData.filter(item => item.checked).length;
+    this.countRowChecked = this.dataTable.filter(item => item.checked).length;
   }
 
   isSelectAll: boolean = false;
@@ -191,6 +191,7 @@ export class TableMerchantComponent implements OnChanges {
 
   doSearch(event: any) {
     this.isLoading = true;
+    this.pageIndex = 0;
     this.lazyLoadData(event);
   }
 
@@ -254,13 +255,19 @@ export class TableMerchantComponent implements OnChanges {
                   ).length;
                 }
               }
-              this.dataTable = this.dataTable.concat(dataGroup);
+              if(this.pageIndex === 1) {
+                this.dataTable = dataGroup
+              } else {
+                this.dataTable = this.dataTable.concat(dataGroup);
+              }
               this.totalItem = res['data']['totalSub'];
               this.isLoading = true;
 
             } else {
-              this.dataTable = [];
-              this.totalItem = 0
+              if(this.pageIndex === 1) {
+                this.dataTable = [];
+                this.totalItem = 0
+              }
               this.isLoading = false;
             }
           }

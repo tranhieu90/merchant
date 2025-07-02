@@ -23,6 +23,8 @@
     "@angular/platform-server": "^18.2.0",
     "@angular/router": "^18.2.0",
     "@angular/ssr": "^18.2.14",
+    "ng-zorro-antd": "^18.2.1",
+    "@ctrl/tinycolor": "^3.5.0",
     "ngx-print": "^3.0.0",
     "angularx-qrcode": "^19.0.0",
     "bn-ng-idle": "^2.0.5",

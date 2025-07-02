@@ -8,14 +8,34 @@
 }
 
 .icon-label-red {
+  position: relative;
   width: 24px;
   height: 24px;
   padding: $spacing-2xs;
   border-radius: 50%;
   border: 2px solid $color-global-neutral-white;
   background: $color-global-red-red-6;
-  background-image: url("../../src/assets/images/icon-check.svg");
-  background-size: cover;
+}
+
+.icon-label-red::before {
+  content: "\e91e";
+  font-family: "webmerchant";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  font-size: $typo-font-sizes-3xl;
+  color: $color-global-neutral-white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
 .number-label-red {

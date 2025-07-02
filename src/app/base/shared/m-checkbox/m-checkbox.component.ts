@@ -23,4 +23,5 @@ export class MCheckboxComponent {
   radioCheck:number=2;
   switchInput:boolean=false;
   values: string[] | undefined;
+  indeterminate:boolean=true
 }

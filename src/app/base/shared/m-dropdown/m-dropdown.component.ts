@@ -3,11 +3,12 @@ import { DropdownModule } from 'primeng/dropdown';
 import { FormBuilder, FormGroup, FormsModule,ReactiveFormsModule, Validators } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { MbDropdown } from '../mb-dropdown/mb-dropdown.component';
 
 @Component({
   selector: 'app-m-dropdown',
   standalone: true,
-  imports: [DropdownModule, FormsModule, ReactiveFormsModule, TooltipModule, MultiSelectModule],
+  imports: [DropdownModule, FormsModule, ReactiveFormsModule, TooltipModule, MultiSelectModule,MbDropdown],
   templateUrl: './m-dropdown.component.html',
   styleUrl: './m-dropdown.component.scss'
 })
