@@ -1,0 +1,105 @@
+@import "../../../scss/mixins";
+@import "../../../scss/variables";
+
+.wrapper {
+  background: $color-global-neutral-white;
+  min-height: calc(100vh - 260px);
+  padding: $spacing-l;
+  border-radius: $border-radius-xs;
+}
+
+.search-role {
+  width: 540px;
+}
+
+.title-no-data {
+  color: $color-text-neutral-main;
+}
+
+.summary-no-data {
+  color: $color-text-neutral-sub;
+}
+
+.merchant-treeSelect {
+  width: 100%;
+
+  ::ng-deep .p-treeselect {
+    width: 100%;
+  }
+
+  ::ng-deep .p-treenode-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  ::ng-deep .p-tree-toggler {
+    order: 2;
+    margin-left: auto;
+  }
+
+  ::ng-deep .p-checkbox {
+    order: 0;
+    margin-right: $spacing-xs;
+  }
+
+  ::ng-deep .p-treenode-label {
+    order: 1;
+  }
+
+  ::ng-deep .p-treenode-content.p-highlight {
+    color: $color-global-neutral-black;
+  }
+
+  ::ng-deep .p-treenode:focus>.p-treenode-content {
+    outline: transparent;
+  }
+
+  ::ng-deep .p-treenode-content.p-highlight .p-tree-toggler {
+    color: $color-global-neutral-black;
+  }
+
+  ::ng-deep .p-treeselect.p-treeselect-chip .p-treeselect-token {
+    margin: 0;
+    padding: $spacing-2xs $spacing-s $spacing-2xs 0;
+    background: transparent;
+    border: none;
+  }
+
+  ::ng-deep .p-treeselect .p-treeselect-label.p-placeholder {
+    color: $color-global-neutral-neutral-12;
+    padding: $spacing-s $spacing-m;
+    font-size: $typo-font-sizes-m;
+  }
+
+  ::ng-deep .p-treeselect .p-treeselect-label {
+    padding: $spacing-s $spacing-m;
+    font-size: $typo-font-sizes-m;
+  }
+}
+
+.container-btn-cf {
+  margin: 0 $spacing-s $spacing-s;
+
+  ::ng-deep .btn-cf .p-button {
+    width: 100%;
+  }
+}
+
+::ng-deep .merchant-dropdown .p-dropdown .p-dropdown-label.p-placeholder {
+  color: $color-global-neutral-neutral-12 !important;
+}
+
+.color-count {
+  color: $color-text-action-main;
+}
+
+.merchant-button-icon.active ::ng-deep.p-button {
+  background: $color-surface-neutral-sub-2 !important;
+}
+
+::ng-deep .mat-badge-content {
+  color: $color-surface-neutral-main !important;
+  background-color: $color-global-primary-primary-4 !important;
+  opacity: 100% !important;
+}

@@ -1,0 +1,53 @@
+<div class="header">
+  <div class="header-left">
+    <div class="toggle-nav-bar" (click)="toggleNavCollapse()">
+      <!-- <mat-icon> {{!isCollapsed ? 'format_indent_decrease':'format_indent_increase'}}</mat-icon> -->
+      <span class="icon-sidebar icon-header"></span>
+    </div>
+    @if (!isCollapsed) {
+    <div class="logo-header">
+      <a [routerLink]="['/dashboard/']"></a>
+      <img [src]="assetPath + '/assets/images/logo_merchant.svg'" alt="" />
+    </div>
+    } @else {
+    <div class="logo-icon">
+      <a [routerLink]="['/dashboard/']"></a>
+      <img [src]=" assetPath + '/assets/images/merchant_logo_icon.svg'" alt="" />
+    </div>
+    }
+
+  </div>
+  <div class="header-right">
+    <!-- <p-button label="Danh sách yêu cầu" class="merchant-button-tertiary" icon="icon-list icon-header" />
+    <div class="noti">
+      <span class="icon-notification icon-header"></span>
+    </div> -->
+    <div [matMenuTriggerFor]="menu" class="user-profile">
+      <img [src]=" assetPath + '/assets/images/avatar_trang.jfif'" alt="" class="user-avatar" *ngIf="!avatarBase64">
+      <img [src]="'data:image/png;base64,' + avatarBase64" alt="" class="user-avatar" *ngIf="avatarBase64">
+      <div class="info">
+        <span class="title-m-semibold" [pTooltip]="tooltipTemplate" tooltipPosition="top"
+          tooltipStyleClass="merchant-tooltip">{{userNameFomat}}</span>
+        <ng-template #tooltipTemplate>
+          {{userName}}
+        </ng-template>
+        <span class="tparagraph-s-regular color-role">{{roleName}}</span>
+      </div>
+      <span class="icon-angle_down icon-header"></span>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="doViewProfile()">
+          <mat-icon class="icon-user"></mat-icon>
+          <span class="title-m-regular">Hồ sơ người dùng</span>
+        </button>
+        <button mat-menu-item (click)="doChangePassword()">
+          <mat-icon class="icon-change_password"></mat-icon>
+          <span class="title-m-regular">Đổi mật khẩu</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon class="icon-logout color-sematic"></mat-icon>
+          <span class="title-m-regular color-sematic">Đăng xuất</span>
+        </button>
+      </mat-menu>
+    </div>
+  </div>
+</div>

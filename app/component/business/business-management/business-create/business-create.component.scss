@@ -1,0 +1,239 @@
+@import "../../../../../scss/variables";
+@import "../../../../../scss/mixins";
+
+.mat-stepper-horizontal {
+    margin-top: 8px;
+}
+
+.mat-mdc-form-field {
+    margin-top: 16px;
+}
+
+.step-role {
+    background: none;
+
+    ::ng-deep.mat-horizontal-stepper-header-container {
+        padding: $spacing-l;
+        background: $color-surface-neutral-main;
+        border-radius: $border-radius-s;
+        justify-content: center;
+    }
+
+    ::ng-deep.mat-horizontal-stepper-header {
+        height: auto;
+    }
+
+    ::ng-deep.mat-step-header,
+    ::ng-deep.mat-step-header-ripple {
+        background: none !important;
+    }
+
+    ::ng-deep.mat-step-text-label {
+        //typo/title-s/semibold
+        @include typo-style($typo-font-sizes-m, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+    }
+
+    ::ng-deep.mat-stepper-horizontal-line {
+        width: 84px;
+        height: 3px;
+        border-radius: $border-radius-round;
+        background: $color-surface-action-main;
+        flex: none;
+    }
+
+    ::ng-deep.mat-step-icon {
+        width: 40px;
+        height: 40px;
+        border: 1px solid $color-border-neutral-main;
+        border-radius: $border-radius-round;
+        background: $color-surface-neutral-main;
+        padding: $spacing-xs;
+        color: $color-text-neutral-sub;
+        //typo/paragraph-l/semibold
+        @include typo-style($typo-font-sizes-l, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+    }
+
+    ::ng-deep.mat-step-icon-selected {
+        background: $color-surface-action-main;
+        color: $color-text-text-on-on-action-main;
+    }
+
+    ::ng-deep.mat-horizontal-content-container {
+        border-radius: $border-radius-s;
+        background: $color-surface-neutral-main;
+        padding: $spacing-l;
+        margin-top: 15px;
+        min-height: calc(100vh - 325px);
+        position: relative;
+    }
+
+    .content-first {
+        width: 870px;
+        margin: auto;
+    }
+
+    .div-button {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 100%;
+        text-align: right;
+    }
+
+    ::ng-deep .mat-step-icon.mat-step-icon-state-done {
+        background: $color-surface-action-main;
+        color: $color-text-text-on-on-action-main;
+    }
+
+    ::ng-deep .mat-step-header {
+        pointer-events: none;
+        cursor: default;
+    }
+}
+
+.content-thirdForm {
+
+    .merchant-button,
+    .merchant-button-tertiary {
+        ::ng-deep.p-button {
+            width: 220px;
+        }
+    }
+
+    .merchant-button-material.mdc-button {
+        width: 220px;
+    }
+
+    .text {
+        color: $color-text-neutral-sub;
+    }
+}
+
+
+.mat-step-header {
+    pointer-events: none;
+}
+
+.form-business {
+    padding: 0px 159px;
+
+    .label {
+        color: $color-text-neutral-main;
+    }
+
+    .text-infor {
+        color: $color-text-neutral-main;
+    }
+}
+
+.button-form {
+    padding: $spacing-l;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.mb-spacing-l {
+    margin-bottom: $spacing-l;
+}
+
+.mb-spacing-xs {
+    margin-bottom: $spacing-xs;
+}
+
+::ng-deep.p-dropdown-panel .p-dropdown-items {
+    padding: 0.25rem 0.25rem;
+}
+
+.alert-info {
+    background-color: $color-surface-semantic-information-sub;
+    padding: $spacing-m;
+    border: 1px solid $color-border-semantic-information-sub;
+    border-radius: $border-radius-s;
+    margin-bottom: $spacing-l;
+
+    .icon-color {
+        color: $color-surface-semantic-information;
+        font-size: $typo-font-sizes-3xl;
+        line-height: $typo-line-heights-l;
+    }
+}
+
+.alert-warning {
+    background-color: $color-surface-semantic-warning-sub;
+    padding: $spacing-m;
+    border: 1px solid $color-border-semantic-warning-sub;
+    border-radius: $border-radius-s;
+    margin-bottom: $spacing-l;
+
+    .icon-color {
+        color: $color-surface-semantic-warning;
+        font-size: $typo-font-sizes-3xl;
+        line-height: $typo-line-heights-l;
+    }
+}
+
+.payment-form {
+    border: 1px solid $color-border-neutral-main;
+    border-radius: $border-radius-xs;
+
+    .title {
+        padding: $spacing-m;
+        background-color: $color-surface-action-sub;
+    }
+
+    .payment-info {
+        padding: $spacing-l;
+
+        .qr-code {
+            padding: $spacing-xs;
+        }
+    }
+}
+
+.add-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: $spacing-m;
+    color: $color-text-action-main;
+    cursor: pointer;
+}
+
+.icon-color {
+    color: $color-icon-action-main;
+    font-size: $typo-font-sizes-3xl;
+    line-height: $typo-line-heights-l;
+}
+
+.scroll-box {
+    margin-bottom: 70px;
+    height: 34vh;
+    overflow-y: auto;
+}
+
+.scroll-form {
+    margin-bottom: 70px;
+    overflow-y: auto;
+}
+
+.icon-arrow_right {
+    color: $color-icon-action-main;
+    cursor: pointer;
+}
+
+.color-organization {
+    color: $color-text-action-main;
+}
+
+.title-no-data {
+    color: $color-text-neutral-main;
+}
+
+.summary-no-data {
+    color: $color-text-neutral-sub;
+}
+
+.input-error {
+    border: 1px solid $color-global-red-red-6 !important;
+    box-shadow: none;
+}

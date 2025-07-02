@@ -1,0 +1,16 @@
+<div class="d-flex justify-content-between modal-header">
+    <h4 class="modal-title title-m-bold">Gán điểm kinh doanh</h4>
+    <span class="icon-close_large cursor-pointer" (click)="onClose()"></span>
+</div>
+
+<div class="modal-body">
+    <div class="infor-warn d-flex align-items-center mb-4">
+        <span class="icon-information_solid me-1"></span>
+        <span class="title-s-semibold">Vui lòng chọn ít nhất 1 điểm kinh doanh để thêm vào nhóm</span>
+    </div>
+    <app-table-merchant [dataSource]="dataSource" [isShowCheckbox]="true" (returnRowsChecked)="returnRowsChecked($event)"></app-table-merchant>
+</div>
+
+<div class="modal-footer">
+    <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="onClose()" />
+    <p-button label="Xác nhận gán" class="merchant-button" [disabled]="lstRowChecked?.length == 0" (click)="doAction()" />

@@ -1,0 +1,30 @@
+<div class="d-flex justify-content-between modal-header">
+    <h4 class="modal-title title-m-bold">Gán điểm kinh doanh</h4>
+    <span class="icon-close_large cursor-pointer" (click)="onClose()"></span>
+  </div>
+  
+  <div class="modal-body">
+    <div class="infor-warn d-flex align-items-center">
+        <span class="icon-information_solid me-1"></span>
+        <span class="title-s-semibold">Vui lòng chọn ít nhất 1 điểm kinh doanh để thêm vào nhóm</span> 
+    </div>
+    <div class="box-search d-flex justify-content-betwwen align-items-center mt-3">
+        <div class="title-m-semibold title">Danh sách điểm kinh doanh ({{data.length}})</div>
+        <div class="p-inputgroup show-icon-left">
+            <span class="p-input-icon-left">
+                <i class="icon-search input-icon input-icon-default"></i>
+            </span>
+            <input type="text" pInputText class="merchant-input search"
+                placeholder="Tìm theo tên, địa chỉ điểm kinh doanh..." />
+        </div>
+    </div>
+    <div class="table-location mt-3">
+        <grid-view [columns]="columnsLocation" [dataSource]="data" [showCheckbox]="true"></grid-view>
+    </div>
+  </div>
+  
+  <div class="modal-footer">
+    <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="onClose()"/>
+    <p-button label="Xác nhận gán" class="merchant-button" [disabled]="countRowSelected==0" (click)="doAction(true)"/>
+  </div>
+  

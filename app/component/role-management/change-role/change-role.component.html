@@ -1,0 +1,50 @@
+<div class="d-flex justify-content-between modal-header">
+    <div class="modal-title">
+        <h4 class="title-m-bold">Chuyển đổi vai trò</h4>
+        <div class="sub-title paragraph-m-regular">Chuyển đổi vai trò sẽ thay đổi quyền sử dụng của người dùng và không
+            thể hoàn tác.</div>
+    </div>
+
+    <span class="icon-close_large align-self-start cursor-pointer" (click)="onClose()"></span>
+</div>
+
+<div class="modal-body">
+    <form [formGroup]="formChangeRole">
+        <div>
+            <label class="form-label title-m-semibold">Vai trò hiện tại</label>
+          <p-dropdown class="merchant-dropdown" formControlName="currentRole" [options]="listRoles" optionValue="id"
+                      optionLabel="name" placeholder="Chọn vai trò mới" [filter]="true" [readonly]="true" [disabled]="true"/>
+                      @if(formChangeRole.controls['currentRole'].hasError('required')&&
+                      formChangeRole.controls['currentRole'].touched &&
+                      formChangeRole.controls['currentRole'].invalid){
+                        <div class="input-erorr">
+                          <span class="icon-error_solid"></span>
+                          Vui lòng nhập thông tin
+                        </div>
+                      }
+        </div>
+        <div class="mt-4">
+            <label class="form-label title-m-semibold">Vai trò mới</label>
+            <p-dropdown class="merchant-dropdown" formControlName="newRole" [options]="listRoles" optionValue="id"
+                optionLabel="name" placeholder="Chọn vai trò mới" [filter]="true" />
+                @if(formChangeRole.controls['newRole'].hasError('required')&&
+                formChangeRole.controls['newRole'].touched &&
+                formChangeRole.controls['newRole'].invalid){
+                <div class="input-erorr">
+                    <span class="icon-error_solid"></span>
+                    Vui lòng nhập thông tin
+                </div>
+                } @else if(formChangeRole.controls['newRole'].hasError('rolesMatch')){
+                  <div class="input-erorr">
+                    <span class="icon-error_solid"></span>
+                    Vui lòng chọn vai trò khác
+                  </div>
+                }
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="onCancel()" />
+    <p-button label="Chuyển đổi" class="merchant-button" (click)="onSubmit()" [disabled]="!isFormChangeRoleValid()"/>
+</div>

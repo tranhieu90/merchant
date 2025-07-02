@@ -1,0 +1,83 @@
+@import "../../../../scss/variables";
+@import "../../../../scss/mixins";
+
+.wrapper {
+    background: $color-global-neutral-white;
+    min-height: calc(100vh - 260px);
+    padding: $spacing-l;
+    border-radius: $border-radius-xs;
+}
+
+.search-role {
+    width: 540px;
+}
+
+.title-no-data {
+    color: $color-text-neutral-main;
+}
+
+.summary-no-data {
+    color: $color-text-neutral-sub;
+}
+
+.merchant-treeSelect {
+    width: 100%;
+
+    ::ng-deep .p-treeselect {
+        width: 100%;
+    }
+
+    ::ng-deep .p-treeselect .p-treeselect-label {
+        padding: $spacing-s $spacing-m;
+        font-size: $typo-font-sizes-m;
+    }
+
+    ::ng-deep .p-treeselect-close {
+        display: none !important;
+    }
+
+    ::ng-deep .p-treeselect-filter-container {
+        position: relative;
+        display: block;
+    }
+
+    ::ng-deep .p-treeselect-filter {
+        padding-left: 40px !important;
+    }
+
+    ::ng-deep .p-treeselect-filter-icon {
+        position: absolute !important;
+        left: 16px;
+        top: 70%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        z-index: 2;
+        color: $color-global-neutral-neutral-6;
+    }
+}
+
+.container-btn-cf {
+    margin: $spacing-none $spacing-s $spacing-s;
+}
+
+::ng-deep .mat-badge-content {
+    color: $color-surface-neutral-main !important;
+    background-color: #4E8AF1 !important;
+    opacity: 100% !important;
+}
+
+.merchant-button-icon.active ::ng-deep.p-button {
+    background: $color-surface-neutral-sub-2 !important;
+}
+
+::ng-deep .cdk-overlay-container {
+    z-index: 9999 !important;
+}
+
+.node-label-ellipsis {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5;
+}

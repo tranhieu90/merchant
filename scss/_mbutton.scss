@@ -1,0 +1,483 @@
+@import "../scss/mixins";
+@import "../scss/variables";
+
+.merchant-button .p-button {
+    color: $color-text-text-on-on-action-main;
+    background: $color-surface-action-main;
+    border: none;
+    border-radius: $border-radius-s;
+    padding: 13px $spacing-l;
+    justify-content: center;
+    //title-s-semibold
+    @include typo-style($typo-font-sizes-m, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+    box-shadow: none;
+
+    &:hover {
+        background: $color-surface-action-main-hover;
+    }
+
+    &:focus {
+        background: $color-surface-action-main-pressed;
+    }
+
+    .p-button-icon {
+        font-size: 20px;
+        margin-right: 4px;
+    }
+
+    .pi {
+        font-size: 1rem;
+    }
+
+    .p-button-label{
+        flex: none;
+    }
+}
+
+.merchant-button-loading .p-button {
+    width: 122px;
+    height: 48px;
+}
+
+.merchant-button-error .p-button {
+    background: $color-surface-semantic-error;
+
+    &:hover {
+        background: $color-surface-semantic-error-hover;
+    }
+
+    &:focus {
+        background: $color-surface-semantic-error-pressed;
+    }
+}
+
+.button-skeleton .p-skeleton {
+    background: $color-surface-skeleton-main;
+    border-radius: $border-radius-s;
+    width: 122px !important;
+    height: 48px !important;
+}
+
+
+.merchant-button-secondary .p-button {
+    color: $color-text-text-on-on-action-sub;
+    background: $color-surface-action-sub;
+    border: none;
+    border-radius: $border-radius-s;
+    padding: 13px $spacing-l;
+    //title-s-semibold
+    @include typo-style($typo-font-sizes-m, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+    box-shadow: none;
+
+    .p-button-icon {
+        font-size: 20px;
+        margin-right: 3px;
+    }
+
+    .pi {
+        font-size: 1rem;
+    }
+
+    &:hover {
+        background: $color-surface-action-sub-hover;
+    }
+
+    &:focus {
+        background: $color-surface-action-sub-pressed;
+    }
+
+    &:disabled {
+        background: $color-surface-action-sub;
+    }
+}
+
+.merchant-button-secondary-error .p-button {
+    background: $color-surface-semantic-error-sub;
+    color: $color-text-semantic-error;
+
+    &:hover {
+        background: $color-surface-semantic-error-sub;
+    }
+
+    &:focus {
+        background: $color-surface-semantic-error-sub;
+    }
+}
+
+.merchant-button-tertiary .p-button {
+    color: $color-text-neutral-main;
+    background: $color-surface-neutral-main;
+    border: 1px solid $color-border-neutral-main;
+    border-radius: $border-radius-s;
+    padding: 13px $spacing-l;
+    //title-s-semibold
+    @include typo-style($typo-font-sizes-m, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+    box-shadow: none;
+
+    .p-button-icon {
+        font-size: 20px;
+        margin-right: 3px;
+    }
+
+    .pi {
+        font-size: 1rem;
+    }
+
+    &:hover {
+        background: $color-surface-action-sub-2-hover;
+    }
+
+    &:focus {
+        background: $color-surface-action-sub-2-pressed;
+        border-color: $color-border-neutral-sub-2;
+    }
+
+    &:disabled {
+        background: $color-surface-neutral-main;
+    }
+}
+
+.merchant-button-tertiary-error .p-button {
+    color: $color-text-semantic-error;
+
+    &:hover {
+        background: $color-surface-neutral-main;
+    }
+
+    &:focus {
+        background: $color-surface-neutral-main;
+    }
+}
+
+
+.merchant-button-text {
+    .p-button {
+        color: $color-text-action-main;
+        background: none;
+        border: none;
+        border-radius: $border-radius-s;
+        padding: 13px $spacing-l;
+        //title-s-semibold
+        @include typo-style($typo-font-sizes-m, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+        box-shadow: none;
+
+        .p-button-icon {
+            font-size: 20px;
+        }
+
+        .pi {
+            font-size: 1rem;
+        }
+
+        &:hover {
+            color: $color-text-action-main-hover;
+        }
+
+        &:focus {
+            color: $color-text-action-main-pressed;
+        }
+
+        &:disabled {
+            color: $color-text-semantic-disabled;
+        }
+    }
+
+    &.merchant-button-loading {
+        .input-icon {
+            margin-right: 5px;
+        }
+
+        .label {
+            margin-right: 8px;
+        }
+    }
+
+    &.merchant-button-s {
+        &.merchant-button-loading .p-button {
+            width: 86px !important;
+        }
+
+        .p-button {
+            .pi {
+                font-size: 12px !important;
+            }
+        }
+    }
+}
+
+.merchant-button-text-error .p-button {
+    color: $color-text-semantic-error;
+}
+
+.merchant-button-m {
+    .p-button {
+        padding: $spacing-xs $spacing-s;
+        @include typo-style($typo-font-sizes-m, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+    }
+
+    &.merchant-button-loading .p-button {
+        width: 98px;
+        height: 40px;
+    }
+
+}
+
+.button-skeleton-m .p-skeleton {
+    width: 93px !important;
+    height: 40px !important;
+}
+
+.merchant-button-s {
+    .p-button {
+        padding: $spacing-3xs $spacing-xs;
+        border-radius: $border-radius-xs;
+        @include typo-style($typo-font-sizes-s, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+    }
+
+    &.merchant-button-loading .p-button {
+        width: 79px;
+        height: 28px;
+    }
+}
+
+.button-skeleton-s .p-skeleton {
+    border-radius: $border-radius-xs;
+    width: 79px !important;
+    height: 28px !important;
+}
+
+.button-text-skeleton-m .p-skeleton {
+    border-radius: $border-radius-xl;
+    width: 68px !important;
+    height: 24px !important;
+}
+
+.button-text-skeleton-s .p-skeleton {
+    border-radius: $border-radius-xl;
+    width: 52px !important;
+    height: 18px !important;
+}
+
+.merchant-button-group {
+    .label {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .label-s {
+        margin-top: 5px;
+    }
+
+    .label-m {
+        margin-top: 7px;
+    }
+
+    .button-icon-skeleton {
+        .p-skeleton {
+            background: $color-surface-skeleton-main;
+            border-radius: $border-radius-m;
+        }
+
+        &.xl .p-skeleton {
+            width: 60px !important;
+            height: 60px !important;
+        }
+
+        &.s .p-skeleton {
+            border-radius: $border-radius-xs;
+            width: 28px !important;
+            height: 28px !important;
+        }
+
+        &.m .p-skeleton {
+            border-radius: $border-radius-s;
+            width: 40px !important;
+            height: 40px !important;
+        }
+
+        &.l .p-skeleton {
+            border-radius: $border-radius-s;
+            width: 48px !important;
+            height: 48px !important;
+        }
+    }
+
+    .label-skeleton {
+        .p-skeleton {
+            background: $color-surface-skeleton-main;
+            border-radius: $border-radius-xs;
+        }
+
+        &.xl .p-skeleton {
+            margin-top: 10px;
+            width: 60px !important;
+            height: 20px !important;
+        }
+
+        &.s .p-skeleton {
+            margin-top: 7px;
+            width: 28px !important;
+            height: 12px !important;
+        }
+
+        &.m .p-skeleton {
+            margin-top: 7px;
+            width: 40px !important;
+            height: 18px !important;
+        }
+
+        &.l .p-skeleton {
+            margin-top: 10px;
+            width: 48px !important;
+            height: 18px !important;
+        }
+    }
+}
+
+.merchant-button-icon {
+    .p-button {
+        background: $color-surface-action-main;
+        border: none;
+        border-radius: $border-radius-m;
+        box-shadow: none;
+        color: $color-icon-icon-on-on-action-main;
+
+        &:hover {
+            background: $color-surface-action-main-hover;
+        }
+
+        &:focus {
+            background: $color-surface-action-main-pressed;
+        }
+    }
+
+    &.button-light .p-button {
+        background: $color-surface-neutral-sub !important;
+        color: $color-icon-neutral-main !important;
+
+        &:hover {
+            background: $color-surface-neutral-main !important;
+        }
+
+        &:focus {
+            background: $color-surface-neutral-sub-2 !important;
+        }
+    }
+
+    &.button-xl .p-button {
+        width: 60px;
+        height: 60px;
+
+        .p-button-icon {
+            font-size: 32px;
+        }
+
+        .pi-spinner {
+            font-size: 22px;
+        }
+    }
+
+    &.button-s .p-button {
+
+        width: 28px;
+        height: 28px;
+        border-radius: $border-radius-xs !important;
+
+        .p-button-icon {
+            font-size: 13px;
+        }
+
+        .pi-spinner {
+            font-size: 11px;
+        }
+    }
+
+
+    &.button-m .p-button {
+        width: 40px;
+        height: 40px;
+        border-radius: $border-radius-s !important;
+
+        .p-button-icon {
+            font-size: 20px;
+        }
+
+        .pi-spinner {
+            font-size: 16px;
+        }
+    }
+
+    &.button-l .p-button {
+        width: 48px;
+        height: 48px;
+        border-radius: $border-radius-s !important;
+
+        .p-button-icon {
+            font-size: 20px;
+        }
+
+        .pi-spinner {
+            font-size: 16px;
+        }
+    }
+
+    &.button-show-shadow .p-button {
+        box-shadow: $shadow-s1;
+    }
+
+}
+
+
+.merchant-button-material.mdc-button {
+    background: $color-surface-action-main;
+    border: none;
+    border-radius: $border-radius-s;
+    padding: $spacing-s $spacing-l;
+    box-shadow: none;
+    height: 48px;
+
+    .mdc-button__label {
+        color: $color-text-text-on-on-action-main;
+        @include typo-style($typo-font-sizes-m, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+    }
+
+    &:hover {
+        background: $color-surface-action-main-hover;
+    }
+
+    &:focus {
+        background: $color-surface-action-main-pressed;
+    }
+
+    &.mat-mdc-button-disabled {
+        opacity: 30%;
+    }
+}
+
+
+.merchant-button-material-tertiary.mdc-button {
+    background: $color-surface-neutral-main;
+    border: 1px solid $color-border-neutral-main;
+    border-radius: $border-radius-s;
+    padding: $spacing-s $spacing-l;
+    box-shadow: none;
+    height: 48px;
+
+    .mdc-button__label {
+        color: $color-text-neutral-main;
+        @include typo-style($typo-font-sizes-m, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+    }
+
+    &:hover {
+        background: $color-surface-action-sub-2-hover;
+    }
+
+    &:focus {
+        background: $color-surface-action-sub-2-pressed;
+        border-color: $color-border-neutral-sub-2;
+    }
+
+    &.mat-mdc-button-disabled {
+        opacity: 30%;
+    }
+}

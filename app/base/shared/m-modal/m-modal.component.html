@@ -1,0 +1,23 @@
+<div class="modal-form">
+    <div class="title-form">
+        <div class="d-flex justify-content-between align-items-center">
+            <span class="title-m-bold title-color">{{dataModal.title}}</span>
+            <span class="icon-close_large icon-close" (click)="onclose(false)"></span>
+        </div>
+        <div class="d-flex">
+            <span class="paragraph-m-regular text-title-color">{{dataModal.textTitle}}</span>
+        </div>
+    </div>
+    <div class="content-modal">
+        <div class="content-info">
+            <div>content 1</div>
+            <div>content 2</div>
+            <div>content 3</div>
+            <div>content 4</div>
+        </div>
+    </div>
+    <div class="button-form">
+        <p-button label={{dataModal.labelLeft}} class="merchant-button-tertiary me-3" (onClick)="onclose(false)" />
+        <p-button label={{dataModal.labelRight}} class="merchant-button" (onClick)="onclose(true)" />
+    </div>
+</div>
