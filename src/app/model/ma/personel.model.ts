@@ -18,6 +18,7 @@ export interface IPersonelDetail {
     isVerify?: number;
     groupList?: IGroupList[];
     roleId?: number;
+    enableUpdate?: string;
 }
 
 export interface IGroupList {
@@ -51,6 +52,7 @@ export interface IRolePersonel {
 export interface IPersonelUpdate {
     userId?: number;
     roleId?: number;
+    actionType?: string;
     oraganizationInfo?: IOraganization;
     oraganizationDelete?: IOraganization;
 }

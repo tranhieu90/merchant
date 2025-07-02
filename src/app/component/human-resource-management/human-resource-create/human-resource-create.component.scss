@@ -2,11 +2,11 @@
 @import "../../../../scss/mixins";
 
 .mat-stepper-horizontal {
-  margin-top: 8px;
+  margin-top: $spacing-xs;
 }
 
 .mat-mdc-form-field {
-  margin-top: 16px;
+  margin-top: $spacing-m;
 }
 
 .step-role {
@@ -63,7 +63,7 @@
     border-radius: $border-radius-s;
     background: $color-surface-neutral-main;
     padding: $spacing-l;
-    margin-top: 15px;
+    margin-top: $spacing-m;
     min-height: calc(100vh - 280px);
     position: relative;
   }
@@ -74,7 +74,7 @@
   }
 
   .div-button {
-    margin-top: 50px;
+    margin-top: $spacing-4xl;
     text-align: right;
   }
 
@@ -100,12 +100,12 @@
         content: "\e91f";
         font-family: 'webmerchant' !important;
         color: $color-global-neutral-white;
-        font-size: 24px;
+        font-size: $typo-font-sizes-3xl;
         position: absolute;
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
+        left: $spacing-none;
+        top: $spacing-none;
+        right: $spacing-none;
+        bottom: $spacing-none;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -121,7 +121,7 @@
   .item {
     background: $color-surface-action-sub-2;
     padding: $spacing-l;
-    border-radius: 8px;
+    border-radius: $border-radius-s;
     color: $color-text-neutral-main;
     height: 100%;
 
@@ -130,13 +130,13 @@
 
     }
 
-    ::ng-deep.mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
-    ::ng-deep.mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
+    ::ng-deep.mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background,
+    ::ng-deep.mdc-checkbox__native-control:enabled:indeterminate~.mdc-checkbox__background {
       border-color: $color-surface-action-main;
       background: $color-surface-action-main;
     }
 
-    ::ng-deep.mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background {
+    ::ng-deep.mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background {
       svg {
         display: none;
       }
@@ -145,12 +145,12 @@
         content: "\e91d";
         font-family: 'webmerchant' !important;
         color: $color-global-neutral-white;
-        font-size: 24px;
+        font-size: $typo-font-sizes-3xl;
         position: absolute;
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
+        left: $spacing-none;
+        top: $spacing-none;
+        right: $spacing-none;
+        bottom: $spacing-none;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -158,12 +158,12 @@
       }
     }
 
-    ::ng-deep.mdc-checkbox__native-control:indeterminate ~ .mdc-checkbox__background .mdc-checkbox__mixedmark {
+    ::ng-deep.mdc-checkbox__native-control:indeterminate~.mdc-checkbox__background .mdc-checkbox__mixedmark {
       width: 70%;
     }
 
-    ::ng-deep.mat-internal-form-field > label {
-      padding-left: 0px;
+    ::ng-deep.mat-internal-form-field>label {
+      padding-left: $spacing-none;
     }
 
     .level-0 {
@@ -171,7 +171,7 @@
     }
 
     .level-2 {
-      margin-left: 29px;
+      margin-left: $spacing-xl;
     }
 
     .title {
@@ -243,80 +243,92 @@
   align-items: center;
   justify-content: center;
   position: absolute;
-  right: 12px;
-  top: 0;
-  bottom: 0;
+  right: $spacing-s;
+  top: $spacing-none;
+  bottom: $spacing-none;
   pointer-events: auto;
   color: $color-icon-neutral-sub-3;
 }
 
 .r-25 {
-  right: 25px;
+  right: $spacing-l;
 }
 
 :host ::ng-deep .p-calendar .p-inputtext {
   height: 48px;
   width: 423px;
 }
-.text-center{
+
+.text-center {
   text-align: center;
 }
-.text-radio{
-  margin-left: 5px;
+
+.text-radio {
+  margin-left: $spacing-2xs;
   font-family: typo/font-family/Averta Std CY;
   font-weight: typo/font-weight/semibold;
   font-size: typo/font-size/m;
   line-height: typo/line-height/m;
   letter-spacing: 0%;
   vertical-align: middle;
-  color: #040D1F;
+  color: $color-global-neutral-black;
 }
+
 .border-custom {
- border: 1px solid #e3eefd;
-  border-radius: 12px;
-  padding: 24px;
-  margin: 16px;
+  border: 1px solid $color-global-neutral-neutral-2;
+  border-radius: $border-radius-m;
+  padding: $spacing-l;
+  margin: $spacing-m;
   min-height: 55vh;
   box-sizing: border-box;
 }
+
 .m-radio {
   ::ng-deep.p-radiobutton .p-radiobutton-box {
     border-color: $color-icon-action-main;
   }
+
   ::ng-deep.p-radiobutton .p-radiobutton-box.p-highlight {
     background: $color-icon-action-main;
   }
+
   ::ng-deep.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
     width: 8px;
     height: 8px;
   }
 }
-.m-radio-check{
+
+.m-radio-check {
   ::ng-deep.p-radiobutton .p-radiobutton-box.p-highlight {
     background: $color-icon-action-main;
     background-image: url("../../../../assets/images/icon-check.svg");
     background-size: cover;
   }
+
   ::ng-deep.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
     width: 0px;
     height: 0px;
   }
 }
+
 .no-underline {
   text-decoration: none !important;
-  color: #0058F0;
+  color: $color-global-blue-blue-6;
 }
+
 .ellipsis {
-    display: inline-block; 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.ellipsis-mw-500{
-  max-width: 500px; 
+
+.ellipsis-mw-500 {
+  max-width: 500px;
 }
-.ellipsis-mw-250{
-  max-width: 250px; 
+
+.ellipsis-mw-250 {
+  max-width: 250px;
 }
 
 .stepper-wrapper {
@@ -347,6 +359,19 @@
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
-    background-color: white;
+    background-color: $color-global-neutral-white;
   }
+}
+
+.style-role {
+  padding: $spacing-none 150px;
+}
+
+::ng-deep .table-container {
+  max-height: 500px !important;
+}
+
+::ng-deep .mat-table {
+  overflow: auto !important;
+  max-height: 500px !important;
 }

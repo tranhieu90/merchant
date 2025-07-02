@@ -24,7 +24,7 @@ import { CommonUtils } from '../../../../base/utils/CommonUtils';
 import { InputCommon } from '../../../../common/directives/input.directive';
 import { InputSanitizeDirective } from '../../../../common/directives/inputSanitize.directive';
 import { ShowClearOnFocusDirective } from '../../../../common/directives/showClearOnFocusDirective';
-import { BUSINESS_ENDPOINT, LOCATION_ENDPOINT, ORGANIZATION_ENDPOINT } from '../../../../common/enum/EApiUrl';
+import { BUSINESS_ENDPOINT, LOCATION_ENDPOINT, ORGANIZATION_ENDPOINT, USER_ENDPOINT } from '../../../../common/enum/EApiUrl';
 import { FetchApiService } from '../../../../common/service/api/fetch-api.service';
 import { AuthenticationService } from '../../../../common/service/auth/authentication.service';
 import { DialogCommonService } from '../../../../common/service/dialog-common/dialog-common.service';
@@ -32,6 +32,10 @@ import { ToastService } from '../../../../common/service/toast/toast.service';
 import { AreaModel } from '../../../../model/AreaModel';
 import { DialogConfirmModel } from '../../../../model/DialogConfirmModel';
 import { AreaViewComponent } from '../../../organization-management/area-view/area-view.component';
+import { UpdateUserComponent } from '../../../user-profile/update-user/update-user.component';
+import { DialogRoleComponent, DialogRoleModel } from '../../../role-management/dialog-role/dialog-role.component';
+import { UserVerifyStatus } from '../../../../common/constants/CUser';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-business-create',
@@ -92,7 +96,7 @@ export class BusinessCreateComponent implements OnInit {
   @ViewChild('posCodeRef') posCodeModel!: NgModel;
   @ViewChild('thddCodeRef') thddCodeModel!: NgModel;
   formBusiness!: FormGroup;
-  areaIdMove: number = 0;
+  areaIdMove!: number;
   ischeck: number = 1
   currentStep: number = 0;
   isPayment1: boolean = false;
@@ -137,7 +141,6 @@ export class BusinessCreateComponent implements OnInit {
   tidPosErrorList: any = [];
   thddErrorList: any = [];
   isSearching: any;
-  errorCreate: any;
   isLoaded: boolean = false;
   constructor(
     private fb: FormBuilder,
@@ -152,7 +155,7 @@ export class BusinessCreateComponent implements OnInit {
     this.routeActive.queryParams.subscribe(params => {
       this.organizationSetup = params['organizationSetup'] ? params['organizationSetup'] : false;
       this.lstBusiness = params['lstBusiness'] === 'true';
-      this.areaIdMove = params['groupId'] ? params['groupId'] : 0;
+      this.areaIdMove = this.areaIdMove = params['groupId'] ?? this.areaIdMove;
     });
   }
 
@@ -304,9 +307,27 @@ export class BusinessCreateComponent implements OnInit {
         this.isSuccess = 1;
         this.doNextStep();
       }, (error) => {
-        this.errorCreate = error?.error || {};
-        this.isSuccess = 0;
-        this.doNextStep();
+        const errorData = error?.error || {};
+        switch (errorData.soaErrorCode) {
+          case '213':
+            this.formBusiness.get('merchantBizName')!.setErrors({ isMerchantBizNameUsed: true });
+            this.formBusiness.get('merchantName')!.setErrors({ isMerchantNameUsed: true });
+            this.clearValidateChange();
+            this.doPreStep();
+            break;
+          case '253':
+            let outputs = errorData['data']['methodSubMerchantXOutputs'];
+            this.checkErrorKey(outputs);
+            break;
+          case '5010':
+            this.checkVerify();
+            break;
+          default:
+            this.toast.showError('Đã có lỗi xảy ra, vui lòng thử lại sau.');
+            this.isSuccess = 0;
+            this.doNextStep();
+            break;
+        }
       });
     } else {
       this.isPayment1 = false
@@ -345,10 +366,10 @@ export class BusinessCreateComponent implements OnInit {
     const errorKey = item.filter((item: any) => item.soaErrorCode === 'MAPPING_KEY_01');
     const errorKeyPos = errorKey.find((item: any) => item.methodId === 333)?.keyAlreadyList || [];
     const errorKeyThd = errorKey.find((item: any) => item.methodId === 332)?.keyAlreadyList || [];
-    const notSpCreate = item.filter((item: any) => item.soaErrorCode === '402');
     const ac01 = item.find((item: any) => item.soaErrorCode === 'AC_01');
     const ac02 = item.find((item: any) => item.soaErrorCode === 'AC_02');
-    const terminalKey = errorKey.find((item: any) => item.methodId === 324)
+    const terminalKey = errorKey.find((item: any) => item.methodId === 324);
+    const notPermission = item.find((item: any) => item.methodId === 324 && item.soaErrorCode == '251');
     if (errorQr.length > 0) {
       this.temiralIdModel?.control.setErrors({ invalidErorr: true });
       this.temiralIdModel?.control.markAsTouched();
@@ -361,9 +382,10 @@ export class BusinessCreateComponent implements OnInit {
     } else if (terminalKey) {
       this.temiralIdModel?.control.setErrors({ notCorrect: true });
       this.temiralIdModel?.control.markAsTouched();
+    } else if (notPermission) {
+      this.toast.showError('Đã có lỗi xảy ra, vui lòng thử lại sau.');
     }
 
-    notSpCreate.length > 0 ? this.toast.showError('not support create payment method!') : '';
     errorKeyPos ? this.tidPosErrorList = errorKeyPos : '';
     errorKeyThd ? this.thddErrorList = errorKeyThd : '';
   }
@@ -373,7 +395,9 @@ export class BusinessCreateComponent implements OnInit {
       if (res['data']) {
         this.lstPaymentMethod = res['data']['paymentMethodList'];
         this.lstPaymentMethod.forEach((item: any) => {
-          this.paymentMethodMap.set(item.paymentMethodId, item);
+          if (item?.status == 'active') {
+            this.paymentMethodMap.set(item.paymentMethodId, item);
+          }
         });
         const paymentMethod = this.paymentMethodMap.get(324);
         this.paymentType = paymentMethod['paymentType'];
@@ -490,7 +514,7 @@ export class BusinessCreateComponent implements OnInit {
 
   doCheckQuantity() {
     this.quantity = this.dataGroup.find((item: any) => item.id == this.areaIdMove)
-    if (this.quantity['pointSaleCount'] > 1000) {
+    if (this.quantity['pointSaleCount'] == 1000) {
       let dataDialog: DialogConfirmModel = new DialogConfirmModel();
       dataDialog.title = 'Số lượng điểm kinh doanh thuộc nhóm vượt quá số lượng quy định';
       dataDialog.message = 'Vui lòng chọn nhóm khác.';
@@ -575,14 +599,6 @@ export class BusinessCreateComponent implements OnInit {
     if (this.currentStep >= 0) {
       this.currentStep = 0;
     }
-
-    const errorData = this.errorCreate;
-    if (errorData.soaErrorCode == '213') {
-      this.formBusiness.get('merchantBizName')!.setErrors({ isMerchantBizNameUsed: true });
-    } else if (errorData.soaErrorCode == '253') {
-      let outputs = errorData['data']['methodSubMerchantXOutputs'];
-      this.checkErrorKey(outputs);
-    }
   }
 
   onSearchChange() {
@@ -657,5 +673,114 @@ export class BusinessCreateComponent implements OnInit {
   checkStepPayment() {
     this.doNextStep();
     this.getLstPaymentMethod();
+  }
+
+  checkVerify() {
+    const verifyUser = this.auth.checkVerifyUserInfo();
+    switch (verifyUser) {
+      case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
+        this.openDialogUnverifiedAccountAndEmail();
+        break;
+      case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
+        this.openDialogUnverifiedAccountAndNoEmail();
+        break;
+      default:
+        console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
+        break;
+    }
+  }
+
+  openDialogUnverifiedAccountAndEmail() {
+    let dataDialog: DialogRoleModel = new DialogRoleModel();
+    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
+    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>.`;
+    dataDialog.icon = 'icon-warning';
+    dataDialog.iconColor = 'warning';
+    dataDialog.buttonLeftLabel = 'Thay đổi email';
+    dataDialog.buttonRightLabel = 'Xác thực email';
+
+    const dialogRef = this.dialog.open(DialogRoleComponent, {
+      width: '500px',
+      data: dataDialog,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.verifyEmail();
+      } else {
+        this.updateEmail();
+      }
+    });
+  }
+
+  openDialogUnverifiedAccountAndNoEmail() {
+    let dataDialog: DialogRoleModel = new DialogRoleModel();
+    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
+    dataDialog.message =
+      'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
+    dataDialog.icon = 'icon-warning';
+    dataDialog.hiddenButtonLeft = true;
+    dataDialog.iconColor = 'warning';
+    dataDialog.buttonRightLabel = 'Bổ sung email';
+
+    const dialogRef = this.dialog.open(DialogRoleComponent, {
+      width: '500px',
+      data: dataDialog,
+      disableClose: true,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.updateEmail();
+      } else {
+      }
+    });
+  }
+
+  updateEmail() {
+    const dialogRef = this.dialog.open(UpdateUserComponent, {
+      width: '600px',
+      panelClass: 'dialog-update-user',
+      data: {
+        title: 'Cập nhật email',
+        type: 'email',
+        isEmailInfo: true,
+      },
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.router.navigate(['/profile']);
+      }
+    })
+  }
+
+  verifyEmail() {
+    this.api.post(USER_ENDPOINT.SEND_VERIFY_MAIL).subscribe(() => {
+      let content = `Chúng tôi vừa gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>, vui lòng kiểm tra email và làm theo hướng dẫn để hoàn tất xác thực tài khoản.`
+      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+      dataDialog.title = 'Hệ thống đã gửi liên kết xác thực';
+      dataDialog.message = content;
+      dataDialog.buttonLabel = 'Tôi đã hiểu';
+      dataDialog.icon = 'icon-mail';
+      dataDialog.iconColor = 'icon info';
+      dataDialog.viewCancel = false;
+      const dialogRef = this.dialogCommon.openDialogInfo(dataDialog);
+      dialogRef.subscribe(() => {
+        this.router.navigate(['/profile']);
+      })
+    })
+  }
+
+  clearValidateChange() {
+    const clearError = () => {
+      this.formBusiness.get('merchantBizName')?.setErrors(null);
+      this.formBusiness.get('merchantName')?.setErrors(null);
+    };
+
+    this.formBusiness.get('merchantBizName')?.valueChanges.pipe(take(1)).subscribe(clearError);
+    this.formBusiness.get('merchantName')?.valueChanges.pipe(take(1)).subscribe(clearError);
   }
 }

@@ -43,7 +43,7 @@
             </div>
             <div class="div-button">
                 <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="onCancel()" />
-                <button [disabled]="areaIdMove == 0" mat-button class="merchant-button-material"
+                <button [disabled]="areaIdMove == null" mat-button class="merchant-button-material"
                     (click)="doCheckQuantity()">
                     Tiếp tục
                 </button>
@@ -57,7 +57,7 @@
             </div>
             <form [formGroup]="formBusiness">
                 <div class="col-12 mb-spacing-l">
-                    <label class="title-s-semibold label mb-spacing-xs">Tên điểm kinh doanh</label>
+                    <label class="input-label-custom label mb-spacing-xs">Tên điểm kinh doanh</label>
                     <div class="p-inputgroup">
                         <input appShowClearOnFocus=".clear-icon" appInputSanitize (blur)="trimValue('merchantBizName')"
                             trim="blur" class=" merchant-input" pInputText formControlName="merchantBizName"
@@ -85,7 +85,7 @@
                     }
                 </div>
                 <div class="col-12 mb-spacing-l">
-                    <label class="title-s-semibold label mb-spacing-xs">Tên diễn giải</label>
+                    <label class="input-label-custom label mb-spacing-xs">Tên diễn giải</label>
                     <div class="p-inputgroup">
                         <input appShowClearOnFocus=".clear-icon" appInputSanitize (blur)="trimValue('merchantName')"
                             trim="blur" class="merchant-input" pInputText formControlName="merchantName"
@@ -105,12 +105,15 @@
                         @if (formBusiness.controls['merchantName'].hasError('required')) {
                         <span class="text-caption paragraph-m-regular">Vui lòng nhập tên diễn giải</span>
                         }
+                        @if (formBusiness.controls['merchantName'].hasError('isMerchantNameUsed')) {
+                        <span class="text-caption paragraph-m-regular">Tên diễn giải đã tồn tại</span>
+                        }
                     </div>
                     }
                 </div>
                 <div class="row mb-spacing-l">
                     <div class="col-4">
-                        <label class="title-s-semibold label mb-spacing-xs">Tỉnh/Thành phố</label>
+                        <label class="input-label-custom label mb-spacing-xs">Tỉnh/Thành phố</label>
                         <p-dropdown [options]="lstProvince" formControlName="provinceId" optionLabel="provinceName"
                             optionValue="provinceId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
                             filterBy="provinceName" styleClass="w-100" [panelStyle]="{'width':'300px'}" appendTo="body"
@@ -130,7 +133,7 @@
                         }
                     </div>
                     <div class="col-4">
-                        <label class="title-s-semibold label mb-spacing-xs">Quận/Huyện</label>
+                        <label class="input-label-custom label mb-spacing-xs">Quận/Huyện</label>
                         <p-dropdown [options]="lstDistrict" formControlName="districtId" optionLabel="districtName"
                             optionValue="districtId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
                             styleClass="w-100" filterBy="districtName" [panelStyle]="{'width':'300px'}" appendTo="body"
@@ -150,7 +153,7 @@
                         }
                     </div>
                     <div class="col-4">
-                        <label class="title-s-semibold label mb-spacing-xs">Phường/Xã</label>
+                        <label class="input-label-custom label mb-spacing-xs">Phường/Xã</label>
                         <p-dropdown [options]="lstCommune" formControlName="communeId" optionLabel="communeName"
                             optionValue="communeId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
                             filterBy="communeName" styleClass="w-100" [panelStyle]="{'width':'300px'}" appendTo="body"
@@ -170,7 +173,7 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <label class="title-s-semibold label mb-spacing-xs">Địa điểm kinh doanh</label>
+                    <label class="input-label-custom label mb-spacing-xs">Địa điểm kinh doanh</label>
                     <div class="p-inputgroup">
                         <input appShowClearOnFocus=".clear-icon" (blur)="trimValue('address')" trim="blur"
                             class="merchant-input" appInputSanitize pInputText formControlName="address"
@@ -237,10 +240,17 @@
                         </div>
                     </div>
                     <div class="col-12" *ngIf="ischeck==1">
-                        <label class="paragraph-m-semibold mb-spacing-xs">Terminal ID</label>
-                        <input appInputSanitize class="merchant-input" pInputText [(ngModel)]="terminalId"
-                            #temiralId="ngModel" required [pattern]="accountNumberPattern"
-                            placeholder="Nhập mã Terminal ID do MB cung cấp khi tích hợp dịch vụ" />
+                        <label class="input-label-custom">Terminal ID</label>
+                        <div class="p-inputgroup">
+                            <input appShowClearOnFocus=".clear-icon" appInputSanitize class="merchant-input" pInputText
+                                [(ngModel)]="terminalId" #temiralId="ngModel" required [pattern]="accountNumberPattern"
+                                placeholder="Nhập mã Terminal ID do MB cung cấp khi tích hợp dịch vụ" />
+                            @if (terminalId) {
+                            <span class="p-input-icon-right clear-icon" (click)="terminalId = null">
+                                <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                            </span>
+                            }
+                        </div>
                         <div class="m-caption error" *ngIf="temiralId.invalid && temiralId.dirty">
                             <div class="icon-caption">
                                 <span class="icon-error_solid"></span>
@@ -261,10 +271,17 @@
                     </div>
                     <div class="ischeck-2" *ngIf="ischeck==2 && paymentType == 0">
                         <div class="col-12 mb-spacing-l">
-                            <label class="paragraph-m-semibold mb-spacing-xs">Số tài khoản</label>
-                            <input appInputSanitize class="merchant-input" pInputText [(ngModel)]="accountNumber"
-                                [pattern]="accountNumberPattern" #accountNumberId="ngModel" required
-                                placeholder="Nhập số tài khoản MB" />
+                            <label class="input-label-custom">Số tài khoản</label>
+                            <div class="p-inputgroup">
+                                <input appShowClearOnFocus=".clear-icon" appInputSanitize class="merchant-input" pInputText [(ngModel)]="accountNumber"
+                                    [pattern]="accountNumberPattern" #accountNumberId="ngModel" required
+                                    placeholder="Nhập số tài khoản MB" />
+                                @if (accountNumber) {
+                                <span class="p-input-icon-right clear-icon" (click)="accountNumber = null">
+                                    <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                                </span>
+                                }
+                            </div>
                             <div class="m-caption error" *ngIf="accountNumberId.invalid &&  accountNumberId.dirty">
                                 <div class="icon-caption">
                                     <span class="icon-error_solid"></span>
@@ -284,10 +301,17 @@
                             </div>
                         </div>
                         <div class="col-12">
-                            <label class="paragraph-m-semibold mb-spacing-xs">Tên tài khoản</label>
-                            <input class="merchant-input" appInputSanitize pInputText [(ngModel)]="accountName"
-                                #accountNameId="ngModel" [pattern]="accountNamePattern" required
-                                placeholder="Nhập tên tài khoản" />
+                            <label class="input-label-custom">Tên tài khoản</label>
+                            <div class="p-inputgroup">
+                                <input appShowClearOnFocus=".clear-icon" class="merchant-input" appInputSanitize pInputText [(ngModel)]="accountName"
+                                    #accountNameId="ngModel" [pattern]="accountNamePattern" required
+                                    placeholder="Nhập tên tài khoản" />
+                                @if (accountName) {
+                                <span class="p-input-icon-right clear-icon" (click)="accountName = null">
+                                    <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                                </span>
+                                }
+                            </div>
                             <div class="m-caption error" *ngIf="accountNameId.invalid && accountNameId.dirty">
                                 <div class="icon-caption">
                                     <span class="icon-error_solid"></span>

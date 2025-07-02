@@ -20,11 +20,12 @@ import { UserVerifyStatus } from '../../../../common/constants/CUser';
 import { UpdateUserComponent } from '../../../user-profile/update-user/update-user.component';
 import { DialogConfirmModel } from '../../../../model/DialogConfirmModel';
 import { DialogCommonService } from '../../../../common/service/dialog-common/dialog-common.service';
-import { QRCodeComponent, QRCodeModule} from 'angularx-qrcode';
+import { QRCodeComponent} from 'angularx-qrcode';
+import { MERCHANT_RULES } from '../../../../base/constants/authority.constants';
 @Component({
   selector: 'app-business-detail',
   standalone: true,
-  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, MatButtonModule, CommonModule, QRCodeModule],
+  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, MatButtonModule, CommonModule, QRCodeComponent],
   templateUrl: './business-detail.component.html',
   styleUrl: './business-detail.component.scss'
 })
@@ -39,6 +40,8 @@ export class BusinessDetailComponent implements OnInit {
   subId!: number
   isShowAllPos: boolean = false;
   isShowAllThd: boolean = false;
+  hasRoleUpdate?: boolean
+  readonly MERCHANT_RULES = MERCHANT_RULES;
 
   constructor(
     private fb: FormBuilder,
@@ -58,6 +61,7 @@ export class BusinessDetailComponent implements OnInit {
     });
   }
   ngOnInit(): void {
+     this.hasRoleUpdate = this.auth.apiTracker([MERCHANT_RULES.BUSINESS_UPDATE]);
   }
 
   getDataDetail(subId: number) {
@@ -130,6 +134,8 @@ export class BusinessDetailComponent implements OnInit {
     this.api.get(BUSINESS_ENDPOINT.GEN_QR, buildParams).subscribe(res => {
       if (res && res['status'] == 200) {
         this.getDataDetail(this.subId);
+      }else if(res && res['status']==400){
+        this.toast.showError(res?.soaErrorDesc);
       }
     }, (error) => {
       this.toast.showError('GenQR xảy ra lỗi, vui lòng thử lại');
@@ -248,6 +254,7 @@ export class BusinessDetailComponent implements OnInit {
   updateEmail() {
     const dialogRef = this.dialog.open(UpdateUserComponent, {
       width: '600px',
+      panelClass: 'dialog-update-user',
       data: {
         title: 'Cập nhật email',
         type: 'email',

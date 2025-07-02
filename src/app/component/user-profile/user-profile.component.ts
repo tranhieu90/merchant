@@ -209,6 +209,7 @@ export class UserProfileComponent implements OnInit {
   updateEmail() {
     const dialogRef = this.dialog.open(UpdateUserComponent, {
       width: '600px',
+      panelClass: 'dialog-update-user',
       data: {
         title: 'Cập nhật email',
         type: 'email',

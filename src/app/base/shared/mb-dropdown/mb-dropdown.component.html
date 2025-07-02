@@ -1,0 +1,21 @@
+<p-dropdown
+  class="merchant-dropdown"
+  [options]="options"
+  [optionValue]="optionValue"
+  [optionLabel]="optionLabel"
+  [placeholder]="placeholder"
+  [disabled]="disabled"
+  [filter]="filter"
+  [(ngModel)]="value"
+  (onChange)="onValueChange($event.value)"
+>
+<ng-template let-item pTemplate="item">
+<div class="item-method">
+      {{ item[optionLabel] }}
+<span
+        *ngIf="showCheckmark && item[optionValue] === value"
+        class="icon-check_circle_solid"
+></span>
+</div>
+</ng-template>
+</p-dropdown>

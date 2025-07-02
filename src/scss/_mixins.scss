@@ -57,7 +57,7 @@
   }
 }
 
-@mixin base-icon($size: 24px, $font-size: 24px) {
+@mixin base-icon($size: $typo-font-sizes-3xl, $font-size: $typo-font-sizes-3xl) {
   width: $size;
   height: $size;
   display: flex;
@@ -67,5 +67,24 @@
 
   &::before {
     line-height: 1;
+  }
+}
+
+@mixin flexWidth($grow, $shrink, $basis) {
+  flex: $grow $shrink $basis;
+  -ms-flex: $grow $shrink $basis;
+  max-width: $basis;
+}
+
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+  border-radius: $radius;
+}
+
+@mixin ie-only {
+  @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    @content;
   }
 }

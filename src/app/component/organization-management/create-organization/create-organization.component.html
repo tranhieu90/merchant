@@ -2,7 +2,7 @@
     <div class="header-m-semibold">Cơ cấu tổ chức</div>
     <div class="d-flex">
         <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="doCancel()" />
-        <p-button label="Lưu thiết lập" class="merchant-button" [disabled]="checkValidCreate()"
+        <p-button [disabled]="!hasRole" label="Lưu thiết lập" class="merchant-button" [disabled]="checkValidCreate()"
             (click)="doCreateOrg()" />
     </div>
 </div>
@@ -17,7 +17,7 @@
                 <div *ngFor="let area of lstAreaByOrder">
                     <app-area-item [lstAreas]="lstAreas" [area]="area" [areaActive]="areaActive"
                         (activeArea)="doActiveArea($event)" (deleteArea)="deleteArea($event)"
-                        (addArea)="addArea($event.level, $event.parentId, $event)"
+                        (addArea)="addArea($event.level, $event.parentId, $event.areaActive)"
                         (blurAreaName)="onBlurCreateArea($event.event, $event.areaId, $event.isFormCreateInvalid)"
                         (doChangeExpand)="doActiveAreaCheckbox($event)" [isShowButton]="isPermission">
                     </app-area-item>
@@ -29,7 +29,7 @@
                     <div class="title-s-semibold">Hướng dẫn</div>
                     <div class="list-item" *ngIf="this.lstMerchantsAll.length==0">
                         <div class="title">1. Tạo nhóm chứa điểm kinh doanh</div>
-                        <div class="item">Chọn nút "Tạo nhóm" và nhập thông tin nhóm</div>
+                        <div class="item">Chọn "Tạo nhóm" và nhập thông tin nhóm</div>
                         <div class="item">Tạo nhóm cùng cấp hoặc nhóm con, tối đa 5 cấp</div>
                         <div class="item">Nhóm không tồn tại nhóm con sẽ được gán điểm kinh doanh</div>
                         <div class="title">2. Lưu thiết lập</div>
@@ -39,7 +39,7 @@
 
                     <div class="list-item" *ngIf="this.lstMerchantsAll.length>0">
                         <div class="title">1. Tạo nhóm chứa điểm kinh doanh</div>
-                        <div class="item">Chọn nút "Tạo nhóm" và nhập thông tin nhóm</div>
+                        <div class="item">Chọn "Tạo nhóm" và nhập thông tin nhóm</div>
                         <div class="item">Tạo nhóm cùng cấp hoặc nhóm con, tối đa 5 cấp</div>
                         <div class="title">2. Gán điểm kinh doanh vào nhóm</div>
                         <div class="item">Gán điểm kinh doanh vào nhóm không tồn tại nhóm con</div>
@@ -122,9 +122,9 @@
                         <div *ngIf="areaActive.lstMerchant.length === 0" class="no-data">
                             <img [src]="assetPath + '/assets/images/grid-search-empty.png'">
                             <div class="mt-4 title-l-semibold title-no-data">Nhóm chưa có điểm kinh doanh</div>
-                            <div class="title-s-regular summary-no-data mb-3">Vui lòng thêm các điểm kinh doanh vào nhóm
+                            <div *ngIf="hasRole && roleBusiness" class="title-s-regular summary-no-data mb-3">Vui lòng thêm các điểm kinh doanh vào nhóm
                                 để quản lý các điểm kinh doanh của bạn hiệu quả hơn</div>
-                            <p-button label="Gán điểm kinh doanh" class="merchant-button" icon="icon-Folder"
+                            <p-button *ngIf="hasRole && roleBusiness" label="Gán điểm kinh doanh" class="merchant-button" icon="icon-Folder"
                                 (click)="doAssignSubmerchant()" />
                         </div>
                     </div>

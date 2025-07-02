@@ -25,6 +25,7 @@ export enum ROlE_ENDPOINT {
   DELETE_ROLE = 'api/v1/role-management/delete',
   GET_LIST_ROLE = 'api/v1/role-management/list-role',
   SEARCH_LIST_USER_ROLE = 'api/v1/role-management/list-user-role',
+  AUTO_COMPLETE = 'api/v1/role-management/auto-complete'
 }
 
 export enum LOGIN_ENDPOINT {

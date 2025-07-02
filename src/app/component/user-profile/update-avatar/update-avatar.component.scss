@@ -20,7 +20,7 @@
   border-radius: 50%;
   overflow: hidden;
   border: 3px solid $color-global-neutral-neutral-2;
-  margin: 0 auto;
+  margin: $spacing-none auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -55,10 +55,11 @@
 
 input[type="range"] {
   -webkit-appearance: none;
+  appearance: none;
   width: 100px;
   height: 3px;
-  background: #ddd;
-  border-radius: 5px;
+  background: $color-global-neutral-neutral-2;
+  border-radius: $border-radius-xs;
   outline: none;
   transition: 0.2s;
 
@@ -67,7 +68,7 @@ input[type="range"] {
     appearance: none;
     width: 12px;
     height: 12px;
-    background: #007bff;
+    background: $color-global-primary-primary-6;
     border-radius: 50%;
     cursor: pointer;
   }
@@ -75,7 +76,7 @@ input[type="range"] {
   &::-moz-range-thumb {
     width: 12px;
     height: 12px;
-    background: #007bff;
+    background: $color-global-primary-primary-6;
     border-radius: 50%;
     cursor: pointer;
   }
@@ -86,7 +87,7 @@ input[type="range"] {
 }
 
 ::ng-deep .dialog-update-avatar .mdc-dialog__surface {
-  border-radius: 4px !important;
+  border-radius: $border-radius-xs !important;
 }
 
 ::ng-deep .ic-download .p-button-icon {

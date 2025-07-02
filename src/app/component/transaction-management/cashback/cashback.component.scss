@@ -34,8 +34,15 @@
     color: $color-icon-action-main;
     font-size: 19px;
     top: 46%;
+    pointer-events: none;
+  }
+
+  ::ng-deep .p-highlight {
+    color: $color-global-neutral-white !important;
+    background-color: $color-surface-action-main !important;
   }
 }
+
 
 .box-search,
 .box-filter {
@@ -256,25 +263,22 @@
 
 ::ng-deep .mat-badge-content {
   color: $color-surface-neutral-main !important;
-  background-color: #4E8AF1 !important;
+  background-color: $color-global-blue-blue-4 !important;
   opacity: 100% !important;
 }
 
-.item-method {
-  height: 38px;
-  font-weight: $typo-font-weights-regular;
-  font-size: $typo-font-sizes-l;
-  display: flex;
-  align-items: center;
-  position: relative; // để icon position-absolute căn theo đây
-  padding-right: 24px; // để tránh text dính vào icon nếu cần
+
+::ng-deep .ellipsis-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 460px;
 }
 
-.icon-check_circle_solid {
-  @include base-icon;
-  color: $color-surface-action-main;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 90%; // giữ nếu bạn muốn nó sát mép phải
+::ng-deep .custom-mutil-option {
+  .p-overlay {
+    left: 0 !important;
+    right: 0 !important;
+  }
 }

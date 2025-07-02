@@ -25,6 +25,7 @@ import { InputCommon } from '../../../common/directives/input.directive';
 import { DialogCommonService } from '../../../common/service/dialog-common/dialog-common.service';
 import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
 import { fomatAddress } from '../../../common/helpers/Ultils';
+import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
 
 @Component({
   selector: 'app-create-organization',
@@ -34,6 +35,7 @@ import { fomatAddress } from '../../../common/helpers/Ultils';
   styleUrl: './create-organization.component.scss'
 })
 export class CreateOrganizationComponent {
+  private MERCHANT_RULES = MERCHANT_RULES;
   assetPath = environment.assetPath;
   @Input() merchantName: any;
   @Output() cancelCreate = new EventEmitter();
@@ -52,6 +54,9 @@ export class CreateOrganizationComponent {
   lstMerchantActive: any = [];
   isCloseInput: boolean = false;
 
+  hasRole?: boolean;
+  roleBusiness?: boolean;
+
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
@@ -68,11 +73,13 @@ export class CreateOrganizationComponent {
   }
 
   ngOnInit() {
+     this.hasRole = this.auth.apiTracker([MERCHANT_RULES.ORGANIZATION_CREATE]);
+     this.roleBusiness = this.auth.apiTracker([MERCHANT_RULES.BUSINESS_CREATE]);
     this.getLstMerchant("");
   }
   checkValidCreate() {
     let isCreate = true;
-    if (this.lstAreaByOrder.length > 0 || (this.lstAreaByOrder.length > 0 && (this.lstMerchantsAll.length > 0 && this.lstMerchantRemain.length == 0)))
+    if (this.lstAreaByOrder.length > 0 && this.lstMerchantRemain.length == 0 || (this.lstAreaByOrder.length > 0 && (this.lstMerchantsAll.length > 0 && this.lstMerchantRemain.length == 0)))
       isCreate = false;
     return isCreate
   }
@@ -87,7 +94,7 @@ export class CreateOrganizationComponent {
 
     let param = {
       page: 1,
-      size: 1000,
+      size: 10,
     };
     let buildParams = CommonUtils.buildParams(param);
 
@@ -149,9 +156,9 @@ export class CreateOrganizationComponent {
 
   deleteArea(data: any) {
     
-    const found = this.lstAreas.find(x=>x.id==data.id) ;
+    const found = this.lstAreas.find(x=>x.id==data) ;
     if (found && (found.groupName =="" ||found.groupName ==null)) {
-      this.lstAreas = this.lstAreas.filter(x=>x.id !=data.id) ;
+      this.lstAreas = this.lstAreas.filter(x=>x.id !=data) ;
       this.lstAreaByOrder= this.convertLstAreaByOrder(this.lstAreas,null);
       this.isFormCreateAreaInvalid= false;
     } else {
@@ -174,15 +181,9 @@ export class CreateOrganizationComponent {
       this.lstAreaByOrder = this.convertLstAreaByOrder(this.lstAreas, null);
       this.toast.showSuccess(`Xóa nhóm ${this.areaActive.groupName} thành công`);
       this.updateActiveSubmit(data.parentId, true);
-      // if (this.lstAreas.length > 0) {
-      //   this.areaActive = this.lstAreas[0];
-      //   if (this.areaActive.lstMerchant.length > 0) {
-      //     this.lstMerchantActive = _.cloneDeep(this.lstMerchantsAll.filter((item: any) => this.areaActive.lstMerchant.includes(item.merchantId)));
-      //   }
-      // } else {
-      //   this.areaActive = new AreaModel();
-      //   this.lstMerchantActive = [];
-      // }
+    }
+    if(this.lstAreas.length == 0) {
+      this.areaActive =  {} as AreaModel;
     }
     this.cdr.detectChanges();
   }
@@ -486,7 +487,7 @@ export class CreateOrganizationComponent {
         }
         item.expanded = true;
         if (item.parentId != null) {
-          this.updateActiveSubmit(item, false);
+          this.updateActiveSubmit(item.parentId, false);
         }
       }
     });

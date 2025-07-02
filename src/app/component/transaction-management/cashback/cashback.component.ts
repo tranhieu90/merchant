@@ -43,6 +43,9 @@ import {UpdateUserComponent} from '../../user-profile/update-user/update-user.co
 import {AuthenticationService} from '../../../common/service/auth/authentication.service';
 import {MatBadge} from '@angular/material/badge';
 import {BANK_IMAGE_DATA} from '../../../../assets/bank-map';
+import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
+import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
+import { MbDropdown } from '../../../base/shared/mb-dropdown/mb-dropdown.component';
 
 @Component({
   selector: 'app-refund-transaction',
@@ -71,6 +74,8 @@ import {BANK_IMAGE_DATA} from '../../../../assets/bank-map';
     CalendarModule,
     DropdownModule,
     MatBadge,
+    ShowClearOnFocusDirective,
+    MbDropdown
   ],
   templateUrl: './cashback.component.html',
   styleUrl: './cashback.component.scss',
@@ -100,6 +105,14 @@ export class CashbackComponent implements OnInit {
   totalAmount: number = 0;
   maxDate: any = null;
   minDate: any = null;
+  previousValidRange: Date[] = [];
+  pendingRange: Date[] = [];
+  cachedSearchParam: any = null;
+  hasRoleExport: boolean = true;
+  merchantPage = 1;
+  merchantSize = 50;
+  isLoadMoreMerchant: boolean = true;
+  currentGroupIdList: any = null;
 
   searchCriteria: {
     transactionNumber: string | null;
@@ -183,11 +196,11 @@ export class CashbackComponent implements OnInit {
           ] : []
       ),
       {
-        name: 'merchantName',
+        name: 'merchantBizName',
         label: 'Điểm kinh doanh',
         options: {
           customCss: (obj: any) => {
-            return ['text-left'];
+            return ['text-left', 'mw-180'];
           },
           customCssHeader: () => {
             return ['text-left'];
@@ -385,7 +398,10 @@ export class CashbackComponent implements OnInit {
     private toast: ToastService,
     private auth: AuthenticationService,
   ) {
-
+    const columnsShow = localStorage.getItem(environment.settingCashback)?.split(',').map(api => api.trim());
+    if (columnsShow) {
+      this.lstColumnShow = columnsShow;
+    }
   }
 
   ngOnInit(): void {
@@ -393,15 +409,17 @@ export class CashbackComponent implements OnInit {
 
     const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
 
-    const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 0);
+    const endDate = today;
 
     this.searchCriteria.dateRange = [startDate, endDate];
 
     const minDate = new Date();
     minDate.setDate(today.getDate() - 365);
     this.minDate = minDate;
+    this.maxDate = today;
 
     this.statusOptions = [
+      {name: 'Tất cả ', code: 'ALL'},
       {name: 'Thành công', code: '00'},
       {name: 'Không thành công', code: '03'},
       {name: 'Chờ tra soát', code: '20'},
@@ -415,6 +433,7 @@ export class CashbackComponent implements OnInit {
 
     this.onSearch();
 
+    this.hasRoleExport = this.auth.apiTracker([MERCHANT_RULES.TRANS_EXPORT_EXCEL]);
   }
 
   onSearch(pageInfo?: any) {
@@ -433,7 +452,7 @@ export class CashbackComponent implements OnInit {
       transactionOriginNumber: this.searchCriteria.transactionOriginNumber || null,
       originOrderRef: this.searchCriteria.orderReferenceOrigin || null,
 
-      status: this.filterCriteria?.selectedStatuses || null,
+      status: (this.filterCriteria?.selectedStatuses == 'ALL' || this.filterCriteria?.selectedStatuses == null) ? null : this.filterCriteria?.selectedStatuses,
       paymentMethodId: (this.filterCriteria?.selectedPaymentMethod == 'ALL' || this.filterCriteria?.selectedPaymentMethod == null) ? null : this.filterCriteria?.selectedPaymentMethod,
       merchantIdArray: this.filterCriteria?.selectedMerchants || [],
       // merchantIdArray: ['202852'],
@@ -443,6 +462,8 @@ export class CashbackComponent implements OnInit {
       size: this.pageSize,
 
     }
+
+    this.cachedSearchParam = param;
 
     this.api.post(TRANSACTION_ENDPOINT.GET_LIST_REFUND, param).subscribe(res => {
         this.dataTable = res['data']['refunds'];
@@ -474,9 +495,10 @@ export class CashbackComponent implements OnInit {
         this.bankOptions = res['data'];
         this.bankOptions = this.bankOptions.map((bank: any) => {
           const match = BANK_IMAGE_DATA.find((b: any) => b.code === bank.code);
+          const logo = match && match.image && match.image.trim() !== '' ? match.image + '.png' : 'img_default.png';
           return {
             ...bank,
-            logo: match ? match.image + '.png' : null
+            logo
           };
         });
       },
@@ -486,23 +508,59 @@ export class CashbackComponent implements OnInit {
       });
   }
 
-  getMerchantOptions() {
+  getMerchantOptions(groupIdList?: any) {
 
-    let param = {
+    this.currentGroupIdList = groupIdList;
+
+    const params = {
       status: null,
-      page: 1,
-      size: 999999999
+      groupIdList: this.currentGroupIdList || null,
+      page: this.merchantPage,
+      size: this.merchantSize,
     };
-    let buildParams = CommonUtils.buildParams(param);
 
-    this.api.get(MERCHANT_ENDPOINT.LIST_MERCHANT, buildParams).subscribe(res => {
-        this.merchantOptions = res['data']['subInfo'] || [];
+    const buildParams = CommonUtils.buildParams(params);
+
+    this.api.get(MERCHANT_ENDPOINT.LIST_MERCHANT, buildParams).subscribe(
+      (res) => {
+        const newData = res?.data?.subInfo || [];
+        const merchantTotal = res?.data?.totalSub ?? 0;
+
+        this.merchantOptions = [...this.merchantOptions, ...newData];
+        const loadedMerchantCount = this.merchantOptions.length;
+
+        if (loadedMerchantCount < merchantTotal) {
+          this.merchantPage++;
+          this.isLoadMoreMerchant = true;
+        } else {
+          this.isLoadMoreMerchant = false;
+        }
+
       },
-      error => {
-        const errorData = error?.error || {};
-        this.toast.showError(errorData.soaErrorDesc);
-      });
+      (error) => {
+        this.toast.showError(error?.error?.soaErrorDesc || 'Lỗi load merchant');
+      }
+    );
   }
+
+  onMerchantDropdownShow() {
+
+    setTimeout(() => {
+      const panel = document.querySelector('.p-multiselect-items-wrapper');
+      if (panel) {
+        panel.addEventListener('scroll', this.onMerchantScroll);
+      }
+    }, 100);
+  }
+
+  onMerchantScroll = (event: any) => {
+    const target = event.target;
+    const isBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 5;
+
+    if (isBottom && this.isLoadMoreMerchant) {
+      this.getMerchantOptions(this.currentGroupIdList);
+    }
+  };
 
   onSetting() {
     const dialogRef = this.dialog.open(CashbackDialogSettingComponent, {
@@ -514,6 +572,7 @@ export class CashbackComponent implements OnInit {
     dialogRef.afterClosed().subscribe((lstColumnShow: any) => {
       if (lstColumnShow != undefined) {
         this.lstColumnShow = lstColumnShow;
+        localStorage.setItem(environment.settingCashback, lstColumnShow);
       }
     })
   }
@@ -560,18 +619,23 @@ export class CashbackComponent implements OnInit {
 
   exportExcel() {
 
+    if (!this.cachedSearchParam) {
+      this.toast.showWarn('Vui lòng thực hiện tìm kiếm trước khi xuất Excel.');
+      return;
+    }
+
     let param = {
-      fromDate: this.searchCriteria?.dateRange[0] ? moment(this.searchCriteria?.dateRange[0]).format('DD/MM/YYYY HH:mm:ss') : null,
-      toDate: this.searchCriteria?.dateRange[1] ? moment(this.searchCriteria?.dateRange[1]).format('DD/MM/YYYY HH:mm:ss') : null,
+      fromDate: this.cachedSearchParam.fromDate,
+      toDate: this.cachedSearchParam.toDate,
 
-      transactionNumber: this.searchCriteria.transactionNumber || null,
-      transactionOriginNumber: this.searchCriteria.transactionOriginNumber || null,
-      originOrderRef: this.searchCriteria.orderReferenceOrigin || null,
+      transactionNumber: this.cachedSearchParam.transactionNumber,
+      transactionOriginNumber: this.cachedSearchParam.transactionOriginNumber,
+      originOrderRef: this.cachedSearchParam.originOrderRef,
 
-      status: this.filterCriteria?.selectedStatuses || null,
-      paymentMethodId: (this.filterCriteria?.selectedPaymentMethod == 'ALL' || this.filterCriteria?.selectedPaymentMethod == null) ? null : this.filterCriteria?.selectedPaymentMethod,
-      merchantIdArray: this.filterCriteria?.selectedMerchants || [],
-      issuerCode: this.filterCriteria?.selectedBanks || null,
+      status: this.cachedSearchParam.status,
+      paymentMethodId: this.cachedSearchParam.paymentMethodId,
+      merchantIdArray: this.cachedSearchParam.merchantIdArray,
+      issuerCode: this.cachedSearchParam.issuerCode,
 
     }
 
@@ -616,17 +680,75 @@ export class CashbackComponent implements OnInit {
     this.onSearch();
   }
 
-  onDateRangeSelect(range: any): void {
-    if (range[1] == null) {
-      const startDate = range[0];
-      const thirtyDaysLater = new Date(startDate);
-      thirtyDaysLater.setDate(startDate.getDate() + 30);
-      this.maxDate = thirtyDaysLater;
+  onDateRangeSelect(range: Date[]): void {
+    this.pendingRange = [...range]; // luôn lưu lại
+
+    if (range?.[0]) {
+      const fromDate = new Date(range[0]);
+
+      const maxLimit = new Date(fromDate);
+      maxLimit.setDate(fromDate.getDate() + 30);
+
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
+
+      // Chặn từ ngày hiện tại về sau 30 ngày
+      this.maxDate = maxLimit > todayEnd ? todayEnd : maxLimit;
     }
-    if (range?.length === 2 && range[0] != null && range[1] != null) {
-      this.onSearch();
-      this.maxDate = null;
+
+  }
+
+  onDatePickerClose(): void {
+    const range = this.pendingRange;
+    if (!range || range.length !== 2) return;
+
+    const [fromRaw, toRaw] = range;
+    const now = new Date();
+
+    const fromDate = new Date(fromRaw);
+    const toDate = new Date(toRaw);
+
+    // fromDate luôn về 00:00:00
+    fromDate.setHours(0, 0, 0, 0);
+
+    // Nếu toDate < fromDate thì không hợp lệ
+    if (toDate < fromDate) {
+      this.searchCriteria.dateRange = [...this.previousValidRange];
+      return;
     }
+
+    // --- Xử lý chuẩn hóa toDate ---
+    const selected = new Date(toDate);
+    const nowDate = new Date(now);
+
+    const selectedDateOnly = new Date(selected.getFullYear(), selected.getMonth(), selected.getDate());
+    const nowDateOnly = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate());
+
+    if (selectedDateOnly.getTime() > nowDateOnly.getTime()) {
+      // Trường hợp toDate > ngày hôm nay → lấy chính xác thời điểm hiện tại
+      selected.setTime(now.getTime());
+    } else if (selectedDateOnly.getTime() === nowDateOnly.getTime()) {
+      // Cùng ngày hiện tại → so sánh giờ phút
+      const selectedHM = selected.getHours() * 60 + selected.getMinutes();
+      const nowHM = nowDate.getHours() * 60 + nowDate.getMinutes();
+
+      if (selectedHM > nowHM) {
+        selected.setTime(now.getTime());
+      } else if (selectedHM === nowHM) {
+        selected.setSeconds(now.getSeconds(), 0);
+      } else {
+        selected.setSeconds(59, 0);
+      }
+    } else {
+      // Trường hợp nhỏ hơn ngày hôm nay → giữ nguyên giờ phút, set giây = 59
+      selected.setSeconds(59, 0);
+    }
+
+    this.searchCriteria.dateRange = [fromDate, selected];
+    this.previousValidRange = [fromDate, selected];
+    this.maxDate = null;
+
+    this.onSearch();
   }
 
   openDialogUnverifiedAccountHasEmail() {
@@ -678,6 +800,7 @@ export class CashbackComponent implements OnInit {
   updateEmail() {
     const dialogRef = this.dialog.open(UpdateUserComponent, {
       width: '600px',
+      panelClass: 'dialog-update-user',
       data: {
         title: 'Cập nhật email',
         type: 'email',
@@ -792,6 +915,10 @@ export class CashbackComponent implements OnInit {
   onToggleFilter() {
     this.isFilter = !this.isFilter;
     this.isSearch = false;
+  }
+
+  setValueMerchantDefault() {
+    this.filterCriteria.selectedMerchants = [];
   }
 
 }

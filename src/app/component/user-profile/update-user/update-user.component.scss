@@ -3,7 +3,7 @@
 @import "../../../../scss/mbutton";
 
 ::ng-deep .dialog-update-user .mdc-dialog__surface {
-  border-radius: 4px !important;
+  border-radius: $border-radius-xs !important;
 }
 
 .modal-header {
@@ -27,8 +27,8 @@
   cursor: pointer;
 }
 
-.r-25 {
-  right: 25px;
+.r-24 {
+  right: $spacing-l;
 }
 
 ::ng-deep p-calendar input::placeholder {
@@ -42,9 +42,9 @@
   align-items: center;
   justify-content: center;
   position: absolute;
-  right: 12px;
-  top: 0;
-  bottom: 0;
+  right: $spacing-s;
+  top: $spacing-none;
+  bottom: $spacing-none;
   pointer-events: auto;
 }
 

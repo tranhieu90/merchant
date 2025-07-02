@@ -22,7 +22,7 @@
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" *ngIf="!isForgotPassword">
           <!-- Tên đăng nhập -->
           <div class="form-group">
-            <label class="title-s-semibold" for="username">Tên đăng nhập</label>
+            <label class="input-label-custom" for="username">Tên đăng nhập</label>
             <div class="p-inputgroup">
               <input appShowClearOnFocus=".clear-icon" #usernameInput class="merchant-input" pInputText type="text"
                 formControlName="username" placeholder="Nhập tên đăng nhập" (focus)="isUsernameFocusedLogin = true"
@@ -51,7 +51,7 @@
 
           <!-- Mật khẩu -->
           <div class="form-group password-group">
-            <label class="title-m-semibold">Mật khẩu</label>
+            <label class="input-label-custom">Mật khẩu</label>
             <div class="p-inputgroup show-icon-right">
               <input appShowClearOnFocus=".clear-icon" class="merchant-input" pInputText type="text"
                 formControlName="password" [type]="showPassword ? 'text' : 'password'" id="password"
@@ -94,7 +94,7 @@
         <form [formGroup]="forgotPasswordForm" (ngSubmit)="resetPassword()" *ngIf="isForgotPassword">
 
           <div class="form-group password-group">
-            <label class="title-m-semibold">Tên đăng nhập</label>
+            <label class="input-label-custom">Tên đăng nhập</label>
             <div class="p-inputgroup">
               <input appShowClearOnFocus=".clear-icon" class="merchant-input" pInputText type="text"
                 formControlName="username" placeholder="Nhập tên đăng nhập" (focus)="isUsernameFocusedForgot = true"
@@ -125,7 +125,7 @@
           <div class="form-group password-group m-b-32">
             <!-- <label class="title-m-semibold" for="new-password">Email </label> -->
             <div class="p-inputgroup show-icon-infomation">
-              <label class="w-100 title-m-semibold">Email</label>
+              <label class="w-100 input-label-custom">Email</label>
               <span class="p-input-icon-right clear-icon" [pTooltip]="tooltipTemplate" tooltipPosition="right"
                 tooltipStyleClass="merchant-tooltip">
                 <i class="icon-information_solid input-icon"></i>

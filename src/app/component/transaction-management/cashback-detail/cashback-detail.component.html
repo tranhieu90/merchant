@@ -1,78 +1,78 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <div class="subject-page">Giao dịch hoàn trả</div>
+    <div class="header-m-semibold">Giao dịch hoàn trả</div>
 </div>
 <div class="wrapper mb-4">
-    <div class="mb-3 info-subject">Thông tin hoàn trả</div>
+    <div class="mb-3 header-s-semibold">Thông tin hoàn trả</div>
     <div class="row">
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-            <div class="info-label">Ngân hàng thanh toán</div>
-            <div class="info-value">{{ detailTrans?.issuerName }}</div>
+            <div class="info-label title-xs-regular">Ngân hàng thanh toán</div>
+            <div class="info-value paragraph-m-semibold">{{ detailTrans?.issuerName }}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-            <div class="info-label">Số tài khoản/Thẻ thanh toán</div>
-            <div class="info-value">{{ detailTrans?.creditAccount }}</div>
+            <div class="info-label title-xs-regular">Số tài khoản/Thẻ thanh toán</div>
+            <div class="info-value paragraph-m-semibold">{{ detailTrans?.creditAccount }}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-          <div class="info-label">Tên tài khoản thanh toán</div>
-          <div class="info-value">{{ detailTrans?.creditName }}</div>
+          <div class="info-label title-xs-regular">Tên tài khoản thanh toán</div>
+          <div class="info-value paragraph-m-semibold">{{ detailTrans?.creditName }}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-            <div class="info-label">Phương thức thanh toán</div>
-            <div class="info-value">{{ detailTrans?.methodName }}</div>
+            <div class="info-label title-xs-regular">Phương thức thanh toán</div>
+            <div class="info-value paragraph-m-semibold">{{ detailTrans?.methodName }}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-            <div class="info-label">Ngày giao dịch</div>
-            <div class="info-value">{{ detailTrans?.tranTime | date: 'dd/MM/yyyy HH:mm'}}</div>
+            <div class="info-label title-xs-regular">Ngày giao dịch</div>
+            <div class="info-value paragraph-m-semibold">{{ detailTrans?.tranTime | date: 'dd/MM/yyyy HH:mm'}}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-            <div class="info-label">Số tiền hoàn trả</div>
-            <div class="info-value">{{ formatMoney(detailTrans?.amount) }}</div>
+            <div class="info-label title-xs-regular">Số tiền hoàn trả</div>
+            <div class="info-value paragraph-m-semibold">{{ formatMoney(detailTrans?.amount) }}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-            <div class="info-label">Phí giao dịch</div>
-            <div class="info-value">{{ formatMoney(detailTrans?.feeAmount) }}</div>
+            <div class="info-label title-xs-regular">Phí giao dịch</div>
+            <div class="info-value paragraph-m-semibold">{{ formatMoney(detailTrans?.feeAmount) }}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-            <div class="info-label">Phí VAT</div>
-            <div class="info-value">{{ formatMoney(detailTrans?.feeVat) }}</div>
+            <div class="info-label title-xs-regular">Phí VAT</div>
+            <div class="info-value paragraph-m-semibold">{{ formatMoney(detailTrans?.feeVat) }}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-          <div class="info-label">Nội dung hoàn trả</div>
-          <div class="info-value">{{ detailTrans?.paymentDesc }}</div>
+          <div class="info-label title-xs-regular">Nội dung hoàn trả</div>
+          <div class="info-value paragraph-m-semibold">{{ detailTrans?.paymentDesc }}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-            <div class="info-label">Trạng thái</div>
+            <div class="info-label title-xs-regular">Trạng thái</div>
             <span [ngClass]="['status', getClassStatus(detailTrans?.status)]" class="">{{
                 getLabelStatus(detailTrans?.status)}}</span>
         </div>
     </div>
 </div>
 <div class="wrapper mb-4">
-    <div class="mb-3 info-subject">Thông tin giao dịch</div>
+    <div class="mb-3 header-s-semibold">Thông tin giao dịch</div>
     <div class="row">
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-          <div class="info-label">Điểm kinh doanh</div>
-          <div class="info-value">{{ detailTrans?.merchantName }}</div>
+          <div class="info-label title-xs-regular">Điểm kinh doanh</div>
+          <div class="info-value paragraph-m-semibold">{{ detailTrans?.merchantBizName }}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-            <div class="info-label">Mã giao dịch hoàn</div>
-            <div class="info-value">{{ detailTrans?.transNumber }}</div>
+            <div class="info-label title-xs-regular">Mã giao dịch hoàn</div>
+            <div class="info-value paragraph-m-semibold">{{ detailTrans?.transNumber }}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-            <div class="info-label">Mã giao dịch gốc</div>
-            <div class="info-value">{{ detailTrans?.transactionReferenceId }}</div>
+            <div class="info-label title-xs-regular">Mã giao dịch gốc</div>
+            <div class="info-value paragraph-m-semibold">{{ detailTrans?.transactionReferenceId }}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-          <div class="info-label">Mã định danh</div>
-          <div class="info-value">{{ detailTrans?.orderReferenceOrigin }}</div>
+          <div class="info-label title-xs-regular">Mã định danh</div>
+          <div class="info-value paragraph-m-semibold">{{ detailTrans?.orderReferenceOrigin }}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-            <div class="info-label">Mã FT giao dịch hoàn</div>
-            <div class="info-value">{{ detailTrans?.txnReference }}</div>
+            <div class="info-label title-xs-regular">Mã FT giao dịch hoàn</div>
+            <div class="info-value paragraph-m-semibold">{{ detailTrans?.txnReference }}</div>
         </div>
         <div class="d-flex flex-column col-3 mb-2 detail-info">
-            <div class="info-label">Mã FT giao dịch gốc</div>
-            <div class="info-value">{{ detailTrans?.txnReferenceOrigin }}</div>
+            <div class="info-label title-xs-regular">Mã FT giao dịch gốc</div>
+            <div class="info-value paragraph-m-semibold">{{ detailTrans?.txnReferenceOrigin }}</div>
         </div>
     </div>
 </div>

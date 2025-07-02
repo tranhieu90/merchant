@@ -26,7 +26,7 @@
   position: relative;
   padding: $spacing-2xs $spacing-xs $spacing-2xs $spacing-m;
   text-transform: uppercase;
-  border-radius: 15px;
+  border-radius: $border-radius-l;
   //typo/paragraph-xs-semibold-Capital
   @include typo-style($typo-font-sizes-xs, $typo-font-weights-semibold, none, none, $font-family-semiBold);
   ;
@@ -34,9 +34,9 @@
   &::before {
     content: '•';
     position: absolute;
-    left: 5px;
-    font-size: 20px;
-    top: 2px;
+    left: $spacing-2xs;
+    font-size: $typo-font-sizes-2xl;
+    top: $spacing-3xs;
   }
 
   &.lock {
@@ -126,7 +126,7 @@
   .item {
     background: $color-surface-action-sub-2;
     padding: $spacing-l;
-    border-radius: 8px;
+    border-radius: $border-radius-s;
     color: $color-text-neutral-main;
     height: 100%;
 
@@ -141,7 +141,7 @@
     }
 
     ::ng-deep.mat-internal-form-field>label {
-      padding-left: 0px;
+      padding-left: $spacing-none;
     }
 
     .level-0 {
@@ -149,7 +149,7 @@
     }
 
     .level-2 {
-      margin-left: 29px;
+      margin-left: $spacing-xl;
     }
 
     .title {
@@ -161,9 +161,9 @@
 .sub-title {
   padding: $spacing-2xs $spacing-xs;
   height: 26px;
-  margin-top: 6px;
-  margin-left: 10px;
-  border-radius: 2px;
+  margin-top: $spacing-xs;
+  margin-left: $spacing-s;
+  border-radius: $border-radius-xs;
 
   &.config {
     color: $color-text-decoration-color-3;
@@ -182,15 +182,16 @@
 }
 
 .mat-stepper-horizontal {
-  margin-top: 8px;
+  margin-top: $spacing-xs;
 }
 
 .mat-mdc-form-field {
-  margin-top: 16px;
+  margin-top: $spacing-m;
 }
 
 .step-role {
   background: none;
+
   ::ng-deep.mat-horizontal-stepper-header-container {
     padding: $spacing-l;
     background: $color-surface-neutral-main;
@@ -242,7 +243,7 @@
     border-radius: $border-radius-s;
     background: $color-surface-neutral-main;
     padding: $spacing-l;
-    margin-top: 15px;
+    margin-top: $spacing-m;
     min-height: calc(100vh - 280px);
     position: relative;
   }
@@ -253,8 +254,8 @@
   }
 
   .div-button {
-    margin-bottom: 0px;
-    margin-top: 30px;
+    margin-bottom: $spacing-none;
+    margin-top: $spacing-xl;
     text-align: right;
     position: absolute;
     right: $spacing-l !important;
@@ -281,15 +282,15 @@
       }
 
       &::before {
-         content: "\e91f";
+        content: "\e91f";
         font-family: 'webmerchant' !important;
         color: $color-global-neutral-white;
-        font-size: 24px;
+        font-size: $typo-font-sizes-3xl;
         position: absolute;
-        left: 0;
-        top: 0;
-        right: 0;
-        bottom: 0;
+        left: $spacing-none;
+        top: $spacing-none;
+        right: $spacing-none;
+        bottom: $spacing-none;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -321,37 +322,59 @@
 .tree-node {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: $spacing-xs;
   height: 40px;
-  border-radius: 8px;
+  border-radius: $border-radius-s;
   background-color: $color-surface-neutral-sub;
-  margin-bottom: 10px;
+  margin-bottom: $spacing-s;
   max-width: 400px;
   cursor: pointer;
 }
+
 .group-name {
   flex: 1;
-  font-weight: 500;
+  font-weight: $typo-font-weights-semibold;
 }
+
 .checkbox-custom {
   width: 18px;
   height: 18px;
-  margin-left: 8px;
+  margin-left: $spacing-xs;
 }
 
 .input-erorr {
-  margin-bottom: -20px;
+  margin-bottom: -$spacing-l;
+
   .icon-error_solid {
-    font-size: 21px;
-    margin-right: 8px;
-    margin-top: -18px;
+    font-size: $typo-font-sizes-2xl;
+    margin-right: $spacing-xs;
+    margin-top: -$spacing-m;
   }
 }
+
 .no-underline {
   text-decoration: none !important;
-  color: #0058F0;
+  color: $color-global-blue-blue-6;
   cursor: pointer;
 }
-::ng-deep .btn-custom >button{
+
+::ng-deep .btn-custom>button {
   min-width: 220px
+}
+
+.text-message {
+  color: $color-global-neutral-neutral-9 !important;
+}
+
+::ng-deep .table-container {
+  max-height: 500px !important;
+}
+
+::ng-deep .mat-table {
+  overflow: auto !important;
+  max-height: 500px !important;
+}
+
+.grid-role {
+  margin-bottom: $spacing-3xl;
 }

@@ -5,6 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { UserVerifyStatus } from '../../constants/CUser';
 import { BehaviorSubject } from 'rxjs';
 import { ToastService } from '../toast/toast.service';
+import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
 
 @Injectable({
   providedIn: 'root',
@@ -31,9 +32,22 @@ export class AuthenticationService {
     let userInfoParse = this.getUserInfo();
     this.userInfoSubject.next(userInfoParse);
     let userInfor = JSON.parse(decoded.sub);
-    if (userInfor['firstChangePassword'] === 0)
-      this.router.navigate(['/change-password']);
-    else this.router.navigate(['/dashboard']);
+    const redirectUrl = sessionStorage.getItem('redirectUrlAfterLogin');
+    sessionStorage.removeItem('redirectUrlAfterLogin');
+    if (userInfor['firstChangePassword'] === 0) {
+      if (this.router.url !== '/change-password') {
+        this.router.navigate(['/change-password']);
+      }
+    } else if (redirectUrl && redirectUrl !== '/login' && redirectUrl !== this.router.url) {
+      this.router.navigateByUrl(redirectUrl);
+    } else if (this.router.url !== '/dashboard') {
+      const hasRole = this.apiTracker([MERCHANT_RULES.TRANS_LIST]);
+      if (hasRole) {
+        this.router.navigate(['/transaction/payment']);
+      } else {
+        this.router.navigate(['/dashboard']);
+      }
+    }
   }
 
   getToken() {

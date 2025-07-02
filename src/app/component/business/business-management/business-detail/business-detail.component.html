@@ -17,21 +17,21 @@
     <div class="d-flex justify-content-start align-items-center mb-3">
         <div class="date-info me-spacing-l">
             <!-- <span class="icon-calendar icon"></span> -->
-            <span class="title-xs-regular">Ngày tạo: <b
-                    class="text-date">{{fomatDate(dataDetail.createDate)}} </b></span>
+            <span class="title-xs-regular">Ngày tạo: <b class="text-date">{{fomatDate(dataDetail.createDate)}}
+                </b></span>
         </div>
         <div class="date-info">
             <!-- <span class="icon-calendar icon"></span> -->
-            <span class="title-xs-regular">Ngày cập nhật: <b
-                    class="text-date">{{fomatDate(dataDetail.updateDate)}} </b></span>
+            <span class="title-xs-regular">Ngày cập nhật: <b class="text-date">{{fomatDate(dataDetail.updateDate)}}
+                </b></span>
         </div>
     </div>
 
     <div class="business-info">
         <div class="d-flex justify-content-between align-items-center mb-spacing-l">
             <span class="header-s-semibold">Thông tin điểm kinh doanh</span>
-            <p-button label="Cập nhật thông tin" class="merchant-button-tertiary merchant-button-m" icon="icon-edit"
-                (click)="checkOpenUpdate(1)" />
+            <p-button *ngIf="hasRoleUpdate" label="Cập nhật thông tin"
+                class="merchant-button-tertiary merchant-button-m" icon="icon-edit" (click)="checkOpenUpdate(1)" />
         </div>
         <div class="row col-12 mb-spacing-l">
             <div class="col-3">
@@ -48,7 +48,7 @@
             </div>
             <div class="col-3">
                 <label class="title-xs-regular label col-12">Tên nhóm</label>
-                <span class="location">{{dataDetail.groupName}}</span>
+                <span class="location" *ngIf="dataDetail.groupName">{{dataDetail.groupName}}</span>
             </div>
         </div>
         <div class="row col-12 mb-spacing-l">
@@ -74,8 +74,8 @@
     <div class="business-payment mb-spacing-l">
         <div class="d-flex justify-content-between align-items-center mb-spacing-l">
             <span class="header-s-semibold">Phương thức thanh toán</span>
-            <p-button label="Cập nhật PT thanh toán" class="merchant-button-tertiary merchant-button-m" icon="icon-edit"
-                (onClick)="checkOpenUpdate(2)" />
+            <p-button *ngIf="hasRoleUpdate" label="Cập nhật PT thanh toán"
+                class="merchant-button-tertiary merchant-button-m" icon="icon-edit" (onClick)="checkOpenUpdate(2)" />
         </div>
         <div class="payment-form mb-spacing-l" *ngIf="paymentQR">
             <div class="title">
@@ -109,6 +109,9 @@
                             @if(paymentQR.qrCode){
                             <p-button label="Tải xuống QR" class="merchant-button w-100" icon="icon-download"
                                 (onClick)="downloadQRCode()" />
+                            } @else {
+                            <p-button label="Gen lại mã QR" class="merchant-button w-100" icon="icon-download"
+                                (onClick)="genQRCode()" />
                             }
                         </div>
                     </div>

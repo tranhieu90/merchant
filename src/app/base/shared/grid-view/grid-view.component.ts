@@ -34,6 +34,9 @@ export class GridViewComponent implements OnInit, AfterViewInit {
   @Input() isDisabled: boolean = false;
   @Output() doChangePage: EventEmitter<any> = new EventEmitter();
   @Output() isChecked: EventEmitter<any> = new EventEmitter();
+  @Output() selectAll = new EventEmitter<void>();
+  @Output() deselectAll = new EventEmitter<void>();
+
   @Input() pageInfo: any = {
     pageSize: 10,
     page: 0,
@@ -41,6 +44,7 @@ export class GridViewComponent implements OnInit, AfterViewInit {
   @Input() isShowPage?: boolean = true;
   @Input() isOrder?: boolean = false;
   @Input() showRadio?: boolean = false;
+  @Input() isWhitespace?: boolean = false;
   @Input() selectedItems?: boolean = false;
   @Output() selectedItemChange: EventEmitter<any> = new EventEmitter();
   @Output() dataChoice: EventEmitter<any> = new EventEmitter();
@@ -52,6 +56,9 @@ export class GridViewComponent implements OnInit, AfterViewInit {
   renderedValues: string[][] = [];
   tooltipText: string = '';
   indeterminate?: boolean;
+  @Input() searchBusiness?: boolean = false;
+  @Output() lazyLoadingEvent: EventEmitter<any> = new EventEmitter();
+  @Output() actionType: EventEmitter<any> = new EventEmitter();
 
   // get selectedItemCount(): number {
   //   var count= this.dataSource.filter((item: any) => item.checked).length;
@@ -211,19 +218,27 @@ export class GridViewComponent implements OnInit, AfterViewInit {
       this.dataSource.forEach((obj: any) => {
         obj["checked"] = true;
       });
-    } else {
-      this.checkAll = false;
+      this.actionType.emit(true)
 
+      this.selectAll.emit();  
+      this.checkAll = true;
+    } else {
+      this.deselectAll.emit();  
+      this.checkAll = false;
+      this.actionType.emit(false)
       this.dataSource.forEach((obj: any) => {
         obj["checked"] = false;
       });
+
     }
+  
     this.indeterminate = false;
     let countChecked = ob.checked === true ? this.dataSource.length : 0;
     this.isChecked.emit(countChecked);
-
+  
     this.dataChoice.emit(this.dataSource);
   }
+  
 
   onCheckItem(ob: MatCheckboxChange, item: any) {
     let itemCheck = _.filter(this.dataSource, (obj: any) => {
@@ -232,6 +247,7 @@ export class GridViewComponent implements OnInit, AfterViewInit {
     if (itemCheck && itemCheck.length === this.dataSource.length) {
       this.checkAll = true;
       this.indeterminate = false;
+      this.actionType.emit(true);
     } else {
       this.checkAll = false;
 
@@ -240,6 +256,7 @@ export class GridViewComponent implements OnInit, AfterViewInit {
       } else {
         this.indeterminate = false;
       }
+      this.actionType.emit(false);
     }
     this.isChecked.emit(itemCheck.length);
     this.dataChoice.emit(item);
@@ -259,5 +276,9 @@ export class GridViewComponent implements OnInit, AfterViewInit {
     } else {
       this.checkAll = false;
     }
+  }
+
+  onTableScroll(e: any) {
+    this.lazyLoadingEvent.emit(e);
   }
 }

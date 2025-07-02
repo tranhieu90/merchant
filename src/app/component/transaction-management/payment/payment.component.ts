@@ -34,11 +34,16 @@ import {UserVerifyStatus} from '../../../common/constants/CUser';
 import {InputCommon} from '../../../common/directives/input.directive';
 import {MatBadge} from '@angular/material/badge';
 import {BANK_IMAGE_DATA} from '../../../../assets/bank-map';
+import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
+import { TooltipModule } from 'primeng/tooltip';
+import { MatTooltip } from '@angular/material/tooltip';
+import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
+import { MbDropdown } from '../../../base/shared/mb-dropdown/mb-dropdown.component';
 
 @Component({
   selector: 'app-payment',
   standalone: true,
-  imports: [ButtonModule, CalendarModule, InputTextModule, MultiSelectModule, NgIf, NgClass, GridViewComponent, InputNumberModule, FormsModule, DropdownModule, ReactiveFormsModule, TreeSelectModule, InputCommon, MatBadge],
+  imports: [ButtonModule, CalendarModule, InputTextModule, MultiSelectModule, NgIf, NgClass, GridViewComponent, InputNumberModule, FormsModule, DropdownModule, ReactiveFormsModule, TreeSelectModule, InputCommon, MatBadge, TooltipModule, MatTooltip, ShowClearOnFocusDirective,MbDropdown],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.scss'
 })
@@ -66,7 +71,15 @@ export class PaymentComponent implements OnInit {
   maxDate: any = null;
   minDate: any = null;
   merchantId: any = null;
-
+  previousValidRange: Date[] = [];
+  pendingRange: Date[] = [];
+  cachedSearchParam: any = null;
+  hasRoleExport: boolean = true;
+  isClear: boolean = false;
+  merchantPage = 1;
+  merchantSize = 50;
+  isLoadMoreMerchant: boolean = true;
+  currentGroupIdList: any = null;
   searchCriteria: {
     transactionCode: string | null;
     ftCode: string | null;
@@ -77,15 +90,15 @@ export class PaymentComponent implements OnInit {
     paymentAmount: number | null;
     dateRange: Date[] | [];
   } = {
-    transactionCode: null,
-    ftCode: null,
-    orderCode: null,
-    identifierCode: null,
-    paymentAccountName: null,
-    accountNumber: null,
-    paymentAmount: null,
-    dateRange: [],
-  };
+      transactionCode: null,
+      ftCode: null,
+      orderCode: null,
+      identifierCode: null,
+      paymentAccountName: null,
+      accountNumber: null,
+      paymentAmount: null,
+      dateRange: [],
+    };
 
   // 2. Đối tượng lưu trữ dữ liệu lọc (từ box-filter)
   filterCriteria: {
@@ -95,12 +108,12 @@ export class PaymentComponent implements OnInit {
     selectedGroups: any[];
     selectedMerchants: string[];
   } = {
-    selectedStatuses: [],
-    selectedPaymentMethod: null,
-    selectedBanks: null,
-    selectedGroups: [],
-    selectedMerchants: []
-  };
+      selectedStatuses: [],
+      selectedPaymentMethod: null,
+      selectedBanks: null,
+      selectedGroups: [],
+      selectedMerchants: []
+    };
 
   action: any = [
     {
@@ -132,25 +145,25 @@ export class PaymentComponent implements OnInit {
         }
       },
       ...(this.lstColumnShow.includes("transactionCode")
-          ? [
-            {
-              name: 'transactionNumber',
-              label: 'Mã giao dịch',
-              options: {
-                customCss: (obj: any) => ['text-left'],
-                customCssHeader: () => ['text-left'],
-                width: "154px",
-                minWidth: "154px"
-              }
+        ? [
+          {
+            name: 'transactionNumber',
+            label: 'Mã giao dịch',
+            options: {
+              customCss: (obj: any) => ['text-left'],
+              customCssHeader: () => ['text-left'],
+              width: "154px",
+              minWidth: "154px"
             }
-          ] : []
+          }
+        ] : []
       ),
       {
-        name: 'merchantName',
+        name: 'merchantBizName',
         label: 'Điểm kinh doanh',
         options: {
           customCss: (obj: any) => {
-            return ['text-left'];
+            return ['text-left', 'mw-180'];
           },
           customCssHeader: () => {
             return ['text-left'];
@@ -177,22 +190,22 @@ export class PaymentComponent implements OnInit {
         }
       },
       ...(this.lstColumnShow.includes("paymentContent")
-          ? [
-            {
-              name: 'orderInfo',
-              label: 'Nội dung thanh toán',
-              options: {
-                customCss: (obj: any) => {
-                  return ['text-left', 'mw-180'];
-                },
-                customCssHeader: () => {
-                  return ['text-left'];
-                },
-                width: "174px",
-                minWidth: "174px"
-              }
-            },
-          ] : []
+        ? [
+          {
+            name: 'orderInfo',
+            label: 'Nội dung thanh toán',
+            options: {
+              customCss: (obj: any) => {
+                return ['text-left', 'mw-180'];
+              },
+              customCssHeader: () => {
+                return ['text-left'];
+              },
+              width: "174px",
+              minWidth: "174px"
+            }
+          },
+        ] : []
       ),
       {
         name: 'orderRef',
@@ -209,22 +222,22 @@ export class PaymentComponent implements OnInit {
         }
       },
       ...(this.lstColumnShow.includes("orderCode")
-          ? [
-            {
-              name: 'orderId',
-              label: 'Mã đơn hàng',
-              options: {
-                customCss: (obj: any) => {
-                  return ['text-left'];
-                },
-                customCssHeader: () => {
-                  return ['text-left'];
-                },
-                width: "121px",
-                minWidth: "121px"
-              }
+        ? [
+          {
+            name: 'orderId',
+            label: 'Mã đơn hàng',
+            options: {
+              customCss: (obj: any) => {
+                return ['text-left'];
+              },
+              customCssHeader: () => {
+                return ['text-left'];
+              },
+              width: "121px",
+              minWidth: "121px"
             }
-          ] : []
+          }
+        ] : []
       ),
       {
         name: 'status',
@@ -268,22 +281,22 @@ export class PaymentComponent implements OnInit {
         }
       },
       ...(this.lstColumnShow.includes("ftCode")
-          ? [
-            {
-              name: 'txnReference',
-              label: 'Mã FT giao dịch',
-              options: {
-                customCss: (obj: any) => {
-                  return ['text-left'];
-                },
-                customCssHeader: () => {
-                  return ['text-left'];
-                },
-                width: "134px",
-                minWidth: "134px"
-              }
-            },
-          ] : []
+        ? [
+          {
+            name: 'txnReference',
+            label: 'Mã FT giao dịch',
+            options: {
+              customCss: (obj: any) => {
+                return ['text-left'];
+              },
+              customCssHeader: () => {
+                return ['text-left'];
+              },
+              width: "134px",
+              minWidth: "134px"
+            }
+          },
+        ] : []
       ),
       {
         name: 'debitAccount',
@@ -312,82 +325,82 @@ export class PaymentComponent implements OnInit {
         }
       },
       ...(this.lstColumnShow.includes("businessAccount")
-          ? [
-            {
-              name: 'creditAccount',
-              label: 'Tài khoản doanh nghiệp',
-              options: {
-                customCss: (obj: any) => {
-                  return ['text-left'];
-                },
-                customCssHeader: () => {
-                  return ['text-left'];
-                },
-                width: "191px",
-                minWidth: "191px",
-              }
+        ? [
+          {
+            name: 'creditAccount',
+            label: 'Tài khoản doanh nghiệp',
+            options: {
+              customCss: (obj: any) => {
+                return ['text-left'];
+              },
+              customCssHeader: () => {
+                return ['text-left'];
+              },
+              width: "191px",
+              minWidth: "191px",
             }
-          ] : []
+          }
+        ] : []
       ),
       ...(this.lstColumnShow.includes("keyCode")
-          ? [
-            {
-              name: 'terminalId',
-              label: 'Mã key dịch vụ',
-              options: {
-                customCss: (obj: any) => {
-                  return ['text-left'];
-                },
-                customCssHeader: () => {
-                  return ['text-left'];
-                },
-                width: "129px",
-                minWidth: "129px"
-              }
+        ? [
+          {
+            name: 'terminalId',
+            label: 'Mã key dịch vụ',
+            options: {
+              customCss: (obj: any) => {
+                return ['text-left'];
+              },
+              customCssHeader: () => {
+                return ['text-left'];
+              },
+              width: "129px",
+              minWidth: "129px"
             }
-          ] : []
+          }
+        ] : []
       ),
       ...(this.lstColumnShow.includes("expense")
-          ? [
-            {
-              name: 'feeAmount',
-              label: 'Phí giao dịch (₫)',
-              options: {
-                customCss: (obj: any) => {
-                  return ['text-left'];
-                },
-                customCssHeader: () => {
-                  return ['text-left'];
-                },
-                customBodyRender: (value: any) => {
-                  return this.formatMoney2(value);
-                },
-                width: "135px",
-                minWidth: "135px"
-              }
+        ? [
+          {
+            name: 'feeAmount',
+            label: 'Phí giao dịch (₫)',
+            options: {
+              customCss: (obj: any) => {
+                return ['text-left'];
+              },
+              customCssHeader: () => {
+                return ['text-left'];
+              },
+              customBodyRender: (value: any) => {
+                return this.formatMoney2(value);
+              },
+              width: "135px",
+              minWidth: "135px"
             }
-          ] : []
+          }
+        ] : []
       ),
       ...(this.lstColumnShow.includes("vat")
-          ? [
-            {
-              name: 'feeVat',
-              label: 'VAT (₫)',
-              options: {
-                customCss: (obj: any) => {
-                  return ['text-left'];
-                },
-                customCssHeader: () => {
-                  return ['text-left'];
-                },
-                customBodyRender: (value: any) => {
-                  return this.formatMoney2(value);
-                },
-                width: "78px",
-                minWidth: "78px"
-              }
+        ? [
+          {
+            name: 'feeVat',
+            label: 'VAT (₫)',
+            options: {
+              customCss: (obj: any) => {
+                return ['text-left'];
+              },
+              customCssHeader: () => {
+                return ['text-left'];
+              },
+              customBodyRender: (value: any) => {
+                return this.formatMoney2(value);
+              },
+              width: "78px",
+              minWidth: "78px"
             }
-          ] : []
+          }
+        ] : []
       )
     ];
   }
@@ -400,7 +413,10 @@ export class PaymentComponent implements OnInit {
     private toast: ToastService,
     private auth: AuthenticationService,
   ) {
-
+    const columnsShow = localStorage.getItem(environment.settingPayment)?.split(',').map(api => api.trim());
+    if (columnsShow) {
+      this.lstColumnShow = columnsShow;
+    }
   }
 
   ngOnInit(): void {
@@ -409,13 +425,16 @@ export class PaymentComponent implements OnInit {
 
     const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
 
-    const endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 0);
+    const endDate = today;
 
     this.searchCriteria.dateRange = [startDate, endDate];
+
+    this.previousValidRange = [...this.searchCriteria.dateRange];
 
     const minDate = new Date();
     minDate.setDate(today.getDate() - 365);
     this.minDate = minDate;
+    this.maxDate = today;
 
     this.statusOptions = [
       {name: 'Thành công', code: '00'},
@@ -433,6 +452,7 @@ export class PaymentComponent implements OnInit {
 
     this.onSearch();
 
+    this.hasRoleExport = this.auth.apiTracker([MERCHANT_RULES.TRANS_EXPORT_EXCEL]);
   }
 
   getLstPaymentMethod() {
@@ -449,15 +469,16 @@ export class PaymentComponent implements OnInit {
 
   getListBank() {
     this.api.get(BANK_ENDPOINT.LIST_BANK, null).subscribe(res => {
-        this.bankOptions = res['data'];
-        this.bankOptions = this.bankOptions.map((bank: any) => {
-          const match = BANK_IMAGE_DATA.find((b: any) => b.code === bank.code);
-          return {
-            ...bank,
-            logo: match ? match.image + '.png' : null
-          };
-        });
-      },
+      this.bankOptions = res['data'];
+      this.bankOptions = this.bankOptions.map((bank: any) => {
+        const match = BANK_IMAGE_DATA.find((b: any) => b.code === bank.code);
+        const logo = match && match.image && match.image.trim() !== '' ? match.image + '.png' : 'img_default.png';
+        return {
+          ...bank,
+          logo
+        };
+      });
+    },
       error => {
         const errorData = error?.error || {};
         this.toast.showError(errorData.soaErrorDesc);
@@ -466,23 +487,57 @@ export class PaymentComponent implements OnInit {
 
   getMerchantOptions(groupIdList?: any) {
 
-    let param = {
-      status: null,
-      groupIdList: groupIdList || null,
-      page: 1,
-      size: 999999999
-    };
-    let buildParams = CommonUtils.buildParams(param);
+    this.currentGroupIdList = groupIdList;
 
-    this.api.get(MERCHANT_ENDPOINT.LIST_MERCHANT, buildParams).subscribe(res => {
-        this.merchantOptions = res['data']['subInfo'] || [];
+    const params = {
+      status: null,
+      groupIdList: this.currentGroupIdList || null,
+      page: this.merchantPage,
+      size: this.merchantSize,
+    };
+
+    const buildParams = CommonUtils.buildParams(params);
+
+    this.api.get(MERCHANT_ENDPOINT.LIST_MERCHANT, buildParams).subscribe(
+      (res) => {
+        const newData = res?.data?.subInfo || [];
+        const merchantTotal = res?.data?.totalSub ?? 0;
+
+        this.merchantOptions = [...this.merchantOptions, ...newData];
+        const loadedMerchantCount = this.merchantOptions.length;
+
+        if (loadedMerchantCount < merchantTotal) {
+          this.merchantPage++;
+          this.isLoadMoreMerchant = true;
+        } else {
+          this.isLoadMoreMerchant = false;
+        }
+
       },
-      error => {
-        const errorData = error?.error || {};
-        this.paymentMethodOptions = [];
-        this.toast.showError(errorData.soaErrorDesc);
-      });
+      (error) => {
+        this.toast.showError(error?.error?.soaErrorDesc || 'Lỗi load merchant');
+      }
+    );
   }
+
+  onMerchantDropdownShow() {
+
+    setTimeout(() => {
+      const panel = document.querySelector('.p-multiselect-items-wrapper');
+      if (panel) {
+        panel.addEventListener('scroll', this.onMerchantScroll);
+      }
+    }, 100);
+  }
+
+  onMerchantScroll = (event: any) => {
+    const target = event.target;
+    const isBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 5;
+
+    if (isBottom && this.isLoadMoreMerchant) {
+      this.getMerchantOptions(this.currentGroupIdList);
+    }
+  };
 
 
   onSearch(pageInfo?: any) {
@@ -527,12 +582,14 @@ export class PaymentComponent implements OnInit {
 
     }
 
+    this.cachedSearchParam = param;
+
     this.api.post(TRANSACTION_ENDPOINT.GET_LIST_TRANSACTION, param).subscribe(res => {
-        this.dataTable = res['data']['content'];
-        this.totalItem = res['data']['paging']['total'];
-        this.totalTrans = res['data']['totalRecord'];
-        this.totalAmount = res['data']['totalAmount'];
-      },
+      this.dataTable = res['data']['content'];
+      this.totalItem = res['data']['paging']['total'];
+      this.totalTrans = res['data']['totalRecord'];
+      this.totalAmount = res['data']['totalAmount'];
+    },
       error => {
         const errorData = error?.error || {};
         this.toast.showError(errorData.soaErrorDesc);
@@ -550,6 +607,7 @@ export class PaymentComponent implements OnInit {
     dialogRef.afterClosed().subscribe((lstColumnShow: any) => {
       if (lstColumnShow != undefined) {
         this.lstColumnShow = lstColumnShow;
+        localStorage.setItem(environment.settingPayment, lstColumnShow);
       }
     })
   }
@@ -596,49 +654,48 @@ export class PaymentComponent implements OnInit {
   }
 
   exportExcel() {
-    let groupIdArray = this.getTopLevelGroupIds(this.filterCriteria?.selectedGroups || []);
-    groupIdArray = groupIdArray?.filter(item => item !== this.merchantId)?.map(item => item);
-
-    let param = {
-      fromDate: this.searchCriteria?.dateRange[0] ? moment(this.searchCriteria?.dateRange[0]).format('DD/MM/YYYY HH:mm:ss') : null,
-      toDate: this.searchCriteria?.dateRange[1] ? moment(this.searchCriteria?.dateRange[1]).format('DD/MM/YYYY HH:mm:ss') : null,
-
-      transactionReference: this.searchCriteria.ftCode || null,
-      orderId: this.searchCriteria?.orderCode || null,
-      amount: this.searchCriteria?.paymentAmount || null,
-      debitName: this.searchCriteria?.paymentAccountName || null,
-      debitAccount: this.searchCriteria?.accountNumber || null,
-      orderReference: this.searchCriteria?.identifierCode || null,
-      transactionNumber: this.searchCriteria?.transactionCode || null,
-
-      statusTransaction: this.filterCriteria?.selectedStatuses || [],
-      transactionMethodID: (this.filterCriteria?.selectedPaymentMethod == 'ALL' || this.filterCriteria?.selectedPaymentMethod == null) ? null : this.filterCriteria?.selectedPaymentMethod,
-      merchantIdArray: this.filterCriteria?.selectedMerchants || [],
-
-      groupId: groupIdArray,
-      issuerCode: this.filterCriteria?.selectedBanks || null,
-
-      type: 'TXN',
-
-      masterId: null,
-
+    if (!this.cachedSearchParam) {
+      this.toast.showWarn('Vui lòng thực hiện tìm kiếm trước khi xuất Excel.');
+      return;
     }
 
+    const param = {
+      fromDate: this.cachedSearchParam.fromDate,
+      toDate: this.cachedSearchParam.toDate,
+
+      transactionReference: this.cachedSearchParam.txnReference,
+      orderId: this.cachedSearchParam.orderId,
+      amount: this.cachedSearchParam.amount,
+      debitName: this.cachedSearchParam.debitName,
+      debitAccount: this.cachedSearchParam.debitAccount,
+      orderReference: this.cachedSearchParam.orderReference,
+      transactionNumber: this.cachedSearchParam.transactionNumber,
+
+      statusTransaction: this.cachedSearchParam.status,
+      transactionMethodID: this.cachedSearchParam.paymentMethodId,
+      merchantIdArray: this.cachedSearchParam.merchantIdArray,
+      groupId: this.cachedSearchParam.groupIdArray,
+      issuerCode: this.cachedSearchParam.issuerCode,
+
+      type: 'TXN',
+      masterId: null
+    };
+
     this.api.post(EXCEL_ENDPOINT.EXPORT_TRANSACTION, param).subscribe(res => {
-        let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-        dataDialog.title = 'Xuất file excel';
-        dataDialog.message = 'Yêu cầu xuất file đang được xử lý. Vui lòng truy cập Lịch sử xuất file excel để nhận kết quả.';
-        dataDialog.icon = 'icon-information';
-        dataDialog.viewCancel = true;
-        dataDialog.iconColor = 'icon info';
-        dataDialog.buttonLabel = 'Xác nhận'
-        dataDialog.width = "30%";
-        this.dialogCommon.openDialogInfo(dataDialog).subscribe((result: any) => {
-          if (result) {
-            this.router.navigate(['/transaction/history-export']);
-          }
-        });
-      },
+      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+      dataDialog.title = 'Xuất file excel';
+      dataDialog.message = 'Yêu cầu xuất file đang được xử lý. Vui lòng truy cập Lịch sử xuất file excel để nhận kết quả.';
+      dataDialog.icon = 'icon-information';
+      dataDialog.viewCancel = true;
+      dataDialog.iconColor = 'icon info';
+      dataDialog.buttonLabel = 'Xác nhận'
+      dataDialog.width = "30%";
+      this.dialogCommon.openDialogInfo(dataDialog).subscribe((result: any) => {
+        if (result) {
+          this.router.navigate(['/transaction/history-export']);
+        }
+      });
+    },
       error => {
         const errorData = error?.error || {};
         this.toast.showError(errorData.soaErrorDesc);
@@ -695,6 +752,7 @@ export class PaymentComponent implements OnInit {
   updateEmail() {
     const dialogRef = this.dialog.open(UpdateUserComponent, {
       width: '600px',
+      panelClass: 'dialog-update-user',
       data: {
         title: 'Cập nhật email',
         type: 'email',
@@ -747,58 +805,117 @@ export class PaymentComponent implements OnInit {
     })
   }
 
-  onDateRangeSelect(range: any): void {
-    if (range[1] == null) {
-      const startDate = range[0];
-      const thirtyDaysLater = new Date(startDate);
-      thirtyDaysLater.setDate(startDate.getDate() + 30);
-      this.maxDate = thirtyDaysLater;
+  onDateRangeSelect(range: Date[]): void {
+    this.pendingRange = [...range]; // luôn lưu lại
+
+    if (range?.[0]) {
+      const fromDate = new Date(range[0]);
+
+      const maxLimit = new Date(fromDate);
+      maxLimit.setDate(fromDate.getDate() + 30);
+
+      const todayEnd = new Date();
+      todayEnd.setHours(23, 59, 59, 999);
+
+      // Chặn từ ngày hiện tại về sau 30 ngày
+      this.maxDate = maxLimit > todayEnd ? todayEnd : maxLimit;
     }
-    if (range?.length === 2 && range[0] != null && range[1] != null) {
-      this.onSearch();
-      this.maxDate = null;
+
+  }
+
+  onDatePickerClose(): void {
+    const range = this.pendingRange;
+    if (!range || range.length !== 2) return;
+
+    const [fromRaw, toRaw] = range;
+    const now = new Date();
+
+    const fromDate = new Date(fromRaw);
+    const toDate = new Date(toRaw);
+
+    // fromDate luôn về 00:00:00
+    fromDate.setHours(0, 0, 0, 0);
+
+    // Nếu toDate < fromDate thì không hợp lệ
+    if (toDate < fromDate) {
+      this.searchCriteria.dateRange = [...this.previousValidRange];
+      return;
     }
+
+    // --- Xử lý chuẩn hóa toDate ---
+    const selected = new Date(toDate);
+    const nowDate = new Date(now);
+
+    const selectedDateOnly = new Date(selected.getFullYear(), selected.getMonth(), selected.getDate());
+    const nowDateOnly = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate());
+
+    if (selectedDateOnly.getTime() > nowDateOnly.getTime()) {
+      // Trường hợp toDate > ngày hôm nay → lấy chính xác thời điểm hiện tại
+      selected.setTime(now.getTime());
+    } else if (selectedDateOnly.getTime() === nowDateOnly.getTime()) {
+      // Cùng ngày hiện tại → so sánh giờ phút
+      const selectedHM = selected.getHours() * 60 + selected.getMinutes();
+      const nowHM = nowDate.getHours() * 60 + nowDate.getMinutes();
+
+      if (selectedHM > nowHM) {
+        selected.setTime(now.getTime());
+      } else if (selectedHM === nowHM) {
+        selected.setSeconds(now.getSeconds(), 0);
+      } else {
+        selected.setSeconds(59, 0);
+      }
+    } else {
+      // Trường hợp nhỏ hơn ngày hôm nay → giữ nguyên giờ phút, set giây = 59
+      selected.setSeconds(59, 0);
+    }
+
+    this.searchCriteria.dateRange = [fromDate, selected];
+    this.previousValidRange = [fromDate, selected];
+    this.maxDate = null;
+
+    this.onSearch();
   }
 
   onGroupClick(event: any) {
     const clickedNode = event.node;
     this.lastClickedGroup = clickedNode;
 
-    setTimeout(() => {
-      const selected = this.filterCriteria.selectedGroups || [];
-      const clickedFullNode = this.findItemById(this.groupOptions, clickedNode.id);
-      if (!clickedFullNode) return;
+    const selected = this.filterCriteria.selectedGroups || [];
+    this.isClear = selected.length > 0
+    const clickedFullNode = this.findItemById(this.groupOptions, clickedNode.id);
+    if (!clickedFullNode) return;
 
-      const targetLevel = clickedFullNode.level;
-      const targetParentId = clickedFullNode.parentId;
+    const targetLevel = clickedFullNode.level;
+    const targetParentId = clickedFullNode.parentId;
 
-      // Lọc các node cùng level và cùng parentId
-      const sameLevelNodes = selected.filter(item => {
-        const fullItem = this.findItemById(this.groupOptions, item.id);
-        return fullItem?.level === targetLevel && fullItem?.parentId === targetParentId;
-      });
+    // Lọc các node cùng level và cùng parentId
+    const sameLevelNodes = selected.filter(item => {
+      const fullItem = this.findItemById(this.groupOptions, item.id);
+      return fullItem?.level === targetLevel && fullItem?.parentId === targetParentId;
+    });
 
-      // Lấy toàn bộ con (mọi cấp) của các node này
-      const allWithChildren: any[] = [];
+    // Lấy toàn bộ con (mọi cấp) của các node này
+    const allWithChildren: any[] = [];
 
-      for (const node of sameLevelNodes) {
-        const fullNode = this.findItemById(this.groupOptions, node.id);
-        if (fullNode) {
-          allWithChildren.push(fullNode);
-          const children = this.getAllChildNodes(fullNode);
-          allWithChildren.push(...children);
-        }
+    for (const node of sameLevelNodes) {
+      const fullNode = this.findItemById(this.groupOptions, node.id);
+      if (fullNode) {
+        allWithChildren.push(fullNode);
+        const children = this.getAllChildNodes(fullNode);
+        allWithChildren.push(...children);
       }
+    }
 
-      // Loại bỏ trùng ID
-      const uniqueById = Array.from(new Map(allWithChildren.map(item => [item.id, item])).values());
+    // Loại bỏ trùng ID
+    const uniqueById = Array.from(new Map(allWithChildren.map(item => [item.id, item])).values());
 
-      // Gán lại cho ngModel
-      this.filterCriteria.selectedGroups = uniqueById;
+    // Gán lại cho ngModel
+    this.filterCriteria.selectedGroups.length = 0;
+    this.filterCriteria.selectedGroups.push(...uniqueById);
 
-      // Gọi logic tiếp theo
-      this.onChangeGroup();
-    }, 0);
+    // Gọi logic tiếp theo
+    this.onChangeGroup();
+
   }
 
   getAllChildNodes(node: any): any[] {
@@ -828,10 +945,16 @@ export class PaymentComponent implements OnInit {
 
   onChangeGroup() {
     const selected = this.filterCriteria.selectedGroups || [];
-    if (!this.lastClickedGroup || selected.length === 0) return;
+    // if (!this.lastClickedGroup || selected.length === 0) return;
 
     const topLevelIds = this.getTopLevelGroupIds(selected);
     const groupIdList = topLevelIds.filter(id => id !== this.merchantId).join(',');
+
+    this.currentGroupIdList = groupIdList;
+    this.merchantPage = 1;
+    this.filterCriteria.selectedMerchants = [];
+    this.isLoadMoreMerchant = true;
+    this.merchantOptions = [];
 
     this.getMerchantOptions(groupIdList);
   }
@@ -931,13 +1054,21 @@ export class PaymentComponent implements OnInit {
 
     return result.map(item => {
       let children = this.convertLstAreaByOrder(list, item.id);
+      const shortLabel = this.shortenLabel(item.groupName);
       return {
         ...item,
-        label: item.groupName,
+        label: shortLabel,
+        fullLabel: item.groupName,
         key: item.id,
-        children: children
+        children: children,
+        showTooltip: shortLabel.includes('...')
       };
     });
+  }
+
+  shortenLabel(label: string): string {
+    if (!label) return '';
+    return label.length > 30 ? label.slice(0, 30) + '...' : label;
   }
 
   checkHasSearchOrFilterData(): boolean {
@@ -1013,5 +1144,6 @@ export class PaymentComponent implements OnInit {
     this.isFilter = !this.isFilter;
     this.isSearch = false;
   }
+
 
 }

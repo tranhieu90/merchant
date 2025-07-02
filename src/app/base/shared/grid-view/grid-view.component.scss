@@ -28,7 +28,7 @@
   background-color: $color-surface-action-sub-2-hover;
 }
 
-.mat-mdc-row:hover{
+.mat-mdc-row:hover {
   background-color: $color-surface-action-sub;
 }
 
@@ -43,7 +43,7 @@
   justify-content: center;
   text-align: center;
 
-  .content{
+  .content {
     margin-top: 104px;
   }
 
@@ -133,13 +133,17 @@
 
 ::ng-deep.mat-mdc-paginator .mat-mdc-select-value {
   font-family: "AvertaStdCY-Regular";
-  font-size: 14px !important;
+  font-size: $typo-font-sizes-m !important;
 }
 
-.paginator-table{
+.paginator-table {
   float: left;
   width: 100%;
   padding-top: $spacing-l;
+}
+
+.mdc-data-table__cell, .mdc-data-table__header-cell {
+    padding: $spacing-m;
 }
 
 // ============================Radio=========================
@@ -147,20 +151,24 @@
   ::ng-deep.p-radiobutton .p-radiobutton-box {
     border-color: $color-icon-action-main;
   }
+
   ::ng-deep.p-radiobutton .p-radiobutton-box.p-highlight {
     background: $color-icon-action-main;
   }
+
   ::ng-deep.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
     width: 8px;
     height: 8px;
   }
 }
-.m-radio-check{
+
+.m-radio-check {
   ::ng-deep.p-radiobutton .p-radiobutton-box.p-highlight {
     background: $color-icon-action-main;
     background-image: url("../../../../assets/images/icon-check.svg");
     background-size: cover;
   }
+
   ::ng-deep.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
     width: 0px;
     height: 0px;
@@ -170,7 +178,7 @@
 .table-container {
   width: 100%;
   overflow-x: auto;
-  height: 520px;
+  height: 35rem;
 }
 
 .mat-cell {
@@ -178,6 +186,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .icon-edit {
   width: 23px;
   height: 23px;
@@ -185,44 +194,57 @@
 
 .mw-100 {
   max-width: 100px;
+  width: 100px;
 }
 
 .mw-120 {
   max-width: 120px;
+  width: 120px;
 }
 
 .mw-140 {
   max-width: 140px;
+  width: 140px;
 }
 
 .mw-160 {
   max-width: 160px;
+  width: 160px;
 }
 
 .mw-180 {
   max-width: 180px;
+  width: 180px;
 }
 
+.mw-220 {
+  max-width: 220px;
+  width: 220px;
+}
+
+
 .tooltip-anchor {
-  display: block;              
+  display: block;
   max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.5;
 }
+
 .text-content {
-  display: inline;             
+  display: inline;
 }
+
 ::ng-depp .p-datatable-frozen-column {
   position: sticky;
   background: var(--p-datatable-header-cell-background);
-} 
-  
+}
+
 .ellipsis {
-    display: inline-block; 
-    max-width: 600px; 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis;
+  display: inline-block;
+  max-width: 600px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

@@ -38,7 +38,7 @@ export class DialogRepayComponent {
 
     this.formRepay = this.fb.group({
       money: [null, [Validators.required]],
-      description: ['Hoan tra giao dich', [Validators.required, Validators.maxLength(500)]]
+      description: ['Hoan tra giao dich', [Validators.required, Validators.maxLength(50)]]
     });
 
     this.isExpireDate = this.getExpiredDate(dataDialog?.transTime);
@@ -60,7 +60,7 @@ export class DialogRepayComponent {
 
     this.api.post(REFUND_ENDPOINT.GET_INFO_REFUND, param).subscribe(res => {
         this.totalNumberCanRefund = res['data']['totalNumberCanRefund'];
-        const amountRefund = res['data']['amount'] || 0;
+        const amountRefund = res['data']['totalAmountRefund'] || 0;
         this.traceTransfer = res['data']['traceTransfer'];
         this.maxMoney = this.dataDialog.amount - Number(amountRefund);
         this.formRepay.controls['money'].setValue(this.maxMoney);
@@ -88,6 +88,11 @@ export class DialogRepayComponent {
   }
 
   doAction() {
+    if (this.formRepay.invalid || this.totalNumberCanRefund <= 0 || this.isExpireDate) {
+      this.formRepay.markAllAsTouched();
+      this.formRepay.markAsDirty();
+      return;
+    }
     let refundData = {
       currentRefundMoney: this.formRepay.get('money')?.value,
       refundReason: this.formRepay.get('description')?.value,
@@ -126,5 +131,24 @@ export class DialogRepayComponent {
 
 
     return todayMoment.isAfter(expiredMoment);
+  }
+
+  onEnterSubmit(event: any) {
+    event.preventDefault();
+
+    const inputEl = (event.target as HTMLElement);
+    if (inputEl && inputEl.id === 'integeronly') {
+      const fakeEvent = { target: { value: this.formRepay.get('money')?.value?.toString() || '' } };
+      this.onBlurMoney(fakeEvent);
+    }
+
+    Object.keys(this.formRepay.controls).forEach(field => {
+      const control = this.formRepay.get(field);
+      control?.markAsTouched({ onlySelf: true });
+    });
+
+    if (this.formRepay.valid && this.totalNumberCanRefund > 0 && !this.isExpireDate) {
+      this.doAction();
+    }
   }
 }

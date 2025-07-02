@@ -18,6 +18,7 @@ import { DialogConfirmModel } from '../../model/DialogConfirmModel';
 import { CommonUtils } from '../../base/utils/CommonUtils';
 import { DialogCommonService } from '../../common/service/dialog-common/dialog-common.service';
 import { UpdateUserComponent } from '../user-profile/update-user/update-user.component';
+import { MERCHANT_RULES } from '../../base/constants/authority.constants';
 
 @Component({
   selector: 'app-organization-management',
@@ -28,6 +29,7 @@ import { UpdateUserComponent } from '../user-profile/update-user/update-user.com
 })
 
 export class OrganizationManagementComponent {
+  private MERCHANT_RULES = MERCHANT_RULES;
   assetPath = environment.assetPath;
   isCreate: boolean = false;
   isUpdate: boolean = false;
@@ -35,6 +37,8 @@ export class OrganizationManagementComponent {
   lstAreas: any = [];
   isAccountNotVerified: boolean = false;
   merchantName: string = '';
+  hasRole?: boolean;
+
   constructor(
     private dialog: MatDialog,
     private toast: ToastService,
@@ -47,6 +51,7 @@ export class OrganizationManagementComponent {
 
   ngOnInit() {
     let userInfo = localStorage.getItem(environment.userInfo);
+    this.hasRole = this.auth.apiTracker([MERCHANT_RULES.ORGANIZATION_CREATE]);
     if (userInfo) {
       this.merchantName = JSON.parse(userInfo)["merchantName"];
     }
@@ -74,7 +79,9 @@ export class OrganizationManagementComponent {
           case 'GROUP_ERROR_019':
             break;
           default:
-            this.toast.showError(errorData?.soaErrorDesc);
+            if (errorData?.soaErrorCode !== 'GROUP_ERROR_007') {
+              this.toast.showError(errorData?.soaErrorDesc);
+            }
         }
       });
   }
@@ -155,6 +162,7 @@ export class OrganizationManagementComponent {
   updateEmail() {
     const dialogRef = this.dialog.open(UpdateUserComponent, {
       width: '600px',
+      panelClass: 'dialog-update-user',
       data: {
         title: 'Cập nhật email',
         type: 'email',

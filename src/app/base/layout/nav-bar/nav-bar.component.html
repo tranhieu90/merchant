@@ -1,15 +1,24 @@
 <div class="nav-bar-custom" id="nav-bar-custom">
+    <!-- <div class="nav-bar-company">
+        <div [class]="isCollapsed ? 'logo-company-collap' : 'logo-company'">
+            <img [src]="assetPath + '/assets/images/merchant_company.svg'" alt="" />
+        </div>
+        <div class="info-company" *ngIf="!isCollapsed">
+            <span class="title-s-semibold">CÔNG TY TNHH DỊCH...</span> <br />
+            <span class="paragraph-s-regular color-l">222 Đ. Trần Duy Hưng, Cầu Giấy, Hà Nội</span>
+        </div>
+    </div> -->
     <mat-nav-list>
         <ng-container *ngFor="let group of menuItems(); trackBy: trackMenu">
             <ng-container *ngIf="group.menuName">
                 <a mat-list-item>
-                    <div class="title">
+                    <div class="title paragraph-m-semibold">
                         {{ group.menuName }}
                     </div>
                 </a>
             </ng-container>
             <ng-container *ngIf="group.subMenus && group.subMenus.length > 0">
-                <mat-accordion class="mat-accordion">
+                <mat-accordion class="mat-accordion" [multi]="false">
                     <ng-container
                         *ngTemplateOutlet="recursiveMenu; context: { $implicit: group.subMenus }"></ng-container>
                 </mat-accordion>
@@ -20,10 +29,10 @@
 <ng-template #recursiveMenu let-items>
     <ng-container *ngFor="let item of items">
         <ng-container *ngIf="item.subMenus && item.subMenus.length > 0; else leafMenu">
-            <mat-expansion-panel class="menuSub">
+            <mat-expansion-panel class="menuSub" [expanded]="isExpanded(item)">
                 <mat-expansion-panel-header>
                     <span class="icon-header" [ngClass]="item.menuIcon"></span>
-                    <span class="paragraph-s-semibold-capital">{{ item.menuName }}</span>
+                    <span class="title-s-semibold">{{ item.menuName }}</span>
                 </mat-expansion-panel-header>
                 <mat-nav-list>
                     <ng-container
@@ -35,9 +44,10 @@
             <a mat-list-item [routerLink]="item.menuPathUrl" routerLinkActive="selected-item"
                 class="custom-list-item mt-1">
                 <div class="d-flex align-items-center menuNoSub">
-                    <span class="icon-header" [ngClass]="item.menuIcon"></span>
-                    <span *ngIf="item.level == 2" class="paragraph-s-semibold-capital">{{ item.menuName }}</span>
-                    <span *ngIf="item.level == 3" class="item-nav">{{ item.menuName }}</span>
+                    <span *ngIf="item.level == 2" class="icon-header" [ngClass]="item.menuIcon"></span>
+                    <span *ngIf="item.level == 3" class="icon-header dot-icon"></span>
+                    <span *ngIf="item.level == 2" class="title-s-semibold">{{ item.menuName }}</span>
+                    <span *ngIf="item.level == 3" class="item-nav title-s-semibold">{{ item.menuName }}</span>
                 </div>
             </a>
         </ng-template>

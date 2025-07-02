@@ -1,37 +1,52 @@
-<div class="box-search d-flex justify-content-betwwen align-items-center">
-    <div class="title-m-semibold title">Danh sách điểm kinh doanh
-        ({{dataTable.length}})</div>
-        <div class="input-search">
-            <form [formGroup]="formSearch">
-                <div class="p-inputgroup show-icon-left">
-                    <span class="p-input-icon-left">
-                        <i class="icon-search input-icon"></i>
-                    </span>
-                    <div class="p-inputgroup">
-                        <input appShowClearOnFocus=".clear-icon" type="text" pInputText class="merchant-input search" formControlName="keyWord"
-                            placeholder="Tìm theo tên, địa chỉ điểm kinh doanh..." (keydown.enter)="doSearch($event)" />
-                        @if(this.formSearch.get('keyWord')?.value){
-                          <span *ngIf="formSearch.get('keyWord')?.value" class="p-input-icon-right clear-icon" (click)="clearAndSearch()">
-                            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
-                          </span>
-                        }
-                    </div>
-                </div>
-            </form>
+<div class="box-search d-flex justify-content-between align-items-center">
+    <div class="title-m-semibold title">
+        Danh sách điểm kinh doanh ({{ totalItem }})
+    </div>
+    <div class="input-search">
+      <form [formGroup]="formSearch">
+        <div class="p-inputgroup show-icon-left">
+          <span class="p-input-icon-left">
+            <i class="icon-search input-icon"></i>
+          </span>
+          <div class="p-inputgroup">
+            <input appShowClearOnFocus=".clear-icon" type="text" pInputText class="merchant-input search"
+              formControlName="keyWord" placeholder="Tìm theo tên, địa chỉ điểm kinh doanh..."
+              (keydown.enter)="doSearch($event)" />
+            <span *ngIf="formSearch.get('keyWord')?.value" class="p-input-icon-right clear-icon"
+              (click)="clearAndSearch()">
+              <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+            </span>
+          </div>
         </div>
-</div>
-
-<div *ngIf="isShowMoveMerchant && countRowChecked > 0" class="box-move-merchant d-flex gap-3 mt-4">
-    <div class="border-right">Đã lựa chọn <span class="count">{{countRowChecked}}/{{dataTable.length}}</span></div>
+      </form>
+    </div>
+  </div>
+  
+  <div *ngIf="isShowMoveMerchant && countRowChecked > 0" class="box-move-merchant d-flex gap-3 mt-4">
+    <div class="border-right">
+      Đã lựa chọn <span class="count">{{ actionType =='ALL' ? totalItem :countRowChecked }}/{{ totalItem  }}</span>
+    </div>
     <div class="border-right d-flex align-items-center cursor-pointer" (click)="onDeselectAll()">
-        <span class="icon icon-task_list me-1"></span> Bỏ chọn tất cả
+      <span class="icon icon-task_list me-1"></span> Bỏ chọn tất cả
     </div>
     <div class="d-flex align-items-center cursor-pointer" (click)="onMoveMerchant()">
         <span class="icon icon-Folder-move me-1"></span> Di chuyển đến
     </div>
-</div>
-
-<div class="table-merchant mt-4">
-    <grid-view [columns]="columnsSubmerchant" [dataSource]="dataTable" [showCheckbox]="isShowCheckbox"
-        (isChecked)="returnRowChecked($event)" [isShowPage]="false" [search]="isSearch"></grid-view>
-</div>
+  </div>
+  
+  <div class="table-merchant mt-4" style="max-height: 600px; overflow-y: auto;">
+    <grid-view
+    [columns]="columnsSubmerchant"
+    [dataSource]="dataTable"
+    [showCheckbox]="isShowCheckbox"
+    [isShowPage]="false"
+    [search]="isSearch"
+    (actionType)="setActionType($event)"
+    (isChecked)="returnRowChecked($event)"
+    (selectAll)="onSelectAll()"
+    (deselectAll)="onDeselectAll()"
+    (lazyLoadingEvent)="lazyLoadData($event)"
+  ></grid-view>
+  
+  </div>
+  

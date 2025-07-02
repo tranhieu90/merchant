@@ -1,5 +1,5 @@
 <div class="p-5">
-    <h3 class="col-12 mb-5">Toast</h3>
+    <h3 class="col-12 mb-5">Toast and show confirm</h3>
     <p-toast class="merchant-toast" />
     <div class="row">
         <div class="col-1">
@@ -15,5 +15,33 @@
             <p-button type="button" (onClick)="showWarn()" label="Warn" severity="warning" />
         </div>
     </div>
-    
+
+    <h3 class="col-12 mb-5 mt-3">show popup</h3>
+    <p-toast class="merchant-toast" />
+    <div class="row">
+        <div class="col-1">
+            <p-button type="button" (onClick)="showConfimDialog('icon-error', 'icon error', 'error',1)" label="Error"
+                severity="danger" />
+        </div>
+        <div class="col-1">
+            <p-button type="button" (onClick)="showConfimDialog('icon-information', 'icon info',null,1)" label="Info"
+                severity="info" />
+        </div>
+        <div class="col-1">
+            <p-button type="button" (onClick)="showConfimDialog('icon-warning', 'icon warning',null,1)" label="Warn"
+                severity="warning" />
+        </div>
+    </div>
+
+    <h3 class="col-12 mb-5">Modal</h3>
+    <p-toast class="merchant-toast" />
+    <div class="row">
+        <div class="col-1">
+            <p-button type="button" (onClick)="showModal()" label="Modal" severity="success" />
+        </div>
+    </div>
+
+    <h3 class="col-12 mb-5 mt-3">Side Menu</h3>
+    <nav-bar class="nav-bar" style="width: 64px;"></nav-bar>
+
 </div>

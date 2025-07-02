@@ -9,7 +9,7 @@
   <mat-step label="Gán tổ chức">
     <div class="row mb-5">
       <div class="col-2"></div>
-      <div class="col-8">
+      <div class="col-8" *ngIf="!this.isLockAccount">
         <ng-container *ngIf="!isChooseOrganization">
           <!-- <div style="display: grid; place-items: center; height: 50vh;">
             <div
@@ -20,19 +20,20 @@
               </div>
             </div>
           </div> -->
-        <div  style="display: grid; place-items: center; height: 50vh;">
-          <div class="content-thirdForm d-flex text-center justify-content-center flex-column align-items-center header-xs-bold mt-5">
-            <div *ngIf="typeUpdate == 0" class="text-center paragraph-l-semibold mb-spacing-s">
-              Nhân sự được gán vào doanh nghiệp {{userInfo.merchantName}}.
-            </div>
-            <div *ngIf="typeUpdate == 2" class="text-center title-l-bold mb-spacing-s">
-              Nhân sự được gán vào điểm kinh doanh {{subMerchantList[0].merchantBizName}}.
-            </div>
-            <div class="text-center paragraph-m-regular mb-spacing-s" style="color: #4F5562;">
-              Bạn không thể thay đổi tổ chức cho nhân sự này. Vui lòng chuyển bước tiếp theo.
+          <div style="display: grid; place-items: center; height: 50vh;">
+            <div
+              class="content-thirdForm d-flex text-center justify-content-center flex-column align-items-center header-xs-bold mt-5">
+              <div *ngIf="typeUpdate == 0" class="text-center paragraph-l-semibold mb-spacing-s">
+                Nhân sự được gán vào doanh nghiệp {{userInfo.merchantName}}.
+              </div>
+              <div *ngIf="typeUpdate == 2" class="text-center title-l-bold mb-spacing-s">
+                Nhân sự được gán vào điểm kinh doanh {{subMerchantList[0].merchantBizName}}.
+              </div>
+              <div class="text-center paragraph-m-regular mb-spacing-s text-message">
+                Bạn không thể thay đổi tổ chức cho nhân sự này. Vui lòng chuyển bước tiếp theo.
+              </div>
             </div>
           </div>
-        </div>
         </ng-container>
         <ng-container>
           <div *ngIf="typeUpdate==1">
@@ -48,11 +49,20 @@
           </div>
           <ng-container *ngIf="isChooseOrganization">
             <div>
-              <div *ngIf="typeUpdate != 1 && orgTypeUser!=2 || (orgTypeLogin == 2 && selectedMerchantDefault.length==0)||typeUpdate==3"
+              <div *ngIf="typeUpdate != 1 && orgTypeUser!=2 
+                      || (orgTypeLogin == 2 && selectedMerchantDefault.length==0)
+                      ||typeUpdate==3 
+                      || (this.userInfo.isConfig == 1 && this.userInfo.orgType == 1)"
                 class="paragraph-m-regular mb-spacing-s">Vui lòng chọn tổ chức để gán cho nhân sự.
               </div>
-              <div *ngIf="orgTypeLogin==2 && (selectedMerchantDefault?.length || 0)>0" class="paragraph-m-regular mb-spacing-s">
+              <div *ngIf="orgTypeLogin==2 && (selectedMerchantDefault?.length || 0)>0"
+                class="paragraph-m-regular mb-spacing-s">
+                <ng-container *ngIf="actionType === 'ALL'; else noCheckAll">
+                  Bạn đang gán nhân sự vào <b> {{totalSub || 0 }}</b> điểm kinh doanh.
+                </ng-container>
+                <ng-template #noCheckAll>
                   Bạn đang gán nhân sự vào <b> {{selectedMerchantDefault.length || 0 }}</b> điểm kinh doanh.
+                </ng-template>
               </div>
               <div *ngIf="typeUpdate != 1 && orgTypeLogin == 0" class="paragraph-m-regular mb-spacing-s">Khi gán vào
                 doanh nghiệp, nhân sẽ
@@ -69,11 +79,12 @@
                 <p-radioButton class="m-radio m-radio-check" [value]="0" name="radioOrganization"
                   [(ngModel)]="orgTypeUser" (ngModelChange)="onRadioChange($event)"
                   (click)="$event.stopPropagation()" />
-                  <span class="title-s-semibold"><b>Gán vào doanh nghiệp:
-                      {{truncateString(userInfo?.merchantName)}}</b></span>
+                <span class="title-s-semibold"><b>Gán vào doanh nghiệp:
+                    {{truncateString(userInfo?.merchantName)}}</b></span>
               </div>
             </div>
-            <div *ngIf="orgTypeLogin != 2 && lstAreaByOrder.length>0" class="d-flex mt-3">
+            <div *ngIf="this.userInfo.isConfig == 1 && (this.userInfo.orgType == 0 || this.userInfo.orgType == 1)"
+              class="d-flex mt-3">
               <div class="d-flex align-items-center gap-2">
                 <p-radioButton class="m-radio m-radio-check" [value]="1" name="radioOrganization"
                   [(ngModel)]="orgTypeUser" (ngModelChange)="onRadioChange($event)"
@@ -104,7 +115,8 @@
               <div class="box-area mt-4 scroll-box">
                 <grid-view #gridViewRef [columns]="columnsMerchant" [dataSource]="subMerchantList" [isShowPage]="false"
                   [selectedItem]="getSelectedItemForRadio()" [showCheckbox]="typeUpdate!=1"
-                  [showRadio]="orgTypeUser==2 && typeUpdate==1" (selectedItemChange)="radioMerchant(($event))"
+                  (lazyLoadingEvent)="lazyLoadData($event)" [showRadio]="orgTypeUser==2 && typeUpdate==1"
+                  (selectedItemChange)="radioMerchant(($event))" (actionType)="setActionType($event)"
                   (dataChoice)="setUpMerchantIds($event)" [search]="true"></grid-view>
               </div>
             </div>
@@ -121,7 +133,7 @@
       </div>
       <div class="col-2"></div>
     </div>
-    <div class="div-button">
+    <div class="div-button" *ngIf="!this.isLockAccount">
       <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="onCancel()" />
       <button mat-button (click)="doNextStep(1)" class="merchant-button-material" [disabled]="!checkHasOrganzation()">
         Tiếp tục
@@ -140,10 +152,11 @@
           <span class="icon-error_solid"></span>
           <p class="title-s-regular text-danger">Bạn cần gán vai trò mới cho nhân sự sau khi thay đổi tổ chức.</p>
         </div>
-        <div class="col-12 d-flex justify-content-end mt-4">
-          <grid-view [columns]="columns" [dataSource]="dataRoles" (doChangePage)="doSearch($event)" [total]="totalItem"
-            (selectedItemChange)="setRoleId($event)" [search]="isSearch" [showRadio]="true" [isShowPage]="false"
-            [selectedItem]="getSelectedItemRoleForRadio()" style="float: left;width: 100%;" (isDisabled)="false">
+        <div class="col-12 d-flex justify-content-end mt-4 mb-3">
+          <grid-view [columns]="columns" class="grid-role" [dataSource]="dataRoles" (doChangePage)="doSearch($event)"
+            [total]="totalItem" (selectedItemChange)="setRoleId($event)" [search]="isSearch" [showRadio]="true"
+            [isShowPage]="false" [selectedItem]="getSelectedItemRoleForRadio()" style="float: left;width: 100%;"
+            (isDisabled)="false">
           </grid-view>
         </div>
       </div>
@@ -151,8 +164,7 @@
     </div>
     <div class="div-button">
       <p-button label="Quay lại" class="merchant-button-tertiary me-2" (click)="doPreStep()" />
-      <button mat-button (click)="doNextStepSubmit()" class="merchant-button-material"
-        [disabled]="hasChangeRoleUpdate">
+      <button mat-button (click)="doNextStepSubmit()" class="merchant-button-material" [disabled]="hasChangeRoleUpdate">
         Cập nhật
       </button>
     </div>

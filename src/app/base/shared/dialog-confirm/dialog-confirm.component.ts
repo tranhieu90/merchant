@@ -3,13 +3,14 @@ import {DialogConfirmModel} from '../../../model/DialogConfirmModel';
 import {NgClass} from '@angular/common';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import { NgIf } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'dialog-confirm',
   standalone: true,
   imports: [
     NgClass,
-    NgIf
+    NgIf,ButtonModule
   ],
   templateUrl: './dialog-confirm.component.html',
   styleUrl: './dialog-confirm.component.scss'

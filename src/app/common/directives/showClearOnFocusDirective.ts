@@ -5,7 +5,8 @@ import {
   HostListener,
   Input,
   OnInit,
-  OnDestroy
+  OnDestroy,
+  AfterViewInit
 } from '@angular/core';
 import { FormControl, NgControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -14,7 +15,7 @@ import { Subscription } from 'rxjs';
   selector: '[appShowClearOnFocus]',
   standalone: true
 })
-export class ShowClearOnFocusDirective implements OnInit, OnDestroy {
+export class ShowClearOnFocusDirective implements OnInit, OnDestroy,AfterViewInit {
   @Input('appShowClearOnFocus') targetSelector!: string; // selector của dấu X
   private formControl!: FormControl;
   private statusSub?: Subscription;
@@ -64,6 +65,15 @@ export class ShowClearOnFocusDirective implements OnInit, OnDestroy {
 
     this.renderer.setStyle(target, 'display', show ? 'inline' : 'none');
   }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+
+      this.updateClearIcon(false);
+
+    });
+  }
+ 
 
   ngOnDestroy(): void {
     this.statusSub?.unsubscribe();

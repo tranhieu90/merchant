@@ -1,6 +1,6 @@
 @if (dataSource.length > 0) {
-<div class="table-container">
-  <table mat-table [dataSource]="dataSource" style="float: left;width: 100%;" matSort [fixedLayout]="true">
+<div class="table-container" (scroll)="onTableScroll($event)">
+  <table mat-table [dataSource]="dataSource" style="float: left;width: 100%;" matSort [fixedLayout]="true" >
     <ng-container *ngIf="showRadio" matColumnDef="radio">
       <th mat-header-cell *matHeaderCellDef>
       </th>
@@ -38,7 +38,7 @@
       <td mat-cell *matCellDef="let item; let i = index" [ngClass]="getClassTable(item,column)">
         <span class="tooltip-anchor" matTooltip="{{ renderValue(item, column, i) }}" matTooltipPosition="above"
           appShowIfTruncated>
-          <span class="text-content" matTooltipPosition="above" matTooltip="{{ renderValue(item, column, i) }}"
+          <span class="text-content" [ngStyle]="{ 'white-space': isWhitespace ? 'pre' : undefined  }"  matTooltipPosition="above" matTooltip="{{ renderValue(item, column, i) }}"
             appShowIfTruncated [innerHTML]="renderValue(item, column, i)"></span>
         </span>
       </td>
@@ -86,8 +86,10 @@
   @if (search) {
   <div class="content">
     <img [src]="assetPath + '/assets/images/grid-search-empty.png'">
-    <div class="mt-4 title-l-semibold title-no-data">Không tìm thấy kết quả</div>
-    <div class="title-s-regular summary-no-data">Vui lòng thử lại hoặc tìm kiếm từ khoá khác.</div>
+    <div *ngIf="!searchBusiness">
+      <div class="mt-4 title-l-semibold title-no-data">Không tìm thấy kết quả</div>
+      <div class="title-s-regular summary-no-data">Vui lòng thử lại hoặc tìm kiếm từ khoá khác.</div>
+    </div>
   </div>
   } @else {
   <div class="content">

@@ -1,10 +1,9 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, SimpleChanges, Output } from '@angular/core';
 import { GridViewComponent } from '../../../base/shared/grid-view/grid-view.component';
 import { InputTextModule } from 'primeng/inputtext';
 import { GridViewModel } from '../../../model/GridViewModel';
 import { NgIf } from '@angular/common';
-import _ from 'lodash';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
 import { CommonUtils } from '../../../base/utils/CommonUtils';
 import { GROUP_ENDPOINT } from '../../../common/enum/EApiUrl';
@@ -24,70 +23,65 @@ export class TableMerchantComponent implements OnChanges {
   @Input() isShowCheckbox: boolean = false;
   @Input() isShowMoveMerchant: boolean = false;
   @Input() groupId: any = [];
-  @Output() doMoveMerchant = new EventEmitter<{ lstRowId: number[], isNotDelete: boolean }>();
+  @Output() doMoveMerchant = new EventEmitter<{ lstRowId: number[], isNotDelete: boolean, actionType: 'ALL' | null }>();
   @Output() returnRowsChecked = new EventEmitter<any>();
+
   countRowChecked: number = 0;
-  dataTable: any = [];
   formSearch!: FormGroup;
+
+  pageIndex: number = 1;
+  pageSize: number = 50;
+  isLoadMoreAvailable: boolean = true;
   isSearch: boolean = false;
+
+  fullData: any[] = [];
+  dataTable: any[] = [];
+  isLoading = true;
+  isLoadSubResult = true;
+  actionType?: string;
+  pointSalesSelected: Set<any> = new Set();
+  totalPointSalesSelected: number = 0;
+  pointSales: any = [];
+  countSelectedPoint: number = 0;
+  totalItem: number = 0;
 
   columnsSubmerchant: Array<GridViewModel> = [
     {
       name: 'merchantId',
       label: 'ID',
       options: {
-        customCss: (obj: any) => {
-          return ['text-left'];
-        },
-        customCssHeader: () => {
-          return ['text-left'];
-        },
-        customBodyRender: (value: any, obj: any) => {
-          return "#" + value;
-        },
+        customCss: () => ['text-left','mw-100'],
+        customCssHeader: () => ['text-left'],
+        customBodyRender: (value: any) => "#" + value,
       }
     },
     {
       name: 'merchantBizName',
       label: 'TÊN ĐIỂM KINH DOANH',
       options: {
-        customCss: (obj: any) => {
-          return ['text-left', 'mw-160'];
-        },
-        customCssHeader: () => {
-          return ['text-left'];
-        }
+        customCss: () => ['text-left', 'mw-160'],
+        customCssHeader: () => ['text-left']
       }
     },
     {
       name: 'formatAddress',
       label: 'ĐỊA CHỈ',
       options: {
-        customCss: (obj: any) => {
-          return ['text-left', 'mw-180'];
-        },
-        customCssHeader: () => {
-          return ['text-left'];
-        }
+        customCss: () => ['text-left', 'mw-180'],
+        customCssHeader: () => ['text-left']
       }
     },
     {
       name: 'status',
       label: 'TRẠNG THÁI',
       options: {
-        width: "15%",
-        customCss: (obj: any) => {
-          return ['text-center'];
-        },
-        customBodyRender: (value: any, obj: any) => {
-          let msg;
-          if (value === "active") {
-            msg = "<span class='status success'> Hoạt động </span>";
-          } else {
-            msg = "<span class='status lock'> Đã khóa </span>";
-          }
-          return msg;
-        },
+        width: '15%',
+        customCss: () => ['text-center'],
+        customBodyRender: (value: any) => {
+          return value === 'active'
+            ? "<span class='status success'> Hoạt động </span>"
+            : "<span class='status lock'> Đã khóa </span>";
+        }
       }
     }
   ];
@@ -103,110 +97,175 @@ export class TableMerchantComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.countRowChecked = 0;
-    this.dataTable = _.cloneDeep(this.dataSource);
+    if (changes['dataSource']) {
+      this.loadDefaultData();
+    }
   }
 
   returnRowChecked(count: number) {
-    this.countRowChecked = count;
-    let lstRowChecked = this.dataTable.filter((item: any) => item.checked == true);
-    this.returnRowsChecked.emit(lstRowChecked);
+    this.updateCountRowChecked();
+  }
+  updateCountRowChecked() {
+    this.countRowChecked = this.fullData.filter(item => item.checked).length;
+  }
+
+  isSelectAll: boolean = false;
+
+  onSelectAll() {
+    this.fullData = this.fullData.map(item => ({ ...item, checked: true }));
+    this.dataTable = [...this.fullData.slice(0, this.pageIndex * this.pageSize)];
+    this.updateCountRowChecked();
+    this.returnRowsChecked.emit(this.fullData.filter(item => item.checked));
   }
 
   onDeselectAll() {
-    this.countRowChecked = 0;
-    this.dataTable = this.dataTable.map((item: any) => ({ ...item, checked: false }));
-    if (this.formSearch.get("keyWord")?.value) {
-      this.formSearch.get("keyWord")?.setValue("");
-    }
+    this.actionType = '';
+    this.fullData = this.fullData.map(item => ({ ...item, checked: false }));
+    this.dataTable = [...this.fullData.slice(0, this.pageIndex * this.pageSize)];
+    this.updateCountRowChecked();
+    this.returnRowsChecked.emit([]);
   }
+
 
   onMoveMerchant() {
-    let lstRowChecked = this.dataTable.filter((item: any) => item.checked == true);
-    if (lstRowChecked?.length > 0) {
-      let lstRowId = lstRowChecked.map((item: any) => item.merchantId);
+    const lstRowChecked = this.fullData.filter(item => item.checked === true);
+    if (lstRowChecked.length > 0) {
+      const lstRowId = lstRowChecked.map(item => item.merchantId);
+      const isSelectAll = this.countRowChecked === this.fullData.length;
+
       this.doMoveMerchant.emit({
-        lstRowId: lstRowId,
-        isNotDelete: true
+        lstRowId,
+        isNotDelete: true,
+        actionType: isSelectAll ? 'ALL' : null
       });
     }
-
   }
-  clearAndSearch() {
-    // Xóa giá trị ô input
-    this.formSearch.get('keyWord')?.setValue('');
 
-    // Gọi lại API để load dữ liệu mặc định
+
+  clearAndSearch() {
+    this.formSearch.get('keyWord')?.setValue('');
     this.loadDefaultData();
   }
 
   loadDefaultData() {
+    this.pageIndex = 1;
+    this.fullData = [];
+    this.dataTable = [];
+    this.isLoadMoreAvailable = true;
     this.isSearch = false;
-    let dataReq = {
+
+    const dataReq = {
       groupIdList: Array.isArray(this.groupId) ? this.groupId : [this.groupId],
-      status: "",
+      status: '',
       methodId: [],
-      mappingKey: ""
+      mappingKey: ''
     };
-    let param = {
+
+    const buildParams = CommonUtils.buildParams({
+      keySearch: '',
       page: 1,
-      size: 1000,
-      keySearch: ''  // không tìm từ khóa, lấy toàn bộ
-    };
-    let buildParams = CommonUtils.buildParams(param);
-    this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe((res: any) => {
-      if (res?.data?.subInfo?.length > 0) {
-        this.dataTable = res.data.subInfo.map((item: any) => ({
+      size: 10
+    });
+
+    this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe({
+      next: (res: any) => {
+        const allData = res?.data?.subInfo ?? [];
+        this.fullData = allData.map((item: any) => ({
           ...item,
           formatAddress: fomatAddress([
             item.address,
             item.communeName,
             item.districtName,
             item.provinceName,
-          ]),
+          ])
         }));
-      } else {
-        this.dataTable = [];
+        this.dataTable = this.fullData.slice(0, this.pageSize);
+        this.totalItem = res['data']['totalSub'];
+        this.isLoadMoreAvailable = this.dataTable.length < this.fullData.length;
+      },
+      error: () => {
+        this.toast.showError('Lỗi khi lấy danh sách điểm kinh doanh.');
       }
-    }, (error: any) => {
-      this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.');
-      this.dataTable = [];
     });
   }
 
   doSearch(event: any) {
-    this.isSearch = true;
-    let dataReq = {
-      groupIdList: Array.isArray(this.groupId) ? this.groupId : [this.groupId],
-      status: "",
-      methodId: [],
-      mappingKey: ""
-    }
+    this.isLoading = true;
+    this.lazyLoadData(event);
+  }
 
-    let param = {
-      page: 1,
-      size: 1000,
-      keySearch: event?.target?.value?.trim()
-    };
-    let buildParams = CommonUtils.buildParams(param);
-    this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe((res: any) => {
-      if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
-        this.dataTable = res['data']['subInfo'].map((item: any) => ({
-          ...item,
-          formatAddress: fomatAddress([
-            item.address,
-            item.communeName,
-            item.districtName,
-            item.provinceName,
-          ]),
-        }));
-      } else {
-        this.dataTable = []
-      }
-    }, (error: any) => {
-      this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.')
-      this.dataTable = [];
-    });
+  setActionType(data: boolean) {
+    if (data) {
+      this.actionType = "ALL"
+    } else {
+      this.actionType = ""
+    }
+  }
+
+  lazyLoadData(e: any) {
+    const tableViewHeight = e.target.offsetHeight
+    const tableScrollHeight = e.target.scrollHeight
+    const scrollLocation = e.target.scrollTop;
+
+    const buffer = 200;
+    const limit = tableScrollHeight - tableViewHeight - buffer;
+    if (scrollLocation > limit && this.isLoading) {
+      this.isLoading = false;
+      this.pageIndex++;
+      let dataReq = {
+        groupIdList: Array.isArray(this.groupId) ? this.groupId : [this.groupId],
+        status: '',
+        methodId: [],
+        mappingKey: '',
+      };
+      let param = {
+        page: this.pageIndex,
+        size: 10,
+        keySearch: this.formSearch.get('keyWord')?.value ?this.formSearch.get('keyWord')?.value : null,
+      };
+      let buildParams = CommonUtils.buildParams(param);
+      this.api
+        .post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams)
+        .subscribe(
+          (res: any) => {
+            if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
+              let dataGroup = res['data']['subInfo'].map((item: any) => ({
+                ...item,
+                formatAddress: fomatAddress([
+                  item.address,
+                  item.communeName,
+                  item.districtName,
+                  item.provinceName,
+                ]),
+              }));
+
+              if (this.actionType == "ALL") {
+                dataGroup.forEach((item: any) => {
+                  item.checked = true;
+                  this.pointSalesSelected.add(item?.merchantId);
+                });
+              } else {
+                if (this.pointSalesSelected.size > 0) {
+                  dataGroup.forEach((item: any) => {
+                    item.checked = this.pointSalesSelected.has(item.merchantId);
+                  });
+                  this.countSelectedPoint = this.dataTable.filter(
+                    (x: any) => x.checked
+                  ).length;
+                }
+              }
+              this.dataTable = this.dataTable.concat(dataGroup);
+              this.totalItem = res['data']['totalSub'];
+              this.isLoading = true;
+
+            } else {
+              this.dataTable = [];
+              this.totalItem = 0
+              this.isLoading = false;
+            }
+          }
+        );
+    }
   }
 
   clearValue(nameInput: string) {
@@ -215,9 +274,8 @@ export class TableMerchantComponent implements OnChanges {
 
   removeVietnamese(str: string): string {
     return str.normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // Loại bỏ dấu kết hợp
-      .replace(/đ/g, 'd')               // Chuyển 'đ' thành 'd'
-      .replace(/Đ/g, 'D');              // Chuyển 'Đ' thành 'D'
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'D');
   }
-
 }

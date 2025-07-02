@@ -13,21 +13,13 @@
     <div *ngIf="areaActive.id === area.id && isShowButton" class="box-button">
       <span *ngIf="area.children.length === 0" class="icon-trash me-2" (click)="onDeleteArea(area)"></span>
       <span *ngIf="area.level < 5 && area.lstMerchant.length === 0" class="icon-plus_small"
-        (click)="onAddArea(area.level + 1, area.id)"></span>
+        (click)="onAddArea(area.level + 1, area.id , areaActive)"></span>
     </div>
 
     <!-- Hiển thị số nhóm con khi có nhóm con, và không phải areaActive hoặc không hiện nút -->
     <div *ngIf="(areaActive.id !== area.id || !isShowButton) && area.children.length > 0" class="count">
       {{ area.children.length }} nhóm
     </div>
-
-    <!-- Hiển thị nút xóa khi không có nhóm con
-      <span
-        *ngIf="area.children.length === 0 && (areaActive.id !== area.id || !isShowButton)"
-        class="icon-trash me-2"
-        (click)="onDeleteArea(area)"
-        ></span
-      > -->
   </div>
 
   }
@@ -59,7 +51,7 @@
 <div *ngIf="area.children && area.children.length > 0 && area.expanded">
   <div *ngFor="let child of area.children">
     <app-area-item [area]="child" [areaActive]="areaActive" [lstAreas]="lstAreas" (activeArea)="onActiveArea($event)"
-      (deleteArea)="onDeleteArea($event)" (addArea)="onAddArea($event.level, $event.parentId)"
+      (deleteArea)="onDeleteArea($event)" (addArea)="onAddArea($event.level, $event.parentId, areaActive)"
       (blurAreaName)="onBlurAreaName($event.event, $event.areaId)" [isShowButton]="isShowButton"></app-area-item>
   </div>
 </div>

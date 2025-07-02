@@ -15,7 +15,7 @@
             tooltipStyleClass="merchant-tooltip">HOẠT ĐỘNG</span>
           <ng-template #tooltipTemplate> Đang hoạt động </ng-template>
           } @else {
-          <span class="status lock">KHÓA</span>
+          <span class="status lock" matTooltipPosition="above" [matTooltip]="'Đã khóa'">KHÓA</span>
           }
         </div>
       </div>
@@ -49,8 +49,8 @@
       </ng-container>
 
       <ng-container *hasRoles="[MERCHANT_RULES.USER_MANAGER_UPDATE]">
-        <p-button *ngIf="this.userId !== this.userInfo.id" label="Cập nhật nhân sự" class="merchant-button"
-          (onClick)="doUpdateHuman()" />
+        <p-button *ngIf="this.userId !== this.userInfo.id && this.personDetail?.enableUpdate === 'YES'"
+          label="Cập nhật nhân sự" class="merchant-button" (onClick)="doUpdateHuman()" />
       </ng-container>
     </div>
   </div>
@@ -61,15 +61,18 @@
     </div>
     <div class="d-flex flex-column col-3 mb-4 detail-info">
       <div class="detail-info-title">Tên đăng nhập</div>
-      <div class="detail-info-value">{{ personDetail?.userName }}</div>
+      <div class="detail-info-value" matTooltipPosition="above" [matTooltip]="personDetail?.userName"
+        appShowIfTruncated>{{ personDetail?.userName }}</div>
     </div>
     <div class="d-flex flex-column col-3 mb-4 detail-info">
       <div class="detail-info-title">Họ và tên</div>
-      <div class="detail-info-value">{{ personDetail?.fullName }}</div>
+      <div class="detail-info-value" matTooltipPosition="above" [matTooltip]="personDetail?.fullName"
+        appShowIfTruncated>{{ personDetail?.fullName }}</div>
     </div>
     <div class="d-flex flex-column col-3 mb-4 detail-info">
       <div class="detail-info-title">Vai trò</div>
-      <div class="detail-info-value">{{ personDetail?.roleName }}</div>
+      <div class="detail-info-value" matTooltipPosition="above" [matTooltip]="personDetail?.roleName"
+        appShowIfTruncated>{{ personDetail?.roleName }}</div>
     </div>
     <div class="d-flex flex-column col-3 mb-4 detail-info">
       <div class="detail-info-title">Ngày sinh</div>
@@ -83,16 +86,19 @@
     </div>
     <div class="d-flex flex-column col-3 mb-4 detail-info">
       <div class="detail-info-title">Email</div>
-      <div class="detail-info-value d-flex gap-1">
+      <div class="d-flex gap-1">
         <ng-container *ngIf="personDetail?.email; else emailNoVerify">
-          {{ personDetail?.email }}
+          <span class="detail-info-value" matTooltipPosition="above" [matTooltip]="personDetail?.email"
+            appShowIfTruncated>{{ personDetail?.email }}</span>
           <span *ngIf="personDetail?.email" class="icon-check_circle_solid pb-1" matTooltipPosition="above"
             matTooltip="Tài khoản đã được xác thực"></span>
         </ng-container>
 
         <ng-template #emailNoVerify>
-          {{ personDetail?.emailChange}}<span *ngIf="personDetail?.emailChange" class="icon-warning_solid pb-1"
-            matTooltipPosition="above" matTooltip="Tài khoản chưa được xác thực"></span>
+          <span class="detail-info-value" matTooltipPosition="above" [matTooltip]="personDetail?.emailChange"
+            appShowIfTruncated>{{ personDetail?.emailChange }}</span>
+          <span *ngIf="personDetail?.emailChange" class="icon-warning_solid pb-1" matTooltipPosition="above"
+            matTooltip="Tài khoản chưa được xác thực"></span>
         </ng-template>
       </div>
     </div>
@@ -128,8 +134,8 @@
           </div>
           <div class="col-9">
             <ng-container *ngIf="subMerchantList.length > 0; else subNodata">
-              <grid-view [columns]="columns" [dataSource]="subMerchantList" [isShowPage]="false" [search]="true"
-                style="float: left; width: 100%"></grid-view>
+              <grid-view [columns]="columns" (lazyLoadingEvent)="lazyLoadData($event)" [dataSource]="subMerchantList"
+                [isShowPage]="false" [search]="true" style="float: left; width: 100%"></grid-view>
             </ng-container>
           </div>
         </div>
@@ -143,12 +149,8 @@
             >Danh sách điểm bán:</span
           > -->
           <div class="row table-container" (scroll)="onScroll($event)">
-            <grid-view [columns]="columns" [dataSource]="subMerchantList" [isShowPage]="false" [search]="true"
-              style="float: left; width: 100%"></grid-view>
-
-            <div class="spinner" *ngIf="isLoading">
-              <mat-spinner diameter="30"></mat-spinner>
-            </div>
+            <grid-view [columns]="columns" (lazyLoadingEvent)="lazyLoadData($event)" [dataSource]="subMerchantList"
+              [isShowPage]="false" [search]="true" style="float: left; width: 100%"></grid-view>
           </div>
         </div>
       </ng-template>

@@ -24,6 +24,7 @@ import {MatButton} from '@angular/material/button';
 import {PrintInvoice} from '../../print-invoice/print-invoice';
 import {NgxPrintDirective} from 'ngx-print';
 import {MaskDebitAccountPipe} from '../../../../common/pipe/mask-debit-account.pipe';
+import { MERCHANT_RULES } from '../../../../base/constants/authority.constants';
 
 @Component({
   selector: 'app-detail-payment',
@@ -45,10 +46,12 @@ export class DetailPaymentComponent implements OnInit {
   transTime: any;
   detailTrans: any = {};
   dataRefund: any = null;
+  hasRolePrint: boolean = true;
+  hasRoleRefund: boolean = true;
 
   columns: Array<GridViewModel> = [
     {
-      name: 'refund_time',
+      name: 'refundTime',
       label: 'Thời gian hoàn trả',
       options: {
         customCss: () => {
@@ -58,12 +61,12 @@ export class DetailPaymentComponent implements OnInit {
           return ['text-left'];
         },
         customBodyRender: (value: any) => {
-          return value ? moment(value).format('DD/MM/YYYY HH:mm') : '';
+          return value ? this.formatDateTime(value) : '';
         }
       }
     },
     {
-      name: 'refund_amount',
+      name: 'refundAmount',
       label: 'Số tiền hoàn trả (₫)',
       options: {
         customCss: () => {
@@ -78,7 +81,7 @@ export class DetailPaymentComponent implements OnInit {
       }
     },
     {
-      name: 'FTCode',
+      name: 'txnReference',
       label: 'Mã FT hoàn trả',
       options: {
         customCss: () => {
@@ -90,7 +93,7 @@ export class DetailPaymentComponent implements OnInit {
       }
     },
     {
-      name: 'refund_status',
+      name: 'refundStatus',
       label: 'Trạng thái',
       options: {
         customCss: () => {
@@ -105,19 +108,6 @@ export class DetailPaymentComponent implements OnInit {
           return `<span class='status ${className}'>${label}</span>`;
         },
         width: "170px"
-      }
-    },
-    {
-      name: 'refund_txn_reference',
-      label: 'Người hoàn trả',
-      options: {
-        customCss: () => {
-          return ['text-left'];
-        },
-
-        customCssHeader: () => {
-          return ['text-left'];
-        }
       }
     }
   ];
@@ -147,6 +137,8 @@ export class DetailPaymentComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.hasRolePrint = this.auth.apiTracker([MERCHANT_RULES.TRANS_PRINT_INVOICE]);
+    this.hasRoleRefund = this.auth.apiTracker([MERCHANT_RULES.TRANS_REFUND]);
   }
 
   getDetailData() {
@@ -201,6 +193,20 @@ export class DetailPaymentComponent implements OnInit {
   }
 
   openDialogRepay() {
+    const isExpireDate = this.getExpiredDate(this.detailTrans?.transTime);
+    if (isExpireDate) {
+      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+      dataDialog.title = 'Bạn không thể thực hiện giao dịch hoàn tiền';
+      dataDialog.message = 'Giao dịch hoàn tiền không thể thực hiện do đã quá 6 tháng kể từ ngày phát sinh giao dịch thanh toán.';
+      dataDialog.buttonLabel = 'Tôi đã hiểu';
+      dataDialog.icon = 'icon-warning';
+      dataDialog.iconColor = 'icon warning';
+      dataDialog.width = '30%';
+      dataDialog.viewCancel = false;
+      dataDialog.iconClosePopup = false;
+      this.dialogCommon.openDialogInfo(dataDialog)
+      return;
+    }
     const dialogRef = this.dialog.open(DialogRepayComponent, {
       width: '500px',
       data: {
@@ -301,6 +307,7 @@ export class DetailPaymentComponent implements OnInit {
   updateEmail() {
     const dialogRef = this.dialog.open(UpdateUserComponent, {
       width: '600px',
+      panelClass: 'dialog-update-user',
       data: {
         title: 'Cập nhật email',
         type: 'email',
@@ -355,7 +362,8 @@ export class DetailPaymentComponent implements OnInit {
 
   formatMoney(value: any): string {
     if (value == null) return '0 đ';
-    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ';
+    const intPart = value.toString().split('.')[0];
+    return intPart.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ';
   }
 
   getClassStatus(status: any) {
@@ -414,5 +422,30 @@ export class DetailPaymentComponent implements OnInit {
 
   printInvoice() {
     this.printBtn.nativeElement.click();
+  }
+
+  formatDateTime(dateStr: string) {
+    const targetMoment = moment(dateStr, 'DD/MM/YYYY HH:mm:ss');
+    return targetMoment.format('DD/MM/YYYY HH:mm')
+  }
+
+  getExpiredDate(dateStr: string): boolean {
+
+    const UTC_PLUS_7_OFFSET_MINUTES = 7 * 60;
+
+    const targetMoment = moment(dateStr, 'DD/MM/YYYY HH:mm:ss');
+    if (!targetMoment.isValid()) {
+      console.error(`Lỗi: Không thể parse chuỗi ngày: '${dateStr}' với định dạng 'DD/MM/YYYY HH:mm:ss'`);
+      return true;
+    }
+
+    targetMoment.utcOffset(UTC_PLUS_7_OFFSET_MINUTES, true);
+
+    const expiredMoment = targetMoment.clone().add(6, 'months').startOf('day');
+
+    const todayMoment = moment().utcOffset(UTC_PLUS_7_OFFSET_MINUTES, true).startOf('day');
+
+
+    return todayMoment.isAfter(expiredMoment);
   }
 }

@@ -34,7 +34,7 @@ import { catchError, map, Observable, of, Subscription } from 'rxjs';
 import { isArray } from 'lodash';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RadioButtonModule } from 'primeng/radiobutton';
-import { IPersonelUpdate } from '../../../model/ma/personel.model';
+import { IPersonelDetail, IPersonelUpdate } from '../../../model/ma/personel.model';
 import { environment } from '../../../../environments/environment';
 import {
   convertLstAreaByOrder,
@@ -44,6 +44,8 @@ import {
 import { AreaViewComponent } from '../../organization-management/area-view/area-view.component';
 import { TreeViewComponent } from '../../../base/shared/tree-view/tree-view.component';
 import { MTreeCheckboxComponent } from '../../../base/shared/m-tree-checkbox/m-tree-checkbox.component';
+import { DialogCommonService } from '../../../common/service/dialog-common/dialog-common.service';
+import { DialogConfirmModel } from '../../../model/DialogConfirmModel';
 @Component({
   selector: 'app-human-resource-update',
   standalone: true,
@@ -66,7 +68,7 @@ import { MTreeCheckboxComponent } from '../../../base/shared/m-tree-checkbox/m-t
     RadioButtonModule,
     MTreeComponent,
     TreeViewComponent,
-    MTreeCheckboxComponent,
+    MTreeCheckboxComponent
   ],
   templateUrl: './human-resource-update.component.html',
   styleUrl: './human-resource-update.component.scss',
@@ -88,6 +90,7 @@ export class HumanResourceUpdateComponent implements OnInit {
   lstAreaByOrder: AreaModel[] = [];
   areaActive: AreaModel = new AreaModel();
   subMerchantList: any[] = [];
+  subMerchantListTemp: any[] = [];
   treeNodes?: any;
   keyWord!: string;
   groupList: any = [];
@@ -103,10 +106,11 @@ export class HumanResourceUpdateComponent implements OnInit {
   selectedGroupDefault: any[] = [];
   roleIdDefault: number = 0;
   isUpdateRole: boolean = false;
-  isSuccess: number = 0;
+  isSuccess: number = 1;
   isHaveEmail: boolean = false;
   masterId?: number;
   orgTypeUser!: number;
+  orgTypeUserFromDb!: number;
   isCheckboxMerchant: boolean = false;
   isShowPointSales: boolean = false;
   isShowGroup: boolean = false;
@@ -120,12 +124,23 @@ export class HumanResourceUpdateComponent implements OnInit {
   searchGroup!: string;
   searchPointSales!: string;
   hasChangeRoleUpdate: boolean = false;
+  roleTypePersonel?: number;
+
+  personDetail?: IPersonelDetail;
+  isLockAccount?: boolean;
+  pageIndex: number = 1;
+  actionType?: string;
+  isLoading = true;
+  isLoadSubResult = true;
+  totalSub: number = 0;
+
   constructor(
     private dialog: MatDialog,
     private router: Router,
     private toast: ToastService,
     private api: FetchApiService,
-    private auth: AuthenticationService
+    private auth: AuthenticationService,
+    private dialogCommon: DialogCommonService
   ) {
     const state = this.router.getCurrentNavigation()?.extras.state;
     const personData = state?.['dataInput'];
@@ -134,6 +149,9 @@ export class HumanResourceUpdateComponent implements OnInit {
       this.personDataDetail = personData;
       this.userId = personData.userId;
       this.orgTypeUser = personData.orgType;
+      this.orgTypeUserFromDb = personData.orgType;
+      this.roleTypePersonel = personData.roleTypePersonel;
+      this.personDetail = personData?.personDetail;
       if (this.orgTypeUser == 2 && personData?.selectedMerchant) {
         if (
           personData?.selectedMerchant &&
@@ -148,9 +166,9 @@ export class HumanResourceUpdateComponent implements OnInit {
       this.masterId = personData.masterId;
       const groupList = personData?.groupList;
       if (this.orgTypeUser == 1 && groupList) {
-        // const maxLevel = Math.min(...groupList.map((x: any) => x.level));
+        const maxLevel = Math.min(...groupList.map((x: any) => x.level));
         this.selectedGroupDefault = [...groupList];
-        this.newOrganization = this.selectedGroupDefault.map(
+        this.newOrganization = this.selectedGroupDefault.filter((it: any) => it.level == maxLevel).map(
           (group: any) => Number(group.id)
         );
       }
@@ -209,51 +227,57 @@ export class HumanResourceUpdateComponent implements OnInit {
         } else {
           if (orgTypeLogin == 0) {
             this.isChooseOrganization = true;
-            this.doGetGroupListLogin().subscribe((data) => {
-              this.lstAreas = data;
-              if (this.selectedGroupDefault.length > 0) {
-                const _level = this.selectedGroupDefault[0].level;
-                data.forEach((item) => {
-                  if (
-                    this.selectedGroupDefault.some((x: any) => x.id == item.id)
-                  ) {
-                    item.checked = true;
-                  }
-                  if (item.level != _level) {
-                    item.disabled = true;
-                  }
-                });
-              }
-              this.lstAreaByOrder = convertLstAreaByOrder(
-                this.lstAreas,
-                this.lstAreas[0]?.parentId
-              );
-            });
+            if (this.orgTypeUser == 1) {
+              this.doGetGroupListLogin().subscribe((data) => {
+                this.lstAreas = data;
+                if (this.selectedGroupDefault.length > 0) {
+                  const _level = this.selectedGroupDefault[0].level;
+                  data.forEach((item) => {
+                    if (
+                      this.selectedGroupDefault.some((x: any) => x.id == item.id)
+                    ) {
+                      item.checked = true;
+                    }
+                    if (item.level != _level) {
+                      item.disabled = true;
+                    }
+                  });
+                }
+                this.lstAreaByOrder = convertLstAreaByOrder(
+                  this.lstAreas,
+                  this.lstAreas[0]?.parentId
+                );
+              });
+            }
+
             this.typeUpdate = 3;
           }
           if (orgTypeLogin == 1) {
             this.isChooseOrganization = true;
             this.typeUpdate = 4;
-            this.doGetGroupListLogin().subscribe((data) => {
-              this.lstAreas = data;
-              if (this.selectedGroupDefault.length > 0) {
-                const _level = this.selectedGroupDefault[0].level;
-                data.forEach((item) => {
-                  if (
-                    this.selectedGroupDefault.some((x: any) => x.id == item.id)
-                  ) {
-                    item.checked = true;
-                  }
-                  if (item.level != _level) {
-                    item.disabled = true;
-                  }
-                });
-              }
-              this.lstAreaByOrder = convertLstAreaByOrder(
-                this.lstAreas,
-                this.lstAreas[0]?.parentId
-              );
-            });
+            if (this.orgTypeUser == 1) {
+              this.doGetGroupListLogin().subscribe((data) => {
+                this.lstAreas = data;
+                if (this.selectedGroupDefault.length > 0) {
+                  const _level = this.selectedGroupDefault[0].level;
+                  data.forEach((item) => {
+                    if (
+                      this.selectedGroupDefault.some((x: any) => x.id == item.id)
+                    ) {
+                      item.checked = true;
+                    }
+                    if (item.level != _level) {
+                      item.disabled = true;
+                    }
+                  });
+                }
+                this.lstAreaByOrder = convertLstAreaByOrder(
+                  this.lstAreas,
+                  this.lstAreas[0]?.parentId
+                );
+              });
+            }
+
           }
           if (orgTypeLogin == 2) {
             if (lstPoinSales.length == 1) {
@@ -272,10 +296,12 @@ export class HumanResourceUpdateComponent implements OnInit {
     );
     this.navigationSubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
-        if (this.isChangedInfo() && !this._isNavigating) {
-          this._isNavigating = true;
-          this.onCancel(event.url);
-          this.router.navigate([], { replaceUrl: true, queryParamsHandling: 'preserve' });
+        if (!this._isNavigating) {
+          // this._isNavigating = true;
+          if (event.url !== '/login') {
+            this.onCancel(event.url);
+            this.router.navigate([], { replaceUrl: true, queryParamsHandling: 'preserve' });
+          }
         }
       }
     });
@@ -287,7 +313,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       options: {
         width: '10%',
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left', 'mw-100'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -374,7 +400,12 @@ export class HumanResourceUpdateComponent implements OnInit {
   }
 
   doPreStep() {
-    this.currentStep--;
+    if (this.currentStep > 0) {
+      this.currentStep--;
+    } else {
+      this.onCancel();
+    }
+    // this.currentStep--;
   }
 
   doNextStep(number: number = 0) {
@@ -396,7 +427,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       this.isSuccess = 2
     } else {
       if (this.orgTypeUser == 0) {
-        if (this.personDataDetail.orgType == 0) {
+        if (this.personDataDetail.orgType != 0) {
           param.oraganizationInfo = {
             masterId: this.auth.getUserInfo().merchantId,
           };
@@ -407,12 +438,12 @@ export class HumanResourceUpdateComponent implements OnInit {
             this.selectedGroupDefault &&
             Array.isArray(this.selectedGroupDefault)
           ) {
-            const lstGr = this.selectedGroupDefault.map((g: any) => g.id);
+            lstGr = this.selectedGroupDefault.map((g: any) => g.id);
           }
-          param.oraganizationInfo = {
-            masterId: this.auth.getUserInfo().merchantId,
-            groupIds: lstGr,
-          };
+          // param.oraganizationDelete = {
+          //   // masterId: this.auth.getUserInfo().merchantId,
+          //   groupIds: lstGr,
+          // };
         }
         if (this.personDataDetail.orgType == 2) {
           let lstPointSales!: any;
@@ -421,10 +452,10 @@ export class HumanResourceUpdateComponent implements OnInit {
               (item: any) => Number(item.merchantId)
             );
           }
-          param.oraganizationInfo = {
-            masterId: this.auth.getUserInfo().merchantId,
-            merchantIds: lstPointSales,
-          };
+          // param.oraganizationDelete = {
+          //   // masterId: this.auth.getUserInfo().merchantId,
+          //   merchantIds: lstPointSales,
+          // };
         }
 
         if (
@@ -438,13 +469,18 @@ export class HumanResourceUpdateComponent implements OnInit {
       }
 
       if (this.orgTypeUser == 1) {
-        const selectedGroupIds = this.selectedGroupDefault.map((g: any) => Number(g.id));
+        const maxLevel = Math.min(...this.selectedGroupDefault.map((x: any) => x.level));
+        const selectedGroupIds = this.selectedGroupDefault.filter((it: any) => it.level == maxLevel).map(
+          (group: any) => Number(group.id)
+        );
+        console.log(selectedGroupIds)
         if (this.personDataDetail.orgType == 1) {
           const groupIdsInsert = selectedGroupIds.filter(
-            (id: any) => !this.newOrganization.includes(id)
+            (id: any) => !this.newOrganization.includes(Number(id))
           );
+          console.log(groupIdsInsert)
           const groupIdsDelete = this.newOrganization.filter(
-            (id: any) => !selectedGroupIds.includes(id)
+            (id: any) => !selectedGroupIds.includes(Number(id))
           );
           if (groupIdsInsert.length > 0) {
             param.oraganizationInfo = {
@@ -482,6 +518,7 @@ export class HumanResourceUpdateComponent implements OnInit {
         const selectedPointSales = this.selectedMerchantDefault.map(
           (g: any) => Number(g.merchantId)
         );
+        param['actionType'] = this.actionType;
         if (this.personDataDetail.orgType == 2) {
           var lstPointSales = this.personDataDetail?.selectedMerchant.map(
             (item: any) => Number(item.merchantId)
@@ -494,7 +531,7 @@ export class HumanResourceUpdateComponent implements OnInit {
           );
           if (pointsInsert.length > 0) {
             param.oraganizationInfo = {
-              merchantIds: pointsInsert,
+              merchantIds: this.actionType == "ALL" ? undefined : pointsInsert,
             };
           }
           if (pointsDelete.length > 0) {
@@ -504,14 +541,14 @@ export class HumanResourceUpdateComponent implements OnInit {
           }
         } else if (this.personDataDetail.orgType == 0) {
           param.oraganizationInfo = {
-            merchantIds: selectedPointSales,
+            merchantIds: this.actionType == "ALL" ? undefined : selectedPointSales,
           };
           param.oraganizationDelete = {
             masterId: this.auth.getUserInfo().merchantId,
           };
         } else {
           param.oraganizationInfo = {
-            merchantIds: selectedPointSales,
+            merchantIds: this.actionType == "ALL" ? undefined : selectedPointSales,
           };
           param.oraganizationDelete = {
             groupIds: this.newOrganization,
@@ -521,12 +558,24 @@ export class HumanResourceUpdateComponent implements OnInit {
       this.api.post(HR_ENDPOINT.UPDATE_HR, param).subscribe(
         (res) => {
           this.isSuccess = res.data.status;
+          this._isNavigating = true;
         },
-        (err) => {
-          if (err) {
-            const { error } = err;
-            this.toast.showError(error.soaErrorDesc);
-          } else this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
+        (error) => {
+          // if (err) {
+          //   const { error } = err;
+          //   this.toast.showError(error.soaErrorDesc);
+          // } else this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
+          this.isSuccess = 0;
+          const errorData = error?.error || {};
+          switch (errorData.soaErrorCode) {
+            case '203':
+              this.toast.showError("Danh sách cập nhật, hủy cơ cấu tổ chức cho nhân sự không hợp lệ.");
+              break;
+            default:
+              this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
+
+              break;
+          }
         }
       );
     }
@@ -549,12 +598,16 @@ export class HumanResourceUpdateComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === true) {
+        this._isNavigating = true;
         if (url) {
           this.router.navigateByUrl(url);
         }
         else {
           this.router.navigate(['hr/hr-detail'], {
             queryParams: { userId: this.userId },
+            state: {
+              personDetail: this.personDetail
+            }
           });
         }
       }
@@ -575,11 +628,11 @@ export class HumanResourceUpdateComponent implements OnInit {
     );
   }
   doGroup(group: any) {
+
     if (group.checked) {
-      if (this.selectedGroupDefault.length == 0) {
-        setDisableOrNotForItemsNotAtLevel(this.lstAreas, group.level, true);
-      }
       this.selectedGroupDefault.push(group);
+      setDisableOrNotForItemsNotAtLevel(this.lstAreas, group.level, true, group.parentId);
+
     } else {
       const index = this.selectedGroupDefault.findIndex(
         (x: any) => Number(x.id) === Number(group.id)
@@ -597,8 +650,11 @@ export class HumanResourceUpdateComponent implements OnInit {
           }
         });
       }
-      if (this.selectedGroupDefault.length == 0) {
-        setDisableOrNotForItemsNotAtLevel(this.lstAreas, group.level, false);
+
+      const unCheckGroup = this.selectedGroupDefault.filter((item: any) => item.level == group.level);
+      if (unCheckGroup.length == 0) {
+        this.selectedGroupDefault = [];
+        setDisableOrNotForItemsNotAtLevel(this.lstAreas, group.level, false, group.parentId);
       }
       this.lstAreaByOrder = convertLstAreaByOrder(
         this.lstAreas,
@@ -608,21 +664,23 @@ export class HumanResourceUpdateComponent implements OnInit {
   }
 
   getLstMerchant() {
-    return this.getLstMerchantWithCheckedObs(true)?.subscribe();
+    this.pageIndex = 1;
+    return this.getLstMerchantWithCheckedObs(false)?.subscribe();
   }
 
   getLstMerchantWithCheckedObs(isFirstLoad?: boolean): Observable<any[]> {
     this.isSearch = true;
     let dataReq = {
       groupIdList: [] as number[],
-      status: '',
+      status: 'active',
       methodId: [],
-      mappingKey: this.searchPointSales,
+      mappingKey: '',
     };
+    this.searchPointSales = this.searchPointSales?.trim();
     let param = {
-      page: 1,
-      size: 1000,
-      keySearch: this.keyWord ? this.keyWord : null,
+      page: this.pageIndex,
+      size: 10,
+      keySearch: this.searchPointSales ? this.searchPointSales : null,
     };
     let buildParams = CommonUtils.buildParams(param);
     return this.api
@@ -640,20 +698,120 @@ export class HumanResourceUpdateComponent implements OnInit {
               ]),
             }));
 
+            const existingIds = new Set(this.selectedMerchantDefault.map((m: any) => +m.merchantId));
+            let filteredSubMerchant = dataGroup.filter((m: any) => !existingIds.has(m.merchantId));
+            this.selectedMerchantDefault = this.selectedMerchantDefault.map((item : any) => ({
+              ...item,
+              merchantId: +item.merchantId
+            }));
+
+            dataGroup = [...this.selectedMerchantDefault, ...filteredSubMerchant];
             if (this.selectedMerchantDefault.length > 0) {
               dataGroup.forEach((item: any) => {
                 item.checked = this.selectedMerchantDefault.some((el) => el.merchantId == item.merchantId);
               });
             }
+
+            // dataGroup?.forEach((data: any) => {
+            //   const existsDetail = this.subMerchantList.some(
+            //     (selected: any) => selected.merchantId === data.merchantId
+            //   );
+
+            //   if (!existsDetail) {
+            //     this.subMerchantList?.push(data);
+            //   }
+            // })
+
             this.subMerchantList = dataGroup;
+            if (isFirstLoad) {
+              this.subMerchantListTemp = dataGroup;
+            }
             return dataGroup;
           } else {
             this.subMerchantList = [];
             return [];
           }
         }),
-        catchError((err) => {
-          this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.');
+        catchError((error) => {
+          const errorData = error?.error || {};
+          let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+          switch (errorData.soaErrorCode) {
+            case 'LOGIN_ERROR_006':
+              dataDialog.title = 'Tài khoản đang bị khoá';
+              dataDialog.message = 'Vui lòng liên hệ Quản trị viên để được hỗ trợ.';
+              dataDialog.buttonLabel = 'Tôi đã hiểu';
+              dataDialog.icon = 'icon-lock';
+              dataDialog.width = '25%';
+              dataDialog.viewCancel = false;
+              dataDialog.iconColor = 'icon warning';
+              this.isLockAccount = true;
+              this.dialogCommon.openDialogInfo(dataDialog).subscribe(result => {
+                if (result) {
+                  this.router.navigate(['/login'], {});
+                }
+              });
+              break;
+            case 'LOGIN_ERROR_009':
+              dataDialog.title = 'Merchant mất kết nối';
+              dataDialog.message = 'Merchant mất kết nối sử dụng dịch vụ, vui lòng liên hệ quản trị viên để được hỗ trợ.';
+              dataDialog.buttonLabel = 'Tôi đã hiểu';
+              dataDialog.icon = 'icon-lock';
+              dataDialog.width = '25%'
+              dataDialog.viewCancel = false;
+              this.isLockAccount = true;
+              this.dialogCommon.openDialogInfo(dataDialog).subscribe(result => {
+                if (result) {
+                  this.router.navigate(['/login'], {});
+                }
+              });
+              break;
+            case 'USER_ERROR_002':
+              dataDialog.title = 'Người dùng không tồn tại hoặc đang bị khóa';
+              dataDialog.message = 'Vui long liên hệ quản trị viên để được hỗ trợ.';
+              dataDialog.buttonLabel = 'Tôi đã hiểu';
+              dataDialog.icon = 'icon-lock';
+              dataDialog.width = '25%'
+              dataDialog.viewCancel = false;
+              dataDialog.iconColor = 'icon warning'
+              this.isLockAccount = true;
+              this.dialogCommon.openDialogInfo(dataDialog).subscribe(result => {
+                if (result) {
+                  this.router.navigate(['/hr'], {});
+                }
+              });
+              break;
+            case '4002':
+              dataDialog.title = 'Tài khoản đang bị khoá';
+              dataDialog.message = 'Vui lòng liên hệ Quản trị viên để được hỗ trợ.';
+              dataDialog.buttonLabel = 'Tôi đã hiểu';
+              dataDialog.icon = 'icon-lock';
+              dataDialog.width = '25%';
+              dataDialog.viewCancel = false;
+              dataDialog.iconColor = 'icon warning';
+              this.isLockAccount = true;
+              this.dialogCommon.openDialogInfo(dataDialog).subscribe(result => {
+                if (result) {
+                  this.router.navigate(['/login'], {});
+                }
+              });
+              break;
+            case 'SYSTEM_ERROR':
+              dataDialog.title = 'Lỗi hệ thống';
+              dataDialog.message = 'Hệ thống đang bị gián đoạn. Vui lòng thử lại hoặc liên hệ quản trị viên để được hỗ trợ.';
+              dataDialog.buttonLabel = 'Tôi đã hiểu';
+              dataDialog.icon = 'icon-error';
+              dataDialog.width = '25%'
+              dataDialog.viewCancel = false;
+              dataDialog.iconColor = 'error';
+              this.isLockAccount = true;
+              this.dialogCommon.openDialogInfo(dataDialog).subscribe(result => {
+                if (result) {
+                }
+              });
+              break;
+            default:
+              this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
+          }
           return of([]);
         })
       );
@@ -698,12 +856,34 @@ export class HumanResourceUpdateComponent implements OnInit {
         this.orgTypeUser = 0;
         this.searchGroup = '';
         this.searchPointSales = '';
-        this.getLstMerchant();
+        if (this.userInfo.isConfig == 0 && this.userInfo.orgType == 0 && this.subMerchantListTemp.length > 0) {
+          this.getLstMerchant();
+        }
         break;
       case 1:
         this.orgTypeUser = 1;
         this.searchGroup = '';
         this.searchPointSales = '';
+        this.doGetGroupListLogin().subscribe((data) => {
+          this.lstAreas = data;
+          if (this.selectedGroupDefault.length > 0) {
+            const _level = this.selectedGroupDefault[0].level;
+            data.forEach((item) => {
+              if (
+                this.selectedGroupDefault.some((x: any) => x.id == item.id)
+              ) {
+                item.checked = true;
+              }
+              if (item.level != _level) {
+                item.disabled = true;
+              }
+            });
+          }
+          this.lstAreaByOrder = convertLstAreaByOrder(
+            this.lstAreas,
+            this.lstAreas[0]?.parentId
+          );
+        });
         break;
       case 2:
         this.orgTypeUser = 2;
@@ -770,11 +950,7 @@ export class HumanResourceUpdateComponent implements OnInit {
     return str;
   }
   openCreateGroups() {
-    window.open(
-      this.assetPath + '/organization',
-      '_blank',
-      'noopener,noreferrer'
-    );
+    this.router.navigate(['organization'], {});
   }
   doActiveAreaCheckbox(group: any) {
     this.lstAreaByOrder.forEach((i: any) => {
@@ -783,37 +959,50 @@ export class HumanResourceUpdateComponent implements OnInit {
   }
   checkChangeOrganization() {
     this.hasChangeRoleUpdate = false;
+    // if (
+    //   this.personDataDetail.orgType !== this.orgTypeUser
+    // ) {
+    //   this.hasChangeRoleUpdate = true;
+    // }
+    // if (this.orgTypeUser === 2) {
+    //   const currentIds = (this.selectedMerchantDefault || []).map((m: any) => m.merchantId).sort();
+    //   const originalIds = (this.personDataDetail.selectedMerchant || []).map((m: any) => m.merchantId).sort();
+    //   if (currentIds.length !== originalIds.length) {
+    //     this.hasChangeRoleUpdate = true;
+    //   }
+    //   for (let i = 0; i < currentIds.length; i++) {
+    //     if (currentIds[i] !== originalIds[i]) {
+    //       this.hasChangeRoleUpdate = true;
+    //     }
+    //   }
+    // }
+    // if (this.orgTypeUser === 1) {
+    //   const currentGroupIds = (this.selectedGroupDefault || []).map((g: any) => g.id).sort();
+    //   const originalGroupIds = (this.personDataDetail.groupList || []).map((g: any) => g.id).sort();
+    //   if (currentGroupIds.length !== originalGroupIds.length) {
+    //     this.hasChangeRoleUpdate = true;
+    //   }
+    //   for (let i = 0; i < currentGroupIds.length; i++) {
+    //     if (currentGroupIds[i] !== originalGroupIds[i]) {
+    //       this.hasChangeRoleUpdate = true;
+    //     }
+    //   }
+    // }
+
     if (
       this.personDataDetail.orgType !== this.orgTypeUser
     ) {
-      this.hasChangeRoleUpdate = true;
-    }
-    if (this.orgTypeUser === 2) {
-      const currentIds = (this.selectedMerchantDefault || []).map((m: any) => m.merchantId).sort();
-      const originalIds = (this.personDataDetail.selectedMerchant || []).map((m: any) => m.merchantId).sort();
-      if (currentIds.length !== originalIds.length) {
+      if (this.roleTypePersonel == 1) {
         this.hasChangeRoleUpdate = true;
       }
-      for (let i = 0; i < currentIds.length; i++) {
-        if (currentIds[i] !== originalIds[i]) {
-          this.hasChangeRoleUpdate = true;
-        }
-      }
     }
-    if (this.orgTypeUser === 1) {
-      const currentGroupIds = (this.selectedGroupDefault || []).map((g: any) => g.id).sort();
-      const originalGroupIds = (this.personDataDetail.groupList || []).map((g: any) => g.id).sort();
-      if (currentGroupIds.length !== originalGroupIds.length) {
-        this.hasChangeRoleUpdate = true;
-      }
-      for (let i = 0; i < currentGroupIds.length; i++) {
-        if (currentGroupIds[i] !== originalGroupIds[i]) {
-          this.hasChangeRoleUpdate = true;
-        }
-      }
-    }
+
+
   }
   checkHasOrganzation() {
+    if (this.isLockAccount) {
+      return false;
+    }
     if (this.orgTypeUser === 2) {
       return Array.isArray(this.selectedMerchantDefault) && this.selectedMerchantDefault.length > 0;
     }
@@ -823,6 +1012,7 @@ export class HumanResourceUpdateComponent implements OnInit {
     if (this.orgTypeUser === 0) {
       return true;
     }
+
     return false;
   }
   isChangedInfo(): boolean {
@@ -857,5 +1047,150 @@ export class HumanResourceUpdateComponent implements OnInit {
       return true;
     }
     return false;
+  }
+
+  lazyLoadData(e: any) {
+    const tableViewHeight = e.target.offsetHeight
+    const tableScrollHeight = e.target.scrollHeight
+    const scrollLocation = e.target.scrollTop;
+
+    const buffer = 200;
+    const limit = tableScrollHeight - tableViewHeight - buffer;
+    if (scrollLocation > limit && this.isLoading) {
+      this.isLoading = false;
+      this.pageIndex++;
+      if (this.orgTypeUserFromDb == 2 && this.isLoadSubResult) {
+        this.getSubMerchantListResult().subscribe((data) => {
+          data?.forEach((item: any) => {
+            const exists = this.selectedMerchantDefault.some(
+              (selected: any) => selected.merchantId == item.merchantId
+            );
+
+            if (!exists) {
+              this.selectedMerchantDefault.push(item);
+            }
+
+            const existsDetail = this.personDataDetail?.selectedMerchant.some(
+              (selected: any) => selected.merchantId === item.merchantId
+            );
+
+            if (!existsDetail) {
+              this.personDataDetail?.selectedMerchant.push(item);
+            }
+
+
+          });
+          this.loadDataWhenScroll();
+        })
+      } else {
+        this.loadDataWhenScroll();
+      }
+
+    }
+  }
+
+  loadDataWhenScroll() {
+    let dataReq = {
+      groupIdList: [] as number[],
+      status: 'active',
+      methodId: [],
+      mappingKey: '',
+    };
+    this.searchPointSales = this.searchPointSales?.trim();
+    let param = {
+      page: this.pageIndex,
+      size: 10,
+      keySearch: this.searchPointSales ? this.searchPointSales : null,
+    };
+    let buildParams = CommonUtils.buildParams(param);
+    this.api
+      .post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe((res: any) => {
+        if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
+          this.totalSub = res['data']['totalSub'];
+          let dataGroup = res['data']['subInfo'].map((item: any) => ({
+            ...item,
+            formatAddress: fomatAddress([
+              item.address,
+              item.communeName,
+              item.districtName,
+              item.provinceName,
+            ]),
+          }));
+
+          if (this.actionType == "ALL") {
+            dataGroup.forEach((item: any) => {
+              item.checked = true;
+              const exists = this.selectedMerchantDefault.some(
+                (selected: any) => selected.merchantId == item.merchantId
+              );
+
+              if (!exists) {
+                this.selectedMerchantDefault.push(item);
+              }
+            });
+          } else {
+            if (this.selectedMerchantDefault.length > 0) {
+              dataGroup.forEach((item: any) => {
+                item.checked = this.selectedMerchantDefault.some((el) => el.merchantId == item.merchantId);
+              });
+            }
+          }
+
+
+          const existingIds = new Set(this.subMerchantList.map(m => m.merchantId));
+          let filteredSubMerchant = this.selectedMerchantDefault.filter((m: any) => !existingIds.has(+m.merchantId));
+          filteredSubMerchant = filteredSubMerchant.map(item => ({
+            ...item,
+            merchantId: +item.merchantId,
+            checked: true
+          }));
+          this.subMerchantList = [...filteredSubMerchant, ...this.subMerchantList]
+
+          const filteredGroup = dataGroup.filter((m: any) => !existingIds.has(m.merchantId));
+
+          this.subMerchantList = this.subMerchantList.concat(filteredGroup);
+          this.isLoading = true;
+        }
+        else {
+          this.isLoading = false;
+        }
+
+      });
+  }
+
+  getSubMerchantListResult(): Observable<any[]> {
+    return this.api.post(HR_ENDPOINT.GET_SUB, {
+      userId: this.userId,
+      page: this.pageIndex,
+      size: 10,
+    }).pipe(
+      map((res: any) => {
+        if (res['data']['getPushSubInfos'] && res['data']['getPushSubInfos'].length > 0) {
+
+          return res.data.getPushSubInfos.map((item: any) => ({
+            ...item,
+            formatAddress: fomatAddress([
+              item.address,
+              item.communeName,
+              item.districtName,
+              item.provinceName,
+            ]),
+          }))
+        } else {
+          this.isLoadSubResult = false;
+          return [];
+        }
+      }
+
+      )
+    );
+  }
+
+  setActionType(data: boolean) {
+    if (data) {
+      this.actionType = "ALL"
+    } else {
+      this.actionType = ""
+    }
   }
 }

@@ -3,7 +3,7 @@
 
 .wrapper {
     background: $color-global-neutral-white;
-    min-height: calc(100vh - 160px);
+    min-height: calc(100vh - 260px);
     padding: $spacing-l;
     border-radius: $border-radius-xs;
 }
@@ -31,17 +31,53 @@
         padding: $spacing-s $spacing-m;
         font-size: $typo-font-sizes-m;
     }
+
+    ::ng-deep .p-treeselect-close {
+        display: none !important;
+    }
+
+    ::ng-deep .p-treeselect-filter-container {
+        position: relative;
+        display: block;
+    }
+
+    ::ng-deep .p-treeselect-filter {
+        padding-left: 40px !important;
+    }
+
+    ::ng-deep .p-treeselect-filter-icon {
+        position: absolute !important;
+        left: 16px;
+        top: 70%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        z-index: 2;
+        color: $color-global-neutral-neutral-6;
+    }
 }
 
 .container-btn-cf {
-    margin: 0 $spacing-s $spacing-s;
+    margin: $spacing-none $spacing-s $spacing-s;
 }
+
 ::ng-deep .mat-badge-content {
-  color: $color-surface-neutral-main !important;
-  background-color: #4E8AF1 !important;
-  opacity: 100% !important;
+    color: $color-surface-neutral-main !important;
+    background-color: #4E8AF1 !important;
+    opacity: 100% !important;
 }
 
 .merchant-button-icon.active ::ng-deep.p-button {
-  background: $color-surface-neutral-sub-2 !important;
+    background: $color-surface-neutral-sub-2 !important;
+}
+
+::ng-deep .cdk-overlay-container {
+    z-index: 9999 !important;
+}
+
+.node-label-ellipsis {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5;
 }
