@@ -1,0 +1,21 @@
+@import "../../../../scss/mixins";
+@import "../../../../scss/variables";
+ 
+.item-method {
+  height: 38px;
+  font-weight: $typo-font-weights-regular;
+  font-size: $typo-font-sizes-m;
+  display: flex;
+  align-items: center;
+  position: relative; // để icon position-absolute căn theo đây
+  padding-right: 24px; // để tránh text dính vào icon nếu cần
+}
+ 
+.icon-check_circle_solid {
+  @include base-icon;
+  color: $color-surface-action-main;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 90%; // giữ nếu bạn muốn nó sát mép phải
+}

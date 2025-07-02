@@ -1,0 +1,44 @@
+@import "../../../../scss/variables";
+::ng-deep.mat-mdc-dialog-surface{
+  border-radius: $border-radius-xs;
+}
+.modal-form {
+ 
+    .title-form {
+        padding: $spacing-l;
+        background-color: $color-surface-highlight-main;
+ 
+        .icon-close {
+            font-size: $typo-font-sizes-3xl;
+            line-height: $typo-line-heights-l;
+            cursor: pointer;
+        }
+    }
+ 
+    .content-modal {
+        padding: $spacing-l;
+        .content-info{
+            border: 1px dashed $color-text-neutral-main;
+            border-radius: $border-radius-xs;;
+        }
+    }
+ 
+    .button-form {
+        padding: $spacing-l;
+        display: flex;
+        justify-content: flex-end;
+    }
+}
+.mb-spacing-l {
+    margin-bottom: $spacing-l;
+}
+ 
+.mb-spacing-xs {
+    margin-bottom: $spacing-xs;
+}
+.title-color{
+    color: $color-text-neutral-main;
+}
+.text-title-color{
+    color: $color-text-neutral-sub-2;
+}

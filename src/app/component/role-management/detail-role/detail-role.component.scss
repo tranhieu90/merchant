@@ -1,0 +1,178 @@
+@import "../../../../scss/variables";
+
+.form-detail {
+    padding: $spacing-l;
+    background-color: $color-surface-neutral-main;
+    border-radius: $border-radius-xs;
+    min-height: calc(100vh - 168px);
+}
+
+.button-delete ::ng-deep.p-button-icon {
+    color: $color-icon-semantic-error !important;
+}
+
+.btn-role-detail ::ng-deep.p-button:hover {
+    background: $color-surface-neutral-sub !important;
+}
+
+.title-role {
+    color: $color-text-neutral-main;
+}
+
+.sub-title {
+    padding: $spacing-2xs $spacing-xs;
+    height: 26px;
+    margin-top: $spacing-xs;
+    margin-left: $spacing-s;
+    border-radius: $border-radius-xs;
+
+    &.config {
+        color: $color-text-decoration-color-3;
+        background-color: $color-surface-decoration-color-3-sub;
+    }
+
+    &.admin {
+        color: $color-text-decoration-color-4;
+        background-color: $color-surface-decoration-color-4-sub;
+    }
+
+    &.user {
+        color: $color-text-decoration-color-5;
+        background-color: $color-surface-decoration-color-5-sub;
+    }
+}
+
+.description {
+    color: $color-text-neutral-sub;
+}
+
+.content-feature {
+    .item {
+        background: $color-surface-action-sub-2;
+        padding: $spacing-l;
+        border-radius: $border-radius-s;
+        color: $color-text-neutral-main;
+        height: 100%;
+
+        ::ng-deep.mdc-checkbox__background {
+            border-color: $color-icon-neutral-sub-2;
+        }
+
+        ::ng-deep.mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
+        ::ng-deep.mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
+            border-color: $color-surface-action-main;
+            background: $color-surface-action-main;
+        }
+
+        ::ng-deep.mat-internal-form-field > label {
+            padding-left: $spacing-none;
+        }
+
+        ::ng-deep.mdc-checkbox--disabled .mdc-checkbox__background {
+            border-color: $color-surface-neutral-sub-4;
+            background: $color-surface-neutral-sub-3;
+        }
+
+        ::ng-deep.mdc-checkbox__native-control:disabled:checked ~ .mdc-checkbox__background {
+            border-color: $color-surface-neutral-sub-3;
+            svg {
+                display: none;
+            }
+            &::before {
+                content: "\e91e";
+                font-family: "webmerchant" !important;
+                color: $color-icon-neutral-sub-3;
+                font-size: $typo-font-sizes-3xl;
+                position: absolute;
+                left: $spacing-none;
+                top: $spacing-none;
+                right: $spacing-none;
+                bottom: $spacing-none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: normal;
+            }
+        }
+
+        ::ng-deep.mdc-checkbox__native-control:disabled:indeterminate ~ .mdc-checkbox__background {
+            border-color: $color-surface-neutral-sub-3;
+            .mdc-checkbox__mixedmark {
+                width: 70%;
+                border-color: $color-icon-neutral-sub-3;
+            }
+        }
+
+        .level-0 {
+            //border-bottom: 1px dotted $color-border-neutral-main;
+            background: url('/merchantx/assets/images/border_dash.svg') repeat-x bottom;
+        }
+
+        .level-2 {
+            margin-left: $spacing-xl;
+        }
+
+        .title {
+            color: $color-text-neutral-main;
+        }
+    }
+}
+
+.content-users {
+    padding-top: 96px;
+    color: $color-text-neutral-main;
+    min-height: calc(100vh - 356px);
+
+    .description {
+        color: $color-text-neutral-sub;
+        margin-bottom: $spacing-l;
+    }
+
+    .merchant-button ::ng-deep.p-button {
+        width: 310px;
+    }
+}
+
+.wrapper {
+    background: $color-global-neutral-white;
+    min-height: calc(100vh - 160px);
+    padding: $spacing-l;
+    border-radius: $border-radius-xs;
+
+    .text {
+        color: $color-text-neutral-sub;
+        max-width: 440px;
+        text-align: center;
+
+        &-504 {
+            color: $color-text-neutral-main;
+            font-size: 96px;
+        }
+    }
+
+    .merchant-button,
+    .merchant-button-tertiary {
+        ::ng-deep.p-button {
+            width: 220px;
+        }
+    }
+}
+
+.mt-152px {
+    margin-top: 152px;
+}
+
+.mb-24{
+    margin-bottom: $spacing-l;
+}
+
+.ml-16{
+    margin-left: $spacing-m;
+}
+
+::ng-deep .p-tabview-panels {
+    overflow-y: auto;
+    height: 200px;
+    min-height: calc(100vh - 330px);
+    overflow-x: hidden;
+}

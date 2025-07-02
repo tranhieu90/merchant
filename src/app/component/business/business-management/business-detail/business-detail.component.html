@@ -1,0 +1,197 @@
+<div class="d-flex mb-3">
+    <span class="header-m-semibold">Chi tiết điểm kinh doanh</span>
+</div>
+
+<div class="wrapper" *ngIf="dataDetail">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <span class="header-m-semibold me-spacing-l">{{dataDetail.merchantBizName}}</span>
+            @if(dataDetail.status== "active"){
+            <span class="status success">HOẠT ĐỘNG</span>
+            }@else {
+            <span class="status lock">ĐÃ KHÓA</span>
+            }
+        </div>
+        <!-- <p-button label="Khóa" class="merchant-button-tertiary merchant-button-m" icon="icon-lock" /> -->
+    </div>
+    <div class="d-flex justify-content-start align-items-center mb-3">
+        <div class="date-info me-spacing-l">
+            <!-- <span class="icon-calendar icon"></span> -->
+            <span class="title-xs-regular">Ngày tạo: <b class="text-date">{{fomatDate(dataDetail.createDate)}}
+                </b></span>
+        </div>
+        <div class="date-info">
+            <!-- <span class="icon-calendar icon"></span> -->
+            <span class="title-xs-regular">Ngày cập nhật: <b class="text-date">{{fomatDate(dataDetail.updateDate)}}
+                </b></span>
+        </div>
+    </div>
+
+    <div class="business-info">
+        <div class="d-flex justify-content-between align-items-center mb-spacing-l">
+            <span class="header-s-semibold">Thông tin điểm kinh doanh</span>
+            <p-button *ngIf="hasRoleUpdate" label="Cập nhật thông tin"
+                class="merchant-button-tertiary merchant-button-m" icon="icon-edit" (click)="checkOpenUpdate(1)" />
+        </div>
+        <div class="row col-12 mb-spacing-l">
+            <div class="col-3">
+                <label class="title-xs-regular label col-12">ID điểm kinh doanh</label>
+                <span class="paragraph-m-semibold text-infor">{{dataDetail.subId}}</span>
+            </div>
+            <div class="col-3">
+                <label class="title-xs-regular label col-12">Tên điểm kinh doanh</label>
+                <span class="paragraph-m-semibold text-infor">{{dataDetail.merchantBizName}}</span>
+            </div>
+            <div class="col-3">
+                <label class="title-xs-regular label col-12">Tên diễn giải</label>
+                <span class="paragraph-m-semibold text-infor">{{dataDetail.merchantName}}</span>
+            </div>
+            <div class="col-3">
+                <label class="title-xs-regular label col-12">Tên nhóm</label>
+                <span class="location" *ngIf="dataDetail.groupName">{{dataDetail.groupName}}</span>
+            </div>
+        </div>
+        <div class="row col-12 mb-spacing-l">
+            <div class="col-3">
+                <label class="title-xs-regular label col-12">Tỉnh/Thành phố</label>
+                <span class="paragraph-m-semibold text-infor">{{dataDetail.provinceName}}</span>
+            </div>
+            <div class="col-3">
+                <label class="title-xs-regular label col-12">Quận/Huyện</label>
+                <span class="paragraph-m-semibold text-infor">{{dataDetail.districtName}}</span>
+            </div>
+            <div class="col-3">
+                <label class="title-xs-regular label col-12">Phường/Xã</label>
+                <span class="paragraph-m-semibold text-infor">{{dataDetail.communeName}}</span>
+            </div>
+            <div class="col-3">
+                <label class="title-xs-regular label col-12">Địa chỉ</label>
+                <span class="paragraph-m-semibold text-infor">{{ dataDetail.address}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="mb-spacing-l"></div>
+    <div class="business-payment mb-spacing-l">
+        <div class="d-flex justify-content-between align-items-center mb-spacing-l">
+            <span class="header-s-semibold">Phương thức thanh toán</span>
+            <p-button *ngIf="hasRoleUpdate" label="Cập nhật PT thanh toán"
+                class="merchant-button-tertiary merchant-button-m" icon="icon-edit" (onClick)="checkOpenUpdate(2)" />
+        </div>
+        <div class="payment-form mb-spacing-l" *ngIf="paymentQR">
+            <div class="title">
+                <span class="paragraph-m-semibold">QR Thanh toán</span>
+            </div>
+            <div class="payment-info" *ngIf="paymentQR.paymentType==0">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="col-12 mb-spacing-l">
+                            <label class="paragraph-m-semibold mb-spacing-xs">Terminal ID</label>
+                            <input class="merchant-input" pInputText [readOnly]="true" [value]="paymentQR.terminalId" />
+                        </div>
+                        <div class="col-12 mb-spacing-l">
+                            <label class="paragraph-m-semibold mb-spacing-xs">Số tài khoản</label>
+                            <input class="merchant-input" pInputText [readOnly]="true"
+                                [value]="paymentQR.accountNumber" />
+                        </div>
+                        <div class="col-12">
+                            <label class="paragraph-m-semibold mb-spacing-xs">Tên tài khoản</label>
+                            <input class="merchant-input" pInputText [readOnly]="true"
+                                [value]="paymentQR.accountName" />
+                        </div>
+                    </div>
+                    <div class="col-6 d-flex justify-content-end">
+                        <div class="col-6">
+                            <label class="paragraph-m-semibold mb-spacing-xs">Mã VQR</label>
+                            <input class="merchant-input" pInputText [readOnly]="true" [value]="paymentQR.accountQr" />
+                            <div class="qr-code d-flex justify-content-center" #qrContainer>
+                                <qrcode [qrdata]="paymentQR.qrCode" [width]="200" [errorCorrectionLevel]="'M'"></qrcode>
+                            </div>
+                            @if(paymentQR.qrCode){
+                            <p-button label="Tải xuống QR" class="merchant-button w-100" icon="icon-download"
+                                (onClick)="downloadQRCode()" />
+                            } @else {
+                            <p-button label="Gen lại mã QR" class="merchant-button w-100" icon="icon-download"
+                                (onClick)="genQRCode()" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-info" *ngIf="paymentQR.paymentType==1">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="col-12 mb-spacing-l">
+                            <label class="paragraph-m-semibold mb-spacing-xs">Terminal ID</label>
+                            <input class="merchant-input" pInputText [readOnly]="true" [value]="paymentQR.terminalId" />
+                        </div>
+                        <div class="col-12 mb-spacing-l">
+                            <label class="paragraph-m-semibold mb-spacing-xs">Mã VQR</label>
+                            <input class="merchant-input" pInputText [readOnly]="true" [value]="paymentQR.accountQr" />
+                        </div>
+                    </div>
+                    <div class="col-6 d-flex justify-content-end">
+                        <div class="col-6">
+                            <div class="qr-code d-flex justify-content-center">
+                                <img [src]="assetPath + '/assets/images/vqr_code.svg'" alt="qr_code" />
+                            </div>
+                            <p-button label="Tải xuống QR" class="merchant-button w-100" icon="icon-download" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="payment-form mb-spacing-l" *ngIf="lstPaymentPod.length>0">
+            <div class="title">
+                <span class="paragraph-m-semibold">TID POS</span>
+            </div>
+            <div class="payment-info">
+                <label class="paragraph-m-semibold mb-spacing-xs">Mã TID POS</label>
+                <div class="row">
+                    <div class="col-3 mb-spacing-l"
+                        *ngFor="let item of (isShowAllPos ? lstPaymentPod : lstPaymentPod.slice(0, 4))">
+                        <input class="merchant-input" pInputText [readOnly]="true" [value]="item" />
+                    </div>
+                </div>
+                <div class="border"></div>
+                <div *ngIf="lstPaymentPod.length >= 5" class="toggle-view mt-2 cursor-pointer"
+                    (click)="toggleShowPoS()">
+                    <span class="d-flex title-s-semibold">
+                        {{ isShowAllPos ? 'Thu gọn' : 'Xem thêm' }}
+                        <span [ngClass]="[isShowAllPos ? 'icon-angle_up' : 'icon-angle_down']"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="payment-form" *ngIf="lstPaymentTHDD.length>0">
+            <div class="title">
+                <span class="paragraph-m-semibold">Thu hộ định danh</span>
+            </div>
+            <div class="payment-info">
+                <label class="paragraph-m-semibold mb-spacing-xs">Mã THD ID</label>
+                <div class="row">
+                    <div class="col-3 mb-spacing-l"
+                        *ngFor="let item of (isShowAllThd ? lstPaymentTHDD : lstPaymentTHDD.slice(0, 4))">
+                        <input class="merchant-input" pInputText [readOnly]="true" [value]="item" />
+                    </div>
+                </div>
+                <div class="border"></div>
+                <div *ngIf="lstPaymentTHDD.length >= 5" class="toggle-view mt-2 cursor-pointer"
+                    (click)="toggleShowThd()">
+                    <span class="d-flex title-s-semibold">
+                        {{ isShowAllThd ? 'Thu gọn' : 'Xem thêm' }}
+                        <span [ngClass]="[isShowAllThd ? 'icon-angle_up' : 'icon-angle_down']"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="row mt-3">
+        <div #qrContainer>
+            <qrcode [qrdata]="textQrCode" [width]="200" [errorCorrectionLevel]="'M'"></qrcode>
+        </div>
+
+        <button (click)="downloadQRCode()">Download QR</button> -->
+</div>

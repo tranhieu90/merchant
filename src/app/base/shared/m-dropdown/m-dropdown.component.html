@@ -1,0 +1,333 @@
+<form [formGroup]="formDropdown" (ngSubmit)="onSubmit()" class="wrapper">
+    <div class="p-5">
+        <h3 class="col-12 mb-3">1. Dropdown</h3>
+        <div class="row gap-5">
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-infomation">
+                    <label class="form-label title-s-semibold">Default, Hover, Focus</label>
+                    <span class="p-input-icon-right" pTooltip="Information" tooltipPosition="right">
+                        <i class="icon-information_solid input-icon"></i>
+                    </span>
+                </div>
+                <mb-dropdown  [options]="countryOptions"
+                    optionValue="code" optionLabel="name" placeholder="Select a country" [filter]="false"
+                    [showCheckmark]="true"></mb-dropdown>
+            </div>
+            <div class="col-3">
+                <label class="form-label title-s-semibold">Disabled</label>
+                     <mb-dropdown  [options]="countryOptions" formControlName="valueDisabled"
+                    optionValue="code" optionLabel="name" placeholder="Select a country" [filter]="false"
+                    [showCheckmark]="true"></mb-dropdown>
+            </div>
+            <div class="col-3">
+                <label class="form-label title-s-semibold">Error</label>
+                 <mb-dropdown  [options]="countryOptions" formControlName="valueDropdownError"
+                    optionValue="code" optionLabel="name" placeholder="Select a country" [filter]="false"
+                    [showCheckmark]="true"></mb-dropdown>
+                @if(formDropdown.controls['valueDropdownError'].hasError('required')&&
+                formDropdown.controls['valueDropdownError'].touched &&
+                formDropdown.controls['valueDropdownError'].invalid){
+                <div class="input-erorr">
+                    <span class="icon-error_solid"></span>
+                    Vui lòng nhập thông tin
+                </div>
+                }
+            </div>
+        </div>
+        <div class="row gap-5 mt-3">
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-left">
+                    <span class="p-input-icon-left">
+                        <i class="icon-default input-icon input-icon-default"></i>
+                    </span>
+                    <p-dropdown [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown"
+                        formControlName="valueDropdown" [options]="countryOptions" optionValue="code" optionLabel="name"
+                        placeholder="Select a country" />
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-left disabled">
+                    <span class="p-input-icon-left">
+                        <i class="icon-default input-icon input-icon-default"></i>
+                    </span>
+                    <p-dropdown [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown"
+                        [options]="countryOptions" formControlName="valueDisabled" optionValue="code" optionLabel="name"
+                        placeholder="Select a country" />
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-left">
+                    <span class="p-input-icon-left">
+                        <i class="icon-default input-icon input-icon-default"></i>
+                    </span>
+                    <p-dropdown [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown"
+                        formControlName="valueDropdownShowIconLeftError" [options]="countryOptions" optionValue="code"
+                        optionLabel="name" placeholder="Select a country" showClear="true" />
+                </div>
+
+                @if(formDropdown.controls['valueDropdownShowIconLeftError'].hasError('required')&&
+                formDropdown.controls['valueDropdownShowIconLeftError'].touched &&
+                formDropdown.controls['valueDropdownShowIconLeftError'].invalid){
+                <div class="input-erorr">
+                    <span class="icon-error_solid"></span>
+                    Vui lòng nhập thông tin
+                </div>
+                }
+            </div>
+        </div>
+        <h3 class="col-12 mt-5">2. MultiSelect</h3>
+        <div class="row gap-5 mt-3">
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-infomation">
+                    <label class="form-label title-s-semibold">Default, Hover, Focus</label>
+                    <span class="p-input-icon-right" pTooltip="Information" tooltipPosition="right">
+                        <i class="icon-information_solid input-icon"></i>
+                    </span>
+                </div>
+                <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect"
+                    [options]="countryOptions" formControlName="valueMultiSelect" optionValue="code" optionLabel="name"
+                    placeholder="Select countries" />
+            </div>
+            <div class="col-3">
+                <label class="form-label title-s-semibold">Disabled</label>
+                <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect"
+                    [options]="countryOptions" formControlName="valueMultiSelectDisabled" optionValue="code"
+                    optionLabel="name" placeholder="Select countries" />
+            </div>
+            <div class="col-3">
+                <label class="form-label title-s-semibold">Error</label>
+                <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect"
+                    [options]="countryOptions" formControlName="valueMultiSelectError" optionValue="code"
+                    optionLabel="name" placeholder="Select countries" />
+
+                @if(formDropdown.controls['valueMultiSelectError'].hasError('required')&&
+                formDropdown.controls['valueMultiSelectError'].touched &&
+                formDropdown.controls['valueMultiSelectError'].invalid){
+                <div class="input-erorr">
+                    <span class="icon-error_solid"></span>
+                    Vui lòng nhập thông tin
+                </div>
+                }
+            </div>
+        </div>
+        <div class="row gap-5 mt-3">
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-left">
+                    <span class="p-input-icon-left">
+                        <i class="icon-default input-icon input-icon-default"></i>
+                    </span>
+                    <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect"
+                        [options]="countryOptions" formControlName="valueMultiSelect" optionValue="code"
+                        optionLabel="name" placeholder="Select countries" />
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-left disabled">
+                    <span class="p-input-icon-left">
+                        <i class="icon-default input-icon input-icon-default"></i>
+                    </span>
+                    <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect"
+                        [options]="countryOptions" formControlName="valueMultiSelectDisabled" optionValue="code"
+                        optionLabel="name" placeholder="Select countries" />
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-left">
+                    <span class="p-input-icon-left">
+                        <i class="icon-default input-icon input-icon-default"></i>
+                    </span>
+                    <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect"
+                        [options]="countryOptions" formControlName="valueMultiSelectShowIconLeftError"
+                        optionValue="code" optionLabel="name" placeholder="Select countries" />
+                </div>
+
+                @if(formDropdown.controls['valueMultiSelectShowIconLeftError'].hasError('required')&&
+                formDropdown.controls['valueMultiSelectShowIconLeftError'].touched &&
+                formDropdown.controls['valueMultiSelectShowIconLeftError'].invalid){
+                <div class="input-erorr">
+                    <span class="icon-error_solid"></span>
+                    Vui lòng nhập thông tin
+                </div>
+                }
+            </div>
+        </div>
+        <div class="row gap-5 mt-3">
+            <div class="col-3">
+                <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'"
+                    class="merchant-multiSelect multiselect-all" [options]="countryOptions"
+                    formControlName="valueMultiSelect" optionValue="code" optionLabel="name" placeholder="Tất cả"
+                    [filter]="false" />
+            </div>
+        </div>
+    </div>
+
+
+    <div class="p-5">
+        <h3 class="col-12 mb-3">3. Dropdown small</h3>
+        <div class="row gap-5">
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-infomation">
+                    <label class="form-label title-s-semibold">Default, Hover, Focus</label>
+                    <span class="p-input-icon-right" pTooltip="Information" tooltipPosition="right">
+                        <i class="icon-information_solid input-icon"></i>
+                    </span>
+                </div>
+                <p-dropdown [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown-small"
+                    formControlName="valueDropdown" [options]="countryOptions" optionValue="code" optionLabel="name"
+                    placeholder="Select a country" [filter]="true" />
+            </div>
+            <div class="col-3">
+                <label class="form-label title-s-semibold">Disabled</label>
+                <p-dropdown [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown-small"
+                    formControlName="valueDisabled" [options]="countryOptions" optionValue="code" optionLabel="name"
+                    placeholder="Select a country" />
+            </div>
+            <div class="col-3">
+                <label class="form-label title-s-semibold">Error</label>
+                <p-dropdown [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown-small"
+                    formControlName="valueDropdownError" [options]="countryOptions" optionValue="code"
+                    optionLabel="name" placeholder="Select a country" />
+
+                @if(formDropdown.controls['valueDropdownError'].hasError('required')&&
+                formDropdown.controls['valueDropdownError'].touched &&
+                formDropdown.controls['valueDropdownError'].invalid){
+                <div class="input-erorr">
+                    <span class="icon-error_solid"></span>
+                    Vui lòng nhập thông tin
+                </div>
+                }
+            </div>
+        </div>
+        <div class="row gap-5 mt-3">
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-left">
+                    <span class="p-input-icon-left">
+                        <i class="icon-default input-icon input-icon-default"></i>
+                    </span>
+                    <p-dropdown [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown-small"
+                        formControlName="valueDropdown" [options]="countryOptions" optionValue="code" optionLabel="name"
+                        placeholder="Select a country" showClear="true" />
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-left disabled">
+                    <span class="p-input-icon-left">
+                        <i class="icon-default input-icon input-icon-default"></i>
+                    </span>
+                    <p-dropdown [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown-small"
+                        [options]="countryOptions" formControlName="valueDisabled" optionValue="code" optionLabel="name"
+                        placeholder="Select a country" />
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-left">
+                    <span class="p-input-icon-left">
+                        <i class="icon-default input-icon input-icon-default"></i>
+                    </span>
+                    <p-dropdown [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown-small"
+                        formControlName="valueDropdownShowIconLeftError" [options]="countryOptions" optionValue="code"
+                        optionLabel="name" placeholder="Select a country" showClear="true" />
+                </div>
+
+                @if(formDropdown.controls['valueDropdownShowIconLeftError'].hasError('required')&&
+                formDropdown.controls['valueDropdownShowIconLeftError'].touched &&
+                formDropdown.controls['valueDropdownShowIconLeftError'].invalid){
+                <div class="input-erorr">
+                    <span class="icon-error_solid"></span>
+                    Vui lòng nhập thông tin
+                </div>
+                }
+            </div>
+        </div>
+        <h3 class="col-12 mt-5">4. MultiSelect small</h3>
+        <div class="row gap-5 mt-3">
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-infomation">
+                    <label class="form-label title-s-semibold">Default, Hover, Focus</label>
+                    <span class="p-input-icon-right" pTooltip="Information" tooltipPosition="right">
+                        <i class="icon-information_solid input-icon"></i>
+                    </span>
+                </div>
+                <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect-small"
+                    [options]="countryOptions" formControlName="valueMultiSelect" optionValue="code" optionLabel="name"
+                    placeholder="Select countries" />
+            </div>
+            <div class="col-3">
+                <label class="form-label title-s-semibold">Disabled</label>
+                <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect-small"
+                    [options]="countryOptions" formControlName="valueMultiSelectDisabled" optionValue="code"
+                    optionLabel="name" placeholder="Select countries" />
+            </div>
+            <div class="col-3">
+                <label class="form-label title-s-semibold">Error</label>
+                <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect-small"
+                    [options]="countryOptions" formControlName="valueMultiSelectError" optionValue="code"
+                    optionLabel="name" placeholder="Select countries" />
+
+                @if(formDropdown.controls['valueMultiSelectError'].hasError('required')&&
+                formDropdown.controls['valueMultiSelectError'].touched &&
+                formDropdown.controls['valueMultiSelectError'].invalid){
+                <div class="input-erorr">
+                    <span class="icon-error_solid"></span>
+                    Vui lòng nhập thông tin
+                </div>
+                }
+            </div>
+        </div>
+        <div class="row gap-5 mt-3">
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-left">
+                    <span class="p-input-icon-left">
+                        <i class="icon-default input-icon input-icon-default"></i>
+                    </span>
+                    <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect-small"
+                        [options]="countryOptions" formControlName="valueMultiSelect" optionValue="code"
+                        optionLabel="name" placeholder="Select countries" />
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-left disabled">
+                    <span class="p-input-icon-left">
+                        <i class="icon-default input-icon input-icon-default"></i>
+                    </span>
+                    <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect-small"
+                        [options]="countryOptions" formControlName="valueMultiSelectDisabled" optionValue="code"
+                        optionLabel="name" placeholder="Select countries" />
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="p-inputgroup show-icon-left">
+                    <span class="p-input-icon-left">
+                        <i class="icon-default input-icon input-icon-default"></i>
+                    </span>
+                    <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect-small"
+                        [options]="countryOptions" formControlName="valueMultiSelectShowIconLeftError"
+                        optionValue="code" optionLabel="name" placeholder="Select countries" />
+                </div>
+
+                @if(formDropdown.controls['valueMultiSelectShowIconLeftError'].hasError('required')&&
+                formDropdown.controls['valueMultiSelectShowIconLeftError'].touched &&
+                formDropdown.controls['valueMultiSelectShowIconLeftError'].invalid){
+                <div class="input-erorr">
+                    <span class="icon-error_solid"></span>
+                    Vui lòng nhập thông tin
+                </div>
+                }
+            </div>
+        </div>
+        <div class="row gap-5 mt-3">
+            <div class="col-3">
+                <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'"
+                    class="merchant-multiSelect-small multiselect-all" [options]="countryOptions"
+                    formControlName="valueMultiSelect" optionValue="code" optionLabel="name" placeholder="Tất cả"
+                    [filter]="false" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3 mt-3">
+        <div class="d-flex justify-content-center">
+            <button class="btn btn-primary mt-3" (click)="onSubmit()">Submit</button>
+        </div>
+    </div>
+</form>

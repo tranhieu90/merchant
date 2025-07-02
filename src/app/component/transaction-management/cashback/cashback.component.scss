@@ -1,0 +1,284 @@
+@import "../../../../scss/variables";
+@import "../../../../scss/mixins";
+
+.wrapper {
+  background: $color-global-neutral-white;
+  min-height: calc(100vh - 230px);
+  padding: $spacing-l;
+  border-radius: $border-radius-xs;
+  color: $color-text-neutral-main;
+  overflow: hidden;
+
+  //typo/paragraph-m-regular
+  @include typo-style($typo-font-sizes-m, $typo-font-weights-regular, none, none);
+}
+
+.box-button-top {
+  margin-top: -58px;
+}
+
+.total span {
+  color: $color-text-action-main;
+  font-family: "AvertaStdCY-Bold";
+}
+
+.merchant-calendar {
+  ::ng-deep.p-inputtext {
+    width: 336px;
+    border: 1px solid $color-border-neutral-main;
+    border-radius: $border-radius-s;
+    padding: 11px $spacing-m;
+  }
+
+  .icon-calendar {
+    color: $color-icon-action-main;
+    font-size: 19px;
+    top: 46%;
+    pointer-events: none;
+  }
+
+  ::ng-deep .p-highlight {
+    color: $color-global-neutral-white !important;
+    background-color: $color-surface-action-main !important;
+  }
+}
+
+
+.box-search,
+.box-filter {
+  .title {
+    //typo/title-s-semibold
+    @include typo-style($typo-font-sizes-m, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+    margin-bottom: 8px;
+  }
+}
+
+.merchant-button-icon.active ::ng-deep.p-button {
+  background: $color-surface-neutral-sub-2 !important;
+}
+
+.merchant-calendar ::ng-deep.p-datepicker {
+  left: -100px !important;
+}
+
+
+.table-transaction ::ng-deep.mat-mdc-table {
+  .custom-view {
+    .tooltip-anchor {
+      white-space: normal !important;
+    }
+  }
+  .status {
+    &.success {
+      color: $color-text-semantic-success;
+      background: $color-surface-semantic-success-sub;
+    }
+
+    &.fail {
+      color: $color-text-semantic-error;
+      background: $color-surface-semantic-error-sub;
+    }
+
+    &.wait {
+      color: $color-text-semantic-warning;
+      background: $color-surface-semantic-warning-sub;
+    }
+  }
+}
+
+.subject-page {
+  font-weight: $typo-font-weights-semibold;
+  font-size: $typo-font-sizes-3xl;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  color: $color-text-neutral-main;
+}
+
+
+::ng-deep.custom-bank-multiselect {
+
+  .p-overlay {
+    left: 0 !important;
+    right: 0 !important;
+  }
+
+  .bank-item {
+    display: flex;
+    align-items: start;
+    padding: 0.5rem 1rem;
+    gap: 10px;
+    cursor: pointer; // Để hiển thị con trỏ tay khi hover
+    flex-direction: column;
+    position: relative;
+
+    .bank-logo {
+      width: 24px; // Kích thước logo
+      height: 24px;
+      object-fit: contain; // Giữ tỷ lệ ảnh
+      border-radius: 4px; // Bo góc nhẹ cho logo
+    }
+
+    .bank-info {
+      display: flex;
+      width: 100%;
+    }
+
+    .bank-name {
+      font-weight: 500; // Tên ngân hàng đậm hơn
+      font-size: 1rem;
+      color: var(--text-color);
+    }
+
+    .bank-description {
+      font-size: 0.85rem;
+      color: var(--text-color-secondary);
+    }
+
+    // Nếu bạn muốn highlight khi hover
+    &:hover {
+      background-color: var(--surface-hover);
+    }
+
+    .icon-check_circle_solid {
+      @include base-icon;
+      color: $color-surface-action-main;
+      position: absolute;
+      top: 50%;
+      left: 96%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+  }
+
+}
+
+.merchant-treeSelect {
+  width: 100%;
+
+  ::ng-deep .p-treeselect {
+    width: 100%;
+  }
+
+  // ::ng-deep .p-treenode-content {
+  //     display: flex;
+  //     align-items: center;
+  //     justify-content: space-between;
+  // }
+
+  // ::ng-deep .p-tree-toggler {
+  //     order: 2;
+  //     margin-left: auto;
+  // }
+
+  // ::ng-deep .p-checkbox {
+  //     order: 0;
+  //     margin-right: 0.5rem;
+  // }
+
+  // ::ng-deep .p-treenode-label {
+  //     order: 1;
+  // }
+
+  // ::ng-deep .p-treenode-content.p-highlight {
+  //     color: $color-global-neutral-black;
+  // }
+
+  // ::ng-deep .p-treenode:focus>.p-treenode-content {
+  //     outline: transparent;
+  // }
+
+  // ::ng-deep .p-treenode-content.p-highlight .p-tree-toggler {
+  //     color: $color-global-neutral-black;
+  // }
+
+  // ::ng-deep .p-treeselect.p-treeselect-chip .p-treeselect-token {
+  //     margin: 0;
+  //     padding: $spacing-2xs $spacing-s $spacing-2xs 0;
+  //     background: transparent;
+  //     border: none;
+  // }
+
+  // ::ng-deep .p-treeselect .p-treeselect-label.p-placeholder {
+  //     color: $color-global-neutral-neutral-12;
+  //     padding: $spacing-s $spacing-m;
+  //     font-size: $typo-font-sizes-m;
+  // }
+
+  ::ng-deep .p-treeselect .p-treeselect-label {
+    padding: $spacing-s $spacing-m;
+    font-size: $typo-font-sizes-m;
+  }
+}
+
+::ng-deep .color-text-neutral-sub {
+  color: $color-text-neutral-sub !important;
+}
+
+::ng-deep.merchant-inputNumber {
+  width: 100% !important;
+  height: 48px;
+
+  span {
+    width: 100%;
+  }
+
+  input {
+    height: 48px;
+
+    &::placeholder {
+      font-weight: $typo-font-weights-regular;
+      font-size: $typo-font-sizes-m;
+
+      color: $color-text-neutral-sub-3;
+
+    }
+  }
+
+}
+
+//::ng-deep .p-dropdown-items-wrapper {
+//  max-width: 500px !important;
+//}
+//
+//::ng-deep .p-dropdown-item .p-element,
+//.p-dropdown-item .ng-star-inserted {
+//  max-width: 500px !important;
+//  width: 100%;
+//  overflow: hidden;
+//  text-overflow: ellipsis !important;
+//}
+
+::ng-deep .p-multiselect-items-wrapper {
+  max-width: 500px !important;
+}
+
+::ng-deep .p-multiselect-item .p-element,
+.p-multiselect-item .ng-star-inserted {
+  max-width: 500px !important;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis !important;
+}
+
+
+::ng-deep .mat-badge-content {
+  color: $color-surface-neutral-main !important;
+  background-color: $color-global-blue-blue-4 !important;
+  opacity: 100% !important;
+}
+
+
+::ng-deep .ellipsis-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 460px;
+}
+
+::ng-deep .custom-mutil-option {
+  .p-overlay {
+    left: 0 !important;
+    right: 0 !important;
+  }
+}

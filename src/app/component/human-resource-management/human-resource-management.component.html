@@ -1,0 +1,66 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <span class="header-m-semibold">Quản lý nhân sự</span>
+  <p-button *hasRoles="[MERCHANT_RULES.USER_MANAGER_CREATE]" label="Thêm mới nhân sự" class="merchant-button ms-auto"
+    icon="icon-plus_small" (click)="doOpenPage()" />
+</div>
+<div class="wrapper">
+  <!-- <div class="pt-4 pb-2 px-4"> -->
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <!-- <span *ngIf="dataList.length>0" class="paragraph-m-regular">
+          Hiển thị <span class="color-count"><b>{{ totalItem }}</b></span> nhân sự
+        </span> -->
+      <span class="header-s-semibold">Danh sách nhân sự ({{this.totalItem}})</span>
+    </div>
+    <div class="d-flex left-align">
+      <div class="p-inputgroup show-icon-left search-role me-3">
+        <span class="p-input-icon-left">
+          <i class="icon-search input-icon input-icon-default"></i>
+        </span>
+        <input type="text" pInputText class="merchant-input search" [(ngModel)]="keyword"
+          [placeholder]="hasRole ? 'Tìm kiếm theo họ và tên, tên đăng nhập, email' : 'Tìm kiếm theo họ và tên'"
+          (keydown.enter)="onEnterSearch()" (blur)="onBlurSearch()" />
+        @if (keyword != null && keyword != '') {
+        <span class="p-input-icon-right clear-icon" (click)="refreshDataKeywordSearch()">
+          <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+        </span>
+        }
+      </div>
+      <p-button [ngClass]="['merchant-button-icon button-l button-light me-2', isFilter? 'active': '']"
+        icon="icon-filter" (onClick)="changeFilter()" [matBadge]="checkFilterNumber()" />
+    </div>
+  </div>
+  <div *ngIf="isFilter">
+    <form [formGroup]="formDropdown" (ngSubmit)="onEnterSearch()" class="row mb-4">
+      <div *hasRoles="[MERCHANT_RULES.USER_MANAGER_DETAIL]" class="col-md-4 mt-4">
+        <label class="form-label title-s-semibold">Trạng thái</label>
+        <p-dropdown class="merchant-dropdown" formControlName="status" [options]="statusOptions" optionValue="code"
+          optionLabel="name" placeholder="Select a status" />
+      </div>
+      <div class="col-md-4 mt-4">
+        <label class="form-label title-s-semibold">Vai trò</label>
+        <p-dropdown class="merchant-dropdown" formControlName="role" [options]="lstRole" optionValue="id"
+          optionLabel="name" placeholder="Tất cả" />
+      </div>
+      <div class="d-flex justify-content-end mt-3">
+        <p-button label="Xóa bộ lọc" class="merchant-button-tertiary me-2" (onClick)="clearFilter()"
+          [disabled]="checkHasSearchOrFilterData()" />
+        <p-button label="Áp dụng" class="merchant-button" (onClick)="doSearch()" />
+      </div>
+    </form>
+  </div>
+  <div class="col-12 d-flex justify-content-end mt-3">
+    <grid-view [columns]="columns" [dataSource]="dataList" (doChangePage)="doSearch($event)" [total]="totalItem"
+      [action]="action" [search]="isSearch" [isWhitespace]="true" style="float: left;width: 100%;"></grid-view>
+  </div>
+  <div *ngIf="dataList.length == 0 && !isSearch" class="col-12 text-center">
+    <div class="mt-4 title-l-semibold title-no-data">Không có nhân sự nào</div>
+    <div class="title-s-regular summary-no-data mb-3">
+      Bạn chưa gán nhân sự nào cho vai trò này.<br>
+      Vui lòng thử lại sau hoặc thêm nhân sự mới.
+    </div>
+    <p-button label="Thêm mới nhân sự" class="merchant-button" icon="icon-plus_small" (click)="doOpenPage()" />
+  </div>
+  <!-- </div> -->
+
+</div>

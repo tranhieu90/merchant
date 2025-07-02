@@ -1,0 +1,117 @@
+.merchant-tab {
+    font-size: $typo-font-sizes-m;
+    color: $color-text-neutral-main;
+    ul {
+        border-color: $color-border-neutral-main;
+        padding-left: 0px;
+        margin-bottom: 0px;
+
+        li {
+            .p-tabview-nav-link {
+                padding: $spacing-xs $spacing-s;
+                text-decoration: none;
+                border-color: $color-border-neutral-main;
+
+                span {
+                    //title-m-regular
+                    @include typo-style($typo-font-sizes-l, $typo-font-weights-regular, none, none);
+                    color: $color-text-semantic-normal;
+                    line-height: 27px;
+                    
+                }
+                .p-badge{
+                    //paragraph-m-semibold-Capital
+                    @include typo-style($typo-font-sizes-m, $typo-font-weights-semibold, uppercase, none, $font-family-semiBold);
+                    color: $color-text-neutral-sub;
+                    background: $color-surface-neutral-sub;
+                    margin-left: 5px;
+                    
+                }
+
+                &:hover{
+                    span {
+                        color: $color-text-action-main;
+                    }
+                    .p-badge{
+                        background: $color-surface-highlight-sub;
+                        color: $color-text-action-main;
+                    }
+                }
+            }
+        }
+
+        .p-highlight {
+            .p-tabview-nav-link {
+                span {
+                    //title-m-semibold
+                    @include typo-style($typo-font-sizes-l, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+                    color: $color-text-action-main;
+                    line-height: 27px;
+                }
+                .p-badge{                   
+                    background: $color-surface-highlight-sub;
+                    font-size: $typo-font-sizes-m;
+                    line-height: 23px;
+                }
+            }
+        }
+
+        .p-disabled{
+            .p-tabview-nav-link {
+                span {
+                    color: $color-text-semantic-disabled;
+                }
+                .p-badge{                   
+                    color: $color-text-semantic-disabled-sub;
+                    background: $color-surface-semantic-disabled-sub;
+                }
+            }
+        }
+
+        .p-tabview-ink-bar {
+            height: 2px;
+            background-color: $color-border-action-main;
+        }
+    }
+
+    .p-tabview-panels {
+        padding: $spacing-l 0 0;
+    }
+
+    &.size-s{
+        ul {
+            li {
+                .p-tabview-nav-link {
+                    padding: $spacing-2xs $spacing-s;
+                    span {
+                        //title-s-regular
+                        @include typo-style($typo-font-sizes-m, $typo-font-weights-regular, none, none);
+                        line-height: 28px;
+                       
+                    }
+                    .p-badge{
+                        //typo/paragraph-s-semibold-Capital
+                        @include typo-style($typo-font-sizes-s, $typo-font-weights-semibold, uppercase, none, $font-family-semiBold);
+                        line-height: 22px;
+                    }
+                }
+            }
+    
+            .p-highlight {
+                .p-tabview-nav-link {
+                    span {
+                        //title-s-semibold
+                        @include typo-style($typo-font-sizes-m, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+                        line-height: 28px;
+                    }
+
+                    .p-badge{        
+                        font-size: $typo-font-sizes-s;           
+                        line-height: 22px;
+                    }
+                }
+            }
+        }
+    }
+
+}

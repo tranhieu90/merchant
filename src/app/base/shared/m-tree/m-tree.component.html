@@ -1,0 +1,53 @@
+<ul class="tree-list">
+  <ng-container *ngFor="let item of data">
+    <li>
+      <div class="tree-node col-12 d-flex align-items-center gap-3" [style.paddingLeft.px]="
+          item.children?.length ? level * 20 : level * 20 + 24
+        " [class.active]="item.id === activeItemId" (click)="doChangeGroup(item)">
+
+        <div class="col-9 d-flex align-items-center gap-2">
+          <button class="expand-btn" *ngIf="item.children?.length" [ngClass]="[isShowCheckbox ? 'mr-3': '']"
+            (click)="toggleExpand(item); $event.stopPropagation()">
+            @if (item.expanded) {
+            <span class="icon-angle_down icon-custom"></span>
+            }@else {
+            <span class="icon-angle_right icon-custom"></span>
+            }
+          </button>
+          
+          <div>
+            <input *ngIf="isShowCheckbox" type="checkbox" class="checkbox-custom" [checked]="item.checked === true"
+              [indeterminate]="item.checked === 'partial'" id="{{ item.id }}" [disabled]="checkDisable || item.disabled"
+              (change)="onCheckboxChange($event, item)" (click)="$event.stopPropagation()" />
+          </div>
+
+
+          <ng-container *ngIf=" item.groupName.length > 30;else noTooltip">
+            <span class="mr-3" [ngClass]="[
+              item.level === 1 ? 'title-s-semibold' : 'title-s-regular'
+            ]" style="white-space: nowrap" [matTooltip]="item.groupName">{{ item.groupName | slice : 0 :
+              (isShowCheckbox ? 20 : 30) }}
+              {{ item.groupName.length > (isShowCheckbox ? 20 : 30) ? "..." : "" }}</span>
+          </ng-container>
+
+          <ng-template #noTooltip>
+            <span class="group-name text" [class]="item.level == 1 ? 'title-s-semibold' : 'title-s-regular'">{{
+              item.groupName }}</span>
+          </ng-template>
+        </div>
+
+        <div class="col-3">
+          <span class="group-count title-xs-regular" *ngIf="item.children?.length > 0">{{ getGroupLabel(item) }}</span>
+        </div>
+
+      </div>
+
+      <div *ngIf="item.expanded && item.children?.length">
+        <m-tree [data]="item.children" [level]="level + 1" [isShowCheckbox]="isShowCheckbox"
+          [activeItemId]="activeItemId" (groupChoice)="emitGroupChoice($event)" [checkDisable]="checkDisable"
+          (groupSelect)="groupSelect.emit($event)">
+        </m-tree>
+      </div>
+    </li>
+  </ng-container>
+</ul>

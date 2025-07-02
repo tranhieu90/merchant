@@ -1,0 +1,48 @@
+@import "../../../../scss/mixins";
+@import "../../../../scss/variables";
+
+::ng-deep.mat-mdc-dialog-surface {
+    border-radius: $border-radius-xs;
+    background: $color-surface-neutral-main;
+}
+
+::ng-deep.cdk-overlay-pane.mat-mdc-dialog-panel {
+    max-width: none !important;
+}
+
+.merchant-input {
+    outline: none;
+}
+
+.modal-header {
+    background-color: $color-surface-highlight-main;
+    color: $color-text-neutral-main;
+    padding: $spacing-l;
+    color: $color-text-neutral-main;
+}
+
+.modal-footer {
+    padding: $spacing-l;
+}
+
+.modal-body {
+    padding: $spacing-l;
+    color: $color-text-neutral-main;
+
+    .infor-warn {
+        background: $color-surface-semantic-warning-sub;
+        border: 1px solid $color-border-semantic-warning-sub;
+        padding: $spacing-m;
+        border-radius: $border-radius-s;
+
+        .icon-warning_solid{
+            color: $color-surface-semantic-warning;
+        }
+    }
+    
+}
+
+.box-area {
+    height: 500px;
+    overflow-y: auto;
+}

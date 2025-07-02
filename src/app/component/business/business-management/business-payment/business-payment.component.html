@@ -1,0 +1,368 @@
+<div class="d-flex mb-3">
+    <span class="header-m-semibold">Cập nhật phương thức thanh toán</span>
+</div>
+<div class="wrapper">
+    <div class="payment-form mb-spacing-l" *ngIf="doCheckPayment(324)">
+        <div class="title d-flex justify-content-between align-items-center" [class.bg-title]="!isPaymentQR">
+            <span class="paragraph-m-semibold">QR Thanh toán</span>
+            <p-inputSwitch [(ngModel)]="isPaymentQR" (onChange)="doCancelPayment($event.checked,1)" />
+        </div>
+        <!-- đã them moi QR code truoc do -->
+        <div class="payment-info" *ngIf="paymentQR">
+            <form [formGroup]="paymentQRFormUpdate">
+                <div class="row">
+                    <div class="d-flex gap-2 mb-spacing-l">
+                        <div class="w-100">
+                            <label class="input-label-custom">Terminal ID</label>
+                            <div class="p-inputgroup">
+                                <input appShowClearOnFocus=".clear-icon" class="merchant-input" appInputSanitize
+                                    pInputText formControlName="terminalId" [maxlength]="50" />
+                                @if (this.paymentQRFormUpdate.get('terminalId')?.value) {
+                                <span class="p-input-icon-right clear-icon"
+                                    (click)="clearValue(paymentQRFormUpdate,'terminalId')">
+                                    <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                                </span>
+                                }
+                            </div>
+                            @if (paymentQRFormUpdate.controls['terminalId'].dirty &&
+                            paymentQRFormUpdate.controls['terminalId'].invalid)
+                            {
+                            <div class="m-caption error">
+                                <div class="icon-caption">
+                                    <span class="icon-error_solid"></span>
+                                </div>
+                                @if (paymentQRFormUpdate.controls['terminalId'].hasError('required')) {
+                                <span class="text-caption paragraph-m-regular">Vui lòng nhập thông tin</span>
+                                }
+                                @if (paymentQRFormUpdate.controls['terminalId'].hasError('pattern')) {
+                                <span class="text-caption paragraph-m-regular">Terminal ID không hợp lệ</span>
+                                }
+                                @if (paymentQRFormUpdate.controls['terminalId'].hasError('ExitErorr')) {
+                                <span class="text-caption paragraph-m-regular">Lấy thông tin terminal thất bại hoặc
+                                    terminalId không tồn tại</span>
+                                }
+                                @if (paymentQRFormUpdate.controls['terminalId'].hasError('Invalid')) {
+                                <span class="text-caption paragraph-m-regular">Terminal ID không hợp lệ</span>
+                                }
+                                @if (paymentQRFormUpdate.controls['terminalId'].hasError('NotValue')) {
+                                <span class="text-caption paragraph-m-regular">TerminalId không phải của merchant</span>
+                                }
+                                @if (paymentQRFormUpdate.controls['terminalId'].hasError('Exited')) {
+                                <span class="text-caption paragraph-m-regular">Terminal ID đã tồn tại</span>
+                                }
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mb-spacing-l" *ngIf="paymentQR.paymentType==0  && !changedTerminalId">
+                        <div class="w-100">
+                            <div class="col-12 mb-spacing-l">
+                                <label class="input-label-custom">Số tài khoản MB</label>
+                                <div class="p-inputgroup">
+                                    <input appShowClearOnFocus=".clear-icon" class="merchant-input" appInputSanitize
+                                        pInputText formControlName="accountNumber" placeholder="Nhập số tài khoản MB"
+                                        [maxlength]="50" />
+                                    @if (this.paymentQRFormUpdate.get('accountNumber')?.value) {
+                                    <span class="p-input-icon-right clear-icon"
+                                        (click)="clearValue(paymentQRFormUpdate,'accountNumber')">
+                                        <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                                    </span>
+                                    }
+                                </div>
+                                @if (paymentQRFormUpdate.controls['accountNumber'].dirty &&
+                                paymentQRFormUpdate.controls['accountNumber'].invalid)
+                                {
+                                <div class="m-caption error">
+                                    <div class="icon-caption">
+                                        <span class="icon-error_solid"></span>
+                                    </div>
+                                    @if (paymentQRFormUpdate.controls['accountNumber'].hasError('required')) {
+                                    <span class="text-caption paragraph-m-regular">Vui lòng nhập số tài khoản</span>
+                                    }
+                                    @if (paymentQRFormUpdate.controls['accountNumber'].hasError('pattern')) {
+                                    <span class="text-caption paragraph-m-regular">Số tài khoản không hợp lệ</span>
+                                    }
+                                    @if (paymentQRFormUpdate.controls['accountNumber'].hasError('ExitErorr')) {
+                                    <span class="text-caption paragraph-m-regular">Số tài khoản không chính xác</span>
+                                    }
+                                </div>
+                                }
+                            </div>
+                            <div class="col-12">
+                                <label class="input-label-custom">Tên tài khoản</label>
+                                <div class="p-inputgroup">
+                                    <input appShowClearOnFocus=".clear-icon" class="merchant-input" appInputSanitize
+                                        pInputText formControlName="accountName" placeholder="Nhập tên tài khoản" />
+                                    @if (this.paymentQRFormUpdate.get('accountName')?.value) {
+                                    <span class="p-input-icon-right clear-icon"
+                                        (click)="clearValue(paymentQRFormUpdate,'accountName')">
+                                        <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                                    </span>
+                                    }
+                                </div>
+                                @if (paymentQRFormUpdate.controls['accountName'].dirty &&
+                                paymentQRFormUpdate.controls['accountName'].invalid)
+                                {
+                                <div class="m-caption error">
+                                    <div class="icon-caption">
+                                        <span class="icon-error_solid"></span>
+                                    </div>
+                                    @if (paymentQRFormUpdate.controls['accountName'].hasError('required')) {
+                                    <span class="text-caption paragraph-m-regular">Vui lòng nhập tên tài khoản</span>
+                                    }
+                                    @if (paymentQRFormUpdate.controls['accountName'].hasError('pattern')) {
+                                    <span class="text-caption paragraph-m-regular">Tên tài khoản không hợp lệ</span>
+                                    }
+                                    @if (paymentQRFormUpdate.controls['accountName'].hasError('ExitErorr')) {
+                                    <span class="text-caption paragraph-m-regular">Tên tài khoản không chính xác</span>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- them moi khi cap nhat -->
+        <div class="payment-info" [@accordion]="isPaymentQR ? 'expanded' : 'collapsed'" *ngIf="!paymentQR">
+            <form [formGroup]="paymentQRFormInsert">
+                <div class="row mb-spacing-l">
+                    <div class="col-3 d-flex align-items-center gap-2">
+                        <p-radioButton [ngModel]="ischeck" [value]="1" name="checkOption"
+                            (ngModelChange)="setValidatorsByIsCheck($event)" inputId="radio1"
+                            [ngModelOptions]="{standalone: true}" />
+                        <label for="radio1" class="paragraph-m-semibold">Nhập mã Terminal ID đã có</label>
+                    </div>
+                    <div class="col-3 d-flex align-items-center gap-2">
+                        <p-radioButton [ngModel]="ischeck" [value]="2" name="checkOption"
+                            (ngModelChange)="setValidatorsByIsCheck($event)" inputId="radio2"
+                            [ngModelOptions]="{standalone: true}" />
+                        <label for="radio2" class="paragraph-m-semibold">Tự động tạo Terminal ID</label>
+                    </div>
+                </div>
+                <div class="col-12" *ngIf="ischeck==1">
+                    <label class="input-label-custom">Terminal ID</label>
+                    <div class="p-inputgroup">
+                        <input appShowClearOnFocus=".clear-icon" class="merchant-input" appInputSanitize pInputText
+                            formControlName="terminalId"
+                            placeholder="Nhập mã Terminal ID do MB cung cấp khi tích hợp dịch vụ" [maxlength]="50" />
+                        @if (this.paymentQRFormInsert.get('terminalId')?.value) {
+                        <span class="p-input-icon-right clear-icon"
+                            (click)="clearValue(paymentQRFormInsert,'terminalId')">
+                            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                        </span>
+                        }
+                    </div>
+                    @if (paymentQRFormInsert.controls['terminalId'].dirty &&
+                    paymentQRFormInsert.controls['terminalId'].invalid)
+                    {
+                    <div class="m-caption error">
+                        <div class="icon-caption">
+                            <span class="icon-error_solid"></span>
+                        </div>
+                        @if (paymentQRFormInsert.controls['terminalId'].hasError('pattern')) {
+                        <span class="text-caption paragraph-m-regular">Terminal ID không hợp lệ</span>
+                        }
+                        @if (paymentQRFormInsert.controls['terminalId'].hasError('required')) {
+                        <span class="text-caption paragraph-m-regular">Chưa nhập Terminal ID</span>
+                        }
+                        @if (paymentQRFormInsert.controls['terminalId'].hasError('ExitErorr')) {
+                        <span class="text-caption paragraph-m-regular">Lấy thông tin terminal thất bại hoặc terminalId
+                            không tồn tại</span>
+                        }
+                        @if (paymentQRFormInsert.controls['terminalId'].hasError('Invalid')) {
+                        <span class="text-caption paragraph-m-regular">Terminal ID không hợp lệ</span>
+                        }
+                        @if (paymentQRFormInsert.controls['terminalId'].hasError('NotValue')) {
+                        <span class="text-caption paragraph-m-regular">TerminalId không phải của merchant</span>
+                        }
+                        @if (paymentQRFormInsert.controls['terminalId'].hasError('Exited')) {
+                        <span class="text-caption paragraph-m-regular">Terminal ID đã tồn tại</span>
+                        }
+                    </div>
+                    }
+                </div>
+                <div class="ischeck-2" *ngIf="ischeck==2 && paymentTypeQr && paymentTypeQr==0">
+                    <div class="col-12 mb-spacing-l">
+                        <label class="input-label-custom">Số tài khoản</label>
+                        <div class="p-inputgroup">
+                            <input class="merchant-input" appInputSanitize pInputText formControlName="accountNumber"
+                                placeholder="Nhập số tài khoản MB" [maxlength]="50" />
+                            @if (this.paymentQRFormInsert.get('accountNumber')?.value) {
+                            <span class="p-input-icon-right clear-icon"
+                                (click)="clearValue(paymentQRFormInsert,'accountNumber')">
+                                <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                            </span>
+                            }
+                        </div>
+                        @if (paymentQRFormInsert.controls['accountNumber'].dirty &&
+                        paymentQRFormInsert.controls['accountNumber'].invalid)
+                        {
+                        <div class="m-caption error">
+                            <div class="icon-caption">
+                                <span class="icon-error_solid"></span>
+                            </div>
+                            @if (paymentQRFormInsert.controls['accountNumber'].hasError('required')) {
+                            <span class="text-caption paragraph-m-regular">Vui lòng nhập số tài khoản</span>
+                            }
+                            @if (paymentQRFormInsert.controls['accountNumber'].hasError('pattern')) {
+                            <span class="text-caption paragraph-m-regular">Số tài khoản không hợp lệ</span>
+                            }
+                            @if (paymentQRFormInsert.controls['accountNumber'].hasError('ExitErorr')) {
+                            <span class="text-caption paragraph-m-regular">Số tài khoản không chính
+                                xác</span>
+                            }
+                        </div>
+                        }
+                    </div>
+                    <div class="col-12">
+                        <label class="input-label-custom">Tên tài khoản</label>
+                        <div class="p-inputgroup">
+                            <input class="merchant-input" appInputSanitize pInputText formControlName="accountName"
+                                placeholder="Nhập tên tài khoản" />
+                            @if (this.paymentQRFormInsert.get('accountName')?.value) {
+                            <span class="p-input-icon-right clear-icon"
+                                (click)="clearValue(paymentQRFormInsert,'accountName')">
+                                <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                            </span>
+                            }
+                        </div>
+                        @if (paymentQRFormInsert.controls['accountName'].dirty &&
+                        paymentQRFormInsert.controls['accountName'].invalid)
+                        {
+                        <div class="m-caption error">
+                            <div class="icon-caption">
+                                <span class="icon-error_solid"></span>
+                            </div>
+                            @if (paymentQRFormInsert.controls['accountName'].hasError('required')) {
+                            <span class="text-caption paragraph-m-regular">Vui lòng nhập tên tài khoản</span>
+                            }
+                            @if (paymentQRFormInsert.controls['accountName'].hasError('pattern')) {
+                            <span class="text-caption paragraph-m-regular">Tên tài khoản không hợp lệ</span>
+                            }
+                            @if (paymentQRFormInsert.controls['accountName'].hasError('ExitErorr')) {
+                            <span class="text-caption paragraph-m-regular">Tên tài khoản không chính
+                                xác</span>
+                            }
+                        </div>
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="payment-form mb-spacing-l" *ngIf="doCheckPayment(333)">
+        <div class="title d-flex justify-content-between align-items-center" [class.bg-title]="!isSoftPos">
+            <span class="paragraph-m-semibold">Soft POS</span>
+            <p-inputSwitch [(ngModel)]="isSoftPos" (onChange)="doCancelPayment($event.checked,2)" />
+        </div>
+        <div class="payment-info">
+            <label class="paragraph-m-semibold mb-spacing-xs">Mã TID POS</label>
+            <div class="row">
+                <div class="col-3 mb-spacing-l" *ngFor="let item of lstPaymentPodClone;index as i">
+                    <div class="p-inputgroup show-icon-right" [ngClass]="{'disabled': !isSoftPos}">
+                        <input class="merchant-input" appInputSanitize pInputText [readOnly]="true" [value]="item"
+                            [disabled]="!isSoftPos" [ngClass]="isDuplicateClass(lstDuplicatePos,item)" />
+                        <span class="p-input-icon-right clear-icon" (click)="deletePayment(item,i,1)">
+                            <i class="icon-trash input-icon input-icon-default icon-color"></i>
+                        </span>
+                    </div>
+                    <div class="m-caption error" *ngIf="isDuplicate(lstDuplicatePos,item)">
+                        <div class="icon-caption">
+                            <span class="icon-error_solid"></span>
+                        </div>
+                        <span class="text-caption paragraph-m-regular">
+                            TID POS đã tồn tại
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mt-3" *ngIf="isAddPodId">
+                <input class="merchant-input" appInputSanitize pInputText placeholder="Nhập mã TID trên thiết bị POS"
+                    [(ngModel)]="paymentMethodPodId" #posCodeRef="ngModel" required maxlength="50"
+                    pattern="^[a-zA-Z0-9]+$" (blur)="doAddPaymentPod(posCodeRef,true)"
+                    (keydown.enter)="doAddPaymentPod(posCodeRef)" />
+                <div class="m-caption error" *ngIf="posCodeRef.invalid && posCodeRef.dirty">
+                    <div class="icon-caption">
+                        <span class="icon-error_solid"></span>
+                    </div>
+                    <span *ngIf="posCodeRef.errors?.['required']" class="text-caption paragraph-m-regular">
+                        Chưa nhập mã TID POS
+                    </span>
+                    <span *ngIf="posCodeRef.errors?.['pattern']" class="text-caption paragraph-m-regular">
+                        Mã TID POS không hợp lệ
+                    </span>
+                    <span *ngIf="posCodeRef.errors?.['exitErorr']" class="text-caption paragraph-m-regular">
+                        TID POS đã tồn tại
+                    </span>
+                </div>
+            </div>
+            <div class="add-item" *ngIf="isSoftPos">
+                <span class="icon-plus_circle me-1"></span>
+                <span class="title-s-semibold" (click)="addPaymentPod()">Thêm mã mới</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="payment-form" *ngIf="doCheckPayment(332)">
+        <div class="title d-flex justify-content-between align-items-center" [class.bg-title]="!isPaymentTHDD">
+            <span class="paragraph-m-semibold">Thu hộ định danh</span>
+            <p-inputSwitch [(ngModel)]="isPaymentTHDD" (onChange)="doCancelPayment($event.checked,3)" />
+        </div>
+        <div class="payment-info">
+            <label class="paragraph-m-semibold mb-spacing-xs">Mã THDD ID</label>
+            <div class="row">
+                <div class="col-3 mb-spacing-l" *ngFor="let item of lstPaymentTHDDClone;index as i">
+                    <div class="p-inputgroup show-icon-right" [ngClass]="{'disabled': !isPaymentTHDD}">
+                        <input class="merchant-input" appInputSanitize pInputText [readOnly]="true" [value]="item"
+                            [disabled]="!isPaymentTHDD" [ngClass]="isDuplicateClass(lstDuplicateId,item)" />
+                        <span class="p-input-icon-right clear-icon" (click)="deletePayment(item,i,2)">
+                            <i class="icon-trash input-icon input-icon-default icon-color"></i>
+                        </span>
+                    </div>
+                    <div class="m-caption error" *ngIf="isDuplicate(lstDuplicateId,item)">
+                        <div class="icon-caption">
+                            <span class="icon-error_solid"></span>
+                        </div>
+                        <span class="text-caption paragraph-m-regular">
+                            Mã THDD đã tồn tại
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mt-3" *ngIf="isAddTHDDId">
+                <input class="merchant-input" appInputSanitize pInputText placeholder="Nhập mã THDD ID"
+                    [(ngModel)]="paymentMethodTHDDId" #THDDCodeRef="ngModel" required maxlength="50"
+                    pattern="^[a-zA-Z0-9]+$" (blur)="doAddPaymentTHDD(THDDCodeRef)"
+                    (keydown.enter)="doAddPaymentTHDD(THDDCodeRef)" />
+                <div class="m-caption error" *ngIf="THDDCodeRef.invalid && THDDCodeRef.dirty">
+                    <div class="icon-caption">
+                        <span class="icon-error_solid"></span>
+                    </div>
+                    <span *ngIf="THDDCodeRef.errors?.['required']" class="text-caption paragraph-m-regular">
+                        Chưa nhập mã THDD ID
+                    </span>
+                    <span *ngIf="THDDCodeRef.errors?.['pattern']" class="text-caption paragraph-m-regular">
+                        Mã THDD không hợp lệ
+                    </span>
+                    <span *ngIf="THDDCodeRef.errors?.['exitErorr']" class="text-caption paragraph-m-regular">
+                        Mã THDD đã tồn tại
+                    </span>
+                </div>
+            </div>
+            <div class="add-item" *ngIf="isPaymentTHDD">
+                <span class="icon-plus_circle me-1"></span>
+                <span class="title-s-semibold" (click)="addPaymentTHDD()">Thêm mã mới</span>
+            </div>
+        </div>
+    </div>
+    <div class="button-form">
+        <p-button label="Hủy" class="merchant-button-tertiary me-3" (onClick)="doClose()" />
+        <p-button label="Cập nhật" class="merchant-button"
+            [disabled]=" (!isPaymentQR && !isSoftPos && !isPaymentTHDD) ||(paymentQRFormUpdate.invalid && hasQR )||(paymentQRFormInsert.invalid && !hasQR && isPaymentQR)"
+            (onClick)="doUpdate()" />
+    </div>
+</div>

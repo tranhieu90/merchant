@@ -1,0 +1,262 @@
+.merchant-dropdown {
+  .p-dropdown {
+    width: 100%;
+    background: $color-surface-neutral-main;
+    border: 1px solid $color-border-neutral-main;
+
+    ul {
+      padding-left: 10px;
+    }
+
+    .p-dropdown-label {
+      color: $color-text-neutral-main;
+      //typo-paragraph-m-regular
+      @include typo-style($typo-font-sizes-m, $typo-font-weights-regular, none, none);
+
+      &.p-placeholder {
+        color: $color-text-neutral-sub-3;
+      }
+
+      &:disabled {
+        color: $color-text-neutral-sub-3 !important;
+      }
+    }
+
+    .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+      font-size: $typo-font-sizes-m !important;
+    }
+
+    .p-inputtext {
+      padding: $spacing-s $spacing-m;
+
+      &.p-dropdown-filter {
+        padding: 5px 12px;
+      }
+    }
+
+    &:hover,
+    &:focus {
+      border-color: $color-border-action-main-hover !important;
+      // box-shadow: none !important;
+      box-shadow: 0 0 0 2px $color-border-action-main-hover-2;
+    }
+
+    &.p-disabled {
+      background: $color-surface-semantic-disabled-sub;
+      border-color: $color-border-semantic-disabled-sub !important;
+      color: $color-text-neutral-sub-3 !important;
+    }
+  }
+
+  &.ng-dirty.ng-invalid>.p-dropdown {
+    border-color: $color-border-semantic-error !important;
+    box-shadow: 0 0 0 2px $color-border-semantic-error-hover-2;
+  }
+}
+
+
+
+.merchant-dropdown-small {
+  .p-dropdown {
+    width: 100%;
+    background: $color-surface-neutral-main;
+    border: 1px solid $color-border-neutral-main;
+
+    ul {
+      padding-left: 10px;
+    }
+
+    .p-dropdown-label {
+      color: $color-text-neutral-main;
+      //typo-paragraph-m-regular
+      @include typo-style($typo-font-sizes-m, $typo-font-weights-regular, none, none);
+
+      &.p-placeholder {
+        color: $color-text-neutral-sub-3;
+      }
+    }
+
+    .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+      font-size: $typo-font-sizes-m !important;
+    }
+
+    .p-inputtext {
+      padding: $spacing-2xs $spacing-2xs $spacing-2xs $spacing-xs;
+
+      &.p-dropdown-filter {
+        padding: 5px 12px;
+      }
+    }
+
+    &:hover,
+    &:focus {
+      border-color: $color-border-action-main-hover !important;
+      // box-shadow: none !important;
+      box-shadow: 0 0 0 2px $color-border-action-main-hover-2;
+    }
+
+    &.p-disabled {
+      background: $color-surface-semantic-disabled-sub;
+      border-color: $color-border-semantic-disabled-sub !important;
+      color: $color-text-neutral-sub-3 !important;
+    }
+  }
+
+  &.ng-dirty.ng-invalid>.p-dropdown {
+    border-color: $color-border-semantic-error !important;
+    box-shadow: 0 0 0 2px $color-border-semantic-error-hover-2;
+  }
+}
+
+.merchant-multiSelect {
+  .p-multiselect {
+    width: 100%;
+    background: $color-surface-neutral-main;
+    border: 1px solid $color-border-neutral-main;
+    font-size: $typo-font-sizes-m;
+
+    ul {
+      padding-left: 4px;
+    }
+
+    .p-multiselect-label.p-placeholder {
+      font-family: "AvertaStdCY-Regular";
+      color: $color-text-neutral-sub-3;
+    }
+
+    .p-multiselect-label {
+      color: $color-text-neutral-main;
+      padding: $spacing-s $spacing-m;
+    }
+
+    .p-multiselect-panel .p-multiselect-items .p-multiselect-item {
+      color: $color-text-neutral-main;
+      //typo-paragraph-m-regular
+      @include typo-style($typo-font-sizes-m, $typo-font-weights-regular, none, none);
+    }
+
+    &:hover,
+    &:focus {
+      border-color: $color-border-action-main-hover !important;
+      box-shadow: 0 0 0 2px $color-border-action-main-hover-2;
+    }
+
+    &.p-disabled {
+      background: $color-surface-semantic-disabled-sub;
+      border-color: $color-border-semantic-disabled-sub !important;
+
+    }
+
+    &:disabled {
+      color: $color-text-neutral-sub-3 !important;
+    }
+  }
+
+  &.multiselect-all {
+    .p-multiselect-header {
+      background: $color-surface-action-sub-hover;
+      margin: 4px;
+      padding: 8px 12px;
+
+      .p-multiselect-close {
+        display: none;
+      }
+    }
+
+    .p-multiselect-header::after {
+      content: "Tất cả";
+      color: $color-text-neutral-main;
+      position: absolute;
+      left: 53px;
+    }
+  }
+
+  &.ng-dirty.ng-invalid>.p-multiselect {
+    border-color: $color-border-semantic-error !important;
+    box-shadow: 0 0 0 2px $color-border-semantic-error-hover-2;
+  }
+}
+
+.merchant-multiSelect-small {
+  .p-multiselect {
+    width: 100%;
+    background: $color-surface-neutral-main;
+    border: 1px solid $color-border-neutral-main;
+    font-size: $typo-font-sizes-m;
+
+    ul {
+      padding-left: 4px;
+    }
+
+    .p-multiselect-label.p-placeholder {
+      font-family: "AvertaStdCY-Regular";
+      color: $color-text-neutral-sub-3;
+    }
+
+    .p-multiselect-label {
+      color: $color-text-neutral-main;
+      padding: $spacing-2xs $spacing-2xs $spacing-2xs $spacing-xs;
+    }
+
+    .p-multiselect-panel .p-multiselect-items .p-multiselect-item {
+      color: $color-text-neutral-main;
+      //typo-paragraph-m-regular
+      @include typo-style($typo-font-sizes-m, $typo-font-weights-regular, none, none);
+    }
+
+    &:hover,
+    &:focus {
+      border-color: $color-border-action-main-hover !important;
+      box-shadow: 0 0 0 2px $color-border-action-main-hover-2;
+    }
+
+    &.p-disabled {
+      background: $color-surface-semantic-disabled-sub;
+      border-color: $color-border-semantic-disabled-sub !important;
+      color: $color-text-neutral-sub-3 !important;
+    }
+  }
+
+  &.multiselect-all {
+    .p-multiselect-header {
+      background: $color-surface-action-sub-hover;
+      margin: 4px;
+      padding: 8px 12px;
+
+      .p-multiselect-close {
+        display: none;
+      }
+    }
+
+    .p-multiselect-header::after {
+      content: "Tất cả";
+      color: $color-text-neutral-main;
+      position: absolute;
+      left: 53px;
+    }
+  }
+
+  &.ng-dirty.ng-invalid>.p-multiselect {
+    border-color: $color-border-semantic-error !important;
+    box-shadow: 0 0 0 2px $color-border-semantic-error-hover-2;
+  }
+}
+
+.p-inputgroup.show-icon-left {
+  .p-dropdown .p-inputtext {
+    padding-left: 45px;
+  }
+
+  .p-multiselect {
+    padding-left: 30px;
+  }
+}
+
+//
+
+// tree-select
+.node-label-ellipsis {
+  @include typo-style($typo-font-sizes-m, $typo-font-weights-regular, none, none);
+  line-height: $typo-line-heights-l !important;
+  color: $color-text-neutral-main;
+}

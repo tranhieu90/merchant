@@ -1,0 +1,134 @@
+@import "../../../../../scss/variables";
+@import "../../../../../scss/mixins";
+
+.wrapper {
+    background: $color-global-neutral-white;
+    min-height: calc(100vh - 160px);
+    padding: $spacing-l;
+    border-radius: $border-radius-xs;
+}
+
+:host ::ng-deep.merchant-button .p-button {
+    width: 100%;
+}
+
+.status {
+    position: relative;
+    padding-left: $spacing-m;
+    padding: $spacing-2xs $spacing-xs $spacing-2xs $spacing-m;
+    text-transform: uppercase;
+    border-radius: $border-radius-l;
+    //typo/paragraph-xs-semibold-Capital
+    @include typo-style($typo-font-sizes-xs, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+    ;
+
+    &::before {
+        content: '•';
+        position: absolute;
+        left: 5px;
+        font-size: $typo-font-sizes-2xl;
+        top: 2px;
+    }
+
+    &.lock {
+        background: $color-surface-semantic-normal-sub;
+        color: $color-text-semantic-normal;
+    }
+
+    &.success {
+        background: $color-surface-semantic-information-sub;
+        color: $color-text-semantic-information;
+    }
+}
+
+.me-spacing-l {
+    margin-right: $spacing-l;
+}
+
+.mb-spacing-l {
+    margin-bottom: $spacing-l;
+}
+
+.mb-spacing-xs {
+    margin-bottom: $spacing-xs;
+}
+
+.date-info {
+    display: flex;
+    align-items: center;
+    color: $color-text-neutral-sub-2;
+
+    .icon {
+        font-size: $typo-font-sizes-3xl;
+        line-height: $typo-line-heights-l;
+    }
+}
+
+.business-info {
+    padding: $spacing-l $spacing-none;
+    border-top: 1px solid $color-border-neutral-main;
+    border-bottom: 1px solid $color-border-neutral-main;
+
+    .label {
+        color: $color-text-neutral-sub;
+    }
+
+    .text-infor {
+        color: $color-text-neutral-main;
+    }
+
+    .location {
+        padding: $spacing-2xs $spacing-xs;
+        background-color: $color-surface-semantic-normal-sub;
+        @include typo-style($typo-font-sizes-xs, $typo-font-weights-semibold, uppercase, none, $font-family-semiBold);
+        color: $color-text-semantic-normal;
+        border-radius: 2px;
+    }
+}
+
+.payment-form {
+    border: 1px solid $color-border-neutral-main;
+    border-radius: $border-radius-xs;
+
+    .title {
+        padding: $spacing-m;
+        background-color: $color-surface-action-sub;
+    }
+
+    .payment-info {
+        padding: $spacing-l;
+
+        .qr-code {
+            padding: $spacing-xs;
+        }
+    }
+}
+
+.user-form {
+    border: 1px solid $color-border-neutral-main;
+    border-radius: $border-radius-xs;
+    height: 100px;
+}
+
+.text-date {
+    color: $color-text-neutral-main;
+}
+
+.toggle-view {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: $spacing-m;
+    color: $color-text-action-main;
+    cursor: pointer;
+}
+
+.border {
+    border: 1px solid $color-border-neutral-main;
+}
+
+.icon-angle_down,
+.icon-angle_up {
+    @include base-icon;
+    color: $color-border-action-main;
+}

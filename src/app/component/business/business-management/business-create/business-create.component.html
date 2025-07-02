@@ -1,0 +1,514 @@
+<div class="fs-3 mb-3 header-xs-bold">Tạo mới điểm kinh doanh</div>
+<mat-stepper class="step-role" [selectedIndex]="currentStep" [disableRipple]="true"
+    (selectionChange)="onStepChange($event)" [linear]="true" #stepper *ngIf="isLoaded">
+    <ng-template matStepperIcon="edit" let-index="index">
+        {{ currentStep +1 }}
+    </ng-template>
+    <mat-step label="Chọn nhóm" *ngIf="!organizationSetup">
+        <div class="form-business">
+            <div class="paragraph-m-regular mb-spacing-l">
+                Vui lòng chọn nhóm cho điểm kinh doanh để doanh nghiệp hoạt động theo đúng mô hình tổ chức.
+            </div>
+            <div *ngIf="roleOrganization" class="d-flex paragraph-m-regular mb-spacing-l">
+                <span>
+                    Nếu chưa có nhóm phù hợp, hãy thiết lập mô hình tổ chức để thêm nhóm cho điểm kinh doanh sắp tạo
+                    mới.
+                    <span class="color-organization cursor-pointer" (click)="doOpenOrganization()">Thiết lập tổ chức
+                        <span class="icon-arrow_right"></span>
+                    </span>
+                </span>
+            </div>
+            <div class="row">
+                <div class="d-flex">
+                    <div class="p-inputgroup show-icon-left search-role">
+                        <span class="p-input-icon-left">
+                            <i class="icon-search input-icon input-icon-default"></i>
+                        </span>
+                        <input type="text" appInputSanitize pInputText class="merchant-input search"
+                            [(ngModel)]="searchAreaIdMove" placeholder="Tìm theo tên cụm/nhóm..."
+                            (blur)="onSearchChange()" (keydown.enter)="onSearchChange()" />
+                    </div>
+                </div>
+
+                <div class="box-area mt-4 scroll-box">
+                    <div *ngIf="filteredAreas.length > 0">
+                        <div *ngFor="let area of filteredAreas">
+                            <app-area-view [area]="area" [isSelectArea]="true" [isShowChildren]="true"
+                                [areaIdMove]="areaIdMove" [isLeaf]="area.isLeaf" [isSearching]="isSearching"
+                                (doChangeAreaIdMove)="doChangeAreaIdMove($event)">
+                            </app-area-view>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="div-button">
+                <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="onCancel()" />
+                <button [disabled]="areaIdMove == null" mat-button class="merchant-button-material"
+                    (click)="doCheckQuantity()">
+                    Tiếp tục
+                </button>
+            </div>
+        </div>
+    </mat-step>
+    <mat-step label="Nhập thông tin">
+        <div class="form-business scroll-form">
+            <div class="paragraph-m-regular mb-spacing-l">
+                Vui lòng nhập chính xác thông tin để hiển thị thống kê kinh doanh của bạn hiệu quả nhất.
+            </div>
+            <form [formGroup]="formBusiness">
+                <div class="col-12 mb-spacing-l">
+                    <label class="input-label-custom label mb-spacing-xs">Tên điểm kinh doanh</label>
+                    <div class="p-inputgroup">
+                        <input appShowClearOnFocus=".clear-icon" appInputSanitize (blur)="trimValue('merchantBizName')"
+                            trim="blur" class=" merchant-input" pInputText formControlName="merchantBizName"
+                            placeholder="Ví dụ: Mã cửa hàng ABC ..." maxlength="32" />
+                        @if (this.formBusiness.get('merchantBizName')?.value) {
+                        <span class="p-input-icon-right clear-icon" (click)="clearValue('merchantBizName')">
+                            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                        </span>
+                        }
+                    </div>
+                    @if (formBusiness.controls['merchantBizName'].dirty &&
+                    formBusiness.controls['merchantBizName'].invalid)
+                    {
+                    <div class="m-caption error">
+                        <div class="icon-caption">
+                            <span class="icon-error_solid"></span>
+                        </div>
+                        @if (formBusiness.controls['merchantBizName'].hasError('required')) {
+                        <span class="text-caption paragraph-m-regular">Vui lòng nhập tên điểm kinh doanh</span>
+                        }
+                        @if (formBusiness.controls['merchantBizName'].hasError('isMerchantBizNameUsed')) {
+                        <span class="text-caption paragraph-m-regular">Tên điểm kinh doanh đã tồn tại</span>
+                        }
+                    </div>
+                    }
+                </div>
+                <div class="col-12 mb-spacing-l">
+                    <label class="input-label-custom label mb-spacing-xs">Tên diễn giải</label>
+                    <div class="p-inputgroup">
+                        <input appShowClearOnFocus=".clear-icon" appInputSanitize (blur)="trimValue('merchantName')"
+                            trim="blur" class="merchant-input" pInputText formControlName="merchantName"
+                            placeholder="Ví dụ: Cửa hàng ABC ..." maxlength="128" />
+                        @if (this.formBusiness.get('merchantName')?.value) {
+                        <span class="p-input-icon-right clear-icon" (click)="clearValue('merchantName')">
+                            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                        </span>
+                        }
+                    </div>
+                    @if (formBusiness.controls['merchantName'].dirty && formBusiness.controls['merchantName'].invalid)
+                    {
+                    <div class="m-caption error">
+                        <div class="icon-caption">
+                            <span class="icon-error_solid"></span>
+                        </div>
+                        @if (formBusiness.controls['merchantName'].hasError('required')) {
+                        <span class="text-caption paragraph-m-regular">Vui lòng nhập tên diễn giải</span>
+                        }
+                        @if (formBusiness.controls['merchantName'].hasError('isMerchantNameUsed')) {
+                        <span class="text-caption paragraph-m-regular">Tên diễn giải đã tồn tại</span>
+                        }
+                    </div>
+                    }
+                </div>
+                <div class="row mb-spacing-l">
+                    <div class="col-4">
+                        <label class="input-label-custom label mb-spacing-xs">Tỉnh/Thành phố</label>
+                        <p-dropdown [options]="lstProvince" formControlName="provinceId" optionLabel="provinceName"
+                            optionValue="provinceId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
+                            filterBy="provinceName" styleClass="w-100" [panelStyle]="{'width':'300px'}" appendTo="body"
+                            placeholder="Chọn tỉnh, thành phố " (ngModelChange)="doGetDistrict($event)"
+                            class="merchant-dropdown">
+                        </p-dropdown>
+                        @if (formBusiness.controls['provinceId'].dirty && formBusiness.controls['provinceId'].invalid)
+                        {
+                        <div class="m-caption error">
+                            <div class="icon-caption">
+                                <span class="icon-error_solid"></span>
+                            </div>
+                            @if (formBusiness.controls['provinceId'].hasError('required')) {
+                            <span class="text-caption paragraph-m-regular">Vui lòng chọn tỉnh, thành phố</span>
+                            }
+                        </div>
+                        }
+                    </div>
+                    <div class="col-4">
+                        <label class="input-label-custom label mb-spacing-xs">Quận/Huyện</label>
+                        <p-dropdown [options]="lstDistrict" formControlName="districtId" optionLabel="districtName"
+                            optionValue="districtId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
+                            styleClass="w-100" filterBy="districtName" [panelStyle]="{'width':'300px'}" appendTo="body"
+                            placeholder="Chọn quận, huyện" (ngModelChange)="doGetCommune(001,$event,1)"
+                            class="merchant-dropdown">
+                        </p-dropdown>
+                        @if (formBusiness.controls['districtId'].dirty && formBusiness.controls['districtId'].invalid)
+                        {
+                        <div class="m-caption error">
+                            <div class="icon-caption">
+                                <span class="icon-error_solid"></span>
+                            </div>
+                            @if (formBusiness.controls['districtId'].hasError('required')) {
+                            <span class="text-caption paragraph-m-regular">Vui lòng chọn quận, huyện</span>
+                            }
+                        </div>
+                        }
+                    </div>
+                    <div class="col-4">
+                        <label class="input-label-custom label mb-spacing-xs">Phường/Xã</label>
+                        <p-dropdown [options]="lstCommune" formControlName="communeId" optionLabel="communeName"
+                            optionValue="communeId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
+                            filterBy="communeName" styleClass="w-100" [panelStyle]="{'width':'300px'}" appendTo="body"
+                            placeholder="Chọn phường, xã" class="merchant-dropdown">
+                        </p-dropdown>
+                        @if (formBusiness.controls['communeId'].dirty && formBusiness.controls['communeId'].invalid)
+                        {
+                        <div class="m-caption error">
+                            <div class="icon-caption">
+                                <span class="icon-error_solid"></span>
+                            </div>
+                            @if (formBusiness.controls['communeId'].hasError('required')) {
+                            <span class="text-caption paragraph-m-regular">Vui lòng chọn xã, phường, thị trấn</span>
+                            }
+                        </div>
+                        }
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label class="input-label-custom label mb-spacing-xs">Địa điểm kinh doanh</label>
+                    <div class="p-inputgroup">
+                        <input appShowClearOnFocus=".clear-icon" (blur)="trimValue('address')" trim="blur"
+                            class="merchant-input" appInputSanitize pInputText formControlName="address"
+                            placeholder="Nhập địa chỉ điểm kinh doanh" maxlength="256" />
+                        @if (this.formBusiness.get('address')?.value) {
+                        <span class="p-input-icon-right clear-icon" (click)="clearValue('address')">
+                            <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                        </span>
+                        }
+                    </div>
+                    @if (formBusiness.controls['address'].dirty && formBusiness.controls['address'].invalid)
+                    {
+                    <div class="m-caption error">
+                        <div class="icon-caption">
+                            <span class="icon-error_solid"></span>
+                        </div>
+                        @if (formBusiness.controls['address'].hasError('required')) {
+                        <span class="text-caption paragraph-m-regular">Vui lòng nhập địa chỉ điểm kinh doanh</span>
+                        }
+                    </div>
+                    }
+                </div>
+                <div class="div-button">
+                    <p-button *ngIf="organizationSetup" label="Hủy" class="merchant-button-tertiary me-2"
+                        (onClick)="onCancel()" />
+                    <p-button *ngIf="!organizationSetup" label="Quay lại" class="merchant-button-tertiary me-2"
+                        (onClick)="doPreStep()" />
+                    <button [disabled]="formBusiness.invalid" mat-button class="merchant-button-material"
+                        (click)="checkStepPayment() ">
+                        Tiếp tục
+                    </button>
+                </div>
+            </form>
+        </div>
+    </mat-step>
+    <mat-step label="Thiết lập PT thanh toán">
+        <div *ngIf="this.lstPaymentMethod.length == 0"
+            class="content-thirdForm d-flex flex-column align-items-center header-xs-bold mt-5">
+            <img [src]="assetPath + '/assets/images/grid-search-empty.png'">
+            <div class="mt-4 title-l-semibold title-no-data">Merchant chưa thiết lập phương thức thanh toán</div>
+            <div class="title-s-regular summary-no-data">Vui lòng thiết lập phương thức thanh toán trước.</div>
+        </div>
+        <div *ngIf="this.lstPaymentMethod.length > 0" class="form-business scroll-form">
+            <div class="paragraph-m-regular mb-spacing-l">
+                Vui lòng chọn ít nhất 1 phương thức thanh toán cho địa điểm kinh doanh để
+                tiếp tục tiến trình
+            </div>
+            <div *ngIf="paymentMethodMap.has(324)" class="payment-form mb-spacing-l">
+                <div class="title d-flex justify-content-between align-items-center">
+                    <span class="paragraph-m-semibold">QR Thanh toán</span>
+                    <p-inputSwitch [(ngModel)]="isPayment1" />
+                </div>
+                <div class="payment-info" [@accordion]="isPayment1 ? 'expanded' : 'collapsed'">
+                    <div class="row mb-spacing-l">
+                        <div class="col-3 d-flex align-items-center gap-2">
+                            <p-radioButton [ngModel]="ischeck" [value]="1" name="checkOption"
+                                (ngModelChange)="ischeck = $event" inputId="radio1" />
+                            <label for="radio1" class="paragraph-m-semibold">Nhập mã Terminal ID đã có</label>
+                        </div>
+                        <div class="col-3 d-flex align-items-center gap-2">
+                            <p-radioButton [ngModel]="ischeck" [value]="2" name="checkOption"
+                                (ngModelChange)="ischeck = $event" inputId="radio2" />
+                            <label for="radio2" class="paragraph-m-semibold">Tự động tạo Terminal ID</label>
+                        </div>
+                    </div>
+                    <div class="col-12" *ngIf="ischeck==1">
+                        <label class="input-label-custom">Terminal ID</label>
+                        <div class="p-inputgroup">
+                            <input appShowClearOnFocus=".clear-icon" appInputSanitize class="merchant-input" pInputText
+                                [(ngModel)]="terminalId" #temiralId="ngModel" required [pattern]="accountNumberPattern"
+                                placeholder="Nhập mã Terminal ID do MB cung cấp khi tích hợp dịch vụ" />
+                            @if (terminalId) {
+                            <span class="p-input-icon-right clear-icon" (click)="terminalId = null">
+                                <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                            </span>
+                            }
+                        </div>
+                        <div class="m-caption error" *ngIf="temiralId.invalid && temiralId.dirty">
+                            <div class="icon-caption">
+                                <span class="icon-error_solid"></span>
+                            </div>
+                            <span *ngIf="temiralId.errors?.['required']" class="text-caption paragraph-m-regular">
+                                Chưa nhập Terminal ID
+                            </span>
+                            <span *ngIf="temiralId.errors?.['notCorrect']" class="text-caption paragraph-m-regular">
+                                Terminal ID đã tồn tại
+                            </span>
+                            <span *ngIf="temiralId.errors?.['invalidErorr']" class="text-caption paragraph-m-regular">
+                                Terminal ID không hợp lệ
+                            </span>
+                            <span *ngIf="temiralId.errors?.['pattern']" class="text-caption paragraph-m-regular">
+                                Terminal ID không hợp lệ
+                            </span>
+                        </div>
+                    </div>
+                    <div class="ischeck-2" *ngIf="ischeck==2 && paymentType == 0">
+                        <div class="col-12 mb-spacing-l">
+                            <label class="input-label-custom">Số tài khoản</label>
+                            <div class="p-inputgroup">
+                                <input appShowClearOnFocus=".clear-icon" appInputSanitize class="merchant-input" pInputText [(ngModel)]="accountNumber"
+                                    [pattern]="accountNumberPattern" #accountNumberId="ngModel" required
+                                    placeholder="Nhập số tài khoản MB" />
+                                @if (accountNumber) {
+                                <span class="p-input-icon-right clear-icon" (click)="accountNumber = null">
+                                    <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                                </span>
+                                }
+                            </div>
+                            <div class="m-caption error" *ngIf="accountNumberId.invalid &&  accountNumberId.dirty">
+                                <div class="icon-caption">
+                                    <span class="icon-error_solid"></span>
+                                </div>
+                                <span *ngIf="accountNumberId.errors?.['required']"
+                                    class="text-caption paragraph-m-regular">
+                                    Chưa nhập số tài khoản
+                                </span>
+                                <span *ngIf="accountNumberId.errors?.['pattern']"
+                                    class="text-caption paragraph-m-regular">
+                                    Số tài khoản sai định dạng
+                                </span>
+                                <span *ngIf="accountNumberId.errors?.['notCorrect']"
+                                    class="text-caption paragraph-m-regular">
+                                    Số tài khoản không chính xác
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="input-label-custom">Tên tài khoản</label>
+                            <div class="p-inputgroup">
+                                <input appShowClearOnFocus=".clear-icon" class="merchant-input" appInputSanitize pInputText [(ngModel)]="accountName"
+                                    #accountNameId="ngModel" [pattern]="accountNamePattern" required
+                                    placeholder="Nhập tên tài khoản" />
+                                @if (accountName) {
+                                <span class="p-input-icon-right clear-icon" (click)="accountName = null">
+                                    <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                                </span>
+                                }
+                            </div>
+                            <div class="m-caption error" *ngIf="accountNameId.invalid && accountNameId.dirty">
+                                <div class="icon-caption">
+                                    <span class="icon-error_solid"></span>
+                                </div>
+                                <span *ngIf="accountNameId.errors?.['required']"
+                                    class="text-caption paragraph-m-regular">
+                                    Chưa nhập tên tài khoản
+                                </span>
+                                <span *ngIf="accountNameId.errors?.['pattern']"
+                                    class="text-caption paragraph-m-regular">
+                                    Tên tài khoản sai định dạng
+                                </span>
+                                <span *ngIf="accountNameId.errors?.['notCorrect']"
+                                    class="text-caption paragraph-m-regular">
+                                    Tên tài khoản không chính xác
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="paymentMethodMap.has(333)" class="payment-form mb-spacing-l">
+                <div class="title d-flex justify-content-between align-items-center">
+                    <span class="paragraph-m-semibold">TID POS</span>
+                    <p-inputSwitch [(ngModel)]="isPayment2" />
+                </div>
+                <div class="payment-info" [@accordion]="isPayment2 ? 'expanded' : 'collapsed'">
+                    <label class="paragraph-m-semibold mb-spacing-xs">Mã TID POS</label>
+                    <div class="row mb-spacing-l">
+                        <div *ngFor="let pos of lstPaymentPos, let i = index" class="col-3 mb-spacing-l">
+                            <div class="p-inputgroup show-icon-right">
+                                <input class="merchant-input" appInputSanitize pInputText [readOnly]="true"
+                                    [value]="pos" [ngClass]="{'input-error': tidPosErrorList.includes(pos)}" />
+                                <span class="p-input-icon-right clear-icon" (click)="removePos(i)">
+                                    <i class="icon-trash input-icon input-icon-default icon-color"></i>
+                                </span>
+                            </div>
+                            <div class="m-caption error" *ngIf="tidPosErrorList.includes(pos)">
+                                <div class="icon-caption">
+                                    <span class="icon-error_solid"></span>
+                                </div>
+                                <span class="text-caption paragraph-m-regular">
+                                    TID POS đã tồn tại
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div *ngIf="isAddPosId">
+                            <input appInputSanitize class="merchant-input" pInputText
+                                placeholder="Nhập mã TID trên thiết bị POS" [(ngModel)]="posCode" #posCodeRef="ngModel"
+                                pattern="^[a-zA-Z0-9]+$" (blur)="doAddPaymentPos(posCodeRef)" maxlength="50"
+                                (keydown.enter)="doAddPaymentPos(posCodeRef)" required />
+                            <div class="m-caption error" *ngIf="posCodeRef.invalid && posCodeRef.dirty">
+                                <div class="icon-caption">
+                                    <span class="icon-error_solid"></span>
+                                </div>
+                                <span *ngIf="posCodeRef.errors?.['required']" class="text-caption paragraph-m-regular">
+                                    Chưa nhập mã TID POS
+                                </span>
+                                <span *ngIf="posCodeRef.errors?.['pattern']" class="text-caption paragraph-m-regular">
+                                    Mã TID POS không hợp lệ
+                                </span>
+                                <span *ngIf="posCodeRef.errors?.['exitErorr']" class="text-caption paragraph-m-regular">
+                                    TID POS đã tồn tại
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="add-item">
+                        <span class="icon-plus_circle me-1"></span>
+                        <span class="title-s-semibold" (click)="addPaymentPos()">Thêm mã mới</span>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="paymentMethodMap.has(332)" class="payment-form">
+                <div class="title d-flex justify-content-between align-items-center">
+                    <span class="paragraph-m-semibold">Thu hộ định danh</span>
+                    <p-inputSwitch [(ngModel)]="isPayment3" />
+                </div>
+                <div class="payment-info" [@accordion]="isPayment3 ? 'expanded' : 'collapsed'">
+                    <label class="paragraph-m-semibold mb-spacing-xs">Mã THD ID</label>
+                    <div class="row">
+                        <div *ngFor="let thd of lstPaymentThdd, let i = index" class="col-3 mb-spacing-l">
+                            <div class="p-inputgroup show-icon-right">
+                                <input appInputSanitize class="merchant-input" pInputText [readOnly]="true"
+                                    [value]="thd" [ngClass]="{'input-error': thddErrorList.includes(thd)}" />
+                                <span class="p-input-icon-right clear-icon" (click)="removeThdd(i)">
+                                    <i class="icon-trash input-icon input-icon-default icon-color"></i>
+                                </span>
+                            </div>
+                            <div class="m-caption error" *ngIf="thddErrorList.includes(thd)">
+                                <div class="icon-caption">
+                                    <span class="icon-error_solid"></span>
+                                </div>
+                                <span class="text-caption paragraph-m-regular">
+                                    THDD ID đã tồn tại
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div *ngIf="isAddTHDDId">
+                            <input appInputSanitize class="merchant-input" pInputText
+                                placeholder="Nhập mã THDD ID do MB cung cấp khi tích hợp dịch vụ" [(ngModel)]="thddCode"
+                                #thddCodeRef="ngModel" maxlength="50" pattern="^[a-zA-Z0-9]+$"
+                                (blur)="doAddPaymentTHDD(thddCodeRef)" required
+                                (keydown.enter)="doAddPaymentTHDD(thddCodeRef)" />
+                            <div class="m-caption error" *ngIf="thddCodeRef.invalid && thddCodeRef.dirty">
+                                <div class="icon-caption">
+                                    <span class="icon-error_solid"></span>
+                                </div>
+                                <span *ngIf="thddCodeRef.errors?.['required']" class="text-caption paragraph-m-regular">
+                                    Chưa nhập mã THDD ID
+                                </span>
+                                <span *ngIf="thddCodeRef.errors?.['pattern']" class="text-caption paragraph-m-regular">
+                                    Mã THDD không hợp lệ
+                                </span>
+                                <span *ngIf="thddCodeRef.errors?.['exitErorr']"
+                                    class="text-caption paragraph-m-regular">
+                                    THDD ID đã tồn tại
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="add-item">
+                        <span class="icon-plus_circle me-1"></span>
+                        <span class="title-s-semibold" (click)="addPaymentTHDD()">Thêm mã mới</span>
+                    </div>
+                </div>
+            </div>
+            <div class="div-button">
+                <p-button label="Quay lại" class="merchant-button-tertiary me-2" (onClick)="doPreStep()" />
+                <button [disabled]="this.lstPaymentMethod.length == 0 || !(isPayment1 || isPayment2 || isPayment3)
+                    || isPtttInvalid() || hasTidPosError() || hasThddError()" mat-button
+                    class="merchant-button-material" (click)="doCreate()">
+                    Tạo mới
+                </button>
+            </div>
+        </div>
+    </mat-step>
+    <mat-step label="Hoàn tất">
+        <div class="content-thirdForm d-flex flex-column align-items-center header-xs-bold mt-5">
+            <ng-container *ngIf="isSuccess === 1">
+                <img [src]="assetPath +'/assets/images/image-success.svg'" alt="Success" />
+                <!-- title -->
+                <div *ngIf="oneSuccessful" class="mt-3 text-center">
+                    Tạo mới điểm kinh doanh "{{ this.formBusiness.get('merchantBizName')?.value}}"<br>
+                    thành công
+                </div>
+                <div *ngIf="!oneSuccessful" class="mt-3 text-center">
+                    Tạo mới điểm kinh doanh thành công: <br>
+                    {{ this.formBusiness.get('merchantBizName')?.value}}
+                </div>
+                <!-- info -->
+                <div *ngIf="oneSuccessful" class="text title-s-regular mt-3">
+                    Vui lòng kiểm tra lại phương thức thanh toán do có lỗi khi thiết lập
+                </div>
+                <div *ngIf="!oneSuccessful && !roleHr" class="text title-s-regular mt-3">
+                    Điểm kinh doanh đã được thêm vào hệ thống quản lý của bạn.
+                </div>
+                <div *ngIf="!oneSuccessful && roleHr" class="text title-s-regular mt-3">
+                    Bạn có thể thiết lập nhân sự cho điểm kinh doanh này.
+                </div>
+                <!-- 1 PTTT thành công -->
+                <a *ngIf="oneSuccessful" class="mt-3">
+                    <p-button (click)="doDetail()" label="Kiểm tra lại" class="merchant-button mt-4" />
+                </a>
+                <!-- Được phân quyền thêm nhân sự -->
+                <a *ngIf="!oneSuccessful && roleHr" [href]="assetPath +'/hr/hr-create'" class="mt-3">
+                    <p-button label="Thêm nhân sự" class="merchant-button mt-4" />
+                </a>
+                <a *ngIf="oneSuccessful || roleHr" [href]="assetPath +'/business'" class="mt-3">
+                    <p-button label="Về trang quản lý" class="merchant-button-tertiary mt-4" />
+                </a>
+                <!-- Không được phân quyền thêm nhân sự -->
+                <a *ngIf="!oneSuccessful && !roleHr" [href]="assetPath +'/business'" class="mt-3">
+                    <p-button label="Về trang quản lý" class="merchant-button mt-4" />
+                </a>
+            </ng-container>
+
+            <ng-container *ngIf="isSuccess === 0">
+                <img [src]="assetPath + '/assets/images/image-false.svg'" alt="False" />
+                <div class="mt-3 text-center">
+                    Tạo mới điểm kinh doanh không thành công:<br>
+                    {{ this.formBusiness.get('merchantBizName')?.value}}
+                </div>
+                <div class="text title-s-regular mt-3">Đã có lỗi xảy ra vui lòng thử lại</div>
+                <a class="mt-3">
+                    <p-button label="Thực hiện lại" class="merchant-button mt-4" (click)="onStepOne()" />
+                </a>
+                <a [href]="assetPath +'/business'" class="mt-3">
+                    <p-button label="Về trang quản lý" class="merchant-button-tertiary mt-4" />
+                </a>
+            </ng-container>
+        </div>
+    </mat-step>
+</mat-stepper>
