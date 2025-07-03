@@ -63,9 +63,9 @@
                     <label class="input-label-custom">Tỉnh/Thành phố</label>
                     <p-dropdown [options]="lstProvince" formControlName="provinceId" optionLabel="provinceName"
                         optionValue="provinceId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
-                        filterBy="provinceName" styleClass="w-100" [panelStyle]="{'width':'220px'}" appendTo="body"
-                        placeholder="Chọn tỉnh,thành phố " (ngModelChange)="doGetDistrict($event,1)"
-                        class="merchant-dropdown">
+                        emptyMessage="Không có dữ liệu" filterBy="provinceName" styleClass="w-100"
+                        [panelStyle]="{'width':'220px'}" appendTo="body" placeholder="Chọn tỉnh,thành phố "
+                        (ngModelChange)="doGetDistrict($event,1)" class="merchant-dropdown">
                     </p-dropdown>
                     @if (formBusiness.controls['provinceId'].dirty && formBusiness.controls['provinceId'].invalid)
                     {
@@ -83,9 +83,9 @@
                     <label class="input-label-custom">Quận/Huyện</label>
                     <p-dropdown [options]="lstDistrict" formControlName="districtId" optionLabel="districtName"
                         optionValue="districtId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
-                        styleClass="w-100" filterBy="districtName" [panelStyle]="{'width':'220px'}" appendTo="body"
-                        placeholder="Chọn quận,huyện" (ngModelChange)="doGetCommune(001,$event,1)"
-                        class="merchant-dropdown">
+                        emptyMessage="Không có dữ liệu" styleClass="w-100" filterBy="districtName"
+                        [panelStyle]="{'width':'220px'}" appendTo="body" placeholder="Chọn quận,huyện"
+                        (ngModelChange)="doGetCommune(001,$event,1)" class="merchant-dropdown">
                     </p-dropdown>
                     @if (formBusiness.controls['districtId'].dirty && formBusiness.controls['districtId'].invalid)
                     {
@@ -103,8 +103,9 @@
                     <label class="input-label-custom">Phường/Xã</label>
                     <p-dropdown [options]="lstCommune" formControlName="communeId" optionLabel="communeName"
                         optionValue="communeId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
-                        filterBy="communeName" styleClass="w-100" [panelStyle]="{'width':'220px'}" appendTo="body"
-                        placeholder="Chọn phường,xã" class="merchant-dropdown">
+                        emptyMessage="Không có dữ liệu" filterBy="communeName" styleClass="w-100"
+                        [panelStyle]="{'width':'220px'}" appendTo="body" placeholder="Chọn phường,xã"
+                        class="merchant-dropdown">
                     </p-dropdown>
                     @if (formBusiness.controls['communeId'].dirty && formBusiness.controls['communeId'].invalid)
                     {

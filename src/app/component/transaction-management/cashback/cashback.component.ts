@@ -47,6 +47,7 @@ import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
 import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
 import { MbDropdown } from '../../../base/shared/mb-dropdown/mb-dropdown.component';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { VerifyUserService } from '../../../common/service/verify/verify-user.service';
 
 @Component({
   selector: 'app-refund-transaction',
@@ -88,6 +89,7 @@ export class CashbackComponent implements OnInit {
   dateRange : (Date | null)[] = [];
   private tempFromDate: Date | null = null;
   lastValidRange: (Date | null)[] | null = null;
+  wasPickerOpened = false;
   assetPath = environment.assetPath;
   statusOptions: any = [];
   paymentMethodOptions: any = [];
@@ -112,7 +114,7 @@ export class CashbackComponent implements OnInit {
   cachedSearchParam: any = null;
   hasRoleExport: boolean = true;
   merchantPage = 1;
-  merchantSize = 50;
+  merchantSize = 1000;
   isLoadMoreMerchant: boolean = true;
   currentGroupIdList: any = null;
 
@@ -397,7 +399,8 @@ export class CashbackComponent implements OnInit {
     private api: FetchApiService,
     private toast: ToastService,
     private auth: AuthenticationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+     private verify:VerifyUserService
   ) {
     const columnsShow = localStorage.getItem(environment.settingCashback)?.split(',').map(api => api.trim());
     if (columnsShow) {
@@ -593,7 +596,7 @@ export class CashbackComponent implements OnInit {
   }
 
   doDetail(item: any) {
-    this.router.navigate(['/transaction/cashback-detail'], {
+    this.router.navigate(['/transaction/cashback/detail'], {
       queryParams: {
         id: item['id'],
         transTime: item['tranTime'],
@@ -621,10 +624,10 @@ export class CashbackComponent implements OnInit {
         this.exportExcel();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
-        this.openDialogUnverifiedAccountHasEmail();
+        this.verify.openDialogUnverifiedAccountAndEmail();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
-        this.openDialogUnverifiedAccountNoEmail();
+        this.verify.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
         console.warn("Trạng thái xác minh không hợp lệ:", verifyUser);
@@ -695,107 +698,6 @@ export class CashbackComponent implements OnInit {
     this.onSearch();
   }
 
-  openDialogUnverifiedAccountHasEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>.`;
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonLeftLabel = 'Thay đổi email';
-    dataDialog.buttonRightLabel = 'Xác thực email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.verifyEmail();
-      } else {
-        this.updateEmail();
-      }
-    })
-  }
-
-  openDialogUnverifiedAccountNoEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = 'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonRightLabel = 'Bổ sung email';
-    dataDialog.hiddenButtonLeft = true
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.updateEmail();
-      }
-    })
-  }
-
-
-  updateEmail() {
-    const dialogRef = this.dialog.open(UpdateUserComponent, {
-      width: '600px',
-      panelClass: 'dialog-update-user',
-      data: {
-        title: 'Cập nhật email',
-        type: 'email',
-        isEmailInfo: true,
-      },
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.router.navigate(['/profile']);
-      }
-    })
-  }
-
-  verifyEmail() {
-    this.api.post(USER_ENDPOINT.SEND_VERIFY_MAIL).subscribe(res => {
-      let content = `Chúng tôi vừa gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>, vui lòng kiểm tra email và làm theo hướng dẫn để hoàn tất xác thực tài khoản.`
-      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-      dataDialog.title = 'Hệ thống đã gửi liên kết xác thực';
-      dataDialog.message = content;
-      dataDialog.buttonLabel = 'Tôi đã hiểu';
-      dataDialog.icon = 'icon-mail';
-      dataDialog.iconColor = 'icon info';
-      dataDialog.viewCancel = false;
-      const dialogRef = this.dialogCommon.openDialogInfo(dataDialog);
-      dialogRef.subscribe(res => {
-        this.router.navigate(['/profile']);
-      })
-    }, (error) => {
-      const errorData = error?.error || {};
-      // if (errorData.soaErrorCode == 'AUTH_ERROR_007') {
-      //   this.dialog.open(LoginNotificationComponent, {
-      //     panelClass: 'dialog-login-noti',
-      //     data: {
-      //       title: 'Email đã được xác thực bởi tài khoản khác',
-      //       message: 'Vui lòng thay đổi email để xác thực tài khoản.',
-      //       icon: 'icon-mail',
-      //       typeClass: 'warning',
-      //       expired: true,
-      //       textLeft: 'Hủy',
-      //       type: 'email',
-      //       textRight: 'Thay đổi email',
-      //       isEmailInfo: true
-      //     },
-      //     width: '30%',
-      //     disableClose: true,
-      //   })
-      // }
-    })
-  }
 
   checkHasSearchOrFilterData(): boolean {
     // Check searchCriteria (bỏ qua dateRange)
@@ -882,6 +784,7 @@ export class CashbackComponent implements OnInit {
   onCalendarOpenChange(open: boolean): void {
     if (open) {
       this.tempFromDate = null;
+      this.wasPickerOpened = true;
       this.initializeDates();
       this.cdr.detectChanges();
 
@@ -893,7 +796,13 @@ export class CashbackComponent implements OnInit {
         }
       }, 100); // Delay nhỏ để chắc chắn DOM đã render
     } else {
+      // Khi đóng popup - nếu đã mở và có dateRange hợp lệ thì call API
+      if (this.wasPickerOpened && this.dateRange && this.dateRange.length === 2 && this.dateRange[0] && this.dateRange[1]) {
+        this.onSearch();
+      }
+
       this.tempFromDate = null;
+      this.wasPickerOpened = false;
     }
   }
 
@@ -961,8 +870,6 @@ export class CashbackComponent implements OnInit {
     this.lastValidRange = [new Date(newFromDate), new Date(newToDate)]; // Deep copy
     this.cdr.detectChanges();
 
-    // Call API khi có đủ 2 ngày hợp lệ
-    this.onSearch();
   }
 
   private restorePreviousValidRange(): void {

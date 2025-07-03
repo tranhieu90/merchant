@@ -21,6 +21,9 @@
         <p-button *ngIf="hasRoleUpdate" (click)="doOpenPage()" class="merchant-button-secondary" label="Chỉnh sửa"/>
         <p-button *ngIf="hasRoleCreateUser" class="merchant-button ml-16" label="Thêm nhân sự" icon="icon-plus_small" (click)="doOpenPage('createUser')" />
       </div>
+      <div *ngIf="roleInfo?.isDefault === 0" class="d-flex col-4 justify-content-end">
+        <p-button *ngIf="hasRoleCreateUser" class="merchant-button ml-16" label="Thêm nhân sự" icon="icon-plus_small" (click)="doOpenPage('createUser')" />
+      </div>
     </div>
   
     <p-tabView styleClass="tabview-custom merchant-tab mt-4">
@@ -76,7 +79,7 @@
           <div class="content-users text-center">
             <img [src]="assetPath + '/assets/images/image-no-user.svg'" alt="Success"/>
             <div class="mt-4 title-l-semibold"> Không có nhân sự nào</div>
-            <div *ngIf="roleInfo?.isDefault === 1 && hasRoleCreateUser">
+            <div *ngIf="hasRoleCreateUser">
               <div class="description title-s-regular">Bạn chưa gán nhân sự nào cho vai trò này.<br> Vui lòng thử lại
                 sau hoặc thêm nhân sự mới.
               </div>

@@ -143,12 +143,6 @@
                        emptyFilterMessage="Không tìm thấy dữ liệu"
                        (onPanelShow)="onMerchantDropdownShow()"
         >
-          <ng-template pTemplate="header">
-            <div class="custom-multi-header" *ngIf="this.filterCriteria.selectedMerchants?.length" (click)="setValueMerchantDefault()">
-              <span class="icon-close_small icon-clear"> </span>
-              <span class="clear-all-link"> Bỏ chọn tất cả</span>
-            </div>
-          </ng-template>
           <ng-template let-option pTemplate="item">
             <div class="ellipsis-item" [title]="option.merchantBizName">
               {{ option.merchantBizName }}

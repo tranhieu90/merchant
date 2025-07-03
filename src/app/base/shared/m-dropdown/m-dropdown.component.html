@@ -9,20 +9,19 @@
                         <i class="icon-information_solid input-icon"></i>
                     </span>
                 </div>
-                <mb-dropdown  [options]="countryOptions"
-                    optionValue="code" optionLabel="name" placeholder="Select a country" [filter]="false"
-                    [showCheckmark]="true"></mb-dropdown>
+                <mb-dropdown [options]="countryOptions" optionValue="code" optionLabel="name"
+                    placeholder="Select a country" [filter]="false" [showCheckmark]="true"></mb-dropdown>
             </div>
             <div class="col-3">
                 <label class="form-label title-s-semibold">Disabled</label>
-                     <mb-dropdown  [options]="countryOptions" formControlName="valueDisabled"
-                    optionValue="code" optionLabel="name" placeholder="Select a country" [filter]="false"
+                <mb-dropdown [options]="countryOptions" formControlName="valueDisabled" optionValue="code"
+                    optionLabel="name" placeholder="Select a country" [filter]="false"
                     [showCheckmark]="true"></mb-dropdown>
             </div>
             <div class="col-3">
                 <label class="form-label title-s-semibold">Error</label>
-                 <mb-dropdown  [options]="countryOptions" formControlName="valueDropdownError"
-                    optionValue="code" optionLabel="name" placeholder="Select a country" [filter]="false"
+                <mb-dropdown [options]="countryOptions" formControlName="valueDropdownError" optionValue="code"
+                    optionLabel="name" placeholder="Select a country" [filter]="false"
                     [showCheckmark]="true"></mb-dropdown>
                 @if(formDropdown.controls['valueDropdownError'].hasError('required')&&
                 formDropdown.controls['valueDropdownError'].touched &&
@@ -44,6 +43,8 @@
                         formControlName="valueDropdown" [options]="countryOptions" optionValue="code" optionLabel="name"
                         placeholder="Select a country" />
                 </div>
+                <mb-dropdown [options]="countryOptions" optionValue="code" optionLabel="name"
+                    placeholder="Select a country" [filter]="false" [showCheckmark]="true"></mb-dropdown>
             </div>
             <div class="col-3">
                 <div class="p-inputgroup show-icon-left disabled">
@@ -62,7 +63,7 @@
                     </span>
                     <p-dropdown [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown"
                         formControlName="valueDropdownShowIconLeftError" [options]="countryOptions" optionValue="code"
-                        optionLabel="name" placeholder="Select a country" showClear="true" />
+                        optionLabel="name" placeholder="Select a country" />
                 </div>
 
                 @if(formDropdown.controls['valueDropdownShowIconLeftError'].hasError('required')&&
@@ -86,19 +87,19 @@
                 </div>
                 <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect"
                     [options]="countryOptions" formControlName="valueMultiSelect" optionValue="code" optionLabel="name"
-                    placeholder="Select countries" />
+                    placeholder="Select countries" selectedItemsLabel="{0} đã chọn" />
             </div>
             <div class="col-3">
                 <label class="form-label title-s-semibold">Disabled</label>
                 <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect"
                     [options]="countryOptions" formControlName="valueMultiSelectDisabled" optionValue="code"
-                    optionLabel="name" placeholder="Select countries" />
+                    optionLabel="name" placeholder="Select countries" selectedItemsLabel="{0} đã chọn" />
             </div>
             <div class="col-3">
                 <label class="form-label title-s-semibold">Error</label>
                 <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect"
                     [options]="countryOptions" formControlName="valueMultiSelectError" optionValue="code"
-                    optionLabel="name" placeholder="Select countries" />
+                    optionLabel="name" placeholder="Select countries" selectedItemsLabel="{0} đã chọn" />
 
                 @if(formDropdown.controls['valueMultiSelectError'].hasError('required')&&
                 formDropdown.controls['valueMultiSelectError'].touched &&
@@ -118,7 +119,7 @@
                     </span>
                     <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect"
                         [options]="countryOptions" formControlName="valueMultiSelect" optionValue="code"
-                        optionLabel="name" placeholder="Select countries" />
+                        optionLabel="name" placeholder="Select countries" selectedItemsLabel="{0} đã chọn" />
                 </div>
             </div>
             <div class="col-3">
@@ -128,7 +129,7 @@
                     </span>
                     <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect"
                         [options]="countryOptions" formControlName="valueMultiSelectDisabled" optionValue="code"
-                        optionLabel="name" placeholder="Select countries" />
+                        optionLabel="name" placeholder="Select countries" selectedItemsLabel="{0} đã chọn" />
                 </div>
             </div>
             <div class="col-3">
@@ -138,7 +139,8 @@
                     </span>
                     <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-multiSelect"
                         [options]="countryOptions" formControlName="valueMultiSelectShowIconLeftError"
-                        optionValue="code" optionLabel="name" placeholder="Select countries" />
+                        optionValue="code" optionLabel="name" placeholder="Select countries"
+                        selectedItemsLabel="{0} đã chọn" />
                 </div>
 
                 @if(formDropdown.controls['valueMultiSelectShowIconLeftError'].hasError('required')&&
@@ -156,7 +158,7 @@
                 <p-multiSelect [emptyFilterMessage]="'Không tìm thấy dữ liệu'"
                     class="merchant-multiSelect multiselect-all" [options]="countryOptions"
                     formControlName="valueMultiSelect" optionValue="code" optionLabel="name" placeholder="Tất cả"
-                    [filter]="false" />
+                    [filter]="false" selectedItemsLabel="{0} đã chọn" />
             </div>
         </div>
     </div>
@@ -172,22 +174,21 @@
                         <i class="icon-information_solid input-icon"></i>
                     </span>
                 </div>
-                <p-dropdown [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown-small"
-                    formControlName="valueDropdown" [options]="countryOptions" optionValue="code" optionLabel="name"
-                    placeholder="Select a country" [filter]="true" />
+                <mb-dropdown [options]="countryOptions" optionValue="code" optionLabel="name"
+                    placeholder="Select a country" [filter]="false" [showCheckmark]="true"
+                    [dropdownClass]="'merchant-dropdown-small'"></mb-dropdown>
             </div>
             <div class="col-3">
                 <label class="form-label title-s-semibold">Disabled</label>
-                <p-dropdown [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown-small"
-                    formControlName="valueDisabled" [options]="countryOptions" optionValue="code" optionLabel="name"
-                    placeholder="Select a country" />
+                <mb-dropdown [options]="countryOptions" formControlName="valueDisabled" optionValue="code"
+                    optionLabel="name" placeholder="Select a country" [filter]="false" [showCheckmark]="true"
+                    [dropdownClass]="'merchant-dropdown-small'"></mb-dropdown>
             </div>
             <div class="col-3">
                 <label class="form-label title-s-semibold">Error</label>
-                <p-dropdown [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown-small"
-                    formControlName="valueDropdownError" [options]="countryOptions" optionValue="code"
-                    optionLabel="name" placeholder="Select a country" />
-
+                <mb-dropdown [options]="countryOptions" formControlName="valueDropdownError" optionValue="code"
+                    optionLabel="name" placeholder="Select a country" [filter]="false" [showCheckmark]="true"
+                    [dropdownClass]="'merchant-dropdown-small'"></mb-dropdown>
                 @if(formDropdown.controls['valueDropdownError'].hasError('required')&&
                 formDropdown.controls['valueDropdownError'].touched &&
                 formDropdown.controls['valueDropdownError'].invalid){
@@ -206,7 +207,7 @@
                     </span>
                     <p-dropdown [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown-small"
                         formControlName="valueDropdown" [options]="countryOptions" optionValue="code" optionLabel="name"
-                        placeholder="Select a country" showClear="true" />
+                        placeholder="Select a country" />
                 </div>
             </div>
             <div class="col-3">
@@ -226,7 +227,7 @@
                     </span>
                     <p-dropdown [emptyFilterMessage]="'Không tìm thấy dữ liệu'" class="merchant-dropdown-small"
                         formControlName="valueDropdownShowIconLeftError" [options]="countryOptions" optionValue="code"
-                        optionLabel="name" placeholder="Select a country" showClear="true" />
+                        optionLabel="name" placeholder="Select a country" />
                 </div>
 
                 @if(formDropdown.controls['valueDropdownShowIconLeftError'].hasError('required')&&

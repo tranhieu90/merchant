@@ -9,21 +9,64 @@ import { NavBarComponent } from '../../layout/nav-bar/nav-bar.component';
 import { ModalModel } from '../../../model/ModalModel';
 import { MatDialog } from '@angular/material/dialog';
 import { MModalComponent } from '../m-modal/m-modal.component';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 @Component({
   selector: 'app-m-toast',
   standalone: true,
-  imports: [ToastModule, ButtonModule, RippleModule,NavBarComponent],
+  imports: [ToastModule, ButtonModule, RippleModule, NavBarComponent, NzDatePickerModule],
   templateUrl: './m-toast.component.html',
   styleUrl: './m-toast.component.scss',
   providers: [MessageService]
 })
 export class MToastComponent {
-
+  navCollapsed: boolean = false;
+  private tempFromDate: Date | null = null;
+  maxDate: any = null;
+  minDate: any = null;
   constructor(private messageService: MessageService,
     private dialogCommon: DialogCommonService,
-    private dialog:MatDialog
+    private dialog: MatDialog
   ) { }
 
+  disabledDate = (current: Date): boolean => {
+    if (!current) return false;
+
+    const currentDate = new Date(current);
+    currentDate.setHours(0, 0, 0, 0);
+
+    const minDate = new Date(this.minDate);
+    minDate.setHours(0, 0, 0, 0);
+
+    const maxDate = new Date(this.maxDate);
+    maxDate.setHours(0, 0, 0, 0);
+
+    // Disable ngày ngoài khoảng min/max tổng
+    if (currentDate < minDate || currentDate > maxDate) {
+      return true;
+    }
+
+    // Khi đang chọn toDate (đã có tempFromDate)
+    if (this.tempFromDate) {
+      const fromDateOnly = new Date(this.tempFromDate);
+      fromDateOnly.setHours(0, 0, 0, 0);
+
+      // Disable ngày trước fromDate
+      if (currentDate < fromDateOnly) {
+        return true;
+      }
+
+      // Disable ngày sau fromDate + 30 ngày hoặc sau ngày hiện tại
+      const maxToDate = new Date(fromDateOnly.getTime() + 30 * 24 * 60 * 60 * 1000);
+      const actualMaxToDate = maxToDate > maxDate ? maxDate : maxToDate;
+      actualMaxToDate.setHours(0, 0, 0, 0);
+
+      if (currentDate > actualMaxToDate) {
+        return true;
+      }
+    }
+
+    return false;
+  };
   showSuccess() {
     this.messageService.add({
       severity: 'success',
@@ -73,6 +116,9 @@ export class MToastComponent {
       data: dataModal,
       disableClose: true,
     });
+  }
+  collapsed() {
+    this.navCollapsed = !this.navCollapsed;
   }
 
 }

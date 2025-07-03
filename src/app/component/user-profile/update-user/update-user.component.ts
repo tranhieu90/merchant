@@ -122,8 +122,6 @@ export class UpdateUserComponent implements OnInit {
         }
       })
     } else {
-      this.handleDevelopAfter()
-      return;
       if (this.formEmail.valid) {
         let params: any = {}
         params['emailChange'] = this.formEmail.get('email')?.value;

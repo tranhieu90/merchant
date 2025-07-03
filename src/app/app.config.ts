@@ -34,8 +34,9 @@ import { LOCALE_ID } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeVi from '@angular/common/locales/vi';
 import { vi_VN, provideNzI18n } from 'ng-zorro-antd/i18n';
-
+ 
 registerLocaleData(localeVi);
+ 
 
 export const appConfig: ApplicationConfig = {
   providers: [

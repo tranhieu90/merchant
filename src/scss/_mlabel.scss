@@ -1,3 +1,4 @@
+// ==============================Label=======================
 .dot-label {
   width: 12px;
   height: 12px;
@@ -374,6 +375,7 @@
   align-items: center;
 }
 
+// ==============================Alert=======================
 .alert {
   width: 431px;
   height: auto;
@@ -429,4 +431,117 @@
 
 .color-4f5562 {
   color: $color-global-neutral-neutral-9;
+}
+
+// ==============================Step=======================
+.mat-stepper-horizontal {
+  margin-top: 8px;
+}
+
+.mat-mdc-form-field {
+  margin-top: 16px;
+}
+
+.step-role {
+  background: none;
+
+  .mat-horizontal-stepper-header-container {
+    padding: $spacing-l;
+    background: $color-surface-neutral-main;
+    border-radius: $border-radius-s;
+    justify-content: center;
+  }
+
+  .mat-horizontal-stepper-header {
+    height: auto;
+  }
+
+  .mat-step-header,
+  .mat-step-header-ripple {
+    background: none !important;
+  }
+
+  .mat-step-text-label {
+    @include typo-style($typo-font-sizes-m, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+  }
+
+  .mat-stepper-horizontal-line {
+    width: 84px;
+    height: 3px;
+    border-radius: $border-radius-round;
+    background: $color-surface-action-main;
+    flex: none;
+  }
+
+  .mat-step-icon {
+    width: 40px;
+    height: 40px;
+    border: 1px solid $color-border-neutral-main;
+    border-radius: $border-radius-round;
+    background: $color-surface-neutral-main;
+    padding: $spacing-xs;
+    color: $color-text-neutral-sub;
+    @include typo-style($typo-font-sizes-l, $typo-font-weights-semibold, none, none, $font-family-semiBold);
+  }
+
+  .mat-step-icon-selected {
+    background: $color-surface-action-main;
+    color: $color-text-text-on-on-action-main;
+  }
+
+  .mat-horizontal-content-container {
+    border-radius: $border-radius-s;
+    background: $color-surface-neutral-main;
+    padding: $spacing-l;
+    margin-top: 15px;
+    min-height: calc(100vh - 325px);
+    position: relative;
+  }
+
+  .content-first {
+    width: 870px;
+    margin: auto;
+  }
+
+  .div-button {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 100%;
+    text-align: right;
+  }
+
+  .mat-step-icon.mat-step-icon-state-done {
+    background: $color-surface-action-main;
+    color: $color-text-text-on-on-action-main;
+  }
+
+  .mat-step-header {
+    pointer-events: none;
+  }
+
+  .step-done::before {
+    content: "\e91e";
+    font-family: "webmerchant";
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    font-size: $typo-font-sizes-3xl;
+    color: $color-global-neutral-white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+}
+
+.step-container {
+  padding: 0px 159px;
 }

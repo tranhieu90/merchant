@@ -52,6 +52,7 @@ export class GridViewComponent implements OnInit, AfterViewInit {
   checkAll: boolean = false;
   displayedColumns: string[] = [];
   @Input() selectedItem: any;
+   @Input() hasCheckAll?: boolean = true;
   isCheckAll: boolean = false;
   renderedValues: string[][] = [];
   tooltipText: string = '';
@@ -271,7 +272,7 @@ export class GridViewComponent implements OnInit, AfterViewInit {
     let itemCheck = _.filter(this.dataSource, (obj: any) => {
       return obj["checked"] === true;
     });
-    if (itemCheck && itemCheck.length === this.dataSource.length) {
+    if (itemCheck && itemCheck.length === this.dataSource.length && this.hasCheckAll) {
       this.checkAll = true;
     } else {
       this.checkAll = false;

@@ -176,9 +176,11 @@ export class DialogAuthenticationComponent implements OnInit {
         if (errorData.soaErrorCode == 'OTP_ERROR_O2') {
           this.otpStatus = 'error';
           this.countError = this.countError + 1;
-          if (this.countError >= 5) {
+          if (this.countError >= 4) {
             this.otpStatus = 'locked';
           }
+        } else if (errorData.soaErrorCode == '4018') {
+          this.otpStatus = 'locked';
         } else {
           this.onclose();
           this.toast.showError('Đã xảy ra lỗi vui lòng thử lại');

@@ -132,6 +132,7 @@ export class HumanResourceDetailComponent implements OnInit {
   changePasswordStatus: number = 0;
 
   personDetail?: IPersonelDetail;
+  countSub: number = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -534,6 +535,7 @@ export class HumanResourceDetailComponent implements OnInit {
               ]),
             })
           );
+          this.countSub =  res['data']['total'];
         });
       // }
     }
@@ -716,7 +718,8 @@ export class HumanResourceDetailComponent implements OnInit {
               selectedMerchant:
                 this.subMerchantList,
               orgType: this.personDetail?.orgType,
-              personDetail: this.personDetail
+              personDetail: this.personDetail,
+              countSub: this.countSub,
             },
           },
         });

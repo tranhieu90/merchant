@@ -9,7 +9,7 @@
     background: $color-surface-action-main;
   }
 
-   .p-checkbox .p-checkbox-box.p-highlight::before {
+  .p-checkbox .p-checkbox-box.p-highlight::before {
     content: "\e91e";
     font-family: "webmerchant";
     font-style: normal;
@@ -31,15 +31,15 @@
   }
 
   .p-disabled {
-    border-color: $color-surface-action-main;
+    border-color: $color-global-neutral-neutral-4;
   }
 
-   .p-checkbox .p-checkbox-icon {
+  .p-checkbox .p-checkbox-icon {
     display: none !important;
   }
 
   &.indeterminate {
-     .p-checkbox .p-checkbox-box.p-highlight::before {
+    .p-checkbox .p-checkbox-box.p-highlight::before {
       content: "";
       position: absolute;
       top: 50%;
@@ -55,24 +55,24 @@
   }
 
   &.hover {
-     .p-checkbox .p-checkbox-box:hover {
+    .p-checkbox .p-checkbox-box:hover {
       border-color: $color-global-blue-blue-5;
       background: transparent;
     }
 
-     .p-checkbox .p-checkbox-box.p-highlight:hover {
+    .p-checkbox .p-checkbox-box.p-highlight:hover {
       background: $color-global-blue-blue-5;
     }
   }
 
   &.pressed {
-     .p-checkbox .p-checkbox-box {
+    .p-checkbox .p-checkbox-box {
       border-color: $color-icon-action-main;
       background: transparent;
       box-shadow: 0 0 0 0.2rem $color-global-primary-primary-3;
     }
 
-     .p-checkbox .p-checkbox-box.p-highlight {
+    .p-checkbox .p-checkbox-box.p-highlight {
       background: $color-icon-action-main;
       outline: 0 none;
       outline-offset: 0;
@@ -81,36 +81,46 @@
       transition: box-shadow 0.2s ease;
     }
   }
+
+  &.disabled {
+    .p-checkbox .p-checkbox-box {
+      background: $color-global-neutral-neutral-2;
+    }
+
+    .p-checkbox .p-checkbox-box.p-highlight {
+      background: $color-global-neutral-neutral-3 !important;
+    }
+  }
 }
 
 // ============================Radio=========================
 .m-radio {
-   .p-radiobutton .p-radiobutton-box {
+  .p-radiobutton .p-radiobutton-box {
     border-color: $color-icon-action-main;
     background: transparent;
   }
 
-   .p-radiobutton .p-radiobutton-box.p-highlight {
+  .p-radiobutton .p-radiobutton-box.p-highlight {
     background: $color-icon-action-main;
   }
 
-   .p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
+  .p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
     width: 8px;
     height: 8px;
   }
 
-   .p-radiobutton-icon {
+  .p-radiobutton-icon {
     background-color: $color-global-neutral-white;
   }
 
   &.pressed {
-     .p-radiobutton .p-radiobutton-box {
+    .p-radiobutton .p-radiobutton-box {
       border-color: $color-icon-action-main;
       background: transparent;
       box-shadow: 0 0 0 0.2rem $color-global-primary-primary-3;
     }
 
-     .p-radiobutton .p-radiobutton-box.p-highlight {
+    .p-radiobutton .p-radiobutton-box.p-highlight {
       background: $color-icon-action-main;
       outline: 0 none;
       outline-offset: 0;
@@ -121,27 +131,27 @@
   }
 
   &.hover {
-     .p-radiobutton .p-radiobutton-box:hover {
+    .p-radiobutton .p-radiobutton-box:hover {
       border-color: $color-global-blue-blue-5;
       background: transparent;
     }
 
-     .p-radiobutton .p-radiobutton-box.p-highlight:hover {
+    .p-radiobutton .p-radiobutton-box.p-highlight:hover {
       background: $color-global-blue-blue-5;
     }
   }
 }
 
 .m-radio-check {
-   .p-radiobutton-box {
+  .p-radiobutton-box {
     position: relative;
   }
 
-   .p-radiobutton-icon {
+  .p-radiobutton-icon {
     display: none !important;
   }
 
-   .p-radiobutton-box.p-highlight::before {
+  .p-radiobutton-box.p-highlight::before {
     content: "\e91e";
     font-family: "webmerchant";
     font-style: normal;
@@ -165,7 +175,7 @@
 }
 
 .m-radio-pressed {
-   .p-radiobutton-box:active {
+  .p-radiobutton-box:active {
     outline: 0 none;
     box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.3);
     border-color: #2196f3;
@@ -177,7 +187,7 @@
   background: $color-surface-action-main;
 }
 
- .p-inputswitch-slider {
+.p-inputswitch-slider {
   &:hover {
     background: $color-surface-action-main;
     opacity: 0.8;

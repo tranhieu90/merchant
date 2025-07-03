@@ -93,17 +93,49 @@
             </ng-template>
           </ng-container>
           <ng-template #leafMenu>
-            <li
-              nz-menu-item
+            <ng-container  *ngIf="!isCollapsed"  >
+              <li
+                nz-menu-item
+                class="menu-item-lv1"
+                nzMatchRouter
+                [routerLink]="item.menuPathUrl"
+              >
+                <div class="d-flex gap-2 align-items-center">
+                  <span class="icon-header" [ngClass]="item.menuIcon"></span>
+                  <span *ngIf="!isCollapsed">{{ item.menuName }}</span>
+                </div>
+              </li>
+            </ng-container>
+
+            <ng-container  *ngIf="isCollapsed"  >
+              <li
+              nz-submenu
+              [nzOpen]="isExpanded(item)"
               class="menu-item-lv1"
-              nzMatchRouter
-              [routerLink]="item.menuPathUrl"
+               [nzTitle]="customTitleTemplatelv2"
             >
-              <div class="d-flex gap-2 align-items-center">
-                <span class="icon-header" [ngClass]="item.menuIcon"></span>
-                <span *ngIf="!isCollapsed">{{ item.menuName }}</span>
-              </div>
-            </li>
+                <ng-container *ngFor="let iem of group.subMenus; let j = index">
+                  <li 
+                    *ngIf="j === 0"  
+                    nz-menu-group
+                    class="menu-item-lv2-header-ext"
+                    >
+                    <div class="d-flex gap-1 align-items-center">
+                      <span class="icon-header" [ngClass]="item.menuIcon"></span>
+                      <span class="header-ext">{{ item.menuName }}</span>
+                    </div>
+                  </li>
+                </ng-container>
+               </li>
+              <ng-template #customTitleTemplatelv2>
+                <div class="d-flex align-items-center">
+                  <span class="icon-header" [ngClass]="item.menuIcon"></span>
+                  <span *ngIf="!isCollapsed">{{ item.menuName }}</span>
+                </div>
+               
+              </ng-template>
+            </ng-container>
+           
           </ng-template>
         </ng-container>
       </ng-container>

@@ -18,7 +18,7 @@ import { AreaItemComponent } from '../area-item/area-item.component';
 import { AreaViewComponent } from '../area-view/area-view.component';
 import { DialogAssignMerchantComponent } from '../dialog-assign-merchant/dialog-assign-merchant.component';
 import { DialogMoveMerchantComponent, MoveMerchantModel } from '../dialog-move-merchant/dialog-move-merchant.component';
-import { TableMerchantComponent } from '../table-merchant/table-merchant.component';
+import { TableMerchantCreateComponent } from '../table-merchant-create/table-merchant-create.component';
 import { CommonUtils } from '../../../base/utils/CommonUtils';
 import { environment } from '../../../../environments/environment';
 import { InputCommon } from '../../../common/directives/input.directive';
@@ -30,7 +30,7 @@ import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
 @Component({
   selector: 'app-create-organization',
   standalone: true,
-  imports: [ButtonModule, InputTextModule, NgFor, NgIf, AreaItemComponent, AreaViewComponent, ReactiveFormsModule, TableMerchantComponent, InputSanitizeDirective, InputCommon, ShowClearOnFocusDirective],
+  imports: [ButtonModule, InputTextModule, NgFor, NgIf, AreaItemComponent, AreaViewComponent, ReactiveFormsModule, TableMerchantCreateComponent, InputSanitizeDirective, InputCommon, ShowClearOnFocusDirective],
   templateUrl: './create-organization.component.html',
   styleUrl: './create-organization.component.scss'
 })
@@ -53,9 +53,11 @@ export class CreateOrganizationComponent {
   areaActive: AreaModel = new AreaModel();
   lstMerchantActive: any = [];
   isCloseInput: boolean = false;
+  totalItem: number = 0;
 
   hasRole?: boolean;
   roleBusiness?: boolean;
+  hasDataPopup: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -110,6 +112,7 @@ export class CreateOrganizationComponent {
           ]),
         }));
         this.lstMerchantRemain = _.cloneDeep(res['data']['subInfo']);
+        this.totalItem = res['data']['totalSub']
         
       }
     }, (error: any) => {
@@ -251,28 +254,36 @@ export class CreateOrganizationComponent {
     }
     this.areaActive = area;
     if (area.lstMerchant.length > 0) {
-      this.lstMerchantActive = _.cloneDeep(this.lstMerchantsAll.filter((item: any) => area.lstMerchant.includes(item.merchantId)));
+      this.lstMerchantActive = area.lstMerchant;
     }
-    else {
-      this.lstMerchantActive = [];
-    }
+    // else {
+    //   this.lstMerchantActive = [];
+    // }
     this.isEditArea = false;
   }
 
   doAssignSubmerchant() {
+    let dataSource : any[] = [];
+    this.lstAreas.forEach((item: any) => {
+      dataSource = dataSource.concat(item.lstMerchant);
+    });
+
     const dialogRef = this.dialog.open(DialogAssignMerchantComponent, {
       width: '60%',
-      data: this.lstMerchantRemain,
+      data: dataSource,
     });
 
     dialogRef.afterClosed().subscribe((lstMerchantIdChecked: number[]) => {
+      console.log("test",lstMerchantIdChecked )
+      this.hasDataPopup = true;
       if (lstMerchantIdChecked) {
         this.lstAreas.map((item: any) => {
           if (item.id == this.areaActive.id) {
             item.lstMerchant = lstMerchantIdChecked;
           }
         });
-        this.lstMerchantActive = _.cloneDeep(this.lstMerchantsAll.filter((item: any) => lstMerchantIdChecked.includes(item.merchantId)));
+        // this.lstMerchantActive = _.cloneDeep(this.lstMerchantsAll.filter((item: any) => lstMerchantIdChecked.includes(item.merchantId)));
+        this.lstMerchantActive =lstMerchantIdChecked;
         this.lstMerchantRemain = this.lstMerchantRemain.filter((item: any) => !lstMerchantIdChecked.includes(item.merchantId));
       }
     })

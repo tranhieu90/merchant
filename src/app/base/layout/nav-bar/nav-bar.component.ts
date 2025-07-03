@@ -94,4 +94,8 @@ export class NavBarComponent implements OnInit, OnChanges {
     }
     return false;
   }
+
+  createRange(): number[] {
+    return Array.from({ length: 1 }, (_, i) => i);
+  }
 }

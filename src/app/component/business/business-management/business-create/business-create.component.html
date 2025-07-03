@@ -4,6 +4,10 @@
     <ng-template matStepperIcon="edit" let-index="index">
         {{ currentStep +1 }}
     </ng-template>
+    <ng-template matStepperIcon="done">
+        <span class="step-done"></span>
+    </ng-template>
+
     <mat-step label="Chọn nhóm" *ngIf="!organizationSetup">
         <div class="form-business">
             <div class="paragraph-m-regular mb-spacing-l">
@@ -116,9 +120,9 @@
                         <label class="input-label-custom label mb-spacing-xs">Tỉnh/Thành phố</label>
                         <p-dropdown [options]="lstProvince" formControlName="provinceId" optionLabel="provinceName"
                             optionValue="provinceId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
-                            filterBy="provinceName" styleClass="w-100" [panelStyle]="{'width':'300px'}" appendTo="body"
-                            placeholder="Chọn tỉnh, thành phố " (ngModelChange)="doGetDistrict($event)"
-                            class="merchant-dropdown">
+                            emptyMessage="Không có dữ liệu" filterBy="provinceName" styleClass="w-100"
+                            [panelStyle]="{'width':'300px'}" appendTo="body" placeholder="Chọn tỉnh, thành phố "
+                            (ngModelChange)="doGetDistrict($event)" class="merchant-dropdown">
                         </p-dropdown>
                         @if (formBusiness.controls['provinceId'].dirty && formBusiness.controls['provinceId'].invalid)
                         {
@@ -136,9 +140,9 @@
                         <label class="input-label-custom label mb-spacing-xs">Quận/Huyện</label>
                         <p-dropdown [options]="lstDistrict" formControlName="districtId" optionLabel="districtName"
                             optionValue="districtId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
-                            styleClass="w-100" filterBy="districtName" [panelStyle]="{'width':'300px'}" appendTo="body"
-                            placeholder="Chọn quận, huyện" (ngModelChange)="doGetCommune(001,$event,1)"
-                            class="merchant-dropdown">
+                            emptyMessage="Không có dữ liệu" styleClass="w-100" filterBy="districtName"
+                            [panelStyle]="{'width':'300px'}" appendTo="body" placeholder="Chọn quận, huyện"
+                            (ngModelChange)="doGetCommune(001,$event,1)" class="merchant-dropdown">
                         </p-dropdown>
                         @if (formBusiness.controls['districtId'].dirty && formBusiness.controls['districtId'].invalid)
                         {
@@ -156,8 +160,9 @@
                         <label class="input-label-custom label mb-spacing-xs">Phường/Xã</label>
                         <p-dropdown [options]="lstCommune" formControlName="communeId" optionLabel="communeName"
                             optionValue="communeId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
-                            filterBy="communeName" styleClass="w-100" [panelStyle]="{'width':'300px'}" appendTo="body"
-                            placeholder="Chọn phường, xã" class="merchant-dropdown">
+                            emptyMessage="Không có dữ liệu" filterBy="communeName" styleClass="w-100"
+                            [panelStyle]="{'width':'300px'}" appendTo="body" placeholder="Chọn phường, xã"
+                            class="merchant-dropdown">
                         </p-dropdown>
                         @if (formBusiness.controls['communeId'].dirty && formBusiness.controls['communeId'].invalid)
                         {
@@ -229,12 +234,12 @@
                 <div class="payment-info" [@accordion]="isPayment1 ? 'expanded' : 'collapsed'">
                     <div class="row mb-spacing-l">
                         <div class="col-3 d-flex align-items-center gap-2">
-                            <p-radioButton [ngModel]="ischeck" [value]="1" name="checkOption"
+                            <p-radioButton class="m-radio" [ngModel]="ischeck" [value]="1" name="checkOption"
                                 (ngModelChange)="ischeck = $event" inputId="radio1" />
                             <label for="radio1" class="paragraph-m-semibold">Nhập mã Terminal ID đã có</label>
                         </div>
                         <div class="col-3 d-flex align-items-center gap-2">
-                            <p-radioButton [ngModel]="ischeck" [value]="2" name="checkOption"
+                            <p-radioButton class="m-radio" [ngModel]="ischeck" [value]="2" name="checkOption"
                                 (ngModelChange)="ischeck = $event" inputId="radio2" />
                             <label for="radio2" class="paragraph-m-semibold">Tự động tạo Terminal ID</label>
                         </div>
@@ -273,9 +278,9 @@
                         <div class="col-12 mb-spacing-l">
                             <label class="input-label-custom">Số tài khoản</label>
                             <div class="p-inputgroup">
-                                <input appShowClearOnFocus=".clear-icon" appInputSanitize class="merchant-input" pInputText [(ngModel)]="accountNumber"
-                                    [pattern]="accountNumberPattern" #accountNumberId="ngModel" required
-                                    placeholder="Nhập số tài khoản MB" />
+                                <input appShowClearOnFocus=".clear-icon" appInputSanitize class="merchant-input"
+                                    pInputText [(ngModel)]="accountNumber" [pattern]="accountNumberPattern"
+                                    #accountNumberId="ngModel" required placeholder="Nhập số tài khoản MB" />
                                 @if (accountNumber) {
                                 <span class="p-input-icon-right clear-icon" (click)="accountNumber = null">
                                     <i class="icon-close_circle_solid input-icon input-icon-close"></i>
@@ -303,9 +308,9 @@
                         <div class="col-12">
                             <label class="input-label-custom">Tên tài khoản</label>
                             <div class="p-inputgroup">
-                                <input appShowClearOnFocus=".clear-icon" class="merchant-input" appInputSanitize pInputText [(ngModel)]="accountName"
-                                    #accountNameId="ngModel" [pattern]="accountNamePattern" required
-                                    placeholder="Nhập tên tài khoản" />
+                                <input appShowClearOnFocus=".clear-icon" class="merchant-input" appInputSanitize
+                                    pInputText [(ngModel)]="accountName" #accountNameId="ngModel"
+                                    [pattern]="accountNamePattern" required placeholder="Nhập tên tài khoản" />
                                 @if (accountName) {
                                 <span class="p-input-icon-right clear-icon" (click)="accountName = null">
                                     <i class="icon-close_circle_solid input-icon input-icon-close"></i>

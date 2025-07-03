@@ -26,6 +26,7 @@ import { DialogRoleComponent, DialogRoleModel } from '../../../role-management/d
 import { AuthenticationService } from '../../../../common/service/auth/authentication.service';
 import { MatDialog } from '@angular/material/dialog';
 import { UpdateUserComponent } from '../../../user-profile/update-user/update-user.component';
+import { VerifyUserService } from '../../../../common/service/verify/verify-user.service';
 
 @Component({
   selector: 'app-business-payment',
@@ -89,6 +90,7 @@ export class BusinessPaymentComponent implements OnInit {
     private toast: ToastService,
     private auth: AuthenticationService,
     private dialog: MatDialog,
+    private verify:VerifyUserService
   ) {
     const state = this.router.getCurrentNavigation()?.extras.state;
     const merchantData = state?.['dataInput'];
@@ -458,7 +460,7 @@ export class BusinessPaymentComponent implements OnInit {
           this.toast.showError(errorData.soaErrorDesc);
           break;
         case '5010':
-          this.openDialogUnverifiedAccountAndEmail();
+          this.verify.openDialogUnverifiedAccountAndEmail();
           break;
         default:
           this.toast.showError('Đã xảy ra lỗi, vui lòng thử lại');
@@ -637,65 +639,7 @@ export class BusinessPaymentComponent implements OnInit {
       this.router.navigate(['/business/business-detail']);
   }
 
-  openDialogUnverifiedAccountAndEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>.`;
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonLeftLabel = 'Thay đổi email';
-    dataDialog.buttonRightLabel = 'Xác thực email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.verifyEmail();
-      } else {
-        this.updateEmail();
-      }
-    });
-  }
-
-  updateEmail() {
-    const dialogRef = this.dialog.open(UpdateUserComponent, {
-      width: '600px',
-      panelClass: 'dialog-update-user',
-      data: {
-        title: 'Cập nhật email',
-        type: 'email',
-        isEmailInfo: true,
-      },
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.router.navigate(['/profile']);
-      }
-    })
-  }
-
-  verifyEmail() {
-    this.api.post(USER_ENDPOINT.SEND_VERIFY_MAIL).subscribe(res => {
-      let content = `Chúng tôi vừa gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>, vui lòng kiểm tra email và làm theo hướng dẫn để hoàn tất xác thực tài khoản.`
-      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-      dataDialog.title = 'Hệ thống đã gửi liên kết xác thực';
-      dataDialog.message = content;
-      dataDialog.buttonLabel = 'Tôi đã hiểu';
-      dataDialog.icon = 'icon-mail';
-      dataDialog.iconColor = 'icon info';
-      dataDialog.viewCancel = false;
-      const dialogRef = this.dialogCommon.openDialogInfo(dataDialog);
-      dialogRef.subscribe(res => {
-        this.router.navigate(['/profile']);
-      })
-    })
-  }
+  
 
   clearValue(formInput: FormGroup, nameInput: string) {
     formInput.get(nameInput)?.setValue(null);

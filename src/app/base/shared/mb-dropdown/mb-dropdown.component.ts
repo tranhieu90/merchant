@@ -35,6 +35,7 @@ export class MbDropdown implements ControlValueAccessor {
   @Input() filter: boolean = false;
   @Input() showIcon: boolean = false;
   @Input() iconClass: string = 'icon-default';
+  @Input() dropdownClass: string = 'merchant-dropdown';
   // Template cho custom item
   @Input() showCheckmark: boolean = false;
  

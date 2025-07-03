@@ -1,0 +1,35 @@
+@import "../../../../scss/mixins";
+@import "../../../../scss/variables";
+
+.box-search {
+    .title {
+        width: 300px;
+    }
+    .input-search{
+        flex: 1;
+        .icon-search{
+            color: $color-icon-neutral-sub-2;
+        }
+    }
+}
+
+.box-move-merchant{
+    background: $color-surface-neutral-sub;
+    border: 1px solid $color-border-neutral-main;
+    border-radius: $border-radius-s;
+    padding: 12px;
+    //title-s-regular
+    @include typo-style($typo-font-sizes-m, $typo-font-weights-regular, none, none);
+
+    .count{
+        font-family: "AvertaStdCY-Semibold";
+    }
+    .border-right{
+        border-right: 1px solid $color-border-neutral-main;
+        padding-right: 16px;
+    }
+    .icon{
+        color: $color-icon-action-main;
+        font-size: 18px;
+    }
+}

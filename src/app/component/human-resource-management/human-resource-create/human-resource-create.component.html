@@ -412,13 +412,16 @@
         <ng-container *ngIf="isSuccess === 1">
           <img [src]="assetPath + '/assets/images/image-success.svg'" alt="Success" />
           <div class="mt-3">Thêm mới nhân sự thành công</div>
-          <div *ngIf="!isHaveEmail" class="text title-s-regular mt-3">
+          <!-- <div *ngIf="!isHaveEmail" class="text title-s-regular mt-3">
             Hãy gửi thông tin đăng nhập để nhân sự truy cập vào hệ thống.
           </div>
           <div *ngIf="isHaveEmail" class="text text-center title-s-regular mt-3">
             <span>
               Hãy gửi thông tin đăng nhập hoặc thông báo nhân sự kiểm tra</span><br />
             <span>email để lấy thông tin truy cập vào hệ thống.</span>
+          </div> -->
+          <div class="text title-s-regular mt-3">
+            Hãy gửi thông tin đăng nhập để nhân sự truy cập vào hệ thống.
           </div>
           <a [href]="assetPath + '/hr'" class="mt-3">
             <p-button label="Về trang quản lý" class="merchant-button mt-4" />

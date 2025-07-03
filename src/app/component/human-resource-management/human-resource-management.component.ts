@@ -42,6 +42,7 @@ import { DialogCommonService } from '../../common/service/dialog-common/dialog-c
 import { distinctUntilChanged } from 'rxjs';
 import { MatBadge } from '@angular/material/badge';
 import { UpdateUserComponent } from '../user-profile/update-user/update-user.component';
+import { VerifyUserService } from '../../common/service/verify/verify-user.service';
 
 @Component({
   selector: 'app-human-resource-management',
@@ -175,7 +176,8 @@ export class HumanResourceManagementComponent implements OnInit {
     private api: FetchApiService,
     private toast: ToastService,
     private auth: AuthenticationService,
-    private dialogCommon: DialogCommonService
+    private dialogCommon: DialogCommonService,
+    private verify: VerifyUserService
   ) {
     this.formDropdown = this.fb.group({
       status: [''],
@@ -220,7 +222,6 @@ export class HumanResourceManagementComponent implements OnInit {
     }
 
     this.doSearch();
-    this.getLstRole();
   }
 
   // formValueChange() {
@@ -257,6 +258,8 @@ export class HumanResourceManagementComponent implements OnInit {
       (res) => {
         this.dataList = res['data']['list'];
         this.totalItem = res['data']['count'];
+        this.getLstRole();
+
       },
       (error) => {
         this.totalItem = 0;
@@ -304,7 +307,7 @@ export class HumanResourceManagementComponent implements OnInit {
     this.doSearch();
   }
 
-  refreshDataKeywordSearch(){
+  refreshDataKeywordSearch() {
     this.keyword = '';
     this.onEnterSearch();
   }
@@ -325,122 +328,15 @@ export class HumanResourceManagementComponent implements OnInit {
         this.doDetail(item);
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
-        this.openDialogUnverifiedAccountAndEmail();
+        this.verify.openDialogUnverifiedAccountAndEmail();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
-        this.openDialogUnverifiedAccountAndNoEmail();
+        this.verify.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
         console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
         break;
     }
-  }
-
-  openDialogUnverifiedAccountAndEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${
-      CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange) }</b>.`;
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonLeftLabel = 'Thay đổi email';
-    dataDialog.buttonRightLabel = 'Xác thực email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result != undefined) {
-        if (result === true) {
-          this.verifyEmail();
-        } else {
-          this.updateEmail();
-        }
-      }
-    })
-  }
-
-  updateEmail() {
-    const dialogRef = this.dialog.open(UpdateUserComponent, {
-      width: '600px',
-      panelClass: 'dialog-update-user',
-      data: {
-        title: 'Cập nhật email',
-        type: 'email',
-        isEmailInfo: true,
-      },
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.router.navigate(['/profile']);
-      }
-    })
-  }
-
-  verifyEmail() {
-    this.api.post(USER_ENDPOINT.SEND_VERIFY_MAIL).subscribe(res => {
-      let content = `Chúng tôi vừa gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>, vui lòng kiểm tra email và làm theo hướng dẫn để hoàn tất xác thực tài khoản.`
-      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-      dataDialog.title = 'Hệ thống đã gửi liên kết xác thực';
-      dataDialog.message = content;
-      dataDialog.buttonLabel = 'Tôi đã hiểu';
-      dataDialog.icon = 'icon-mail';
-      dataDialog.iconColor = 'icon info';
-      dataDialog.viewCancel = false;
-      const dialogRef = this.dialogCommon.openDialogInfo(dataDialog);
-      dialogRef.subscribe(res => {
-        this.router.navigate(['/profile']);
-      })
-    }, (error) => {
-      const errorData = error?.error || {};
-      // if (errorData.soaErrorCode == 'AUTH_ERROR_007') {
-      //   this.dialog.open(LoginNotificationComponent, {
-      //     panelClass: 'dialog-login-noti',
-      //     data: {
-      //       title: 'Email đã được xác thực bởi tài khoản khác',
-      //       message: 'Vui lòng thay đổi email để xác thực tài khoản.',
-      //       icon: 'icon-mail',
-      //       typeClass: 'warning',
-      //       expired: true,
-      //       textLeft: 'Hủy',
-      //       type: 'email',
-      //       textRight: 'Thay đổi email',
-      //       isEmailInfo: true
-      //     },
-      //     width: '30%',
-      //     disableClose: true,
-      //   })
-      // }
-    })
-  }
-
-  openDialogUnverifiedAccountAndNoEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message =
-      'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
-    dataDialog.icon = 'icon-warning';
-    dataDialog.hiddenButtonLeft = true;
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonRightLabel = 'Bổ sung email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.router.navigate(['/profile']);
-      } else {
-      }
-    });
   }
 
   doOpenPage() {
@@ -457,10 +353,10 @@ export class HumanResourceManagementComponent implements OnInit {
         this.router.navigate(['/hr/hr-create']);
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
-        this.openDialogUnverifiedAccountAndEmail();
+        this.verify.openDialogUnverifiedAccountAndEmail();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
-        this.openDialogUnverifiedAccountAndNoEmail();
+        this.verify.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
         console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
@@ -604,14 +500,58 @@ export class HumanResourceManagementComponent implements OnInit {
     let buildParams = CommonUtils.buildParams(param);
     this.api
       .get(ROlE_ENDPOINT.AUTO_COMPLETE, buildParams)
-      .subscribe((res) => {
-        this.lstRole = res['data']['list'];
-        this.lstRole.unshift({
-          id: '',
-          name: 'Tất cả',
-          description: 'Tất cả vai trò',
-        });
-      });
+      .subscribe(
+        (res) => {
+          this.lstRole = res['data']['list'];
+          this.lstRole.unshift({
+            id: '',
+            name: 'Tất cả',
+            description: 'Tất cả vai trò',
+          });
+        },
+        (error) => {
+          const errorData = error?.error || {};
+          let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+          switch (errorData.soaErrorCode) {
+            case 'LOGIN_ERROR_006':
+              dataDialog.title = 'Tài khoản đang bị khoá';
+              dataDialog.message = 'Vui lòng liên hệ Quản trị viên để được hỗ trợ.';
+              dataDialog.buttonLabel = 'Tôi đã hiểu';
+              dataDialog.icon = 'icon-lock';
+              dataDialog.width = '25%';
+              dataDialog.viewCancel = false;
+              dataDialog.iconColor = 'icon warning';
+              this.dialogCommon.openDialogInfo(dataDialog).subscribe(result => {
+                if (result) {
+                  this.router.navigate(['/login'], {});
+                }
+              });
+              break;
+            default:
+              dataDialog.title = 'Lỗi hệ thống';
+              dataDialog.message = 'Hệ thống đang bị gián đoạn. Vui lòng thử lại hoặc liên hệ quản trị viên để được hỗ trợ.';
+              dataDialog.buttonLabel = 'Tôi đã hiểu';
+              dataDialog.icon = 'icon-error';
+              dataDialog.width = '25%'
+              dataDialog.viewCancel = false;
+              dataDialog.iconColor = 'error';
+              this.dialogCommon.openDialogInfo(dataDialog).subscribe(result => {
+                if (result) {
+                  this.router.navigate(['/login'], {});
+                }
+              });
+          }
+
+        }
+      )
+    // .subscribe((res) => {
+    //   this.lstRole = res['data']['list'];
+    //   this.lstRole.unshift({
+    //     id: '',
+    //     name: 'Tất cả',
+    //     description: 'Tất cả vai trò',
+    //   });
+    // });
   }
 
   checkHasSearchOrFilterData(): boolean {

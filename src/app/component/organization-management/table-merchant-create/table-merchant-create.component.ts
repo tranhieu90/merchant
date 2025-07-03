@@ -10,21 +10,23 @@ import { GROUP_ENDPOINT } from '../../../common/enum/EApiUrl';
 import { FetchApiService } from '../../../common/service/api/fetch-api.service';
 import { ToastService } from '../../../common/service/toast/toast.service';
 import { fomatAddress } from '../../../common/helpers/Ultils';
+import _ from 'lodash';
 
 @Component({
-  selector: 'app-table-merchant',
+  selector: 'app-table-merchant-create',
   standalone: true,
   imports: [InputTextModule, GridViewComponent, NgIf, ReactiveFormsModule, ShowClearOnFocusDirective],
-  templateUrl: './table-merchant.component.html',
-  styleUrl: './table-merchant.component.scss'
+  templateUrl: './table-merchant-create.component.html',
+  styleUrl: './table-merchant-create.component.scss'
 })
-export class TableMerchantComponent implements OnChanges {
+export class TableMerchantCreateComponent implements OnChanges {
   @Input() dataSource: any = [];
   @Input() isShowCheckbox: boolean = false;
   @Input() isShowMoveMerchant: boolean = false;
   @Input() groupId: any = [];
   @Output() doMoveMerchant = new EventEmitter<{ lstRowId: number[], isNotDelete: boolean, actionType: 'ALL' | null }>();
   @Output() returnRowsChecked = new EventEmitter<any>();
+  @Input() hasDataPopup: boolean = false;
 
   countRowChecked: number = 0;
   formSearch!: FormGroup;
@@ -51,38 +53,58 @@ export class TableMerchantComponent implements OnChanges {
       name: 'merchantId',
       label: 'ID',
       options: {
-        customCss: () => ['text-left','mw-100'],
-        customCssHeader: () => ['text-left'],
-        customBodyRender: (value: any) => "#" + value,
+        customCss: (obj: any) => {
+          return ['text-left', 'mw-100'];
+        },
+        customCssHeader: () => {
+          return ['text-left'];
+        },
+        customBodyRender: (value: any, obj: any) => {
+          return "#" + value;
+        },
       }
     },
     {
       name: 'merchantBizName',
       label: 'TÊN ĐIỂM KINH DOANH',
       options: {
-        customCss: () => ['text-left', 'mw-160'],
-        customCssHeader: () => ['text-left']
+        customCss: (obj: any) => {
+          return ['text-left', 'mw-160'];
+        },
+        customCssHeader: () => {
+          return ['text-left'];
+        }
       }
     },
     {
       name: 'formatAddress',
       label: 'ĐỊA CHỈ',
       options: {
-        customCss: () => ['text-left', 'mw-180'],
-        customCssHeader: () => ['text-left']
+        customCss: (obj: any) => {
+          return ['text-left', 'mw-180'];
+        },
+        customCssHeader: () => {
+          return ['text-left'];
+        }
       }
     },
     {
       name: 'status',
       label: 'TRẠNG THÁI',
       options: {
-        width: '15%',
-        customCss: () => ['text-center'],
-        customBodyRender: (value: any) => {
-          return value === 'active'
-            ? "<span class='status success'> Hoạt động </span>"
-            : "<span class='status lock'> Đã khóa </span>";
-        }
+        width: "15%",
+        customCss: (obj: any) => {
+          return ['text-center'];
+        },
+        customBodyRender: (value: any, obj: any) => {
+          let msg;
+          if (value === "active") {
+            msg = "<span class='status success'> Hoạt động </span>";
+          } else {
+            msg = "<span class='status lock'> Đã khóa </span>";
+          }
+          return msg;
+        },
       }
     }
   ];
@@ -98,49 +120,46 @@ export class TableMerchantComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['dataSource']) {
+    this.countRowChecked = 0;
+    if (this.hasDataPopup) {
+      this.dataTable = _.cloneDeep(this.dataSource);
+      this.totalItem = this.dataSource.length;
+    } else {
       this.loadDefaultData();
     }
   }
 
   returnRowChecked(count: number) {
-    this.updateCountRowChecked();
-  }
-  updateCountRowChecked() {
-    this.countRowChecked = this.dataTable.filter(item => item.checked).length;
+    this.countRowChecked = count;
+    let lstRowChecked = this.dataTable.filter((item: any) => item.checked == true);
+    this.returnRowsChecked.emit(lstRowChecked);
   }
 
   onSelectAll() {
     this.fullData = this.fullData.map(item => ({ ...item, checked: true }));
     this.dataTable = [...this.fullData.slice(0, this.pageIndex * this.pageSize)];
-    this.updateCountRowChecked();
     this.returnRowsChecked.emit(this.fullData.filter(item => item.checked));
   }
 
   onDeselectAll() {
-    this.actionType = '';
-    this.fullData = this.fullData.map(item => ({ ...item, checked: false }));
-    this.dataTable = [...this.fullData.slice(0, this.pageIndex * this.pageSize)];
-    this.updateCountRowChecked();
-    this.returnRowsChecked.emit([]);
-  }
-
-
-  onMoveMerchant() {
-    const lstRowChecked = this.fullData.filter(item => item.checked === true);
-    if (lstRowChecked.length > 0) {
-      const lstRowId = lstRowChecked.map(item => item.merchantId);
-      const isSelectAll = this.countRowChecked === this.fullData.length;
-
-      this.doMoveMerchant.emit({
-        lstRowId,
-        isNotDelete: true,
-        actionType: isSelectAll ? 'ALL' : null
-      });
+    this.countRowChecked = 0;
+    this.dataTable = this.dataTable.map((item: any) => ({ ...item, checked: false }));
+    if (this.formSearch.get("keyWord")?.value) {
+      this.formSearch.get("keyWord")?.setValue("");
     }
   }
 
+  onMoveMerchant() {
+    let lstRowChecked = this.dataTable.filter((item: any) => item.checked == true);
+    if (lstRowChecked?.length > 0) {
+      let lstRowId = lstRowChecked.map((item: any) => item.merchantId);
+      // this.doMoveMerchant.emit({
+      //   lstRowId: lstRowId,
+      //   isNotDelete: true
+      // });
+    }
 
+  }
   clearAndSearch() {
     this.formSearch.get('keyWord')?.setValue('');
     this.loadDefaultData();
@@ -168,7 +187,9 @@ export class TableMerchantComponent implements OnChanges {
 
     this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe({
       next: (res: any) => {
-        const allData = res?.data?.subInfo ?? [];
+        let allData = res?.data?.subInfo ?? [];
+        const existingIds = new Set(this.dataSource.map((m: any) => +m.merchantId));
+        allData = allData?.filter((item: any) => !existingIds.has(item.merchantId))
         this.fullData = allData.map((item: any) => ({
           ...item,
           formatAddress: fomatAddress([
@@ -179,7 +200,7 @@ export class TableMerchantComponent implements OnChanges {
           ])
         }));
         this.dataTable = this.fullData.slice(0, this.pageSize);
-        this.totalItem = res['data']['totalSub'];
+        this.totalItem = res['data']['totalSub'] - this.dataSource.length;
         this.isLoadMoreAvailable = this.dataTable.length < this.fullData.length;
       },
       error: () => {
@@ -221,7 +242,7 @@ export class TableMerchantComponent implements OnChanges {
       let param = {
         page: this.pageIndex,
         size: 10,
-        keySearch: this.formSearch.get('keyWord')?.value ?this.formSearch.get('keyWord')?.value : null,
+        keySearch: this.formSearch.get('keyWord')?.value ? this.formSearch.get('keyWord')?.value : null,
       };
       let buildParams = CommonUtils.buildParams(param);
       this.api
@@ -239,6 +260,9 @@ export class TableMerchantComponent implements OnChanges {
                 ]),
               }));
 
+              const existingIds = new Set(this.dataSource.map((m: any) => +m.merchantId));
+              dataGroup = dataGroup?.filter((item: any) => !existingIds.has(item.merchantId))
+
               if (this.actionType == "ALL") {
                 dataGroup.forEach((item: any) => {
                   item.checked = true;
@@ -254,16 +278,16 @@ export class TableMerchantComponent implements OnChanges {
                   ).length;
                 }
               }
-              if(this.pageIndex === 1) {
+              if (this.pageIndex === 1) {
                 this.dataTable = dataGroup
               } else {
                 this.dataTable = this.dataTable.concat(dataGroup);
               }
-              this.totalItem = res['data']['totalSub'];
+              this.totalItem = res['data']['totalSub'] - this.dataSource.length;;
               this.isLoading = true;
 
             } else {
-              if(this.pageIndex === 1) {
+              if (this.pageIndex === 1) {
                 this.dataTable = [];
                 this.totalItem = 0
               }

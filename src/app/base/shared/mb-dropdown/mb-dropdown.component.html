@@ -2,7 +2,7 @@
   <span class="p-input-icon-left" *ngIf="showIcon">
     <i class="input-icon input-icon-default" [ngClass]="iconClass"></i>
   </span>
-  <p-dropdown class="merchant-dropdown" [options]="options" [optionValue]="optionValue" [optionLabel]="optionLabel"
+  <p-dropdown [ngClass]="dropdownClass" [options]="options" [optionValue]="optionValue" [optionLabel]="optionLabel"
     [placeholder]="placeholder" [disabled]="disabled" [filter]="filter" [(ngModel)]="value"
     [emptyFilterMessage]="'Không tìm thấy dữ liệu'" (onChange)="onValueChange($event.value)">
     <ng-template let-item pTemplate="item">

@@ -94,7 +94,6 @@ export class IdleService {
           return res.access_token;
         }),
         catchError(err => {
-          this.toast.showError("Token không hợp lệ!");
           return throwError(() => err);
         })
       );

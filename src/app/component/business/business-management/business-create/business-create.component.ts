@@ -36,6 +36,7 @@ import { UpdateUserComponent } from '../../../user-profile/update-user/update-us
 import { DialogRoleComponent, DialogRoleModel } from '../../../role-management/dialog-role/dialog-role.component';
 import { UserVerifyStatus } from '../../../../common/constants/CUser';
 import { take } from 'rxjs/operators';
+import { VerifyUserService } from '../../../../common/service/verify/verify-user.service';
 
 @Component({
   selector: 'app-business-create',
@@ -151,6 +152,7 @@ export class BusinessCreateComponent implements OnInit {
     private auth: AuthenticationService,
     private routeActive: ActivatedRoute,
     private dialogCommon: DialogCommonService,
+    private verify: VerifyUserService
   ) {
     this.routeActive.queryParams.subscribe(params => {
       this.organizationSetup = params['organizationSetup'] ? params['organizationSetup'] : false;
@@ -679,10 +681,10 @@ export class BusinessCreateComponent implements OnInit {
     const verifyUser = this.auth.checkVerifyUserInfo();
     switch (verifyUser) {
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
-        this.openDialogUnverifiedAccountAndEmail();
+        this.verify.openDialogUnverifiedAccountAndEmail();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
-        this.openDialogUnverifiedAccountAndNoEmail();
+        this.verify.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
         console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
@@ -690,89 +692,6 @@ export class BusinessCreateComponent implements OnInit {
     }
   }
 
-  openDialogUnverifiedAccountAndEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>.`;
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonLeftLabel = 'Thay đổi email';
-    dataDialog.buttonRightLabel = 'Xác thực email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.verifyEmail();
-      } else {
-        this.updateEmail();
-      }
-    });
-  }
-
-  openDialogUnverifiedAccountAndNoEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message =
-      'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
-    dataDialog.icon = 'icon-warning';
-    dataDialog.hiddenButtonLeft = true;
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonRightLabel = 'Bổ sung email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.updateEmail();
-      } else {
-      }
-    });
-  }
-
-  updateEmail() {
-    const dialogRef = this.dialog.open(UpdateUserComponent, {
-      width: '600px',
-      panelClass: 'dialog-update-user',
-      data: {
-        title: 'Cập nhật email',
-        type: 'email',
-        isEmailInfo: true,
-      },
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.router.navigate(['/profile']);
-      }
-    })
-  }
-
-  verifyEmail() {
-    this.api.post(USER_ENDPOINT.SEND_VERIFY_MAIL).subscribe(() => {
-      let content = `Chúng tôi vừa gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>, vui lòng kiểm tra email và làm theo hướng dẫn để hoàn tất xác thực tài khoản.`
-      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-      dataDialog.title = 'Hệ thống đã gửi liên kết xác thực';
-      dataDialog.message = content;
-      dataDialog.buttonLabel = 'Tôi đã hiểu';
-      dataDialog.icon = 'icon-mail';
-      dataDialog.iconColor = 'icon info';
-      dataDialog.viewCancel = false;
-      const dialogRef = this.dialogCommon.openDialogInfo(dataDialog);
-      dialogRef.subscribe(() => {
-        this.router.navigate(['/profile']);
-      })
-    })
-  }
 
   clearValidateChange() {
     const clearError = () => {

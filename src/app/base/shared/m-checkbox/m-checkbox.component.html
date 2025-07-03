@@ -13,10 +13,11 @@
     <div class="col-2 border-start border-primary">
       <label class="form-label">Disable</label>
       <div class="row">
-        <p-checkbox [(ngModel)]="unChecked" [binary]="true" inputId="binary" class="w-50 m-checkbox"
-          [disabled]="true" />
+        <p-checkbox [(ngModel)]="unChecked" [binary]="true" inputId="binary" class="w-50 m-checkbox disabled"
+          disabled="true" />
 
-        <p-checkbox [(ngModel)]="checked" [binary]="true" inputId="binary" class="w-50 m-checkbox" [disabled]="true" />
+        <p-checkbox [(ngModel)]="checked" [binary]="true" inputId="binary" class="w-50 m-checkbox disabled"
+          disabled="true" />
       </div>
     </div>
 
@@ -25,7 +26,8 @@
       <div class="row">
         <p-checkbox [(ngModel)]="unChecked" [binary]="false" inputId="binary" class="w-50 m-checkbox" />
 
-        <p-checkbox [(ngModel)]="indeterminate" [binary]="true" inputId="binary" class="w-50 m-checkbox indeterminate" />
+        <p-checkbox [(ngModel)]="indeterminate" [binary]="true" inputId="binary"
+          class="w-50 m-checkbox indeterminate" />
       </div>
     </div>
 
@@ -94,7 +96,7 @@
       </div>
       <div class="col-2 border-start border-primary">
         <label class="form-label">Pressed Check</label>
-        <div class="row"> 
+        <div class="row">
           <p-radioButton [(ngModel)]="radioCheck" [value]="1" class="w-50 m-radio m-radio-check pressed" />
           <p-radioButton [(ngModel)]="radioCheck" [value]="2" class="w-50 m-radio m-radio-check pressed" />
         </div>
@@ -108,7 +110,7 @@
       </div>
       <div class="col-2 border-start border-primary">
         <label class="form-label">Hover Check</label>
-        <div class="row"> 
+        <div class="row">
           <p-radioButton [(ngModel)]="radioCheck" [value]="1" class="w-50 m-radio m-radio-check hover" />
           <p-radioButton [(ngModel)]="radioCheck" [value]="2" class="w-50 m-radio m-radio-check hover" />
         </div>

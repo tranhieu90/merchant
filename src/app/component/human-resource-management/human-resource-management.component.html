@@ -50,7 +50,7 @@
     </form>
   </div>
   <div class="col-12 d-flex justify-content-end mt-3">
-    <grid-view [columns]="columns" [dataSource]="dataList" (doChangePage)="doSearch($event)" [total]="totalItem"
+    <grid-view [isOrder]="true" [columns]="columns" [dataSource]="dataList" (doChangePage)="doSearch($event)" [total]="totalItem"
       [action]="action" [search]="isSearch" [isWhitespace]="true" style="float: left;width: 100%;"></grid-view>
   </div>
   <div *ngIf="dataList.length == 0 && !isSearch" class="col-12 text-center">

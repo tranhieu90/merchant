@@ -23,6 +23,7 @@ import { DialogConfirmModel } from '../../model/DialogConfirmModel';
 import { LoginNotificationComponent } from '../dialog/login-notification/login-notification.component';
 import { UpdateAvatarComponent } from './update-avatar/update-avatar.component';
 import { UpdateUserComponent } from './update-user/update-user.component';
+import { VerifyUserService } from '../../common/service/verify/verify-user.service';
 
 @Component({
   selector: 'app-user-profile',
@@ -63,6 +64,7 @@ export class UserProfileComponent implements OnInit {
     private router: Router,
     private navigate: NavigationService,
     private idleService: IdleService,
+     private verify:VerifyUserService
   ) {
     this.doVerifyMail();
     this.userForm = this.fb.group({
@@ -207,6 +209,8 @@ export class UserProfileComponent implements OnInit {
   }
 
   updateEmail() {
+    this.verify.handleDevelopAfter();
+    return;
     const dialogRef = this.dialog.open(UpdateUserComponent, {
       width: '600px',
       panelClass: 'dialog-update-user',

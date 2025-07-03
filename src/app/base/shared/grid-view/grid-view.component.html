@@ -2,7 +2,7 @@
 <div class="table-container" (scroll)="onTableScroll($event)">
   <table mat-table [dataSource]="dataSource" style="float: left;width: 100%;" matSort [fixedLayout]="true" >
     <ng-container *ngIf="showRadio" matColumnDef="radio">
-      <th mat-header-cell *matHeaderCellDef>
+      <th style="width: 5%" mat-header-cell *matHeaderCellDef>
       </th>
       <td class="text-center" mat-cell *matCellDef="let item">
         <p-radioButton class="w-50 m-radio m-radio-check" [value]="item" [(ngModel)]="selectedItem"

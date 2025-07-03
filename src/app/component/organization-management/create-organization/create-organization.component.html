@@ -10,7 +10,7 @@
     <div class="col-3" style="max-height: 80vh; overflow-y: auto;">
         <div class="content">
             <h1 class="title-m-semibold mb-3"><span class="icon-building"></span> {{this.merchantName}}
-                ({{lstMerchantRemain.length}})</h1>
+                ({{totalItem}})</h1>
             <p-button *ngIf="isPermission" label="Tạo nhóm" class="merchant-button-tertiary merchant-button-m"
                 icon="icon-Folder-plus" (click)="addArea(1, null,null)" />
             <div *ngIf="lstAreas.length > 0" class="mt-3">
@@ -115,9 +115,9 @@
 
                     <div *ngIf="lstMerchantsAll.length > 0 && areaActive.children.length === 0">
                         <div *ngIf="areaActive.lstMerchant.length > 0" class="mt-4">
-                            <app-table-merchant [dataSource]="lstMerchantActive" [isShowCheckbox]="true"
+                            <app-table-merchant-create [dataSource]="lstMerchantActive" [isShowCheckbox]="true" [hasDataPopup]="hasDataPopup"
                                 [isShowMoveMerchant]="true" (doMoveMerchant)="doMoveMerchant($event)">
-                            </app-table-merchant>
+                            </app-table-merchant-create>
                         </div>
                         <div *ngIf="areaActive.lstMerchant.length === 0" class="no-data">
                             <img [src]="assetPath + '/assets/images/grid-search-empty.png'">
@@ -130,7 +130,7 @@
                     </div>
                 </div>
                 <div *ngIf="lstMerchantsAll.length > 0 && !areaActive.id">
-                    <app-table-merchant [dataSource]="lstMerchantsAll"></app-table-merchant>
+                    <app-table-merchant-create [dataSource]="lstMerchantsAll"></app-table-merchant-create>
                 </div>
             </div>
             <div *ngIf="lstMerchantsAll.length == 0">

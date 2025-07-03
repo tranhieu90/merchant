@@ -25,6 +25,7 @@ import {PrintInvoice} from '../../print-invoice/print-invoice';
 import {NgxPrintDirective} from 'ngx-print';
 import {MaskDebitAccountPipe} from '../../../../common/pipe/mask-debit-account.pipe';
 import { MERCHANT_RULES } from '../../../../base/constants/authority.constants';
+import { VerifyUserService } from '../../../../common/service/verify/verify-user.service';
 
 @Component({
   selector: 'app-detail-payment',
@@ -120,6 +121,7 @@ export class DetailPaymentComponent implements OnInit {
     private api: FetchApiService,
     private toast: ToastService,
     private dialogCommon: DialogCommonService,
+    private verify:VerifyUserService
   ) {
     this.routeActive.queryParams.subscribe(params => {
       //this.roleId = params['roleId'] || null;
@@ -181,10 +183,10 @@ export class DetailPaymentComponent implements OnInit {
         this.openDialogRepay();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
-        this.openDialogUnverifiedAccountHasEmail();
+        this.verify.openDialogUnverifiedAccountAndEmail();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
-        this.openDialogUnverifiedAccountNoEmail();
+        this.verify.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
         console.warn("Trạng thái xác minh không hợp lệ:", verifyUser);
@@ -258,107 +260,6 @@ export class DetailPaymentComponent implements OnInit {
     })
   }
 
-  openDialogUnverifiedAccountHasEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>.`;
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonLeftLabel = 'Thay đổi email';
-    dataDialog.buttonRightLabel = 'Xác thực email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.verifyEmail();
-      } else {
-        this.updateEmail();
-      }
-    })
-  }
-
-  openDialogUnverifiedAccountNoEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = 'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonRightLabel = 'Bổ sung email';
-    dataDialog.hiddenButtonLeft = true
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.updateEmail();
-      }
-    })
-  }
-
-
-  updateEmail() {
-    const dialogRef = this.dialog.open(UpdateUserComponent, {
-      width: '600px',
-      panelClass: 'dialog-update-user',
-      data: {
-        title: 'Cập nhật email',
-        type: 'email',
-        isEmailInfo: true,
-      },
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.router.navigate(['/profile']);
-      }
-    })
-  }
-
-  verifyEmail() {
-    this.api.post(USER_ENDPOINT.SEND_VERIFY_MAIL).subscribe(res => {
-      let content = `Chúng tôi vừa gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>, vui lòng kiểm tra email và làm theo hướng dẫn để hoàn tất xác thực tài khoản.`
-      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-      dataDialog.title = 'Hệ thống đã gửi liên kết xác thực';
-      dataDialog.message = content;
-      dataDialog.buttonLabel = 'Tôi đã hiểu';
-      dataDialog.icon = 'icon-mail';
-      dataDialog.iconColor = 'icon info';
-      dataDialog.viewCancel = false;
-      const dialogRef = this.dialogCommon.openDialogInfo(dataDialog);
-      dialogRef.subscribe(res => {
-        this.router.navigate(['/profile']);
-      })
-    }, (error) => {
-      const errorData = error?.error || {};
-      // if (errorData.soaErrorCode == 'AUTH_ERROR_007') {
-      //   this.dialog.open(LoginNotificationComponent, {
-      //     panelClass: 'dialog-login-noti',
-      //     data: {
-      //       title: 'Email đã được xác thực bởi tài khoản khác',
-      //       message: 'Vui lòng thay đổi email để xác thực tài khoản.',
-      //       icon: 'icon-mail',
-      //       typeClass: 'warning',
-      //       expired: true,
-      //       textLeft: 'Hủy',
-      //       type: 'email',
-      //       textRight: 'Thay đổi email',
-      //       isEmailInfo: true
-      //     },
-      //     width: '30%',
-      //     disableClose: true,
-      //   })
-      // }
-    })
-  }
 
   formatMoney(value: any): string {
     if (value == null) return '0 đ';
@@ -409,10 +310,10 @@ export class DetailPaymentComponent implements OnInit {
         this.printInvoice();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
-        this.openDialogUnverifiedAccountHasEmail();
+        this.verify.openDialogUnverifiedAccountAndEmail();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
-        this.openDialogUnverifiedAccountNoEmail();
+        this.verify.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
         console.warn("Trạng thái xác minh không hợp lệ:", verifyUser);

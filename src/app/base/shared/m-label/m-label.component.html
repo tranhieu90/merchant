@@ -498,4 +498,58 @@
             </div>
         </div>
     </div>
+
+    <!-- Step -->
+    <div class="row mt-5">
+        <h1>Step</h1>
+        <mat-stepper class="step-role" [selectedIndex]="currentStep" [disableRipple]="true"
+            (selectionChange)="onStepChange($event)" [linear]="true" #stepper (animationDone)="onAnimationDone()">
+            <ng-template matStepperIcon="edit" let-index="index">
+                {{ currentStep +1 }}
+            </ng-template>
+            <ng-template matStepperIcon="done">
+                <span class="step-done"></span>
+            </ng-template>
+
+            <mat-step label="Start">
+                <div class="step-container" *ngIf="currentStep == 0 &&  isStepContentReady">
+                    <div class="paragraph-m-regular mb-spacing-l">
+                        Step 1
+                    </div>
+                    <div class="div-button">
+                        <button mat-button class="merchant-button-material" (click)="doNextStep()">
+                            Tiếp tục
+                        </button>
+                    </div>
+                </div>
+            </mat-step>
+            <mat-step label="Middle">
+                <div class="step-container" *ngIf="currentStep == 1 &&  isStepContentReady">
+                    <div class="paragraph-m-regular mb-spacing-l">
+                        Step 2
+                    </div>
+                    <div class="div-button">
+                        <p-button mat-button class="merchant-button-tertiary me-2" (click)="doPreStep()">
+                            Quay lại
+                        </p-button>
+                        <button mat-button class="merchant-button-material" (click)="doNextStep()">
+                            Tiếp tục
+                        </button>
+                    </div>
+                </div>
+            </mat-step>
+            <mat-step label="End">
+                <div class="step-container" *ngIf="currentStep == 2 &&  isStepContentReady">
+                    <div class="paragraph-m-regular mb-spacing-l">
+                        Step 3
+                    </div>
+                    <div class="div-button">
+                        <p-button mat-button class="merchant-button-tertiary" (click)="doPreStep()">
+                            Quay lại
+                        </p-button>
+                    </div>
+                </div>
+            </mat-step>
+        </mat-stepper>
+    </div>
 </div>

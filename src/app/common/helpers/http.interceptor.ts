@@ -40,7 +40,7 @@ export class AppHttpInterceptor implements HttpInterceptor {
     'auth/logout',
     'user/verify-email',
   ];
-  private urlVerify: string = 'user/verify-email';
+  private urlVerify: string = 'api/v1/user/verify-email';
   private isRefreshing = false;
   private refreshTokenSubject = new BehaviorSubject<string | null>(null);
   constructor(

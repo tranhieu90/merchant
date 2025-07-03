@@ -133,6 +133,7 @@ export class HumanResourceUpdateComponent implements OnInit {
   isLoading = true;
   isLoadSubResult = true;
   totalSub: number = 0;
+  hasCheckAll?: boolean = false;
 
   constructor(
     private dialog: MatDialog,
@@ -152,6 +153,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       this.orgTypeUserFromDb = personData.orgType;
       this.roleTypePersonel = personData.roleTypePersonel;
       this.personDetail = personData?.personDetail;
+      this.totalSub = personData?.countSub;
       if (this.orgTypeUser == 2 && personData?.selectedMerchant) {
         if (
           personData?.selectedMerchant &&
@@ -356,7 +358,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       label: 'ID',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left','mw-100'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -368,7 +370,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       label: 'TÊN ĐIỂM KINH DOANH',
       options: {
         customCss: (obj: any) => {
-          return ['text-left', 'mw-120'];
+          return ['text-left', 'mw-160'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -688,6 +690,9 @@ export class HumanResourceUpdateComponent implements OnInit {
       .pipe(
         map((res: any) => {
           if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
+            if (this.totalSub == res['data']['totalSub']) {
+              this.hasCheckAll = true;
+            }
             let dataGroup = res['data']['subInfo'].map((item: any) => ({
               ...item,
               formatAddress: fomatAddress([
@@ -700,7 +705,7 @@ export class HumanResourceUpdateComponent implements OnInit {
 
             const existingIds = new Set(this.selectedMerchantDefault.map((m: any) => +m.merchantId));
             let filteredSubMerchant = dataGroup.filter((m: any) => !existingIds.has(m.merchantId));
-            this.selectedMerchantDefault = this.selectedMerchantDefault.map((item : any) => ({
+            this.selectedMerchantDefault = this.selectedMerchantDefault.map((item: any) => ({
               ...item,
               merchantId: +item.merchantId
             }));
@@ -1022,11 +1027,11 @@ export class HumanResourceUpdateComponent implements OnInit {
     if (this.orgTypeUser === 2) {
       const currentIds = (this.selectedMerchantDefault || []).map((m: any) => m.merchantId).sort();
       const originalIds = (this.personDataDetail.selectedMerchant || []).map((m: any) => m.merchantId).sort();
-      if (currentIds.length !== originalIds.length) {
+      if (currentIds.length != originalIds.length) {
         return true;
       }
       for (let i = 0; i < currentIds.length; i++) {
-        if (currentIds[i] !== originalIds[i]) {
+        if (currentIds[i] != originalIds[i]) {
           return true;
         }
       }
@@ -1038,12 +1043,12 @@ export class HumanResourceUpdateComponent implements OnInit {
         return true;
       }
       for (let i = 0; i < currentGroupIds.length; i++) {
-        if (currentGroupIds[i] !== originalGroupIds[i]) {
+        if (currentGroupIds[i] != originalGroupIds[i]) {
           return true;
         }
       }
     }
-    if (this.roleIdDefault !== this.personDataDetail.roleId) {
+    if (this.roleIdDefault != this.personDataDetail.roleId) {
       return true;
     }
     return false;
@@ -1189,8 +1194,10 @@ export class HumanResourceUpdateComponent implements OnInit {
   setActionType(data: boolean) {
     if (data) {
       this.actionType = "ALL"
+      this.hasCheckAll = true;
     } else {
       this.actionType = ""
+      this.hasCheckAll = false;
     }
   }
 }
