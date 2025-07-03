@@ -24,6 +24,7 @@ import { PermissionDirective } from '../../common/directives/permissionDirective
 import { MERCHANT_RULES } from '../../base/constants/authority.constants';
 import { firstValueFrom } from 'rxjs';
 import { VerifyUserService } from '../../common/service/verify/verify-user.service';
+import { ShowClearOnFocusDirective } from '../../common/directives/showClearOnFocusDirective';
 
 export type Role = {
   id: number,
@@ -44,7 +45,7 @@ export type Role = {
 @Component({
   selector: 'app-role-management',
   standalone: true,
-  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, GridViewComponent, MatButtonModule, InputCommon, PermissionDirective],
+  imports: [ButtonModule, FormsModule, InputTextModule, ReactiveFormsModule, AutoCompleteModule, GridViewComponent, MatButtonModule, InputCommon, PermissionDirective,ShowClearOnFocusDirective],
   templateUrl: './role-management.component.html',
   styleUrl: './role-management.component.scss'
 })

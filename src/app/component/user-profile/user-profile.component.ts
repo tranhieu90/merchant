@@ -209,8 +209,8 @@ export class UserProfileComponent implements OnInit {
   }
 
   updateEmail() {
-    // this.verify.handleDevelopAfter();
-    // return;
+    this.verify.handleDevelopAfter();
+    return;
     const dialogRef = this.dialog.open(UpdateUserComponent, {
       width: '600px',
       panelClass: 'dialog-update-user',

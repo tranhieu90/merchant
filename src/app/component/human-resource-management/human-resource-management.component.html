@@ -17,7 +17,8 @@
         <span class="p-input-icon-left">
           <i class="icon-search input-icon input-icon-default"></i>
         </span>
-        <input type="text" pInputText class="merchant-input search" [(ngModel)]="keyword"
+        <input type="text" appShowClearOnFocus=".clear-icon" pInputText class="merchant-input search"
+          [(ngModel)]="keyword"
           [placeholder]="hasRole ? 'Tìm kiếm theo họ và tên, tên đăng nhập, email' : 'Tìm kiếm theo họ và tên'"
           (keydown.enter)="onEnterSearch()" (blur)="onBlurSearch()" />
         @if (keyword != null && keyword != '') {
@@ -34,13 +35,13 @@
     <form [formGroup]="formDropdown" (ngSubmit)="onEnterSearch()" class="row mb-4">
       <div *hasRoles="[MERCHANT_RULES.USER_MANAGER_DETAIL]" class="col-md-4 mt-4">
         <label class="form-label title-s-semibold">Trạng thái</label>
-        <p-dropdown class="merchant-dropdown" formControlName="status" [options]="statusOptions" optionValue="code"
-          optionLabel="name" placeholder="Select a status" />
+         <mb-dropdown formControlName="status" [options]="statusOptions" optionValue="code" optionLabel="name" placeholder="Select a status"
+          [filter]="false" [showCheckmark]="true"></mb-dropdown>
       </div>
       <div class="col-md-4 mt-4">
         <label class="form-label title-s-semibold">Vai trò</label>
-        <p-dropdown class="merchant-dropdown" formControlName="role" [options]="lstRole" optionValue="id"
-          optionLabel="name" placeholder="Tất cả" />
+          <mb-dropdown formControlName="role"[options]="lstRole" optionValue="id" optionLabel="name" placeholder="Tất cả"
+          [filter]="false" [showCheckmark]="true"></mb-dropdown>
       </div>
       <div class="d-flex justify-content-end mt-3">
         <p-button label="Xóa bộ lọc" class="merchant-button-tertiary me-2" (onClick)="clearFilter()"
@@ -50,8 +51,9 @@
     </form>
   </div>
   <div class="col-12 d-flex justify-content-end mt-3">
-    <grid-view [isOrder]="true" [columns]="columns" [dataSource]="dataList" (doChangePage)="doSearch($event)" [total]="totalItem"
-      [action]="action" [search]="isSearch" [isWhitespace]="true" style="float: left;width: 100%;"></grid-view>
+    <grid-view [isOrder]="true" [columns]="columns" [dataSource]="dataList" (doChangePage)="doSearch($event)"
+      [total]="totalItem" [action]="action" [search]="isSearch" [isWhitespace]="true"
+      style="float: left;width: 100%;"></grid-view>
   </div>
   <div *ngIf="dataList.length == 0 && !isSearch" class="col-12 text-center">
     <div class="mt-4 title-l-semibold title-no-data">Không có nhân sự nào</div>

@@ -43,6 +43,8 @@ import { distinctUntilChanged } from 'rxjs';
 import { MatBadge } from '@angular/material/badge';
 import { UpdateUserComponent } from '../user-profile/update-user/update-user.component';
 import { VerifyUserService } from '../../common/service/verify/verify-user.service';
+import { ShowClearOnFocusDirective } from '../../common/directives/showClearOnFocusDirective';
+import { MbDropdown } from '../../base/shared/mb-dropdown/mb-dropdown.component';
 
 @Component({
   selector: 'app-human-resource-management',
@@ -62,7 +64,9 @@ import { VerifyUserService } from '../../common/service/verify/verify-user.servi
     TreeSelectModule,
     DirectiveModule,
     MatBadge,
-    NgClass
+    NgClass,
+    ShowClearOnFocusDirective,
+    MbDropdown
   ],
   templateUrl: './human-resource-management.component.html',
   styleUrl: './human-resource-management.component.scss',
