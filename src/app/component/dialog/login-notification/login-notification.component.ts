@@ -103,6 +103,7 @@ export class LoginNotificationComponent implements OnInit {
           isEmailInfo: true,
         },
         width: '35%',
+        panelClass: 'dialog-update-user',
         disableClose: true,
       })
     } else if (val === 'lock-account') {

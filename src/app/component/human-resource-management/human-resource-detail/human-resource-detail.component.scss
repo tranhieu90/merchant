@@ -20,7 +20,7 @@
       margin-top: 7rem;
     }
 
-    .update-result-pass{
+    .update-result-pass {
       width: 100%;
       margin: auto;
       text-align: center;
@@ -56,6 +56,7 @@
     color: $color-text-semantic-information;
   }
 }
+
 .me-spacing-l {
   margin-right: $spacing-l;
 }
@@ -140,13 +141,13 @@
       border-color: $color-icon-neutral-sub-2;
     }
 
-        ::ng-deep.mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
-        ::ng-deep.mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
+    ::ng-deep.mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background,
+    ::ng-deep.mdc-checkbox__native-control:enabled:indeterminate~.mdc-checkbox__background {
       border-color: $color-surface-action-main;
       background: $color-surface-action-main;
     }
 
-        ::ng-deep.mat-internal-form-field > label {
+    ::ng-deep.mat-internal-form-field>label {
       padding-left: $spacing-none;
     }
 
@@ -155,11 +156,13 @@
       background: $color-surface-neutral-sub-3;
     }
 
-        ::ng-deep.mdc-checkbox__native-control:disabled:checked ~ .mdc-checkbox__background {
+    ::ng-deep.mdc-checkbox__native-control:disabled:checked~.mdc-checkbox__background {
       border-color: $color-surface-neutral-sub-3;
+
       svg {
         display: none;
       }
+
       &::before {
         content: "\e91e";
         font-family: "webmerchant" !important;
@@ -177,8 +180,9 @@
       }
     }
 
-        ::ng-deep.mdc-checkbox__native-control:disabled:indeterminate ~ .mdc-checkbox__background {
+    ::ng-deep.mdc-checkbox__native-control:disabled:indeterminate~.mdc-checkbox__background {
       border-color: $color-surface-neutral-sub-3;
+
       .mdc-checkbox__mixedmark {
         width: 70%;
         border-color: $color-icon-neutral-sub-3;
@@ -348,6 +352,7 @@
   width: 100%;
   overflow: auto;
   position: relative;
+  max-height: unset !important;
 }
 
 .spinner {
@@ -356,11 +361,28 @@
   padding: $spacing-xs;
 }
 
-.sub-title{
+.sub-title {
   margin-top: unset !important;
 }
 
 .icon-check_circle_solid {
   @include base-icon;
   color: $color-icon-semantic-success;
+}
+
+::ng-deep .table-container {
+  max-height: 500px !important;
+}
+
+::ng-deep .mat-table {
+  overflow: auto !important;
+  max-height: 500px !important;
+}
+
+.detail-info-value {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 100%; // hoặc inline-block với width: 100%
 }

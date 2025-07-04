@@ -13,11 +13,12 @@ import moment from 'moment';
 import {ToastService} from '../../../../common/service/toast/toast.service';
 import {InputCommon} from '../../../../common/directives/input.directive';
 import { InputSanitizeDirective2 } from '../../../../common/directives/inputSanitize2.directive';
+import {ShowClearOnFocusDirective} from '../../../../common/directives/showClearOnFocusDirective';
 
 @Component({
   selector: 'app-dialog-repay',
   standalone: true,
-  imports: [ButtonModule, InputTextModule, InputTextareaModule, InputNumberModule, ReactiveFormsModule, InputCommon, InputSanitizeDirective2],
+  imports: [ButtonModule, InputTextModule, InputTextareaModule, InputNumberModule, ReactiveFormsModule, InputCommon, InputSanitizeDirective2, ShowClearOnFocusDirective],
   templateUrl: './dialog-repay.component.html',
   styleUrl: './dialog-repay.component.scss'
 })
@@ -150,5 +151,10 @@ export class DialogRepayComponent {
     if (this.formRepay.valid && this.totalNumberCanRefund > 0 && !this.isExpireDate) {
       this.doAction();
     }
+  }
+
+  clearMoney() {
+    this.formRepay.controls['money'].setValue(null);
+    this.formRepay.updateValueAndValidity();
   }
 }

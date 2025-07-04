@@ -106,7 +106,7 @@
     color: $color-text-neutral-sub-3;
   }
 
-  &:not(:disabled):focus {
+  &:not(:disabled):not(:read-only):focus {
     border-color: $color-border-action-main-hover;
     box-shadow: 0 0 0 2px $color-border-action-main-hover-2;
   }
@@ -128,7 +128,7 @@
     box-shadow: 0 0 0 2px $color-border-semantic-error-hover-2;
   }
 
-  &:not(:disabled):hover {
+  &:not(:disabled):not(:read-only):hover {
     border-color: $color-border-action-main-hover;
     box-shadow: 0 0 0 2px $color-border-action-main-hover-2;
   }
@@ -291,5 +291,49 @@
 }
 
 .form-label .required {
-  color: $color-text-semantic-error;
+  color: $color-text-semantic-error !important;
 }
+p-inputnumber.ng-dirty.ng-invalid>.p-inputnumber>.p-inputtext {
+  border: 1px solid $color-border-semantic-error !important;
+  box-shadow: 0 0 0 2px $color-border-semantic-error-hover-2 !important;
+}
+p-inputnumber {
+  .p-inputnumber-input {
+    border-color: $color-border-neutral-main;
+    border-width: 1px;
+    border-radius: $border-radius-s;
+    padding: $spacing-s 32px $spacing-s $spacing-m;
+    color: $color-text-neutral-main;
+    width: 100%;
+    outline: none;
+
+    //typo/paragraph-m-regular
+    @include typo-style($typo-font-sizes-m, $typo-font-weights-regular, none, none);
+
+    &::placeholder {
+      color: $color-text-neutral-sub-3;
+    }
+
+    &:not(:disabled):not(:read-only):focus {
+      border-color: $color-border-action-main-hover;
+      box-shadow: 0 0 0 2px $color-border-action-main-hover-2;
+    }
+
+    &:disabled,
+    &:read-only {
+      background-color: $color-surface-semantic-disabled-sub;
+      border-color: $color-border-semantic-disabled-sub;
+    }
+
+    &:disabled {
+      color: $color-text-semantic-disabled;
+    }
+
+    &:not(:disabled):not(:read-only):hover {
+      border-color: $color-border-action-main-hover;
+      box-shadow: 0 0 0 2px $color-border-action-main-hover-2;
+    }
+
+  }
+}
+ 

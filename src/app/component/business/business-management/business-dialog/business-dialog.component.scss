@@ -1,4 +1,7 @@
 @import "../../../../../scss/variables";
+::ng-deep.mat-mdc-dialog-surface {
+  border-radius: $border-radius-xs;
+}
 
 .dialog-form {
     border-radius: $border-radius-xs !important;

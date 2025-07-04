@@ -49,6 +49,7 @@ export class UpdateOrganizationComponent implements OnChanges {
   areaBeforeDelete: AreaModel = new AreaModel();
   setActiveItem?: any;
   hasRoleSetup: boolean = false;
+  roleBusiness: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -66,6 +67,7 @@ export class UpdateOrganizationComponent implements OnChanges {
 
   ngOnInit() {
     this.hasRoleSetup = this.auth.apiTracker([MERCHANT_RULES.ORGANIZATION_CREATE]);
+    this.roleBusiness = this.auth.apiTracker([MERCHANT_RULES.BUSINESS_CREATE]);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -122,7 +124,7 @@ export class UpdateOrganizationComponent implements OnChanges {
 
     let param = {
       page: 1,
-      size: 1000,
+      size: 10,
     };
     let buildParams = CommonUtils.buildParams(param);
     this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe((res: any) => {
@@ -216,7 +218,7 @@ export class UpdateOrganizationComponent implements OnChanges {
       this.isFormCreateAreaInvalid = false;
     } else {
       this.setActiveItem = data.parentId;
-     
+
       let param = {
         groupId: data.id
       }
@@ -440,12 +442,12 @@ export class UpdateOrganizationComponent implements OnChanges {
   clearValue(nameInput: string) {
     this.formEditArea.get(nameInput)?.setValue('');
     this.isCloseInput = true;
-  
+
     setTimeout(() => {
       this.areaNameInput?.nativeElement.focus();
     });
   }
-  
+
 
   updateAreaName() {
     let areaName = this.formEditArea.get("areaName")?.value;
@@ -495,7 +497,7 @@ export class UpdateOrganizationComponent implements OnChanges {
             groupNewId: result.areaId,
             lstMerchant: result.merchantIds
           };
-          this.callAPIMoveLstMerchant(param, lstMerchantIdMove?.isNotDelete);
+          this.callAPIMoveLstMerchant(param, lstMerchantIdMove?.isNotDelete, lstMerchantIdMove?.actionType);
         }
       });
 
@@ -520,15 +522,25 @@ export class UpdateOrganizationComponent implements OnChanges {
   }
 
 
-  callAPIMoveLstMerchant(param: any, isNotDelete: boolean) {
-    this.api.post(ORGANIZATION_ENDPOINT.MOVE_LIST_MERCHANT, param).subscribe(
+  callAPIMoveLstMerchant(param: any, isNotDelete: boolean, actionType: 'ALL' | null = null) {
+    const finalParam: any = {
+      ...param,
+      groupOldId: this.areaActive.id
+    };
+
+    if (actionType === 'ALL') {
+      finalParam.actionType = 'ALL';
+      finalParam.lstMerchant = [];
+    } else {
+      finalParam.lstMerchant = param.lstMerchant;
+    }
+    this.api.post(ORGANIZATION_ENDPOINT.MOVE_LIST_MERCHANT, finalParam).subscribe(
       (res: any) => {
         if (isNotDelete) {
           this.toast.showSuccess("Chuyển điểm kinh doanh thành công");
 
-          // Active nhóm đích ngay sau khi lấy lại danh sách
           setTimeout(() => {
-            const newActiveArea = this.lstAreas.find(item => item.id === param.groupNewId);
+            const newActiveArea = this.lstAreas.find(item => item.id === finalParam.groupNewId);
             if (newActiveArea) {
               this.doActiveArea(newActiveArea);
             }
@@ -536,7 +548,7 @@ export class UpdateOrganizationComponent implements OnChanges {
         } else {
           this.areaBeforeDelete = this.areaActive;
           this.isMoveMerchantSuccess = true;
-          const newActiveArea = this.lstAreas.find(item => item.id === param.groupNewId);
+          const newActiveArea = this.lstAreas.find(item => item.id === finalParam.groupNewId);
           if (newActiveArea) {
             this.doActiveArea(newActiveArea);
           }
@@ -544,13 +556,13 @@ export class UpdateOrganizationComponent implements OnChanges {
       },
       (error: any) => {
         const errorData = error?.error || {};
-        if (errorData.soaErrorCode == "GROUP_ERROR_005") {
+        if (errorData.soaErrorCode === "GROUP_ERROR_005") {
           this.openPopupErrorMaxMerchant();
-        }
-        else {
+        } else {
           this.toast.showError(errorData?.soaErrorDesc);
         }
-      });
+      }
+    );
   }
 
   cancelEdit() {

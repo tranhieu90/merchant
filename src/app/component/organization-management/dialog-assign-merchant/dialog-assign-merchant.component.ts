@@ -4,12 +4,12 @@ import { ButtonModule } from 'primeng/button';
 import { DialogConfirmComponent } from '../../../base/shared/dialog-confirm/dialog-confirm.component';
 import { DialogConfirmModel } from '../../../model/DialogConfirmModel';
 import _ from 'lodash';
-import { TableMerchantComponent } from '../table-merchant/table-merchant.component';
+import { TableMerchantCreateComponent } from '../table-merchant-create/table-merchant-create.component';
 
 @Component({
   selector: 'app-dialog-assign-merchant',
   standalone: true,
-  imports: [ButtonModule, TableMerchantComponent],
+  imports: [ButtonModule, TableMerchantCreateComponent],
   templateUrl: './dialog-assign-merchant.component.html',
   styleUrl: './dialog-assign-merchant.component.scss'
 })
@@ -50,7 +50,7 @@ export class DialogAssignMerchantComponent implements OnInit {
     }
     else {
       let lstRowCheckedId = this.lstRowChecked.map((item: any) => item.merchantId);
-      this.dialogRef.close(lstRowCheckedId);
+      this.dialogRef.close(this.lstRowChecked);
     }
   }
 

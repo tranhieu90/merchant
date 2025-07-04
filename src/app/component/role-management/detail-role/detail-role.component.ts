@@ -26,6 +26,7 @@ import { DialogConfirmModel } from '../../../model/DialogConfirmModel';
 import { ToastService } from '../../../common/service/toast/toast.service';
 import { environment } from '../../../../environments/environment';
 import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
+import { VerifyUserService } from '../../../common/service/verify/verify-user.service';
 
 @Component({
   selector: 'app-detail-role',
@@ -69,7 +70,7 @@ export class DetailRoleComponent {
       label: 'ID',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left', 'mw-100'];
         },
         customCssHeader: (obj: any) => {
           return ['text-left'];
@@ -85,7 +86,7 @@ export class DetailRoleComponent {
       label: 'HỌ VÀ TÊN',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left', 'mw-180'];
         },
         customCssHeader: (obj: any) => {
           return ['text-left'];
@@ -123,7 +124,8 @@ export class DetailRoleComponent {
     private api: FetchApiService,
     private auth: AuthenticationService,
     private toast: ToastService,
-    private dialogCommon: DialogCommonService
+    private dialogCommon: DialogCommonService,
+     private verify:VerifyUserService
   ) {
     this.routeActive.queryParams.subscribe((params) => {
       this.roleId = params['roleId'] || null;
@@ -219,10 +221,10 @@ export class DetailRoleComponent {
         }
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
-        this.openDialogUnverifiedAccountAndEmail();
+        this.verify.openDialogUnverifiedAccountAndEmail();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
-        this.openDialogUnverifiedAccountAndNoEmail();
+        this.verify.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
         console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
@@ -240,10 +242,10 @@ export class DetailRoleComponent {
         });
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
-        this.openDialogUnverifiedAccountAndEmail();
+        this.verify.openDialogUnverifiedAccountAndEmail();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
-        this.openDialogUnverifiedAccountAndNoEmail();
+        this.verify.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
         console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
@@ -320,10 +322,10 @@ export class DetailRoleComponent {
         this.handleDeleteRole();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
-        this.openDialogUnverifiedAccountAndEmail();
+        this.verify.openDialogUnverifiedAccountAndEmail();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
-        this.openDialogUnverifiedAccountAndNoEmail();
+        this.verify.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
         console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
@@ -430,49 +432,4 @@ export class DetailRoleComponent {
     this.viewPageIndex = 0;
   }
 
-  openDialogUnverifiedAccountAndEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${this.userInfo?.emailChange}</b>.`;
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonLeftLabel = 'Thay đổi email';
-    dataDialog.buttonRightLabel = 'Xác thực email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result != undefined) {
-        this.router.navigate(['/profile']);
-      } else {
-      }
-    });
-  }
-
-  openDialogUnverifiedAccountAndNoEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message =
-      'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonRightLabel = 'Bổ sung email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.router.navigate(['/profile']);
-      } else {
-      }
-    });
-  }
 }

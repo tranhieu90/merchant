@@ -20,41 +20,6 @@
     color: $color-text-neutral-sub;
 }
 
-.merchant-treeSelect {
-    width: 100%;
-
-    ::ng-deep .p-treeselect {
-        width: 100%;
-    }
-
-    ::ng-deep .p-treeselect .p-treeselect-label {
-        padding: $spacing-s $spacing-m;
-        font-size: $typo-font-sizes-m;
-    }
-
-    ::ng-deep .p-treeselect-close {
-        display: none !important;
-    }
-
-    ::ng-deep .p-treeselect-filter-container {
-        position: relative;
-        display: block;
-    }
-
-    ::ng-deep .p-treeselect-filter {
-        padding-left: 40px !important;
-    }
-
-    ::ng-deep .p-treeselect-filter-icon {
-        position: absolute !important;
-        left: 16px;
-        top: 70%;
-        transform: translateY(-50%);
-        pointer-events: none;
-        z-index: 2;
-        color: $color-global-neutral-neutral-6;
-    }
-}
 
 .container-btn-cf {
     margin: $spacing-none $spacing-s $spacing-s;

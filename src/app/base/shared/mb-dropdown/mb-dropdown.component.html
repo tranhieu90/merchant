@@ -1,0 +1,26 @@
+<div [class.p-inputgroup]="showIcon" [class.show-icon-left]="showIcon">
+  <span class="p-input-icon-left" *ngIf="showIcon">
+    <i class="input-icon input-icon-default" [ngClass]="iconClass"></i>
+  </span>
+  <p-dropdown
+    [ngClass]="[dropdownClass, hasError ? 'ng-invalid ng-dirty ng-touched' : '']"
+    [options]="options"
+    [optionValue]="optionValue"
+    [optionLabel]="optionLabel"
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    [filter]="filter"
+    [appendTo]="appendTo"
+    [(ngModel)]="value"
+    [emptyFilterMessage]="'Không tìm thấy dữ liệu'"
+    emptyMessage="Không có dữ liệu"
+    (onChange)="onValueChange($event.value)"
+    (onBlur)="onTouched()">
+    <ng-template let-item pTemplate="item">
+      <div class="item-method">
+        {{ item[optionLabel] }}
+        <span *ngIf="showCheckmark && item[optionValue] === value" class="icon-check_circle_solid"></span>
+      </div>
+    </ng-template>
+  </p-dropdown>
+</div>

@@ -43,11 +43,11 @@
     background: $color-surface-semantic-error;
 
     &:hover {
-        background: $color-surface-semantic-error;
+        background: $color-surface-semantic-error-hover;
     }
 
     &:focus {
-        background: $color-surface-semantic-error;
+        background: $color-surface-semantic-error-pressed;
     }
 }
 

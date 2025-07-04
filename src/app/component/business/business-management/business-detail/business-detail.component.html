@@ -109,6 +109,9 @@
                             @if(paymentQR.qrCode){
                             <p-button label="Tải xuống QR" class="merchant-button w-100" icon="icon-download"
                                 (onClick)="downloadQRCode()" />
+                            } @else {
+                            <p-button label="Gen lại mã QR" class="merchant-button w-100" icon="icon-download"
+                                (onClick)="genQRCode()" />
                             }
                         </div>
                     </div>

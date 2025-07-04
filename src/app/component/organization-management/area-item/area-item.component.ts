@@ -63,6 +63,7 @@ export class AreaItemComponent implements OnChanges {
   onDeleteArea(data: any): void {
     this.isActionDelte = true;
     this.deleteArea.emit(data);
+    this.isActionDelte = false;
   }
 
   onAddArea(level: number, parentId: number, areaActive: any): void {
@@ -98,6 +99,8 @@ export class AreaItemComponent implements OnChanges {
     }
 
     this.blurAreaName.emit({ event, areaId, isFormCreateInvalid });
+    this.isActionAdd = false;
+    this.isActionDelte = false;
   }
 
   onOpenChildren(item: any) {

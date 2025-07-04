@@ -6,12 +6,16 @@
 </div>
 
 <div class="wrapper">
-  <div class="col-12 d-flex justify-content-end">
+  <div class="col-12 d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <span class="header-s-semibold">Danh sách vai trò ({{ this.totalItem }})</span>
+    </div>
     <div class="p-inputgroup show-icon-left search-role">
       <span class="p-input-icon-left">
         <i class="icon-search input-icon input-icon-default"></i>
       </span>
       <input
+        appShowClearOnFocus=".clear-icon"
         type="text"
         pInputText
         class="merchant-input search"
@@ -20,12 +24,17 @@
         (keydown.enter)="onEnterSearch()"
         maxlength="255"
       />
+      @if (keyWord != null && keyWord != '') {
+        <span class="p-input-icon-right clear-icon" (click)="keyWord = ''">
+          <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+        </span>
+      }
     </div>
   </div>
-
   <div class="col-12 d-flex justify-content-end mt-24">
     <grid-view
       [columns]="columns"
+      [isOrder]="true"
       [dataSource]="dataList"
       (doChangePage)="doSearch($event)"
       [total]="totalItem"

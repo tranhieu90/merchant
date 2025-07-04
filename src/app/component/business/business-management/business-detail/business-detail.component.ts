@@ -134,6 +134,8 @@ export class BusinessDetailComponent implements OnInit {
     this.api.get(BUSINESS_ENDPOINT.GEN_QR, buildParams).subscribe(res => {
       if (res && res['status'] == 200) {
         this.getDataDetail(this.subId);
+      }else if(res && res['status']==400){
+        this.toast.showError(res?.soaErrorDesc);
       }
     }, (error) => {
       this.toast.showError('GenQR xảy ra lỗi, vui lòng thử lại');
@@ -252,6 +254,7 @@ export class BusinessDetailComponent implements OnInit {
   updateEmail() {
     const dialogRef = this.dialog.open(UpdateUserComponent, {
       width: '600px',
+      panelClass: 'dialog-update-user',
       data: {
         title: 'Cập nhật email',
         type: 'email',

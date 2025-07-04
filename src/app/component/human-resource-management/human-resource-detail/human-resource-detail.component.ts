@@ -41,6 +41,7 @@ import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MTreeComponent } from '../../../base/shared/m-tree/m-tree.component';
 import { catchError, map, Observable, throwError } from 'rxjs';
+import { ShowIfTruncatedDirective } from '../../../common/directives/showIfTruncatedDirective';
 @Component({
   selector: 'app-human-resource-detail',
   standalone: true,
@@ -63,6 +64,7 @@ import { catchError, map, Observable, throwError } from 'rxjs';
     MatTooltipModule,
     DirectiveModule,
     MTreeComponent,
+    ShowIfTruncatedDirective
   ],
   templateUrl: './human-resource-detail.component.html',
   styleUrl: './human-resource-detail.component.scss',
@@ -79,6 +81,7 @@ export class HumanResourceDetailComponent implements OnInit {
   pageSize = 10;
   totalItem: number = 0;
   isLoading = false;
+  isLoadingLazyLoad = true;
   hasMoreData = true;
   userInfo?: any;
   columns: Array<GridViewModel> = [
@@ -87,7 +90,7 @@ export class HumanResourceDetailComponent implements OnInit {
       label: 'ID',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left', 'mw-100'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -102,7 +105,7 @@ export class HumanResourceDetailComponent implements OnInit {
       label: 'TÊN ĐIỂM KINH DOANH',
       options: {
         customCss: (obj: any) => {
-          return ['text-left', 'mw-120'];
+          return ['text-left', 'mw-160'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -129,6 +132,7 @@ export class HumanResourceDetailComponent implements OnInit {
   changePasswordStatus: number = 0;
 
   personDetail?: IPersonelDetail;
+  countSub: number = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -394,7 +398,7 @@ export class HumanResourceDetailComponent implements OnInit {
 
     let param = {
       page: 1,
-      size: 1000,
+      size: this.pageSize,
     };
     let buildParams = CommonUtils.buildParams(param);
     this.api
@@ -516,8 +520,8 @@ export class HumanResourceDetailComponent implements OnInit {
       this.api
         .post(HR_ENDPOINT.GET_SUB, {
           userId: this.userId,
-          page: 1,
-          size: 1000,
+          page: this.pageIndex,
+          size: this.pageSize,
         })
         .subscribe((res) => {
           this.subMerchantList = res['data']['getPushSubInfos'].map(
@@ -531,6 +535,7 @@ export class HumanResourceDetailComponent implements OnInit {
               ]),
             })
           );
+          this.countSub =  res['data']['total'];
         });
       // }
     }
@@ -713,7 +718,8 @@ export class HumanResourceDetailComponent implements OnInit {
               selectedMerchant:
                 this.subMerchantList,
               orgType: this.personDetail?.orgType,
-              personDetail: this.personDetail
+              personDetail: this.personDetail,
+              countSub: this.countSub,
             },
           },
         });
@@ -729,4 +735,43 @@ export class HumanResourceDetailComponent implements OnInit {
     if (!date) return '';
     return moment(date).isValid() ? moment(date).format('DD/MM/YYYY') : '';
   }
+
+  lazyLoadData(e: any) {
+    const tableViewHeight = e.target.offsetHeight
+    const tableScrollHeight = e.target.scrollHeight
+    const scrollLocation = e.target.scrollTop;
+
+    const buffer = 200;
+    const limit = tableScrollHeight - tableViewHeight - buffer;
+    if (scrollLocation > limit && this.isLoadingLazyLoad) {
+      this.isLoadingLazyLoad = false;
+      this.pageIndex++;
+      this.api
+        .post(HR_ENDPOINT.GET_SUB, {
+          userId: this.userId,
+          page: this.pageIndex,
+          size: this.pageSize,
+        })
+        .subscribe((res) => {
+          if (res['data']['getPushSubInfos'] && res['data']['getPushSubInfos'].length > 0) {
+            let dataGroup = res['data']['getPushSubInfos'].map(
+              (item: any) => ({
+                ...item,
+                formatAddress: fomatAddress([
+                  item.address,
+                  item.communeName,
+                  item.districtName,
+                  item.provinceName,
+                ]),
+              })
+            );
+            this.subMerchantList = this.subMerchantList.concat(dataGroup);
+            this.isLoadingLazyLoad = true;
+          } else {
+            this.isLoadingLazyLoad = false;
+          }
+        });
+    }
+  }
+
 }

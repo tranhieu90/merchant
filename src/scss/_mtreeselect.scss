@@ -1,0 +1,37 @@
+@import "../scss/variables";
+
+.merchant-treeSelect {
+    width: 100%;
+
+     .p-treeselect {
+        width: 100%;
+    }
+
+     .p-treeselect .p-treeselect-label {
+        padding: $spacing-s $spacing-m;
+        font-size: $typo-font-sizes-m;
+    }
+
+     .p-treeselect-close {
+        display: none !important;
+    }
+
+     .p-treeselect-filter-container {
+        position: relative;
+        display: block;
+    }
+
+     .p-treeselect-filter {
+        padding-left: 40px !important;
+    }
+
+     .p-treeselect-filter-icon {
+        position: absolute !important;
+        left: 16px;
+        top: 70%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        z-index: 2;
+        color: $color-global-neutral-neutral-6;
+    }
+}

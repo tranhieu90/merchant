@@ -97,7 +97,7 @@
       }
 
       &::before {
-        content: "\e91f";
+        content: "\e91e";
         font-family: 'webmerchant' !important;
         color: $color-global-neutral-white;
         font-size: $typo-font-sizes-3xl;
@@ -283,34 +283,6 @@
   box-sizing: border-box;
 }
 
-.m-radio {
-  ::ng-deep.p-radiobutton .p-radiobutton-box {
-    border-color: $color-icon-action-main;
-  }
-
-  ::ng-deep.p-radiobutton .p-radiobutton-box.p-highlight {
-    background: $color-icon-action-main;
-  }
-
-  ::ng-deep.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
-    width: 8px;
-    height: 8px;
-  }
-}
-
-.m-radio-check {
-  ::ng-deep.p-radiobutton .p-radiobutton-box.p-highlight {
-    background: $color-icon-action-main;
-    background-image: url("../../../../assets/images/icon-check.svg");
-    background-size: cover;
-  }
-
-  ::ng-deep.p-radiobutton .p-radiobutton-box .p-radiobutton-icon {
-    width: 0px;
-    height: 0px;
-  }
-}
-
 .no-underline {
   text-decoration: none !important;
   color: $color-global-blue-blue-6;
@@ -365,4 +337,13 @@
 
 .style-role {
   padding: $spacing-none 150px;
+}
+
+::ng-deep .table-container {
+  max-height: 500px !important;
+}
+
+::ng-deep .mat-table {
+  overflow: auto !important;
+  max-height: 500px !important;
 }

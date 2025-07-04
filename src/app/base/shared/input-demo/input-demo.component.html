@@ -315,7 +315,7 @@
           </span>
           <p-autoComplete appShowClearOnFocus=".clear-icon" class="merchant-input-search" formControlName="valueInputSearch" [suggestions]="suggestions" (completeMethod)="search($event)" placeholder="Text"/>
           @if(this.formInput.get('valueInputSearch')?.value){
-          <span class="p-input-icon-right clear-icon" (click)="clearValue('valueInputSearch')">
+          <span class="p-input-icon-right clear-icon"  (click)="clearValue('valueInputSearch')">
             <i class="icon-close_circle_solid input-icon input-icon-close"></i>
           </span>
           }

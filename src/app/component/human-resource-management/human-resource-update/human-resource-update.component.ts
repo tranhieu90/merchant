@@ -106,10 +106,11 @@ export class HumanResourceUpdateComponent implements OnInit {
   selectedGroupDefault: any[] = [];
   roleIdDefault: number = 0;
   isUpdateRole: boolean = false;
-  isSuccess: number = 0;
+  isSuccess: number = 1;
   isHaveEmail: boolean = false;
   masterId?: number;
   orgTypeUser!: number;
+  orgTypeUserFromDb!: number;
   isCheckboxMerchant: boolean = false;
   isShowPointSales: boolean = false;
   isShowGroup: boolean = false;
@@ -127,6 +128,13 @@ export class HumanResourceUpdateComponent implements OnInit {
 
   personDetail?: IPersonelDetail;
   isLockAccount?: boolean;
+  pageIndex: number = 1;
+  actionType?: string;
+  isLoading = true;
+  isLoadSubResult = true;
+  totalSub: number = 0;
+  hasCheckAll?: boolean = false;
+  skipSearch = false;
 
   constructor(
     private dialog: MatDialog,
@@ -138,13 +146,14 @@ export class HumanResourceUpdateComponent implements OnInit {
   ) {
     const state = this.router.getCurrentNavigation()?.extras.state;
     const personData = state?.['dataInput'];
-    console.log('personData', personData);
     if (personData) {
       this.personDataDetail = personData;
       this.userId = personData.userId;
       this.orgTypeUser = personData.orgType;
+      this.orgTypeUserFromDb = personData.orgType;
       this.roleTypePersonel = personData.roleTypePersonel;
       this.personDetail = personData?.personDetail;
+      this.totalSub = personData?.countSub;
       if (this.orgTypeUser == 2 && personData?.selectedMerchant) {
         if (
           personData?.selectedMerchant &&
@@ -181,7 +190,7 @@ export class HumanResourceUpdateComponent implements OnInit {
   //isConfig=1 orgType=2 pointsales > 0 typeUpdate= 5
   //isConfig=1 orgType=2 pointsales == 1 typeUpdate=6
   ngOnInit(): void {
-    
+
     this.isSearch = true;
     this.userInfo = this.auth.getUserInfo();
     let lstPoinSales: any[] = [];
@@ -290,7 +299,7 @@ export class HumanResourceUpdateComponent implements OnInit {
     this.navigationSubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         if (!this._isNavigating) {
-          // this._isNavigating = true;
+          this._isNavigating = true;
           if (event.url !== '/login') {
             this.onCancel(event.url);
             this.router.navigate([], { replaceUrl: true, queryParamsHandling: 'preserve' });
@@ -306,7 +315,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       options: {
         width: '10%',
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left', 'mw-100'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -349,7 +358,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       label: 'ID',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left', 'mw-100'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -361,7 +370,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       label: 'TÊN ĐIỂM KINH DOANH',
       options: {
         customCss: (obj: any) => {
-          return ['text-left', 'mw-120'];
+          return ['text-left', 'mw-160'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -433,10 +442,10 @@ export class HumanResourceUpdateComponent implements OnInit {
           ) {
             lstGr = this.selectedGroupDefault.map((g: any) => g.id);
           }
-          param.oraganizationDelete = {
-            // masterId: this.auth.getUserInfo().merchantId,
-            groupIds: lstGr,
-          };
+          // param.oraganizationDelete = {
+          //   // masterId: this.auth.getUserInfo().merchantId,
+          //   groupIds: lstGr,
+          // };
         }
         if (this.personDataDetail.orgType == 2) {
           let lstPointSales!: any;
@@ -445,10 +454,10 @@ export class HumanResourceUpdateComponent implements OnInit {
               (item: any) => Number(item.merchantId)
             );
           }
-          param.oraganizationDelete = {
-            // masterId: this.auth.getUserInfo().merchantId,
-            merchantIds: lstPointSales,
-          };
+          // param.oraganizationDelete = {
+          //   // masterId: this.auth.getUserInfo().merchantId,
+          //   merchantIds: lstPointSales,
+          // };
         }
 
         if (
@@ -466,12 +475,10 @@ export class HumanResourceUpdateComponent implements OnInit {
         const selectedGroupIds = this.selectedGroupDefault.filter((it: any) => it.level == maxLevel).map(
           (group: any) => Number(group.id)
         );
-        console.log(selectedGroupIds)
         if (this.personDataDetail.orgType == 1) {
           const groupIdsInsert = selectedGroupIds.filter(
             (id: any) => !this.newOrganization.includes(Number(id))
           );
-          console.log(groupIdsInsert)
           const groupIdsDelete = this.newOrganization.filter(
             (id: any) => !selectedGroupIds.includes(Number(id))
           );
@@ -511,6 +518,7 @@ export class HumanResourceUpdateComponent implements OnInit {
         const selectedPointSales = this.selectedMerchantDefault.map(
           (g: any) => Number(g.merchantId)
         );
+        param['actionType'] = this.actionType;
         if (this.personDataDetail.orgType == 2) {
           var lstPointSales = this.personDataDetail?.selectedMerchant.map(
             (item: any) => Number(item.merchantId)
@@ -523,7 +531,7 @@ export class HumanResourceUpdateComponent implements OnInit {
           );
           if (pointsInsert.length > 0) {
             param.oraganizationInfo = {
-              merchantIds: pointsInsert,
+              merchantIds: this.actionType == "ALL" ? undefined : pointsInsert,
             };
           }
           if (pointsDelete.length > 0) {
@@ -533,14 +541,14 @@ export class HumanResourceUpdateComponent implements OnInit {
           }
         } else if (this.personDataDetail.orgType == 0) {
           param.oraganizationInfo = {
-            merchantIds: selectedPointSales,
+            merchantIds: this.actionType == "ALL" ? undefined : selectedPointSales,
           };
           param.oraganizationDelete = {
             masterId: this.auth.getUserInfo().merchantId,
           };
         } else {
           param.oraganizationInfo = {
-            merchantIds: selectedPointSales,
+            merchantIds: this.actionType == "ALL" ? undefined : selectedPointSales,
           };
           param.oraganizationDelete = {
             groupIds: this.newOrganization,
@@ -557,7 +565,7 @@ export class HumanResourceUpdateComponent implements OnInit {
           //   const { error } = err;
           //   this.toast.showError(error.soaErrorDesc);
           // } else this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
-
+          this.isSuccess = 0;
           const errorData = error?.error || {};
           switch (errorData.soaErrorCode) {
             case '203':
@@ -602,6 +610,8 @@ export class HumanResourceUpdateComponent implements OnInit {
             }
           });
         }
+      } else {
+        this._isNavigating = false;
       }
     });
   }
@@ -656,6 +666,7 @@ export class HumanResourceUpdateComponent implements OnInit {
   }
 
   getLstMerchant() {
+    this.pageIndex = 1;
     return this.getLstMerchantWithCheckedObs(false)?.subscribe();
   }
 
@@ -669,8 +680,8 @@ export class HumanResourceUpdateComponent implements OnInit {
     };
     this.searchPointSales = this.searchPointSales?.trim();
     let param = {
-      page: 1,
-      size: 1000,
+      page: this.pageIndex,
+      size: 10,
       keySearch: this.searchPointSales ? this.searchPointSales : null,
     };
     let buildParams = CommonUtils.buildParams(param);
@@ -679,6 +690,9 @@ export class HumanResourceUpdateComponent implements OnInit {
       .pipe(
         map((res: any) => {
           if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
+            if (this.totalSub == res['data']['totalSub']) {
+              this.hasCheckAll = true;
+            }
             let dataGroup = res['data']['subInfo'].map((item: any) => ({
               ...item,
               formatAddress: fomatAddress([
@@ -689,11 +703,30 @@ export class HumanResourceUpdateComponent implements OnInit {
               ]),
             }));
 
+            const existingIds = new Set(this.selectedMerchantDefault.map((m: any) => +m.merchantId));
+            let filteredSubMerchant = dataGroup.filter((m: any) => !existingIds.has(m.merchantId));
+            this.selectedMerchantDefault = this.selectedMerchantDefault.map((item: any) => ({
+              ...item,
+              merchantId: +item.merchantId
+            }));
+
+            dataGroup = [...this.selectedMerchantDefault, ...filteredSubMerchant];
             if (this.selectedMerchantDefault.length > 0) {
               dataGroup.forEach((item: any) => {
                 item.checked = this.selectedMerchantDefault.some((el) => el.merchantId == item.merchantId);
               });
             }
+
+            // dataGroup?.forEach((data: any) => {
+            //   const existsDetail = this.subMerchantList.some(
+            //     (selected: any) => selected.merchantId === data.merchantId
+            //   );
+
+            //   if (!existsDetail) {
+            //     this.subMerchantList?.push(data);
+            //   }
+            // })
+
             this.subMerchantList = dataGroup;
             if (isFirstLoad) {
               this.subMerchantListTemp = dataGroup;
@@ -789,7 +822,7 @@ export class HumanResourceUpdateComponent implements OnInit {
       );
   }
   setUpMerchantIds(event: any) {
-    console.log(1, event)
+     this.skipSearch = true;
     if (event && Array.isArray(event)) {
       if (event[0]?.checked) {
         event.forEach((item: any) => {
@@ -820,7 +853,7 @@ export class HumanResourceUpdateComponent implements OnInit {
           (m: any) => Number(m.merchantId) !== Number(event.merchantId)
         );
       }
-    } console.log(2, this.selectedMerchantDefault)
+    }
   }
   onRadioChange(event: any) {
     switch (event) {
@@ -879,6 +912,7 @@ export class HumanResourceUpdateComponent implements OnInit {
     }
   }
   radioMerchant(event: any) {
+    this.skipSearch = true;
     this.selectedMerchantDefault = [];
     this.selectedMerchantDefault.push(event);
   }
@@ -994,11 +1028,11 @@ export class HumanResourceUpdateComponent implements OnInit {
     if (this.orgTypeUser === 2) {
       const currentIds = (this.selectedMerchantDefault || []).map((m: any) => m.merchantId).sort();
       const originalIds = (this.personDataDetail.selectedMerchant || []).map((m: any) => m.merchantId).sort();
-      if (currentIds.length !== originalIds.length) {
+      if (currentIds.length != originalIds.length) {
         return true;
       }
       for (let i = 0; i < currentIds.length; i++) {
-        if (currentIds[i] !== originalIds[i]) {
+        if (currentIds[i] != originalIds[i]) {
           return true;
         }
       }
@@ -1010,14 +1044,170 @@ export class HumanResourceUpdateComponent implements OnInit {
         return true;
       }
       for (let i = 0; i < currentGroupIds.length; i++) {
-        if (currentGroupIds[i] !== originalGroupIds[i]) {
+        if (currentGroupIds[i] != originalGroupIds[i]) {
           return true;
         }
       }
     }
-    if (this.roleIdDefault !== this.personDataDetail.roleId) {
+    if (this.roleIdDefault != this.personDataDetail.roleId) {
       return true;
     }
     return false;
+  }
+
+  lazyLoadData(e: any) {
+    const tableViewHeight = e.target.offsetHeight
+    const tableScrollHeight = e.target.scrollHeight
+    const scrollLocation = e.target.scrollTop;
+
+    const buffer = 200;
+    const limit = tableScrollHeight - tableViewHeight - buffer;
+    if (scrollLocation > limit && this.isLoading) {
+      this.isLoading = false;
+      this.pageIndex++;
+      if (this.orgTypeUserFromDb == 2 && this.isLoadSubResult) {
+        this.getSubMerchantListResult().subscribe((data) => {
+          data?.forEach((item: any) => {
+            const exists = this.selectedMerchantDefault.some(
+              (selected: any) => selected.merchantId == item.merchantId
+            );
+
+            if (!exists) {
+              this.selectedMerchantDefault.push(item);
+            }
+
+            const existsDetail = this.personDataDetail?.selectedMerchant.some(
+              (selected: any) => selected.merchantId === item.merchantId
+            );
+
+            if (!existsDetail) {
+              this.personDataDetail?.selectedMerchant.push(item);
+            }
+
+
+          });
+          this.loadDataWhenScroll();
+        })
+      } else {
+        this.loadDataWhenScroll();
+      }
+
+    }
+  }
+
+  loadDataWhenScroll() {
+    let dataReq = {
+      groupIdList: [] as number[],
+      status: 'active',
+      methodId: [],
+      mappingKey: '',
+    };
+    this.searchPointSales = this.searchPointSales?.trim();
+    let param = {
+      page: this.pageIndex,
+      size: 10,
+      keySearch: this.searchPointSales ? this.searchPointSales : null,
+    };
+    let buildParams = CommonUtils.buildParams(param);
+    this.api
+      .post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams).subscribe((res: any) => {
+        if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
+          this.totalSub = res['data']['totalSub'];
+          let dataGroup = res['data']['subInfo'].map((item: any) => ({
+            ...item,
+            formatAddress: fomatAddress([
+              item.address,
+              item.communeName,
+              item.districtName,
+              item.provinceName,
+            ]),
+          }));
+
+          if (this.actionType == "ALL") {
+            dataGroup.forEach((item: any) => {
+              item.checked = true;
+              const exists = this.selectedMerchantDefault.some(
+                (selected: any) => selected.merchantId == item.merchantId
+              );
+
+              if (!exists) {
+                this.selectedMerchantDefault.push(item);
+              }
+            });
+          } else {
+            if (this.selectedMerchantDefault.length > 0) {
+              dataGroup.forEach((item: any) => {
+                item.checked = this.selectedMerchantDefault.some((el) => el.merchantId == item.merchantId);
+              });
+            }
+          }
+
+
+          const existingIds = new Set(this.subMerchantList.map(m => m.merchantId));
+          let filteredSubMerchant = this.selectedMerchantDefault.filter((m: any) => !existingIds.has(+m.merchantId));
+          filteredSubMerchant = filteredSubMerchant.map(item => ({
+            ...item,
+            merchantId: +item.merchantId,
+            checked: true
+          }));
+          this.subMerchantList = [...filteredSubMerchant, ...this.subMerchantList]
+
+          const filteredGroup = dataGroup.filter((m: any) => !existingIds.has(m.merchantId));
+
+          this.subMerchantList = this.subMerchantList.concat(filteredGroup);
+          this.isLoading = true;
+        }
+        else {
+          this.isLoading = false;
+        }
+
+      });
+  }
+
+  getSubMerchantListResult(): Observable<any[]> {
+    return this.api.post(HR_ENDPOINT.GET_SUB, {
+      userId: this.userId,
+      page: this.pageIndex,
+      size: 10,
+    }).pipe(
+      map((res: any) => {
+        if (res['data']['getPushSubInfos'] && res['data']['getPushSubInfos'].length > 0) {
+
+          return res.data.getPushSubInfos.map((item: any) => ({
+            ...item,
+            formatAddress: fomatAddress([
+              item.address,
+              item.communeName,
+              item.districtName,
+              item.provinceName,
+            ]),
+          }))
+        } else {
+          this.isLoadSubResult = false;
+          return [];
+        }
+      }
+
+      )
+    );
+  }
+
+  setActionType(data: boolean) {
+    if (data) {
+      this.actionType = "ALL"
+      this.hasCheckAll = true;
+    } else {
+      this.actionType = ""
+      this.hasCheckAll = false;
+    }
+  }
+
+  onBlurSearch() {
+    setTimeout(() => {
+      if (!this.skipSearch) {
+        this.getLstMerchant();
+      }
+      this.skipSearch = false; // reset lại
+    }, 100);
   }
 }

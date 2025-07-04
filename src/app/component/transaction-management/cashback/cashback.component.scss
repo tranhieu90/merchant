@@ -7,7 +7,6 @@
   padding: $spacing-l;
   border-radius: $border-radius-xs;
   color: $color-text-neutral-main;
-  overflow: hidden;
 
   //typo/paragraph-m-regular
   @include typo-style($typo-font-sizes-m, $typo-font-weights-regular, none, none);
@@ -152,101 +151,9 @@
 
 }
 
-.merchant-treeSelect {
-  width: 100%;
-
-  ::ng-deep .p-treeselect {
-    width: 100%;
-  }
-
-  // ::ng-deep .p-treenode-content {
-  //     display: flex;
-  //     align-items: center;
-  //     justify-content: space-between;
-  // }
-
-  // ::ng-deep .p-tree-toggler {
-  //     order: 2;
-  //     margin-left: auto;
-  // }
-
-  // ::ng-deep .p-checkbox {
-  //     order: 0;
-  //     margin-right: 0.5rem;
-  // }
-
-  // ::ng-deep .p-treenode-label {
-  //     order: 1;
-  // }
-
-  // ::ng-deep .p-treenode-content.p-highlight {
-  //     color: $color-global-neutral-black;
-  // }
-
-  // ::ng-deep .p-treenode:focus>.p-treenode-content {
-  //     outline: transparent;
-  // }
-
-  // ::ng-deep .p-treenode-content.p-highlight .p-tree-toggler {
-  //     color: $color-global-neutral-black;
-  // }
-
-  // ::ng-deep .p-treeselect.p-treeselect-chip .p-treeselect-token {
-  //     margin: 0;
-  //     padding: $spacing-2xs $spacing-s $spacing-2xs 0;
-  //     background: transparent;
-  //     border: none;
-  // }
-
-  // ::ng-deep .p-treeselect .p-treeselect-label.p-placeholder {
-  //     color: $color-global-neutral-neutral-12;
-  //     padding: $spacing-s $spacing-m;
-  //     font-size: $typo-font-sizes-m;
-  // }
-
-  ::ng-deep .p-treeselect .p-treeselect-label {
-    padding: $spacing-s $spacing-m;
-    font-size: $typo-font-sizes-m;
-  }
-}
-
 ::ng-deep .color-text-neutral-sub {
   color: $color-text-neutral-sub !important;
 }
-
-::ng-deep.merchant-inputNumber {
-  width: 100% !important;
-  height: 48px;
-
-  span {
-    width: 100%;
-  }
-
-  input {
-    height: 48px;
-
-    &::placeholder {
-      font-weight: $typo-font-weights-regular;
-      font-size: $typo-font-sizes-m;
-
-      color: $color-text-neutral-sub-3;
-
-    }
-  }
-
-}
-
-//::ng-deep .p-dropdown-items-wrapper {
-//  max-width: 500px !important;
-//}
-//
-//::ng-deep .p-dropdown-item .p-element,
-//.p-dropdown-item .ng-star-inserted {
-//  max-width: 500px !important;
-//  width: 100%;
-//  overflow: hidden;
-//  text-overflow: ellipsis !important;
-//}
 
 ::ng-deep .p-multiselect-items-wrapper {
   max-width: 500px !important;
@@ -267,24 +174,6 @@
   opacity: 100% !important;
 }
 
-.item-method {
-  height: 38px;
-  font-weight: $typo-font-weights-regular;
-  font-size: $typo-font-sizes-l;
-  display: flex;
-  align-items: center;
-  position: relative; // để icon position-absolute căn theo đây
-  padding-right: 24px; // để tránh text dính vào icon nếu cần
-}
-
-.icon-check_circle_solid {
-  @include base-icon;
-  color: $color-surface-action-main;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 90%; // giữ nếu bạn muốn nó sát mép phải
-}
 
 ::ng-deep .ellipsis-item {
   white-space: nowrap;

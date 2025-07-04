@@ -12,6 +12,12 @@
 
 .color-inactive {
     color: $color-text-neutral-sub-2;
+    &:hover{
+        color: $color-text-action-main-hover;
+    }
+    &:active{
+        color: $color-text-action-main-pressed;
+    }
 }
 
 .separator {

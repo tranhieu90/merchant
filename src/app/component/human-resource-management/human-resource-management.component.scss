@@ -103,3 +103,7 @@
   background-color: $color-global-primary-primary-4 !important;
   opacity: 100% !important;
 }
+::ng-deep .merchant-dropdown .p-scroller {
+  height: 250px !important;
+  max-height: 250px !important;
+}

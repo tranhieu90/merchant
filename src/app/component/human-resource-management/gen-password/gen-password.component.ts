@@ -1,12 +1,17 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Button } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputCommon } from '../../../common/directives/input.directive';
 import { ToastService } from '../../../common/service/toast/toast.service';
 import { generatePassword } from '../../../common/helpers/Ultils';
+import { CommonUtils } from '../../../base/utils/CommonUtils';
+import { Router } from '@angular/router';
+import { AuthenticationService } from '../../../common/service/auth/authentication.service';
+import { FetchApiService } from '../../../common/service/api/fetch-api.service';
+import { DialogCommonService } from '../../../common/service/dialog-common/dialog-common.service';
 
 @Component({
   selector: 'app-gen-password',
@@ -28,6 +33,11 @@ export class GenPasswordComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<GenPasswordComponent>,
+    public dialog: MatDialog,
+    public router: Router,
+    public auth: AuthenticationService,
+    public api: FetchApiService,
+    public dialogCommon: DialogCommonService,
     @Inject(MAT_DIALOG_DATA) public dataDialog: any,
     private toast: ToastService,
   ) {
@@ -38,11 +48,16 @@ export class GenPasswordComponent implements OnInit {
   }
 
   doAction(actionType: boolean) {
-    const data = {
-      actionType: actionType,
-      pass: this.pass
+    const isVerify = CommonUtils.checkVerifyAccount(this.dialog, this.router, this.auth, this.api, this.dialogCommon);
+    if (isVerify) {
+      const data = {
+        actionType: actionType,
+        pass: this.pass
+      }
+      this.dialogRef.close(data);
+    } else {
+      this.dialogRef.close();
     }
-    this.dialogRef.close(data);
   }
 
   onclose() {

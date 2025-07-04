@@ -13,7 +13,7 @@ export class DialogCommonService {
 
   openDialogInfo(dataModel: DialogConfirmModel): Observable<boolean> {
     const dialogRef = this.dialog.open(DialogConfirmComponent, {
-      width: dataModel?.width || '40%',
+      width: '500px',
       data: dataModel,
       disableClose: true,
     });

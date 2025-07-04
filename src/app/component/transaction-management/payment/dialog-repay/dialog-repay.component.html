@@ -26,11 +26,16 @@
 
     <form [formGroup]="formRepay">
         <div class="col-12 mb-4">
-            <label class="form-label title-m-semibold">Số tiền hoàn trả (₫)</label>
-            <div class="col-12">
-                <p-inputNumber formControlName="money" inputId="integeronly" class="merchant-inputNumber"
-                    [locale]="'en-US'" [min]="0" [showClear]="true"
+            <label class="input-label-custom">Số tiền hoàn trả (₫)</label>
+            <div class="col-12 p-inputgroup">
+                <p-inputNumber appShowClearOnFocus=".clear-icon" formControlName="money" inputId="integeronly" class="merchant-inputNumber"
+                    [locale]="'en-US'" [min]="0" [showClear]="false"
                     placeholder="Số tiền hoàn trả phải lớn hơn 2,000 ₫" (onBlur)="onBlurMoney($event)" />
+                @if(this.formRepay.get('money')?.value){
+                    <span class="p-input-icon-right clear-icon" (click)="clearMoney()">
+                        <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                    </span>
+                }
             </div>
             @if (formRepay.controls['money'].touched
             && formRepay.controls['money'].invalid) {
@@ -51,14 +56,14 @@
             }
         </div>
         <div class="col-12">
-            <label class="form-label title-m-semibold">Nội dung hoàn trả</label>
+            <label class="input-label-custom">Nội dung hoàn trả</label>
             <div class="p-inputgroup p-textaregroup">
-                <textarea rows="2" pInputTextarea appInputSanitize2 formControlName="description" class="merchant-input"
+                <textarea appShowClearOnFocus=".clear-icon" rows="2" pInputTextarea appInputSanitize2 formControlName="description" class="merchant-input"
                     placeholder="Nhập lý do hoàn tiền không dấu & không ký tự đặc biệt" maxlength="50">
                            </textarea>
                 <span class="count-length">{{ this.formRepay.get("description")?.value?.length }}/50</span>
                 @if(this.formRepay.get('description')?.value){
-                <span class="p-input-icon-right" (click)="clearValue('description')">
+                <span class="p-input-icon-right clear-icon" (click)="clearValue('description')">
                     <i class="icon-close_circle_solid input-icon input-icon-close"></i>
                 </span>
                 }

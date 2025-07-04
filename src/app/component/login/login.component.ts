@@ -108,7 +108,7 @@ export class LoginComponent implements OnInit {
     });
 
     this.forgotPasswordForm = this.fb.group({
-      username: ['', [Validators.required,Validators.pattern(REGEX_PATTERN.USER_NAME)]],
+      username: ['', [Validators.required, Validators.pattern(REGEX_PATTERN.USER_NAME)]],
       email: ['', [Validators.required, Validators.pattern(REGEX_PATTERN.EMAIL)]],
     });
 
@@ -218,6 +218,12 @@ export class LoginComponent implements OnInit {
             dataDialog.icon = 'icon-lock';
             dataDialog.width = '25%'
             break;
+          default:
+            dataDialog.title = 'Đăng nhập không thành công';
+            dataDialog.message = 'Vui lòng thử lại.';
+            dataDialog.buttonLabel = 'Tôi đã hiểu';
+            dataDialog.icon = 'icon-warning';
+            dataDialog.width = '25%'
           // case 'LOGIN_ERROR_009':
           //   dataDialog.title = 'Merchant mất kết nối';
           //   dataDialog.message = 'Merchant mất kết nối sử dụng dịch vụ, vui lòng liên hệ quản trị viên để được hỗ trợ.';

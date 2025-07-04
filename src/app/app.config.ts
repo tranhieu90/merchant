@@ -30,8 +30,18 @@ import { environment } from '../environments/environment';
 //   return new TranslateHttpLoader(http, assetsUrl, '.json?nocache=' + new Date().getTime())
 // }
 
+import { LOCALE_ID } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeVi from '@angular/common/locales/vi';
+import { vi_VN, provideNzI18n } from 'ng-zorro-antd/i18n';
+ 
+registerLocaleData(localeVi);
+ 
+
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: LOCALE_ID, useValue: 'vi' },
+    provideNzI18n(vi_VN),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(),

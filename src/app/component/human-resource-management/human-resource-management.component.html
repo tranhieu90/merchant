@@ -17,9 +17,14 @@
         <span class="p-input-icon-left">
           <i class="icon-search input-icon input-icon-default"></i>
         </span>
-        <input type="text" pInputText class="merchant-input search" [(ngModel)]="keyword"
+        <input type="text" appShowClearOnFocus=".clear-icon" pInputText class="merchant-input search" [(ngModel)]="keyword"
           [placeholder]="hasRole ? 'Tìm kiếm theo họ và tên, tên đăng nhập, email' : 'Tìm kiếm theo họ và tên'"
           (keydown.enter)="onEnterSearch()" (blur)="onBlurSearch()" />
+        @if (keyword != null && keyword != '') {
+        <span class="p-input-icon-right clear-icon" (click)="refreshDataKeywordSearch()">
+          <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+        </span>
+        }
       </div>
       <p-button [ngClass]="['merchant-button-icon button-l button-light me-2', isFilter? 'active': '']"
         icon="icon-filter" (onClick)="changeFilter()" [matBadge]="checkFilterNumber()" />
@@ -34,8 +39,10 @@
       </div>
       <div class="col-md-4 mt-4">
         <label class="form-label title-s-semibold">Vai trò</label>
-        <p-dropdown class="merchant-dropdown" formControlName="role" [options]="lstRole" optionValue="id"
-          optionLabel="name" placeholder="Tất cả" />
+        <p-dropdown class="merchant-dropdown" formControlName="role" [options]="lstRole" optionValue="id" 
+            [virtualScroll]="true"
+        [virtualScrollItemSize]="38"
+        [virtualScrollOptions]="options" optionLabel="name" placeholder="Tất cả" />
       </div>
       <div class="d-flex justify-content-end mt-3">
         <p-button label="Xóa bộ lọc" class="merchant-button-tertiary me-2" (onClick)="clearFilter()"
@@ -45,7 +52,7 @@
     </form>
   </div>
   <div class="col-12 d-flex justify-content-end mt-3">
-    <grid-view [columns]="columns" [dataSource]="dataList" (doChangePage)="doSearch($event)" [total]="totalItem"
+    <grid-view [isOrder]="true" [columns]="columns" [dataSource]="dataList" (doChangePage)="doSearch($event)" [total]="totalItem"
       [action]="action" [search]="isSearch" [isWhitespace]="true" style="float: left;width: 100%;"></grid-view>
   </div>
   <div *ngIf="dataList.length == 0 && !isSearch" class="col-12 text-center">

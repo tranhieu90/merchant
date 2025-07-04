@@ -72,9 +72,10 @@
               </ng-container>
 
               <ng-container *ngIf="userInfo.isConfig === 1">
-                <ng-container
+                <!-- <ng-container
                   *ngIf="!(userInfo.orgType === 2 && pointSales.length === 1) 
-                                    && !(userInfo.isConfig === 1 && userInfo.orgType === 2 && pointSalesInitFirt.length > 1)">
+                                    && !(userInfo.isConfig === 1 && userInfo.orgType === 2 && pointSalesInitFirt.length > 1)"> -->
+                <ng-container *ngIf="pointSales.length !== 1 && userInfo.orgType !== 2">
                   <div class="paragraph-m-regular mb-spacing-s">
                     Vui lòng chọn tổ chức để gán cho nhân sự.
                   </div>
@@ -99,7 +100,12 @@
                 <ng-container
                   *ngIf="userInfo.isConfig === 1 && userInfo.orgType === 2 && pointSalesInitFirt.length > 1">
                   <div class="paragraph-m-regular mb-spacing-s">
-                    Bạn đang gán nhân sự vào <b>{{ totalPointSalesSelected }}</b> điểm kinh doanh.
+                    <ng-container *ngIf="actionType === 'ALL'; else noCheckAll">
+                      Bạn đang gán nhân sự vào <b> {{totalSub || 0 }}</b> điểm kinh doanh.
+                    </ng-container>
+                    <ng-template #noCheckAll>
+                      Bạn đang gán nhân sự vào <b>{{ totalPointSalesSelected }}</b> điểm kinh doanh.
+                    </ng-template>
                   </div>
                 </ng-container>
 
@@ -153,7 +159,11 @@
                   <ng-container *ngTemplateOutlet="group"></ng-container>
                 </div>
 
-                <div *ngIf="orgTypeInput === 2">
+                <div *ngIf="orgTypeInput === 2 && !(pointSales.length === 1 && userInfo.orgType === 2)">
+                  <ng-container *ngTemplateOutlet="merchantCheckbox"></ng-container>
+                </div>
+
+                <div *ngIf="userInfo.isConfig === 1 && userInfo.orgType === 2 && pointSalesInitFirt.length > 1">
                   <ng-container *ngTemplateOutlet="merchantCheckbox"></ng-container>
                 </div>
 
@@ -196,9 +206,9 @@
         <div class="content-first">
           <div class="row">
             <div class="col-6 mb-4">
-              <label class="form-label title-m-semibold">Họ và tên <span class="required">*</span></label>
+              <label class="input-label-custom">Họ và tên <span class="required">*</span></label>
               <div class="p-inputgroup">
-                <input type="text" pInputText maxlength="50" id="fullName" class="merchant-input"
+                <input type="text"appShowClearOnFocus=".clear-icon" pInputText maxlength="50" id="fullName" class="merchant-input"
                   formControlName="fullName" placeholder="Nhập họ và tên" (blur)="trimValue('fullName')"
                   (keypress)="allowPattern($event)" />
                 <span *ngIf="formInfo.get('fullName')?.value" class="p-input-icon-right clear-icon"
@@ -225,9 +235,9 @@
               <!-- <sm-text-control [item]="$fullName" [form]='formInfo'></sm-text-control> -->
             </div>
             <div class="col-6 mb-4">
-              <label class="form-label title-m-semibold">Email</label>
+              <label class="input-label-custom">Email</label>
               <div class="p-inputgroup">
-                <input type="text" maxlength="254" pInputText id="email" class="merchant-input"
+                <input appShowClearOnFocus=".clear-icon" type="text" maxlength="254" pInputText id="email" class="merchant-input"
                   formControlName="emailChange" placeholder="name@company.com" (blur)="trimValue('emailChange')"
                   (keypress)="allowPattern($event)" />
                 <span *ngIf="formInfo.get('emailChange')?.value" class="p-input-icon-right clear-icon"
@@ -247,7 +257,7 @@
                   !formInfo.controls['emailChange'].hasError('required') &&
                   formInfo.controls['emailChange'].hasError('pattern')
                 " class="text-caption paragraph-m-regular">
-                  Email không đúng định dạng
+                  Email không đúng định dạng (Ví dụ: name&#64;company.com)
                 </div>
                 <div *ngIf="
                   !formInfo.controls['emailChange'].hasError('required') &&
@@ -278,9 +288,9 @@
           </div>
           <div class="row">
             <div class="col-6 mb-4">
-              <label class="form-label title-m-semibold">Số điện thoại</label>
+              <label class="input-label-custom">Số điện thoại</label>
               <div class="p-inputgroup">
-                <input type="text" pInputText class="merchant-input" formControlName="phoneNumber"
+                <input appShowClearOnFocus=".clear-icon" type="text" pInputText class="merchant-input" formControlName="phoneNumber"
                   placeholder="Nhập số điện thoại" (blur)="trimValue('phoneNumber')" />
                 <span *ngIf="formInfo.get('phoneNumber')?.value" class="p-input-icon-right clear-icon"
                   (click)="clearValue('phoneNumber')">
@@ -303,7 +313,7 @@
               </div>
             </div>
             <div class="col-6 mb-4">
-              <label class="form-label title-m-semibold">Ngày sinh</label>
+              <label class="input-label-custom">Ngày sinh</label>
               <div class="p-inputgroup">
                 <p-calendar formControlName="dateOfBirth" [iconDisplay]="'input'" [showIcon]="true" [appendTo]="'body'"
                   [dateFormat]="'dd/mm/yy'" [readonlyInput]="true" placeholder="DD/MM/YYYY" [maxDate]="maxDate">
@@ -322,9 +332,9 @@
           </div>
           <div class="row">
             <div class="col-6 mb-4">
-              <label class="form-label title-m-semibold">Tên đăng nhập <span class="required">*</span></label>
+              <label class="input-label-custom">Tên đăng nhập <span class="required">*</span></label>
               <div class="p-inputgroup">
-                <input type="text" pInputText maxlength="100" id="userName" class="merchant-input"
+                <input appShowClearOnFocus=".clear-icon" type="text" pInputText maxlength="100" id="userName" class="merchant-input"
                   formControlName="userName" placeholder="Nhập tên đăng nhập" (blur)="trimValue('userName')"
                   (keypress)="allowPattern($event)" />
                 <span *ngIf="formInfo.get('userName')?.value" class="p-input-icon-right clear-icon"
@@ -351,10 +361,10 @@
               </div>
             </div>
             <div class="col-6 mb-4">
-              <label class="form-label title-m-semibold">Mật khẩu <span class="required">*</span></label>
+              <label class="input-label-custom">Mật khẩu <span class="required">*</span></label>
               <div class="d-flex align-items-center">
                 <div class="p-inputgroup show-icon-right col-8">
-                  <input class="merchant-input" formControlName="userPass" pInputText [readOnly]="true"
+                  <input appShowClearOnFocus=".clear-icon" class="merchant-input" formControlName="userPass" pInputText [readOnly]="true"
                     placeholder="Mật khẩu sẽ xuất hiện tại đây" />
                   <span class="p-input-icon-right clear-icon" (click)="this.copyPassword()">
                     <i class="icon-copy input-icon input-icon-default"></i>
@@ -402,13 +412,16 @@
         <ng-container *ngIf="isSuccess === 1">
           <img [src]="assetPath + '/assets/images/image-success.svg'" alt="Success" />
           <div class="mt-3">Thêm mới nhân sự thành công</div>
-          <div *ngIf="!isHaveEmail" class="text title-s-regular mt-3">
+          <!-- <div *ngIf="!isHaveEmail" class="text title-s-regular mt-3">
             Hãy gửi thông tin đăng nhập để nhân sự truy cập vào hệ thống.
           </div>
           <div *ngIf="isHaveEmail" class="text text-center title-s-regular mt-3">
             <span>
               Hãy gửi thông tin đăng nhập hoặc thông báo nhân sự kiểm tra</span><br />
             <span>email để lấy thông tin truy cập vào hệ thống.</span>
+          </div> -->
+          <div class="text title-s-regular mt-3">
+            Hãy gửi thông tin đăng nhập để nhân sự truy cập vào hệ thống.
           </div>
           <a [href]="assetPath + '/hr'" class="mt-3">
             <p-button label="Về trang quản lý" class="merchant-button mt-4" />
@@ -517,14 +530,15 @@
         <span class="p-input-icon-left">
           <i class="icon-search input-icon input-icon-default"></i>
         </span>
-        <input type="text" pInputText class="merchant-input search" [(ngModel)]="searchOrganization"
+        <input appInputSanitize type="text" pInputText class="merchant-input search" [(ngModel)]="searchOrganization"
           placeholder="Tìm kiếm tên, địa chỉ điểm kinh doanh" (keydown.enter)="getLstMerchant()" />
       </div>
     </div>
   </div>
   <div class="box-area mt-4 scroll-box">
     <grid-view #gridViewRef [columns]="columnsMerchant" [dataSource]="pointSales" [isShowPage]="false" [search]="true"
-      [showCheckbox]="true" (dataChoice)="setUpMerchantIds($event)" style="float: left; width: 100%"></grid-view>
+      [showCheckbox]="true" (lazyLoadingEvent)="lazyLoadData($event)" (actionType)="setActionType($event)"
+      (dataChoice)="setUpMerchantIds($event)" style="float: left; width: 100%"></grid-view>
   </div>
 
 </ng-template>

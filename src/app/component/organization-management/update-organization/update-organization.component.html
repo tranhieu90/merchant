@@ -99,9 +99,9 @@
                     <div *ngIf="lstMerchantActive.length === 0 " class="no-data">
                         <img [src]="assetPath +'/assets/images/grid-search-empty.png'">
                         <div class="mt-4 title-l-semibold title-no-data">Nhóm chưa có điểm kinh doanh</div>
-                        <div *ngIf="hasRoleSetup" class="title-s-regular summary-no-data mb-3">Vui lòng thêm các điểm kinh doanh vào nhóm
+                        <div *ngIf="hasRoleSetup && roleBusiness" class="title-s-regular summary-no-data mb-3">Vui lòng thêm các điểm kinh doanh vào nhóm
                             để quản lý các điểm kinh doanh của bạn hiệu quả hơn</div>
-                        <p-button *ngIf="hasRoleSetup" label="Gán điểm kinh doanh" class="merchant-button" icon="icon-Folder"
+                        <p-button *ngIf="hasRoleSetup && roleBusiness" label="Gán điểm kinh doanh" class="merchant-button" icon="icon-Folder"
                             (click)="doAssignSubmerchant()" />
                     </div>
                 </div>

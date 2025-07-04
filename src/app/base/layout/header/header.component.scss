@@ -15,10 +15,11 @@
     z-index: 999;
 }
 
-.icon-header{
+.icon-header {
     font-size: 24px;
     line-height: 24px;
     color: $color-icon-neutral-main;
+    margin-left: 6px;
 }
 
 .header-left {
@@ -60,6 +61,7 @@
 .header-right {
     display: flex;
     align-items: center;
+
     .noti {
         display: flex;
         justify-content: center;
@@ -67,7 +69,7 @@
         width: 48px;
         height: 48px;
         border-radius: $border-radius-s;
-        background-color:$color-surface-neutral-sub;
+        background-color: $color-surface-neutral-sub;
         margin-right: $spacing-l;
         margin-left: $spacing-m;
         cursor: pointer;
@@ -80,31 +82,37 @@
         padding: $spacing-xs $spacing-s;
         border-radius: $border-radius-xs;
         color: $color-text-neutral-main;
+
         .user-avatar {
             width: 48px;
             height: 48px;
             border-radius: 50%;
             object-fit: cover;
         }
-        .info{
+
+        .info {
             display: flex;
             flex-direction: column;
             padding: 0px $spacing-s;
         }
-        .color-role{
+
+        .color-role {
             color: $color-text-neutral-sub-2;
         }
 
     }
 }
-::ng-deep.mat-mdc-menu-content{
+
+::ng-deep.mat-mdc-menu-content {
     background-color: $color-surface-neutral-main;
     border-radius: $border-radius-s;
     min-width: 250px;
 }
+
 ::ng-deep.mat-mdc-menu-item:not([disabled]):hover {
     background-color: $color-surface-action-sub-hover !important;
 }
-.color-sematic{
+
+.color-sematic {
     color: $color-text-semantic-error !important;
 }

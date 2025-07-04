@@ -4,7 +4,8 @@
 ::ng-deep.cdk-overlay-pane.mat-mdc-dialog-panel {
   max-width: none !important;
 }
-::ng-deep.mat-mdc-dialog-surface{
+
+::ng-deep.mat-mdc-dialog-surface {
   border-radius: $border-radius-xs;
 }
 
@@ -28,17 +29,17 @@
     background-color: $color-surface-semantic-success-sub;
     color: $color-icon-semantic-success;
   }
-  
-  &.error{
+
+  &.error {
     background-color: $color-surface-semantic-error-sub;
     color: $color-icon-semantic-error;
   }
-  
+
   &.warning {
     background-color: $color-surface-semantic-warning-sub;
     color: $color-icon-semantic-warning;
   }
-  
+
   &.info {
     background-color: $color-surface-semantic-information-sub;
     color: $color-icon-semantic-information;
@@ -57,6 +58,11 @@
   display: flex;
   margin-bottom: 25px;
   gap: 24px;
+
+  .icon-close {
+    margin-left: auto;
+    cursor: pointer;
+  }
 
   img {
     width: 60px;
@@ -78,7 +84,7 @@
     border-radius: $border-radius-s;
     color: $color-text-text-on-on-semantic-main;
 
-    &.error{
+    &.error {
       background-color: $color-surface-semantic-error;
 
       &:hover {
@@ -105,12 +111,12 @@
   }
 }
 
-.icon-close_large{
+.icon-close_large {
   cursor: pointer;
-  font-size: 17px;
+  font-size: $typo-font-sizes-3xl;
   color: $color-icon-neutral-main;
 }
 
-.mr-16{
+.mr-16 {
   margin-right: 16px;
 }

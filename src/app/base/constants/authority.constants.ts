@@ -20,7 +20,7 @@ export const MERCHANT_RULES = {
 
    // =================== Quyền giao dịch ===================
    TRANS_EXPORT_EXCEL: '/api/v1/excel/export-excel-transaction',
-   TRANS_REFUND: '/api/v1/refund/search',
+   TRANS_REFUND: '/api/v1/refund/get-refund-info',
    TRANS_PRINT_INVOICE: 'print-invoice',
    TRANS_LIST: '/api/v1/transaction/search'
 };

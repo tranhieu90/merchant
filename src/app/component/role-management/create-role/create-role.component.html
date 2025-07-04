@@ -13,7 +13,7 @@
         <form [formGroup]="formNameRole">
             <div class="content-first">
                 <div class="col-12 mb-4">
-                    <label class="form-label title-s-semibold">Tên vai trò <span class="required">*</span></label>
+                    <label class="input-label-custom">Tên vai trò <span class="required">*</span></label>
                     <div class="p-inputgroup">
                         <input appInputSanitize type="text" pInputText class="merchant-input" formControlName="roleName"
                             placeholder="Tối đa 50 ký tự (Ví dụ: Nhân viên thu ngân, Nhân viên bán hàng, Kế toán...)"
@@ -45,7 +45,7 @@
                     }
                 </div>
                 <div class="col-12">
-                    <label class="form-label title-s-semibold">Mô tả</label>
+                    <label class="input-label-custom">Mô tả</label>
                     <div class="p-inputgroup p-textaregroup">
                         <textarea appInputSanitize rows="9" pInputTextarea formControlName="description"
                             class="merchant-input" placeholder="Nhập mô tả chi tiết cho vai trò"  

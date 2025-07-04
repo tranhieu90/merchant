@@ -1,5 +1,5 @@
 import {NgClass, NgFor, NgIf} from '@angular/common';
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCheckboxModule} from '@angular/material/checkbox';
@@ -45,6 +45,9 @@ import {MatBadge} from '@angular/material/badge';
 import {BANK_IMAGE_DATA} from '../../../../assets/bank-map';
 import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
 import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
+import { MbDropdown } from '../../../base/shared/mb-dropdown/mb-dropdown.component';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { VerifyUserService } from '../../../common/service/verify/verify-user.service';
 
 @Component({
   selector: 'app-refund-transaction',
@@ -74,6 +77,8 @@ import { ShowClearOnFocusDirective } from '../../../common/directives/showClearO
     DropdownModule,
     MatBadge,
     ShowClearOnFocusDirective,
+    MbDropdown,
+    NzDatePickerModule
   ],
   templateUrl: './cashback.component.html',
   styleUrl: './cashback.component.scss',
@@ -81,7 +86,10 @@ import { ShowClearOnFocusDirective } from '../../../common/directives/showClearO
 })
 
 export class CashbackComponent implements OnInit {
-
+  dateRange : (Date | null)[] = [];
+  private tempFromDate: Date | null = null;
+  lastValidRange: (Date | null)[] | null = null;
+  wasPickerOpened = false;
   assetPath = environment.assetPath;
   statusOptions: any = [];
   paymentMethodOptions: any = [];
@@ -103,21 +111,21 @@ export class CashbackComponent implements OnInit {
   totalAmount: number = 0;
   maxDate: any = null;
   minDate: any = null;
-  previousValidRange: Date[] = [];
-  pendingRange: Date[] = [];
   cachedSearchParam: any = null;
   hasRoleExport: boolean = true;
+  merchantPage = 1;
+  merchantSize = 1000;
+  isLoadMoreMerchant: boolean = true;
+  currentGroupIdList: any = null;
 
   searchCriteria: {
     transactionNumber: string | null;
     transactionOriginNumber: string | null;
     orderReferenceOrigin: string | null;
-    dateRange: Date[] | [];
   } = {
     transactionNumber: null,
     transactionOriginNumber: null,
     orderReferenceOrigin: null,
-    dateRange: [],
   };
 
   filterCriteria: {
@@ -391,6 +399,8 @@ export class CashbackComponent implements OnInit {
     private api: FetchApiService,
     private toast: ToastService,
     private auth: AuthenticationService,
+    private cdr: ChangeDetectorRef,
+     private verify:VerifyUserService
   ) {
     const columnsShow = localStorage.getItem(environment.settingCashback)?.split(',').map(api => api.trim());
     if (columnsShow) {
@@ -399,18 +409,9 @@ export class CashbackComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const today = new Date();
 
-    const startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0);
-
-    const endDate = today;
-
-    this.searchCriteria.dateRange = [startDate, endDate];
-
-    const minDate = new Date();
-    minDate.setDate(today.getDate() - 365);
-    this.minDate = minDate;
-    this.maxDate = today;
+    this.initializeDates();
+    this.lastValidRange = [...this.dateRange];
 
     this.statusOptions = [
       {name: 'Tất cả ', code: 'ALL'},
@@ -438,9 +439,32 @@ export class CashbackComponent implements OnInit {
       this.pageIndex = 0;
     }
 
+    let toDate = this.dateRange[1] ? new Date(this.dateRange[1]) : null;
+
+    if (toDate) {
+      const now = new Date();
+      const toDateOnly = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate());
+
+      const nowOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      if (toDateOnly.getTime() === nowOnly.getTime()) {
+        // Cùng ngày hiện tại
+        const toMinutes = toDate.getHours() * 60 + toDate.getMinutes();
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+        if (toMinutes < nowMinutes) {
+          toDate.setSeconds(59);
+        } else {
+          toDate = new Date(); // set về thời điểm hiện tại
+        }
+      } else {
+        toDate.setSeconds(59);
+      }
+    }
+
     let param = {
-      fromDate: this.searchCriteria?.dateRange[0] ? moment(this.searchCriteria?.dateRange[0]).format('DD/MM/YYYY HH:mm:ss') : null,
-      toDate: this.searchCriteria?.dateRange[1] ? moment(this.searchCriteria?.dateRange[1]).format('DD/MM/YYYY HH:mm:ss') : null,
+      fromDate: this.dateRange[0] ? moment(this.dateRange[0]).format('DD/MM/YYYY HH:mm:ss') : null,
+      toDate: toDate ? moment(toDate).format('DD/MM/YYYY HH:mm:ss') : null,
 
       transactionNumber: this.searchCriteria.transactionNumber || null,
       transactionOriginNumber: this.searchCriteria.transactionOriginNumber || null,
@@ -489,9 +513,10 @@ export class CashbackComponent implements OnInit {
         this.bankOptions = res['data'];
         this.bankOptions = this.bankOptions.map((bank: any) => {
           const match = BANK_IMAGE_DATA.find((b: any) => b.code === bank.code);
+          const logo = match && match.image && match.image.trim() !== '' ? match.image + '.png' : 'img_default.png';
           return {
             ...bank,
-            logo: match ? match.image + '.png' : null
+            logo
           };
         });
       },
@@ -501,23 +526,59 @@ export class CashbackComponent implements OnInit {
       });
   }
 
-  getMerchantOptions() {
+  getMerchantOptions(groupIdList?: any) {
 
-    let param = {
+    this.currentGroupIdList = groupIdList;
+
+    const params = {
       status: null,
-      page: 1,
-      size: 1000
+      groupIdList: this.currentGroupIdList || null,
+      page: this.merchantPage,
+      size: this.merchantSize,
     };
-    let buildParams = CommonUtils.buildParams(param);
 
-    this.api.get(MERCHANT_ENDPOINT.LIST_MERCHANT, buildParams).subscribe(res => {
-        this.merchantOptions = res['data']['subInfo'] || [];
+    const buildParams = CommonUtils.buildParams(params);
+
+    this.api.get(MERCHANT_ENDPOINT.LIST_MERCHANT, buildParams).subscribe(
+      (res) => {
+        const newData = res?.data?.subInfo || [];
+        const merchantTotal = res?.data?.totalSub ?? 0;
+
+        this.merchantOptions = [...this.merchantOptions, ...newData];
+        const loadedMerchantCount = this.merchantOptions.length;
+
+        if (loadedMerchantCount < merchantTotal) {
+          this.merchantPage++;
+          this.isLoadMoreMerchant = true;
+        } else {
+          this.isLoadMoreMerchant = false;
+        }
+
       },
-      error => {
-        const errorData = error?.error || {};
-        this.toast.showError(errorData.soaErrorDesc);
-      });
+      (error) => {
+        this.toast.showError(error?.error?.soaErrorDesc || 'Lỗi load merchant');
+      }
+    );
   }
+
+  onMerchantDropdownShow() {
+
+    setTimeout(() => {
+      const panel = document.querySelector('.p-multiselect-items-wrapper');
+      if (panel) {
+        panel.addEventListener('scroll', this.onMerchantScroll);
+      }
+    }, 100);
+  }
+
+  onMerchantScroll = (event: any) => {
+    const target = event.target;
+    const isBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 5;
+
+    if (isBottom && this.isLoadMoreMerchant) {
+      this.getMerchantOptions(this.currentGroupIdList);
+    }
+  };
 
   onSetting() {
     const dialogRef = this.dialog.open(CashbackDialogSettingComponent, {
@@ -535,7 +596,7 @@ export class CashbackComponent implements OnInit {
   }
 
   doDetail(item: any) {
-    this.router.navigate(['/transaction/cashback-detail'], {
+    this.router.navigate(['/transaction/cashback/detail'], {
       queryParams: {
         id: item['id'],
         transTime: item['tranTime'],
@@ -563,10 +624,10 @@ export class CashbackComponent implements OnInit {
         this.exportExcel();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
-        this.openDialogUnverifiedAccountHasEmail();
+        this.verify.openDialogUnverifiedAccountAndEmail();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
-        this.openDialogUnverifiedAccountNoEmail();
+        this.verify.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
         console.warn("Trạng thái xác minh không hợp lệ:", verifyUser);
@@ -637,182 +698,10 @@ export class CashbackComponent implements OnInit {
     this.onSearch();
   }
 
-  onDateRangeSelect(range: Date[]): void {
-    this.pendingRange = [...range]; // luôn lưu lại
-
-    if (range?.[0]) {
-      const fromDate = new Date(range[0]);
-
-      const maxLimit = new Date(fromDate);
-      maxLimit.setDate(fromDate.getDate() + 30);
-
-      const todayEnd = new Date();
-      todayEnd.setHours(23, 59, 59, 999);
-
-      // Chặn từ ngày hiện tại về sau 30 ngày
-      this.maxDate = maxLimit > todayEnd ? todayEnd : maxLimit;
-    }
-
-  }
-
-  onDatePickerClose(): void {
-    const range = this.pendingRange;
-    if (!range || range.length !== 2) return;
-
-    const [fromRaw, toRaw] = range;
-    const now = new Date();
-
-    const fromDate = new Date(fromRaw);
-    const toDate = new Date(toRaw);
-
-    // fromDate luôn về 00:00:00
-    fromDate.setHours(0, 0, 0, 0);
-
-    // Nếu toDate < fromDate thì không hợp lệ
-    if (toDate < fromDate) {
-      this.searchCriteria.dateRange = [...this.previousValidRange];
-      return;
-    }
-
-    // --- Xử lý chuẩn hóa toDate ---
-    const selected = new Date(toDate);
-    const nowDate = new Date(now);
-
-    const selectedDateOnly = new Date(selected.getFullYear(), selected.getMonth(), selected.getDate());
-    const nowDateOnly = new Date(nowDate.getFullYear(), nowDate.getMonth(), nowDate.getDate());
-
-    if (selectedDateOnly.getTime() > nowDateOnly.getTime()) {
-      // Trường hợp toDate > ngày hôm nay → lấy chính xác thời điểm hiện tại
-      selected.setTime(now.getTime());
-    } else if (selectedDateOnly.getTime() === nowDateOnly.getTime()) {
-      // Cùng ngày hiện tại → so sánh giờ phút
-      const selectedHM = selected.getHours() * 60 + selected.getMinutes();
-      const nowHM = nowDate.getHours() * 60 + nowDate.getMinutes();
-
-      if (selectedHM > nowHM) {
-        selected.setTime(now.getTime());
-      } else if (selectedHM === nowHM) {
-        selected.setSeconds(now.getSeconds(), 0);
-      } else {
-        selected.setSeconds(59, 0);
-      }
-    } else {
-      // Trường hợp nhỏ hơn ngày hôm nay → giữ nguyên giờ phút, set giây = 59
-      selected.setSeconds(59, 0);
-    }
-
-    this.searchCriteria.dateRange = [fromDate, selected];
-    this.previousValidRange = [fromDate, selected];
-    this.maxDate = null;
-
-    this.onSearch();
-  }
-
-  openDialogUnverifiedAccountHasEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>.`;
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonLeftLabel = 'Thay đổi email';
-    dataDialog.buttonRightLabel = 'Xác thực email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.verifyEmail();
-      } else {
-        this.updateEmail();
-      }
-    })
-  }
-
-  openDialogUnverifiedAccountNoEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = 'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonRightLabel = 'Bổ sung email';
-    dataDialog.hiddenButtonLeft = true
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.updateEmail();
-      }
-    })
-  }
-
-
-  updateEmail() {
-    const dialogRef = this.dialog.open(UpdateUserComponent, {
-      width: '600px',
-      data: {
-        title: 'Cập nhật email',
-        type: 'email',
-        isEmailInfo: true,
-      },
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.router.navigate(['/profile']);
-      }
-    })
-  }
-
-  verifyEmail() {
-    this.api.post(USER_ENDPOINT.SEND_VERIFY_MAIL).subscribe(res => {
-      let content = `Chúng tôi vừa gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>, vui lòng kiểm tra email và làm theo hướng dẫn để hoàn tất xác thực tài khoản.`
-      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-      dataDialog.title = 'Hệ thống đã gửi liên kết xác thực';
-      dataDialog.message = content;
-      dataDialog.buttonLabel = 'Tôi đã hiểu';
-      dataDialog.icon = 'icon-mail';
-      dataDialog.iconColor = 'icon info';
-      dataDialog.viewCancel = false;
-      const dialogRef = this.dialogCommon.openDialogInfo(dataDialog);
-      dialogRef.subscribe(res => {
-        this.router.navigate(['/profile']);
-      })
-    }, (error) => {
-      const errorData = error?.error || {};
-      // if (errorData.soaErrorCode == 'AUTH_ERROR_007') {
-      //   this.dialog.open(LoginNotificationComponent, {
-      //     panelClass: 'dialog-login-noti',
-      //     data: {
-      //       title: 'Email đã được xác thực bởi tài khoản khác',
-      //       message: 'Vui lòng thay đổi email để xác thực tài khoản.',
-      //       icon: 'icon-mail',
-      //       typeClass: 'warning',
-      //       expired: true,
-      //       textLeft: 'Hủy',
-      //       type: 'email',
-      //       textRight: 'Thay đổi email',
-      //       isEmailInfo: true
-      //     },
-      //     width: '30%',
-      //     disableClose: true,
-      //   })
-      // }
-    })
-  }
 
   checkHasSearchOrFilterData(): boolean {
     // Check searchCriteria (bỏ qua dateRange)
-    const { dateRange, ...restSearch } = this.searchCriteria;
-    const hasSearchData = Object.values(restSearch).some(value =>
+    const hasSearchData = Object.values(this.searchCriteria).some(value =>
       value !== null && value !== undefined && value !== ''
     );
 
@@ -825,10 +714,9 @@ export class CashbackComponent implements OnInit {
   }
 
   checkSearchNumber() {
-    const {dateRange, ...restSearch} = this.searchCriteria;
     let count = 0;
 
-    Object.values(restSearch).forEach(value => {
+    Object.values(this.searchCriteria).forEach(value => {
       if (value !== null && value !== undefined && value !== '') {
         count++;
       }
@@ -875,6 +763,297 @@ export class CashbackComponent implements OnInit {
 
   setValueMerchantDefault() {
     this.filterCriteria.selectedMerchants = [];
+  }
+
+  private initializeDates(): void {
+    const now = new Date();
+
+    // Set min date = hiện tại - 365 ngày
+    this.minDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+    this.maxDate = new Date(now);
+
+    // Khởi tạo dateRange: từ 00:00:00 hôm nay đến thời điểm hiện tại
+    if (!this.dateRange || this.dateRange.length !== 2) {
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+      this.dateRange = [startOfToday, new Date(now)];
+      this.lastValidRange = [startOfToday, new Date(now)];
+    }
+  }
+
+  // Khi mở popup chọn ngày
+  onCalendarOpenChange(open: boolean): void {
+    if (open) {
+      this.tempFromDate = null;
+      this.wasPickerOpened = true;
+      this.initializeDates();
+      this.cdr.detectChanges();
+
+      // Focus vào ô từ ngày
+      setTimeout(() => {
+        const inputElements = document.querySelectorAll('.ant-picker-input input');
+        if (inputElements.length > 0) {
+          (inputElements[0] as HTMLInputElement).focus(); // ô đầu là fromDate
+        }
+      }, 100); // Delay nhỏ để chắc chắn DOM đã render
+    } else {
+      // Khi đóng popup - nếu đã mở và có dateRange hợp lệ thì call API
+      if (this.wasPickerOpened && this.dateRange && this.dateRange.length === 2 && this.dateRange[0] && this.dateRange[1]) {
+        this.onSearch();
+      }
+
+      this.tempFromDate = null;
+      this.wasPickerOpened = false;
+    }
+  }
+
+  // Xử lý khi người dùng chọn from date (chưa chọn to date)
+  onCalendarSelect(dates: (Date | null)[]): void {
+    if (!dates || dates.length === 0) return;
+
+    const [fromDate, toDate] = dates;
+
+    // Khi chỉ chọn fromDate (chưa chọn toDate)
+    if (fromDate && !toDate) {
+      this.tempFromDate = fromDate;
+      this.cdr.detectChanges(); // Trigger update để disable dates không hợp lệ cho toDate
+    }
+  }
+
+  // Xử lý khi hoàn thành chọn cả 2 ngày
+  onDateRangeChange(dates: (Date | null)[]): void {
+    // Nếu không có đủ 2 ngày hoặc bị null
+    if (!dates || dates.length !== 2 || !dates[0] || !dates[1]) {
+      this.restorePreviousValidRange();
+      return;
+    }
+
+    const [newFromDate, newToDate] = dates;
+    const now = new Date();
+
+    // Validate fromDate không được sau hiện tại
+    if (newFromDate > now) {
+      this.restorePreviousValidRange();
+      return;
+    }
+
+    // Validate fromDate không được trước minDate
+    if (newFromDate < this.minDate) {
+      this.restorePreviousValidRange();
+      return;
+    }
+
+    // Validate toDate không được trước fromDate
+    if (newToDate < newFromDate) {
+      this.restorePreviousValidRange();
+      return;
+    }
+
+    // Validate toDate không được sau hiện tại
+    if (newToDate > now) {
+      this.restorePreviousValidRange();
+      return;
+    }
+
+    // Validate khoảng cách không quá 30 ngày (chỉ so sánh ngày, không so sánh giờ phút)
+    const fromDateOnly = new Date(newFromDate.getFullYear(), newFromDate.getMonth(), newFromDate.getDate());
+    const toDateOnly = new Date(newToDate.getFullYear(), newToDate.getMonth(), newToDate.getDate());
+    const daysDiff = Math.floor((toDateOnly.getTime() - fromDateOnly.getTime()) / (24 * 60 * 60 * 1000));
+
+    if (daysDiff > 30) {
+      this.restorePreviousValidRange();
+      return;
+    }
+
+    // ✅ Tất cả validation đều pass
+    this.tempFromDate = null;
+    this.dateRange = [newFromDate, newToDate];
+    this.lastValidRange = [new Date(newFromDate), new Date(newToDate)]; // Deep copy
+    this.cdr.detectChanges();
+
+  }
+
+  private restorePreviousValidRange(): void {
+    if (this.lastValidRange && this.lastValidRange[0] && this.lastValidRange[1]) {
+      this.dateRange = [
+        new Date(this.lastValidRange[0]),
+        new Date(this.lastValidRange[1])
+      ];
+    } else {
+      // Fallback về giá trị mặc định
+      const now = new Date();
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+      this.dateRange = [startOfToday, new Date(now)];
+      this.lastValidRange = [startOfToday, new Date(now)];
+    }
+
+    this.tempFromDate = null;
+    this.cdr.detectChanges();
+  }
+
+  // Disabled ngày không hợp lệ
+  disabledDate = (current: Date): boolean => {
+    if (!current) return false;
+
+    const currentDate = new Date(current);
+    currentDate.setHours(0, 0, 0, 0);
+
+    const minDate = new Date(this.minDate);
+    minDate.setHours(0, 0, 0, 0);
+
+    const maxDate = new Date(this.maxDate);
+    maxDate.setHours(0, 0, 0, 0);
+
+    // Disable ngày ngoài khoảng min/max tổng
+    if (currentDate < minDate || currentDate > maxDate) {
+      return true;
+    }
+
+    // Khi đang chọn toDate (đã có tempFromDate)
+    if (this.tempFromDate) {
+      const fromDateOnly = new Date(this.tempFromDate);
+      fromDateOnly.setHours(0, 0, 0, 0);
+
+      // Disable ngày trước fromDate
+      if (currentDate < fromDateOnly) {
+        return true;
+      }
+
+      // Disable ngày sau fromDate + 30 ngày hoặc sau ngày hiện tại
+      const maxToDate = new Date(fromDateOnly.getTime() + 30 * 24 * 60 * 60 * 1000);
+      const actualMaxToDate = maxToDate > maxDate ? maxDate : maxToDate;
+      actualMaxToDate.setHours(0, 0, 0, 0);
+
+      if (currentDate > actualMaxToDate) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  // Disable time cho range picker
+  disabledRangeTime = (current: Date | Date[], partial?: 'start' | 'end'): any => {
+    if (current instanceof Date && partial) {
+      if (partial === 'start') {
+        return this.disabledStartTime(current);
+      } else {
+        const fromDate = this.tempFromDate ?? (this.dateRange?.[0] ?? new Date());
+        return this.disabledEndTime(current, fromDate);
+      }
+    }
+
+    if (Array.isArray(current) && current.length > 0 && partial) {
+      if (partial === 'start') {
+        return this.disabledStartTime(current[0]);
+      } else if (current[1]) {
+        return this.disabledEndTime(current[1], current[0]);
+      }
+    }
+
+    return {};
+  };
+
+  private disabledStartTime(date: Date): any {
+    if (!date) return {};
+
+    const now = new Date();
+    const selectedDate = new Date(date);
+    const isToday = this.isSameDay(selectedDate, now);
+
+    // Chỉ disable time nếu chọn ngày hôm nay
+    if (!isToday) return {};
+
+    return {
+      nzDisabledHours: (): number[] => {
+        const hours: number[] = [];
+        const currentHour = now.getHours();
+        // Disable các giờ sau giờ hiện tại
+        for (let i = currentHour + 1; i < 24; i++) {
+          hours.push(i);
+        }
+        return hours;
+      },
+      nzDisabledMinutes: (hour: number): number[] => {
+        if (hour !== now.getHours()) return [];
+        const minutes: number[] = [];
+        const currentMinute = now.getMinutes();
+        // Disable các phút sau phút hiện tại
+        for (let i = currentMinute + 1; i < 60; i++) {
+          minutes.push(i);
+        }
+        return minutes;
+      },
+      nzDisabledSeconds: (): number[] => []
+    };
+  }
+
+  private disabledEndTime(endDate: Date, startDate: Date): any {
+    if (!endDate || !startDate) return {};
+
+    const now = new Date();
+    const selectedEndDate = new Date(endDate);
+    const selectedStartDate = new Date(startDate);
+    const isEndDateToday = this.isSameDay(selectedEndDate, now);
+    const isSameStartEndDate = this.isSameDay(selectedStartDate, selectedEndDate);
+
+    // Chỉ disable time nếu chọn ngày hôm nay
+    if (!isEndDateToday) return {};
+
+    return {
+      nzDisabledHours: (): number[] => {
+        const hours: number[] = [];
+        const currentHour = now.getHours();
+
+        // Nếu cùng ngày với startDate, thì không được chọn giờ trước startDate
+        let minHour = 0;
+        if (isSameStartEndDate) {
+          minHour = selectedStartDate.getHours();
+        }
+
+        // Disable giờ trước minHour
+        for (let i = 0; i < minHour; i++) {
+          hours.push(i);
+        }
+
+        // Disable giờ sau giờ hiện tại
+        for (let i = currentHour + 1; i < 24; i++) {
+          hours.push(i);
+        }
+
+        return hours;
+      },
+      nzDisabledMinutes: (hour: number): number[] => {
+        const minutes: number[] = [];
+
+        // Nếu cùng ngày và cùng giờ với startDate
+        if (isSameStartEndDate && hour === selectedStartDate.getHours()) {
+          const startMinute = selectedStartDate.getMinutes();
+          for (let i = 0; i < startMinute; i++) {
+            minutes.push(i);
+          }
+        }
+
+        // Nếu là giờ hiện tại, disable phút sau phút hiện tại
+        if (hour === now.getHours()) {
+          const currentMinute = now.getMinutes();
+          for (let i = currentMinute + 1; i < 60; i++) {
+            minutes.push(i);
+          }
+        }
+
+        return minutes;
+      },
+      nzDisabledSeconds: (): number[] => []
+    };
+  }
+
+  private isSameDay(date1: Date | null | undefined, date2: Date | null | undefined): boolean {
+    if (!(date1 instanceof Date) || !(date2 instanceof Date)) return false;
+    return (
+      date1.getFullYear() === date2.getFullYear() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getDate() === date2.getDate()
+    );
   }
 
 }

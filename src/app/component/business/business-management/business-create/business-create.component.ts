@@ -19,23 +19,23 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { take } from 'rxjs/operators';
 import { environment } from '../../../../../environments/environment';
 import { CommonUtils } from '../../../../base/utils/CommonUtils';
+import { UserVerifyStatus } from '../../../../common/constants/CUser';
 import { InputCommon } from '../../../../common/directives/input.directive';
 import { InputSanitizeDirective } from '../../../../common/directives/inputSanitize.directive';
 import { ShowClearOnFocusDirective } from '../../../../common/directives/showClearOnFocusDirective';
-import { BUSINESS_ENDPOINT, LOCATION_ENDPOINT, ORGANIZATION_ENDPOINT, USER_ENDPOINT } from '../../../../common/enum/EApiUrl';
+import { BUSINESS_ENDPOINT, LOCATION_ENDPOINT, ORGANIZATION_ENDPOINT } from '../../../../common/enum/EApiUrl';
 import { FetchApiService } from '../../../../common/service/api/fetch-api.service';
 import { AuthenticationService } from '../../../../common/service/auth/authentication.service';
 import { DialogCommonService } from '../../../../common/service/dialog-common/dialog-common.service';
 import { ToastService } from '../../../../common/service/toast/toast.service';
+import { VerifyUserService } from '../../../../common/service/verify/verify-user.service';
 import { AreaModel } from '../../../../model/AreaModel';
 import { DialogConfirmModel } from '../../../../model/DialogConfirmModel';
 import { AreaViewComponent } from '../../../organization-management/area-view/area-view.component';
-import { UpdateUserComponent } from '../../../user-profile/update-user/update-user.component';
-import { DialogRoleComponent, DialogRoleModel } from '../../../role-management/dialog-role/dialog-role.component';
-import { UserVerifyStatus } from '../../../../common/constants/CUser';
-import { take } from 'rxjs/operators';
+import { MbDropdown } from '../../../../base/shared/mb-dropdown/mb-dropdown.component';
 
 @Component({
   selector: 'app-business-create',
@@ -61,7 +61,8 @@ import { take } from 'rxjs/operators';
     AreaViewComponent,
     InputSanitizeDirective,
     InputCommon,
-    ShowClearOnFocusDirective
+    ShowClearOnFocusDirective,
+    MbDropdown
   ],
   templateUrl: './business-create.component.html',
   styleUrl: './business-create.component.scss',
@@ -151,6 +152,7 @@ export class BusinessCreateComponent implements OnInit {
     private auth: AuthenticationService,
     private routeActive: ActivatedRoute,
     private dialogCommon: DialogCommonService,
+    private verify: VerifyUserService
   ) {
     this.routeActive.queryParams.subscribe(params => {
       this.organizationSetup = params['organizationSetup'] ? params['organizationSetup'] : false;
@@ -323,7 +325,7 @@ export class BusinessCreateComponent implements OnInit {
             this.checkVerify();
             break;
           default:
-            this.toast.showError('Đã xảy ra lỗi. Vui lòng thử lại sau.');
+            this.toast.showError('Đã có lỗi xảy ra, vui lòng thử lại sau.');
             this.isSuccess = 0;
             this.doNextStep();
             break;
@@ -368,7 +370,8 @@ export class BusinessCreateComponent implements OnInit {
     const errorKeyThd = errorKey.find((item: any) => item.methodId === 332)?.keyAlreadyList || [];
     const ac01 = item.find((item: any) => item.soaErrorCode === 'AC_01');
     const ac02 = item.find((item: any) => item.soaErrorCode === 'AC_02');
-    const terminalKey = errorKey.find((item: any) => item.methodId === 324)
+    const terminalKey = errorKey.find((item: any) => item.methodId === 324);
+    const notPermission = item.find((item: any) => item.methodId === 324 && item.soaErrorCode == '251');
     if (errorQr.length > 0) {
       this.temiralIdModel?.control.setErrors({ invalidErorr: true });
       this.temiralIdModel?.control.markAsTouched();
@@ -381,6 +384,8 @@ export class BusinessCreateComponent implements OnInit {
     } else if (terminalKey) {
       this.temiralIdModel?.control.setErrors({ notCorrect: true });
       this.temiralIdModel?.control.markAsTouched();
+    } else if (notPermission) {
+      this.toast.showError('Đã có lỗi xảy ra, vui lòng thử lại sau.');
     }
 
     errorKeyPos ? this.tidPosErrorList = errorKeyPos : '';
@@ -392,7 +397,9 @@ export class BusinessCreateComponent implements OnInit {
       if (res['data']) {
         this.lstPaymentMethod = res['data']['paymentMethodList'];
         this.lstPaymentMethod.forEach((item: any) => {
-          this.paymentMethodMap.set(item.paymentMethodId, item);
+          if (item?.status == 'active') {
+            this.paymentMethodMap.set(item.paymentMethodId, item);
+          }
         });
         const paymentMethod = this.paymentMethodMap.get(324);
         this.paymentType = paymentMethod['paymentType'];
@@ -674,10 +681,10 @@ export class BusinessCreateComponent implements OnInit {
     const verifyUser = this.auth.checkVerifyUserInfo();
     switch (verifyUser) {
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
-        this.openDialogUnverifiedAccountAndEmail();
+        this.verify.openDialogUnverifiedAccountAndEmail();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
-        this.openDialogUnverifiedAccountAndNoEmail();
+        this.verify.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
         console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
@@ -685,88 +692,6 @@ export class BusinessCreateComponent implements OnInit {
     }
   }
 
-  openDialogUnverifiedAccountAndEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>.`;
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonLeftLabel = 'Thay đổi email';
-    dataDialog.buttonRightLabel = 'Xác thực email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.verifyEmail();
-      } else {
-        this.updateEmail();
-      }
-    });
-  }
-
-  openDialogUnverifiedAccountAndNoEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message =
-      'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
-    dataDialog.icon = 'icon-warning';
-    dataDialog.hiddenButtonLeft = true;
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonRightLabel = 'Bổ sung email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.updateEmail();
-      } else {
-      }
-    });
-  }
-
-  updateEmail() {
-    const dialogRef = this.dialog.open(UpdateUserComponent, {
-      width: '600px',
-      data: {
-        title: 'Cập nhật email',
-        type: 'email',
-        isEmailInfo: true,
-      },
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.router.navigate(['/profile']);
-      }
-    })
-  }
-
-  verifyEmail() {
-    this.api.post(USER_ENDPOINT.SEND_VERIFY_MAIL).subscribe(() => {
-      let content = `Chúng tôi vừa gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>, vui lòng kiểm tra email và làm theo hướng dẫn để hoàn tất xác thực tài khoản.`
-      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-      dataDialog.title = 'Hệ thống đã gửi liên kết xác thực';
-      dataDialog.message = content;
-      dataDialog.buttonLabel = 'Tôi đã hiểu';
-      dataDialog.icon = 'icon-mail';
-      dataDialog.iconColor = 'icon info';
-      dataDialog.viewCancel = false;
-      const dialogRef = this.dialogCommon.openDialogInfo(dataDialog);
-      dialogRef.subscribe(() => {
-        this.router.navigate(['/profile']);
-      })
-    })
-  }
 
   clearValidateChange() {
     const clearError = () => {

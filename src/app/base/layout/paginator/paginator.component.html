@@ -1,7 +1,7 @@
 <div class="paginator-container">
     <div class="content-left">
         <span class="paragraph-l-regular color-text">Hiển thị</span>
-        <p-dropdown class="mx-2" [(ngModel)]="pageSize" (onChange)="changePageSize($event.value)"
+        <p-dropdown class="merchant-dropdown-small mx-2" [(ngModel)]="pageSize" (onChange)="changePageSize($event.value)"
             [options]="pageSizeOptions" optionLabel="label" optionValue="value" />
         <span class="paragraph-l-regular color-text">bản ghi trên trang</span>
     </div>

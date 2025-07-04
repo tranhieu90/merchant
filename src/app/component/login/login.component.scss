@@ -61,15 +61,10 @@ h1 {
   }
 }
 
-.form-group {
-  margin-bottom: 32px;
+.form-group-custom {
+  margin-bottom: $spacing-2xl;
   display: flex;
   flex-direction: column;
-  gap: $spacing-xs;
-
-  label {
-    color: $color-text-neutral-main;
-  }
 }
 
 .password-group {

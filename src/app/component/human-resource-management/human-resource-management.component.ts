@@ -42,6 +42,9 @@ import { DialogCommonService } from '../../common/service/dialog-common/dialog-c
 import { distinctUntilChanged } from 'rxjs';
 import { MatBadge } from '@angular/material/badge';
 import { UpdateUserComponent } from '../user-profile/update-user/update-user.component';
+import { VerifyUserService } from '../../common/service/verify/verify-user.service';
+import { ScrollerOptions } from 'primeng/api';
+import { ShowClearOnFocusDirective } from '../../common/directives/showClearOnFocusDirective';
 
 @Component({
   selector: 'app-human-resource-management',
@@ -61,7 +64,8 @@ import { UpdateUserComponent } from '../user-profile/update-user/update-user.com
     TreeSelectModule,
     DirectiveModule,
     MatBadge,
-    NgClass
+    NgClass,
+    ShowClearOnFocusDirective
   ],
   templateUrl: './human-resource-management.component.html',
   styleUrl: './human-resource-management.component.scss',
@@ -71,6 +75,7 @@ export class HumanResourceManagementComponent implements OnInit {
   keyword: string = '';
   isFilter: boolean = false;
   pageIndex = 0;
+  pageIndexRole = 0;
   pageSize = 10;
   totalItem: number = 0;
   dataList: any = [];
@@ -83,7 +88,7 @@ export class HumanResourceManagementComponent implements OnInit {
       label: 'ID',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left', 'mw-100'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -110,7 +115,7 @@ export class HumanResourceManagementComponent implements OnInit {
       label: 'NGÀY SINH',
       options: {
         customCss: (obj: any) => {
-          return ['text-left', 'mw-140'];
+          return ['text-left', 'mw-120'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -125,7 +130,7 @@ export class HumanResourceManagementComponent implements OnInit {
       label: 'SỐ ĐIỆN THOẠI',
       options: {
         customCss: (obj: any) => {
-          return ['text-left', 'mw-140'];
+          return ['text-left', 'mw-120'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -136,12 +141,15 @@ export class HumanResourceManagementComponent implements OnInit {
       name: 'roleName',
       label: 'VAI TRÒ',
       options: {
-        customCssHeader: (obj: any) => {
-          return ['text-left', 'mw-160'];
-        },
+
         customCss: (obj: any) => {
+          return ['text-left', 'mw-220'];
+        },
+
+        customCssHeader: (obj: any) => {
           return ['text-left'];
         },
+
       },
     },
   ];
@@ -164,7 +172,10 @@ export class HumanResourceManagementComponent implements OnInit {
   merchantWithGroup: boolean = false; //Được gán với merchant có nhóm
   hasRole?: boolean;
   countSelectFilter: number = 0;
-
+  isLoadMoreMerchant: boolean = true;
+  loadLazyTimeout: any = null;
+  hasMoreData = true;
+  isInitialLoad = true;
   constructor(
     private fb: FormBuilder,
     private dialog: MatDialog,
@@ -172,7 +183,8 @@ export class HumanResourceManagementComponent implements OnInit {
     private api: FetchApiService,
     private toast: ToastService,
     private auth: AuthenticationService,
-    private dialogCommon: DialogCommonService
+    private dialogCommon: DialogCommonService,
+    private verify: VerifyUserService
   ) {
     this.formDropdown = this.fb.group({
       status: [''],
@@ -190,10 +202,10 @@ export class HumanResourceManagementComponent implements OnInit {
         label: 'TRẠNG THÁI',
         options: {
           customCssHeader: (obj: any) => {
-            return ['text-left'];
+            return ['text-left', 'mw-120'];
           },
           customCss: (obj: any) => {
-            return ['text-left'];
+            return ['text-left', 'mw-120'];
           },
           customBodyRender: (value: any, obj: any) => {
             let msg;
@@ -217,21 +229,7 @@ export class HumanResourceManagementComponent implements OnInit {
     }
 
     this.doSearch();
-    this.getLstRole();
   }
-
-  // formValueChange() {
-  //   this.formDropdown?.valueChanges
-  //     .pipe(distinctUntilChanged())
-  //     .subscribe(value => {
-  //       console.log(value)
-  //       if (value) {
-  //         this.countSelectFilter++;
-  //         return;
-  //       }
-  //       this.countSelectFilter--;
-  //     });
-  // }
 
   doSearch(pageInfo?: any) {
     this.isSearch = true;
@@ -254,6 +252,8 @@ export class HumanResourceManagementComponent implements OnInit {
       (res) => {
         this.dataList = res['data']['list'];
         this.totalItem = res['data']['count'];
+        this.getLstRole();
+
       },
       (error) => {
         this.totalItem = 0;
@@ -301,6 +301,11 @@ export class HumanResourceManagementComponent implements OnInit {
     this.doSearch();
   }
 
+  refreshDataKeywordSearch() {
+    this.keyword = '';
+    this.onEnterSearch();
+  }
+
   onBlurSearch() {
     setTimeout(() => {
       if (!this.skipSearch) {
@@ -317,10 +322,10 @@ export class HumanResourceManagementComponent implements OnInit {
         this.doDetail(item);
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
-        this.openDialogUnverifiedAccountAndEmail();
+        this.verify.openDialogUnverifiedAccountAndEmail();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
-        this.openDialogUnverifiedAccountAndNoEmail();
+        this.verify.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
         console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
@@ -328,130 +333,17 @@ export class HumanResourceManagementComponent implements OnInit {
     }
   }
 
-  openDialogUnverifiedAccountAndEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${this.auth.getUserInfo()?.emailChange
-      }</b>.`;
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonLeftLabel = 'Thay đổi email';
-    dataDialog.buttonRightLabel = 'Xác thực email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result != undefined) {
-        if (result === true) {
-          this.verifyEmail();
-        } else {
-          this.updateEmail();
-        }
-      }
-    })
-  }
-
-  updateEmail() {
-    const dialogRef = this.dialog.open(UpdateUserComponent, {
-      width: '600px',
-      data: {
-        title: 'Cập nhật email',
-        type: 'email',
-        isEmailInfo: true,
-      },
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.router.navigate(['/profile']);
-      }
-    })
-  }
-  
-  verifyEmail() {
-    this.api.post(USER_ENDPOINT.SEND_VERIFY_MAIL).subscribe(res => {
-      let content = `Chúng tôi vừa gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>, vui lòng kiểm tra email và làm theo hướng dẫn để hoàn tất xác thực tài khoản.`
-      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-      dataDialog.title = 'Hệ thống đã gửi liên kết xác thực';
-      dataDialog.message = content;
-      dataDialog.buttonLabel = 'Tôi đã hiểu';
-      dataDialog.icon = 'icon-mail';
-      dataDialog.iconColor = 'icon info';
-      dataDialog.viewCancel = false;
-      const dialogRef = this.dialogCommon.openDialogInfo(dataDialog);
-      dialogRef.subscribe(res => {
-        this.router.navigate(['/profile']);
-      })
-    }, (error) => {
-      const errorData = error?.error || {};
-      // if (errorData.soaErrorCode == 'AUTH_ERROR_007') {
-      //   this.dialog.open(LoginNotificationComponent, {
-      //     panelClass: 'dialog-login-noti',
-      //     data: {
-      //       title: 'Email đã được xác thực bởi tài khoản khác',
-      //       message: 'Vui lòng thay đổi email để xác thực tài khoản.',
-      //       icon: 'icon-mail',
-      //       typeClass: 'warning',
-      //       expired: true,
-      //       textLeft: 'Hủy',
-      //       type: 'email',
-      //       textRight: 'Thay đổi email',
-      //       isEmailInfo: true
-      //     },
-      //     width: '30%',
-      //     disableClose: true,
-      //   })
-      // }
-    })
-  }
-
-  openDialogUnverifiedAccountAndNoEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message =
-      'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
-    dataDialog.icon = 'icon-warning';
-    dataDialog.hiddenButtonLeft = true;
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonRightLabel = 'Bổ sung email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.router.navigate(['/profile']);
-      } else {
-      }
-    });
-  }
-
   doOpenPage() {
-    // let verifyInfo = this.auth.checkVerifyUserInfo();
-    // if (verifyInfo == 'VERIFIED') {
-    //   this.router.navigate(['/hr/hr-create']);
-    // } else {
-    //   this.router.navigate(['/profile']);
-    // }
-
     const verifyUser = this.auth.checkVerifyUserInfo();
     switch (verifyUser) {
       case UserVerifyStatus.VERIFIED:
         this.router.navigate(['/hr/hr-create']);
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
-        this.openDialogUnverifiedAccountAndEmail();
+        this.verify.openDialogUnverifiedAccountAndEmail();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
-        this.openDialogUnverifiedAccountAndNoEmail();
+        this.verify.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
         console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
@@ -589,20 +481,64 @@ export class HumanResourceManagementComponent implements OnInit {
     let param = {
       keyword: this.keyword,
       pageIndex: this.pageIndex,
-      pageSize: 1000,
+      pageSize: 20,
     };
 
     let buildParams = CommonUtils.buildParams(param);
     this.api
       .get(ROlE_ENDPOINT.AUTO_COMPLETE, buildParams)
-      .subscribe((res) => {
-        this.lstRole = res['data']['list'];
-        this.lstRole.unshift({
-          id: '',
-          name: 'Tất cả',
-          description: 'Tất cả vai trò',
-        });
-      });
+      .subscribe(
+        (res) => {
+          this.lstRole = res['data']['list'];
+          this.lstRole.unshift({
+            id: '',
+            name: 'Tất cả',
+            description: 'Tất cả vai trò',
+          });
+        },
+        (error) => {
+          const errorData = error?.error || {};
+          let dataDialog: DialogConfirmModel = new DialogConfirmModel();
+          switch (errorData.soaErrorCode) {
+            case 'LOGIN_ERROR_006':
+              dataDialog.title = 'Tài khoản đang bị khoá';
+              dataDialog.message = 'Vui lòng liên hệ Quản trị viên để được hỗ trợ.';
+              dataDialog.buttonLabel = 'Tôi đã hiểu';
+              dataDialog.icon = 'icon-lock';
+              dataDialog.width = '25%';
+              dataDialog.viewCancel = false;
+              dataDialog.iconColor = 'icon warning';
+              this.dialogCommon.openDialogInfo(dataDialog).subscribe(result => {
+                if (result) {
+                  this.router.navigate(['/login'], {});
+                }
+              });
+              break;
+            default:
+              dataDialog.title = 'Lỗi hệ thống';
+              dataDialog.message = 'Hệ thống đang bị gián đoạn. Vui lòng thử lại hoặc liên hệ quản trị viên để được hỗ trợ.';
+              dataDialog.buttonLabel = 'Tôi đã hiểu';
+              dataDialog.icon = 'icon-error';
+              dataDialog.width = '25%'
+              dataDialog.viewCancel = false;
+              dataDialog.iconColor = 'error';
+              this.dialogCommon.openDialogInfo(dataDialog).subscribe(result => {
+                if (result) {
+                  this.router.navigate(['/login'], {});
+                }
+              });
+          }
+
+        }
+      )
+    // .subscribe((res) => {
+    //   this.lstRole = res['data']['list'];
+    //   this.lstRole.unshift({
+    //     id: '',
+    //     name: 'Tất cả',
+    //     description: 'Tất cả vai trò',
+    //   });
+    // });
   }
 
   checkHasSearchOrFilterData(): boolean {
@@ -619,6 +555,49 @@ export class HumanResourceManagementComponent implements OnInit {
     const p1 = status === null || status === undefined || status === '' ? 0 : 1;
     const p2 = role === null || role === undefined || role === '' ? 0 : 1;
     return (p1 + p2) > 0 ? (p1 + p2) : null;
+  }
+
+  options: ScrollerOptions = {
+    lazy: true,
+    onLazyLoad: this.onLazyLoad.bind(this)
+  };
+
+  onLazyLoad(event: any) {
+    if (!this.hasMoreData) return;
+
+    const { first = 0, last = 0 } = event;
+    const visibleRangeEnd = last;
+
+    this.isLoadMoreMerchant = true;
+    // Chỉ load khi scroll đến gần cuối
+    if (visibleRangeEnd < this.lstRole.length) return;
+    this.isLoadMoreMerchant = true;
+    if (this.loadLazyTimeout) {
+      clearTimeout(this.loadLazyTimeout);
+    }
+    this.loadLazyTimeout = setTimeout(() => {
+      this.pageIndexRole++;
+      let param = {
+        pageIndex: this.pageIndexRole,
+        pageSize: 20,
+      };
+
+      let buildParams = CommonUtils.buildParams(param);
+      this.api
+        .get(ROlE_ENDPOINT.AUTO_COMPLETE, buildParams)
+        .subscribe(
+          (res) => {
+            if (res['data']['list'] && res['data']['list'].length > 0) {
+
+              const existingIds = new Set(this.lstRole.map((m: any) => m.id));
+              let dataSource = res['data']['list'].filter((m: any) => !existingIds.has(+m.id));
+              this.lstRole = this.lstRole.concat(dataSource);
+            } else {
+              this.hasMoreData = false;
+            }
+            this.isLoadMoreMerchant = false;
+          })
+    },100);
   }
 
 }

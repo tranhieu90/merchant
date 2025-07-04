@@ -135,7 +135,7 @@ export class HumanResourceUpdateV2Component implements OnInit {
       options: {
         width: '10%',
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left', 'mw-100'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -151,7 +151,7 @@ export class HumanResourceUpdateV2Component implements OnInit {
       options: {
         width: '25%',
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left', 'mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -179,7 +179,7 @@ export class HumanResourceUpdateV2Component implements OnInit {
       label: 'ID',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left', 'mw-100'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -191,7 +191,7 @@ export class HumanResourceUpdateV2Component implements OnInit {
       label: 'TÊN ĐIỂM KINH DOANH',
       options: {
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left', 'mw-180'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -287,7 +287,7 @@ export class HumanResourceUpdateV2Component implements OnInit {
 
     let param = {
       page: 1,
-      size: 1000,
+      size: ,
       keySearch: this.searchOrganization ? this.searchOrganization : null
     };
     let buildParams = CommonUtils.buildParams(param);
@@ -482,7 +482,7 @@ export class HumanResourceUpdateV2Component implements OnInit {
     let param = {
       keyword: null,
       pageIndex: 0,
-      pageSize: 1000,
+      pageSize: this.pageSize,
     };
 
     let buildParams = CommonUtils.buildParams(param);

@@ -191,32 +191,36 @@ export const routes: Routes = [
     children: [
       {
         path: 'payment',
-        component: PaymentComponent,
-        data: {
-          breadcrumb: 'Thanh toán',
-        },
-        //canActivate: [authGuard]
-      },
-      {
-        path: 'payment-detail', component: DetailPaymentComponent,
-        data: {
-          breadcrumb: 'Chi tiết thanh toán',
-        },
+        data: { breadcrumb: 'Thanh toán' },
+        children: [
+          {
+            path: '',
+            component: PaymentComponent,
+          },
+          {
+            path: 'detail',
+            component: DetailPaymentComponent,
+            data: { breadcrumb: 'Chi tiết thanh toán' },
+          }
+        ]
         //canActivate: [authGuard]
       },
       {
         path: 'cashback',
-        component: CashbackComponent,
-        data: {
-          breadcrumb: 'Hoàn trả',
-        },
-        //canActivate: [authGuard]
-      },
-      {
-        path: 'cashback-detail', component: CashbackDetailComponent,
-        data: {
-          breadcrumb: 'Chi tiết hoàn trả',
-        },
+        data: { breadcrumb: 'Hoàn trả' },
+        children: [
+          {
+            path: '',
+            component: CashbackComponent,
+          },
+          {
+            path: 'detail', component: CashbackDetailComponent,
+            data: {
+              breadcrumb: 'Chi tiết hoàn trả',
+            },
+            //canActivate: [authGuard]
+          },
+        ]
         //canActivate: [authGuard]
       },
       {

@@ -7,6 +7,10 @@
   justify-content: space-between;
   gap: 8px;
   flex-wrap: wrap;
+  .content-left{
+    display: flex;
+    align-items: center;
+  }
 }
 
 .pagination {
@@ -49,10 +53,6 @@ span.active {
 }
 
 .color-text {
-  color: $color-text-neutral-main;
-}
-
-::ng-deep .p-highlight {
   color: $color-text-neutral-main;
 }
 

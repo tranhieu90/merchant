@@ -39,24 +39,3 @@
     }
   }
 }
-
-::ng-deep.merchant-inputNumber {
-  width: 100% !important;
-  height: 48px;
-
-  span {
-    width: 100%;
-  }
-
-  input {
-    height: 48px;
-
-    &::placeholder {
-      font-weight: $typo-font-weights-regular;
-      font-size: $typo-font-sizes-m;
-
-      color: $color-text-neutral-sub-3;
-
-    }
-  }
-}

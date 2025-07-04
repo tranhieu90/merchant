@@ -29,6 +29,8 @@ import { DialogRoleComponent, DialogRoleModel } from '../../role-management/dial
 import { UpdateUserComponent } from '../../user-profile/update-user/update-user.component';
 import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
 import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
+import { MbDropdown } from '../../../base/shared/mb-dropdown/mb-dropdown.component';
+import { VerifyUserService } from '../../../common/service/verify/verify-user.service';
 
 @Component({
   selector: '[app-business-management]',
@@ -50,7 +52,8 @@ import { ShowClearOnFocusDirective } from '../../../common/directives/showClearO
     CommonModule,
     TooltipModule,
     MatTooltip,
-    ShowClearOnFocusDirective
+    ShowClearOnFocusDirective,
+    MbDropdown
   ],
   templateUrl: './business-management.component.html',
   styleUrl: './business-management.component.scss'
@@ -78,6 +81,7 @@ export class BusinessManagementComponent {
   roleBusiness: boolean = false;
   searchBusiness: boolean = false;
   isClear: boolean = false;
+  showGroup: boolean = true;
   columns: Array<GridViewModel> = [
     {
       name: 'merchantId',
@@ -85,7 +89,7 @@ export class BusinessManagementComponent {
       options: {
         width: '8%',
         customCss: () => {
-          return ['text-left'];
+          return ['text-left', 'mw-100'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -192,6 +196,7 @@ export class BusinessManagementComponent {
     private toast: ToastService,
     private auth: AuthenticationService,
     private dialogCommon: DialogCommonService,
+    private verify:VerifyUserService
   ) {
     this.formDropdown = this.fb.group({
       status: [''],
@@ -204,7 +209,9 @@ export class BusinessManagementComponent {
     this.isConfig = this.auth.getUserInfo()?.isConfig;
     this.roleBusiness = this.auth.apiTracker([MERCHANT_RULES.BUSINESS_CREATE]);
     this.getLstPaymentMethod();
-    if (this.auth.getUserInfo()?.orgType != 2) {
+    if ((this.auth.getUserInfo()?.orgType == 2) || (this.auth.getUserInfo().isConfig == 0)) {
+      this.showGroup = false;
+    } else {
       this.getDataGroup();
     }
     this.doSearch();
@@ -294,9 +301,9 @@ export class BusinessManagementComponent {
         let dataGroup = res['data'];
         this.groupNameOptions = this.convertLstAreaByOrder(dataGroup, dataGroup[0].parentId)
       }
-    }, (error: any) => {
+    }, () => {
       this.groupNameOptions = [];
-      this.toast.showError('Lấy phương thức thanh toán xảy ra lỗi')
+      this.toast.showError('Lấy tên nhóm xảy ra lỗi')
     });
   }
 
@@ -546,10 +553,6 @@ export class BusinessManagementComponent {
     return statusSelected || paymentSelected || groupNameSelected || serviceCodeFilled || keyWordFilled;
   }
 
-  setValueFormDefault() {
-    this.formDropdown.controls['groupName']?.setValue([]);
-    this.isClear = false;
-  }
   checkOpenCreate() {
     const verifyUser = this.auth.checkVerifyUserInfo();
     switch (verifyUser) {
@@ -557,98 +560,15 @@ export class BusinessManagementComponent {
         this.doOpenPage();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITH_EMAIL:
-        this.openDialogUnverifiedAccountAndEmail();
+        this.verify.openDialogUnverifiedAccountAndEmail();
         break;
       case UserVerifyStatus.UN_VERIFIED_WITHOUT_EMAIL:
-        this.openDialogUnverifiedAccountAndNoEmail();
+        this.verify.openDialogUnverifiedAccountAndNoEmail();
         break;
       default:
         console.warn('Trạng thái xác minh không hợp lệ:', verifyUser);
         break;
     }
-  }
-
-  openDialogUnverifiedAccountAndEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message = `Hệ thống sẽ gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>.`;
-    dataDialog.icon = 'icon-warning';
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonLeftLabel = 'Thay đổi email';
-    dataDialog.buttonRightLabel = 'Xác thực email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.verifyEmail();
-      } else {
-        this.updateEmail();
-      }
-    });
-  }
-
-  openDialogUnverifiedAccountAndNoEmail() {
-    let dataDialog: DialogRoleModel = new DialogRoleModel();
-    dataDialog.title = 'Tính năng bị hạn chế do chưa xác thực tài khoản';
-    dataDialog.message =
-      'Vui lòng bổ sung email để hệ thống gửi liên kết xác thực.';
-    dataDialog.icon = 'icon-warning';
-    dataDialog.hiddenButtonLeft = true;
-    dataDialog.iconColor = 'warning';
-    dataDialog.buttonRightLabel = 'Bổ sung email';
-
-    const dialogRef = this.dialog.open(DialogRoleComponent, {
-      width: '500px',
-      data: dataDialog,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.updateEmail();
-      } else {
-      }
-    });
-  }
-
-  updateEmail() {
-    const dialogRef = this.dialog.open(UpdateUserComponent, {
-      width: '600px',
-      data: {
-        title: 'Cập nhật email',
-        type: 'email',
-        isEmailInfo: true,
-      },
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.router.navigate(['/profile']);
-      }
-    })
-  }
-
-  verifyEmail() {
-    this.api.post(USER_ENDPOINT.SEND_VERIFY_MAIL).subscribe(res => {
-      let content = `Chúng tôi vừa gửi liên kết xác thực tới <b>${CommonUtils.convertEmail(this.auth?.getUserInfo()?.emailChange)}</b>, vui lòng kiểm tra email và làm theo hướng dẫn để hoàn tất xác thực tài khoản.`
-      let dataDialog: DialogConfirmModel = new DialogConfirmModel();
-      dataDialog.title = 'Hệ thống đã gửi liên kết xác thực';
-      dataDialog.message = content;
-      dataDialog.buttonLabel = 'Tôi đã hiểu';
-      dataDialog.icon = 'icon-mail';
-      dataDialog.iconColor = 'icon info';
-      dataDialog.viewCancel = false;
-      const dialogRef = this.dialogCommon.openDialogInfo(dataDialog);
-      dialogRef.subscribe(res => {
-        this.router.navigate(['/profile']);
-      })
-    })
   }
 
   shortenLabel(label: string): string {

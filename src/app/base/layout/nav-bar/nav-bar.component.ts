@@ -5,6 +5,9 @@ import { MatListModule } from '@angular/material/list';
 import { Router, RouterModule } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { AuthenticationService } from '../../../common/service/auth/authentication.service';
+import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
 @Component({
   selector: 'nav-bar',
   standalone: true,
@@ -13,6 +16,9 @@ import { AuthenticationService } from '../../../common/service/auth/authenticati
     MatExpansionModule,
     MatListModule,
     RouterModule,
+    NzMenuModule,
+    NzToolTipModule,
+    MatTooltipModule
   ],
   templateUrl: './nav-bar.component.html',
   styleUrl: './nav-bar.component.scss'
@@ -35,6 +41,7 @@ export class NavBarComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     const structuredMenu = this.buildAndSortMenuTree(this.auth.getMenuInfo().sort((a: any, b: any) => a.index - b.index));
     this.menuItems.set(structuredMenu);
+    console.log('Menu Items:', this.menuItems());
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -87,4 +94,12 @@ export class NavBarComponent implements OnInit, OnChanges {
     }
     return false;
   }
+
+  createRange(): number[] {
+    return Array.from({ length: 1 }, (_, i) => i);
+  }
+
+  isSelected(path: string): boolean {
+  return this.router.url === path;
+}
 }

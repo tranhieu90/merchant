@@ -6,9 +6,18 @@
     <div class="form-business">
         <form [formGroup]="formBusiness">
             <div class="col-12 mb-spacing-l">
-                <label class="title-s-semibold label mb-spacing-xs">Tên điểm kinh doanh</label>
-                <input class="merchant-input" appInputSanitize pInputText formControlName="merchantBizName" [maxlength]="32"/>
-                @if (formBusiness.controls['merchantBizName'].dirty && formBusiness.controls['merchantBizName'].invalid)
+                <label class="input-label-custom">Tên điểm kinh doanh</label>
+                <div class="p-inputgroup">
+                    <input appShowClearOnFocus=".clear-icon" class="merchant-input" appInputSanitize pInputText
+                        placeholder="Ví dụ: Mã cửa hàng ABC ..." formControlName="merchantBizName" [maxlength]="32" />
+                    @if (this.formBusiness.get('merchantBizName')?.value) {
+                    <span class="p-input-icon-right clear-icon" (click)="clearValue('merchantBizName')">
+                        <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                    </span>
+                    }
+                </div>
+                @if (formBusiness.controls['merchantBizName'].dirty &&
+                formBusiness.controls['merchantBizName'].invalid)
                 {
                 <div class="m-caption error">
                     <div class="icon-caption">
@@ -20,15 +29,20 @@
                     @if (formBusiness.controls['merchantBizName'].hasError('nameExit')) {
                     <span class="text-caption paragraph-m-regular">Tên điểm kinh doanh đã tồn tại</span>
                     }
-                    @if (formBusiness.controls['merchantBizName'].hasError('maxlength')) {
-                    <span class="text-caption paragraph-m-regular">Tên điểm kinh doanh không vượt quá 32 kí tự</span>
-                    }
                 </div>
                 }
             </div>
             <div class="col-12 mb-spacing-l">
-                <label class="title-s-semibold label mb-spacing-xs">Tên diễn giải</label>
-                <input class="merchant-input" appInputSanitize pInputText formControlName="merchantName" [maxlength]="128"/>
+                <label class="input-label-custom">Tên diễn giải</label>
+                <div class="p-inputgroup">
+                    <input appShowClearOnFocus=".clear-icon" class="merchant-input" appInputSanitize pInputText
+                        formControlName="merchantName" [maxlength]="128" />
+                    @if (this.formBusiness.get('merchantName')?.value) {
+                    <span class="p-input-icon-right clear-icon" (click)="clearValue('merchantName')">
+                        <i class="icon-close_circle_solid input-icon input-icon-close"></i>
+                    </span>
+                    }
+                </div>
                 @if (formBusiness.controls['merchantName'].dirty && formBusiness.controls['merchantName'].invalid)
                 {
                 <div class="m-caption error">
@@ -38,21 +52,20 @@
                     @if (formBusiness.controls['merchantName'].hasError('required')) {
                     <span class="text-caption paragraph-m-regular">Vui lòng nhập tên diễn giải</span>
                     }
-                    @if (formBusiness.controls['merchantName'].hasError('maxlength')) {
-                    <span class="text-caption paragraph-m-regular">Tên diễn giải không vượt quá 128 kí tự</span>
+                    @if (formBusiness.controls['merchantName'].hasError('isMerchantNameUsed')) {
+                    <span class="text-caption paragraph-m-regular">Tên diễn giải đã tồn tại</span>
                     }
                 </div>
                 }
             </div>
             <div class="row mb-spacing-l">
                 <div class="col-4">
-                    <label class="title-s-semibold label mb-spacing-xs">Tỉnh/Thành phố</label>
-                    <p-dropdown [options]="lstProvince" formControlName="provinceId" optionLabel="provinceName"
-                        optionValue="provinceId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
-                        filterBy="provinceName" styleClass="w-100" [panelStyle]="{'width':'220px'}" appendTo="body"
-                        placeholder="Chọn tỉnh,thành phố " (ngModelChange)="doGetDistrict($event,1)"
-                        class="merchant-dropdown">
-                    </p-dropdown>
+                    <label class="input-label-custom">Tỉnh/Thành phố</label>
+                    <mb-dropdown [options]="lstProvince" formControlName="provinceId" optionLabel="provinceName"
+                        optionValue="provinceId" [filter]="true" filterBy="provinceName"
+                        placeholder="Chọn tỉnh, thành phố " (ngModelChange)="doGetDistrict($event,1)"
+                        [showCheckmark]="true">
+                    </mb-dropdown>
                     @if (formBusiness.controls['provinceId'].dirty && formBusiness.controls['provinceId'].invalid)
                     {
                     <div class="m-caption error">
@@ -60,19 +73,17 @@
                             <span class="icon-error_solid"></span>
                         </div>
                         @if (formBusiness.controls['provinceId'].hasError('required')) {
-                        <span class="text-caption paragraph-m-regular">Vui lòng chọn tỉnh,thành phố</span>
+                        <span class="text-caption paragraph-m-regular">Vui lòng chọn tỉnh, thành phố</span>
                         }
                     </div>
                     }
                 </div>
                 <div class="col-4">
-                    <label class="title-s-semibold label mb-spacing-xs">Quận/Huyện</label>
-                    <p-dropdown [options]="lstDistrict" formControlName="districtId" optionLabel="districtName"
-                        optionValue="districtId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
-                        styleClass="w-100" filterBy="districtName" [panelStyle]="{'width':'220px'}" appendTo="body"
-                        placeholder="Chọn quận,huyện" (ngModelChange)="doGetCommune(001,$event,1)"
-                        class="merchant-dropdown">
-                    </p-dropdown>
+                    <label class="input-label-custom">Quận/Huyện</label>
+                    <mb-dropdown [options]="lstDistrict" formControlName="districtId" optionLabel="districtName"
+                        optionValue="districtId" [filter]="true" filterBy="districtName" placeholder="Chọn quận, huyện"
+                        (ngModelChange)="doGetCommune(001,$event,1)" [showCheckmark]="true">
+                    </mb-dropdown>
                     @if (formBusiness.controls['districtId'].dirty && formBusiness.controls['districtId'].invalid)
                     {
                     <div class="m-caption error">
@@ -80,18 +91,17 @@
                             <span class="icon-error_solid"></span>
                         </div>
                         @if (formBusiness.controls['districtId'].hasError('required')) {
-                        <span class="text-caption paragraph-m-regular">Vui lòng chọn quận,huyện</span>
+                        <span class="text-caption paragraph-m-regular">Vui lòng chọn quận, huyện</span>
                         }
                     </div>
                     }
                 </div>
                 <div class="col-4">
-                    <label class="title-s-semibold label mb-spacing-xs">Phường/Xã</label>
-                    <p-dropdown [options]="lstCommune" formControlName="communeId" optionLabel="communeName"
-                        optionValue="communeId" [filter]="true" emptyFilterMessage="Không tìm thấy dữ liệu"
-                        filterBy="communeName" styleClass="w-100" [panelStyle]="{'width':'220px'}" appendTo="body"
-                        placeholder="Chọn phường,xã" class="merchant-dropdown">
-                    </p-dropdown>
+                    <label class="input-label-custom">Phường/Xã</label>
+                    <mb-dropdown [options]="lstCommune" formControlName="communeId" optionLabel="communeName"
+                        optionValue="communeId" [filter]="true" filterBy="communeName" placeholder="Chọn phường, xã"
+                        [showCheckmark]="true">
+                    </mb-dropdown>
                     @if (formBusiness.controls['communeId'].dirty && formBusiness.controls['communeId'].invalid)
                     {
                     <div class="m-caption error">
@@ -99,14 +109,14 @@
                             <span class="icon-error_solid"></span>
                         </div>
                         @if (formBusiness.controls['communeId'].hasError('required')) {
-                        <span class="text-caption paragraph-m-regular">Vui lòng chọn xã,phường,thị trấn</span>
+                        <span class="text-caption paragraph-m-regular">Vui lòng chọn xã, phường, thị trấn</span>
                         }
                     </div>
                     }
                 </div>
             </div>
             <div class="col-12">
-                <label class="title-s-semibold label mb-spacing-xs">Địa điểm kinh doanh</label>
+                <label class="input-label-custom">Địa điểm kinh doanh</label>
                 <input class="merchant-input" appInputSanitize pInputText formControlName="address" />
                 @if (formBusiness.controls['address'].dirty && formBusiness.controls['address'].invalid)
                 {

@@ -8,9 +8,9 @@
         <span class="icon-information_solid me-1"></span>
         <span class="title-s-semibold">Vui lòng chọn ít nhất 1 điểm kinh doanh để thêm vào nhóm</span>
     </div>
-    <app-table-merchant [dataSource]="dataSource" [isShowCheckbox]="true" (returnRowsChecked)="returnRowsChecked($event)"></app-table-merchant>
+    <app-table-merchant-create [dataSource]="dataSource" [isShowCheckbox]="true" (returnRowsChecked)="returnRowsChecked($event)"></app-table-merchant-create>
 </div>
 
 <div class="modal-footer">
-    <p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="onClose()" />
-    <p-button label="Xác nhận gán" class="merchant-button" [disabled]="lstRowChecked?.length == 0" (click)="doAction()" />
+<p-button label="Hủy" class="merchant-button-tertiary me-2" (click)="onClose()" />
+<p-button label="Xác nhận gán" class="merchant-button" [disabled]="lstRowChecked?.length == 0" (click)="doAction()" />

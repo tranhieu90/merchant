@@ -18,7 +18,7 @@ import { AreaItemComponent } from '../area-item/area-item.component';
 import { AreaViewComponent } from '../area-view/area-view.component';
 import { DialogAssignMerchantComponent } from '../dialog-assign-merchant/dialog-assign-merchant.component';
 import { DialogMoveMerchantComponent, MoveMerchantModel } from '../dialog-move-merchant/dialog-move-merchant.component';
-import { TableMerchantComponent } from '../table-merchant/table-merchant.component';
+import { TableMerchantCreateComponent } from '../table-merchant-create/table-merchant-create.component';
 import { CommonUtils } from '../../../base/utils/CommonUtils';
 import { environment } from '../../../../environments/environment';
 import { InputCommon } from '../../../common/directives/input.directive';
@@ -26,11 +26,24 @@ import { DialogCommonService } from '../../../common/service/dialog-common/dialo
 import { ShowClearOnFocusDirective } from '../../../common/directives/showClearOnFocusDirective';
 import { fomatAddress } from '../../../common/helpers/Ultils';
 import { MERCHANT_RULES } from '../../../base/constants/authority.constants';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-create-organization',
   standalone: true,
-  imports: [ButtonModule, InputTextModule, NgFor, NgIf, AreaItemComponent, AreaViewComponent, ReactiveFormsModule, TableMerchantComponent, InputSanitizeDirective, InputCommon, ShowClearOnFocusDirective],
+  imports: [
+    ButtonModule,
+    InputTextModule,
+    NgFor,
+    NgIf,
+    AreaItemComponent,
+    AreaViewComponent,
+    ReactiveFormsModule,
+    TableMerchantCreateComponent,
+    InputSanitizeDirective,
+    InputCommon,
+    ShowClearOnFocusDirective
+  ],
   templateUrl: './create-organization.component.html',
   styleUrl: './create-organization.component.scss'
 })
@@ -46,15 +59,19 @@ export class CreateOrganizationComponent {
   isPermission: boolean = true;
   isEditArea: boolean = false;
   lstMerchantsAll: any = [];
-  lstMerchantRemain: any = [];
+  // lstMerchantRemain: any = [];
   lstAreas: AreaModel[] = [];
   lstAreaByOrder: AreaModel[] = [];
   isFormCreateAreaInvalid: boolean = false;
   areaActive: AreaModel = new AreaModel();
   lstMerchantActive: any = [];
   isCloseInput: boolean = false;
+  totalItem: number = 0;
 
   hasRole?: boolean;
+  roleBusiness?: boolean;
+  hasDataPopup: boolean = false;
+  hasAllData: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -72,12 +89,13 @@ export class CreateOrganizationComponent {
   }
 
   ngOnInit() {
-     this.hasRole = this.auth.apiTracker([MERCHANT_RULES.ORGANIZATION_CREATE]);
+    this.hasRole = this.auth.apiTracker([MERCHANT_RULES.ORGANIZATION_CREATE]);
+    this.roleBusiness = this.auth.apiTracker([MERCHANT_RULES.BUSINESS_CREATE]);
     this.getLstMerchant("");
   }
   checkValidCreate() {
     let isCreate = true;
-    if (this.lstAreaByOrder.length > 0 && this.lstMerchantRemain.length == 0 || (this.lstAreaByOrder.length > 0 && (this.lstMerchantsAll.length > 0 && this.lstMerchantRemain.length == 0)))
+    if (this.lstAreaByOrder.length > 0 && (this.lstAreaByOrder.length > 0 && (this.lstMerchantsAll.length > 0)))
       isCreate = false;
     return isCreate
   }
@@ -92,7 +110,7 @@ export class CreateOrganizationComponent {
 
     let param = {
       page: 1,
-      size: 1000,
+      size: 200,
     };
     let buildParams = CommonUtils.buildParams(param);
 
@@ -107,13 +125,65 @@ export class CreateOrganizationComponent {
             item.provinceName,
           ]),
         }));
-        this.lstMerchantRemain = _.cloneDeep(res['data']['subInfo']);
-        
+        // this.lstMerchantRemain = _.cloneDeep(res['data']['subInfo']);
+        this.totalItem = res['data']['totalSub']
+        const totalCallApi = Math.ceil(this.totalItem / 200);
+        console.log("ducpv");
+        if (totalCallApi > 1) {
+          this.loadAllLstMerchant(totalCallApi);
+
+        }
       }
     }, (error: any) => {
       this.toast.showError('Lấy danh sách điểm kinh doanh xảy ra lỗi.')
       this.lstMerchantActive = [];
     });
+  }
+
+  loadAllLstMerchant(totalCallApi: number) {
+    let dataReq = {
+      groupIdList: [],
+      status: "",
+      methodId: [],
+      mappingKey: ""
+    }
+    const requests = [];
+    for (let i = 2; i <= totalCallApi; i++) {
+      const param = {
+        page: i,
+        size: 200,
+      };
+      const buildParams = CommonUtils.buildParams(param);
+
+      const req = this.api.post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams);
+      requests.push(req);
+    }
+
+    forkJoin(requests).subscribe(
+      (responses: any[]) => {
+
+        responses.forEach((res) => {
+          if (res.data?.subInfo?.length > 0) {
+            const formatted = res.data.subInfo.map((item: any) => ({
+              ...item,
+              formatAddress: fomatAddress([
+                item.address,
+                item.communeName,
+                item.districtName,
+                item.provinceName,
+              ]),
+            }));
+            this.lstMerchantsAll.push(...formatted);
+            
+          }
+        });
+        this.hasAllData = true;
+      },
+      (error) => {
+        this.toast.showError('Lỗi khi lấy danh sách điểm kinh doanh.');
+        this.lstMerchantActive = [];
+      }
+    )
   }
 
   addArea(level: number, parentId: number | null, areaActive: any) {
@@ -153,14 +223,14 @@ export class CreateOrganizationComponent {
   }
 
   deleteArea(data: any) {
-    
-    const found = this.lstAreas.find(x=>x.id==data) ;
-    if (found && (found.groupName =="" ||found.groupName ==null)) {
-      this.lstAreas = this.lstAreas.filter(x=>x.id !=data) ;
-      this.lstAreaByOrder= this.convertLstAreaByOrder(this.lstAreas,null);
-      this.isFormCreateAreaInvalid= false;
+
+    const found = this.lstAreas.find(x => x.id == data);
+    if (found && (found.groupName == "" || found.groupName == null)) {
+      this.lstAreas = this.lstAreas.filter(x => x.id != data);
+      this.lstAreaByOrder = this.convertLstAreaByOrder(this.lstAreas, null);
+      this.isFormCreateAreaInvalid = false;
     } else {
-      if(this.isFormCreateAreaInvalid== true) {
+      if (this.isFormCreateAreaInvalid == true) {
         return;
       }
       let lstAreaIdsRemove = this.collectAreaIdsRemove(this.lstAreas, data.id);
@@ -173,15 +243,15 @@ export class CreateOrganizationComponent {
       });
       this.lstAreas = this.lstAreas.filter(item => !lstAreaIdsRemove.includes(item.id));
 
-      let lstMerchantIdsRemainOld = this.lstMerchantRemain.map((item: any) => item.merchantId);
-      this.lstMerchantRemain = this.lstMerchantsAll.filter((item: any) => lstMerchantIdsRestore.includes(item.merchantId) || lstMerchantIdsRemainOld.includes(item.merchantId));
+      // let lstMerchantIdsRemainOld = this.lstMerchantRemain.map((item: any) => item.merchantId);
+      // this.lstMerchantRemain = this.lstMerchantsAll.filter((item: any) => lstMerchantIdsRestore.includes(item.merchantId) || lstMerchantIdsRemainOld.includes(item.merchantId));
 
       this.lstAreaByOrder = this.convertLstAreaByOrder(this.lstAreas, null);
       this.toast.showSuccess(`Xóa nhóm ${this.areaActive.groupName} thành công`);
       this.updateActiveSubmit(data.parentId, true);
     }
-    if(this.lstAreas.length == 0) {
-      this.areaActive =  {} as AreaModel;
+    if (this.lstAreas.length == 0) {
+      this.areaActive = {} as AreaModel;
     }
     this.cdr.detectChanges();
   }
@@ -212,7 +282,7 @@ export class CreateOrganizationComponent {
 
   onBlurCreateArea(event: any, areaId: number, isFormCreateInvalid: boolean) {
 
-    let areaCreate:AreaModel = this.lstAreas.find(item => item.id == areaId) as AreaModel;
+    let areaCreate: AreaModel = this.lstAreas.find(item => item.id == areaId) as AreaModel;
     if (areaCreate) {
       const { target } = event;
       let areaName = target?.value?.trim();
@@ -222,9 +292,8 @@ export class CreateOrganizationComponent {
         this.lstAreaByOrder = this.convertLstAreaByOrder(this.lstAreas, null);
         this.isFormCreateAreaInvalid = false;
         this.toast.showSuccess(`Tạo nhóm ${areaName} thành công`)
-        this.updateActiveSubmit(areaCreate.id,true);
-      }else
-      {
+        this.updateActiveSubmit(areaCreate.id, true);
+      } else {
         this.isFormCreateAreaInvalid = isFormCreateInvalid;
       }
     }
@@ -249,29 +318,37 @@ export class CreateOrganizationComponent {
     }
     this.areaActive = area;
     if (area.lstMerchant.length > 0) {
-      this.lstMerchantActive = _.cloneDeep(this.lstMerchantsAll.filter((item: any) => area.lstMerchant.includes(item.merchantId)));
+      this.lstMerchantActive = area.lstMerchant;
     }
-    else {
-      this.lstMerchantActive = [];
-    }
+    // else {
+    //   this.lstMerchantActive = [];
+    // }
     this.isEditArea = false;
   }
 
   doAssignSubmerchant() {
+    let dataSource: any[] = [];
+    this.lstAreas.forEach((item: any) => {
+      dataSource = dataSource.concat(item.lstMerchant);
+    });
+
+    const existingIds = new Set(dataSource.map((m: any) => +m.merchantId));
     const dialogRef = this.dialog.open(DialogAssignMerchantComponent, {
       width: '60%',
-      data: this.lstMerchantRemain,
+      data: this.lstMerchantsAll?.filter((item: any) => !existingIds.has(item.merchantId)),
     });
 
     dialogRef.afterClosed().subscribe((lstMerchantIdChecked: number[]) => {
+      this.hasDataPopup = true;
       if (lstMerchantIdChecked) {
         this.lstAreas.map((item: any) => {
           if (item.id == this.areaActive.id) {
             item.lstMerchant = lstMerchantIdChecked;
           }
         });
-        this.lstMerchantActive = _.cloneDeep(this.lstMerchantsAll.filter((item: any) => lstMerchantIdChecked.includes(item.merchantId)));
-        this.lstMerchantRemain = this.lstMerchantRemain.filter((item: any) => !lstMerchantIdChecked.includes(item.merchantId));
+        // this.lstMerchantActive = _.cloneDeep(this.lstMerchantsAll.filter((item: any) => lstMerchantIdChecked.includes(item.merchantId)));
+        this.lstMerchantActive = lstMerchantIdChecked;
+        // this.lstMerchantRemain = this.lstMerchantRemain.filter((item: any) => !lstMerchantIdChecked.includes(item.merchantId));
       }
     })
 
@@ -298,18 +375,18 @@ export class CreateOrganizationComponent {
   }
 
   updateAreaName() {
+
+    let areaExits = this.lstAreas.find(item => item.groupName?.toLowerCase() ===this.formEditArea.get("areaName")?.value.toLowerCase());
+    if (areaExits && areaExits.id != this.areaActive.id) {
+      this.formEditArea.get('areaName')!.setErrors({ areaExists: true });
+      this.formEditArea.get('areaName')?.markAsTouched(); // Đánh dấu trường là touched để hiển thị lỗi nếu có
+      this.formEditArea.updateValueAndValidity(); // Cập nhật trạng thái valid của form
+      return;
+    }
     let area = this.lstAreas.find(item => item.id === this.areaActive.id);
     if (area) {
       area.groupName = this.formEditArea.get("areaName")?.value;
     }
-    let areaExits = this.lstAreas.find(item => item.groupName?.toLowerCase() === area?.groupName?.toLowerCase());
-    if (areaExits && areaExits.id == this.areaActive.id) {
-      this.formEditArea.get('areaName')!.setErrors({ areaExists: true });
-      this.formEditArea.get('areaName')?.markAsTouched(); // Đánh dấu trường là touched để hiển thị lỗi nếu có
-      this.formEditArea.updateValueAndValidity(); // Cập nhật trạng thái valid của form
-  
-    }
-
     this.isEditArea = false;
     this.toast.showSuccess('Đổi tên nhóm thành công')
 
@@ -334,7 +411,12 @@ export class CreateOrganizationComponent {
       });
 
       dialogRef.afterClosed().subscribe((result: { areaId: number, merchantIds: any }) => {
-
+        const existingIds = new Set(result.merchantIds.lstRowId.map((m: any) => +m.merchantId));
+        this.lstAreas.map((item: any) => {
+          if (item.id == this.areaActive.id) {
+            item.lstMerchant = item.lstMerchant.filter((data: any) => !existingIds.has(data.merchantId));
+          }
+        });
         if (result?.areaId > 0) {
           let areaMove = this.lstAreas.find(item => item.id == result.areaId);
 
@@ -408,10 +490,15 @@ export class CreateOrganizationComponent {
     if (this.lstAreaByOrder.length > 0 && this.lstAreaByOrder[0].groupName) {
       let lstParam = _.cloneDeep(this.lstAreaByOrder);
       this.removeKeys(lstParam, ['id', 'parentId']);
+      console.log('lstParam', lstParam)
+      lstParam = lstParam.map((group: any) => ({
+        ...group,
+        lstMerchant: group.lstMerchant.map((merchant: any) => merchant.merchantId)
+      }));
       this.api.post(ORGANIZATION_ENDPOINT.SAVE_ORGANIZATION, lstParam).subscribe(
         (res: any) => {
           this.createSuccess.emit();
-          this.toast.showInfo('Thiết lập tổ chức thành công!');
+          this.toast.showSuccess('Thiết lập tổ chức thành công!');
           //set thanh cong, update lại isconfig cho localstorage
           const userInfo = this.auth.getUserInfo();
           if (userInfo) {

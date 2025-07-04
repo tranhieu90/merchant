@@ -4,17 +4,17 @@
       <!-- <mat-icon> {{!isCollapsed ? 'format_indent_decrease':'format_indent_increase'}}</mat-icon> -->
       <span class="icon-sidebar icon-header"></span>
     </div>
-    @if (!isCollapsed) {
+    <!-- @if (!isCollapsed) { -->
     <div class="logo-header">
       <a [routerLink]="['/dashboard/']"></a>
-      <img [src]="assetPath + '/assets/images/merchant_logo.svg'" alt="" />
+      <img [src]="assetPath + '/assets/images/logo_merchant.svg'" alt="" />
     </div>
-    } @else {
+    <!-- } @else {
     <div class="logo-icon">
       <a [routerLink]="['/dashboard/']"></a>
       <img [src]=" assetPath + '/assets/images/merchant_logo_icon.svg'" alt="" />
     </div>
-    }
+    } -->
 
   </div>
   <div class="header-right">

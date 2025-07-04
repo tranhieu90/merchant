@@ -60,6 +60,7 @@ import { DirectiveModule } from '../../../base/module/directive.module';
 import { DialogConfirmModel } from '../../../model/DialogConfirmModel';
 // import { TextControlComponent } from '../../../base/shared/component/text-control/text-control.component';
 import { TextboxItem } from '../../../base/shared/models/item-form.model';
+import { InputSanitizeDirective } from '../../../common/directives/inputSanitize.directive';
 
 @Component({
   selector: 'app-human-resource-create',
@@ -86,6 +87,7 @@ import { TextboxItem } from '../../../base/shared/models/item-form.model';
     MatTooltipModule,
     MatRadioModule,
     MTreeCheckboxComponent,
+    InputSanitizeDirective
   ],
   templateUrl: './human-resource-create.component.html',
   styleUrl: './human-resource-create.component.scss',
@@ -133,6 +135,10 @@ export class HumanResourceCreateComponent implements OnInit {
   selectedValue?: number = 0;
   showRadioButton?: boolean = true;
   isLockAccount?: boolean;
+  actionType?: string;
+  isLoading = true;
+  pageIndex: number = 1;
+  totalSub: number = 0;
 
   // $fullName!: TextboxItem;
   constructor(
@@ -146,7 +152,7 @@ export class HumanResourceCreateComponent implements OnInit {
     private routeActive: ActivatedRoute,
     private dialogCommon: DialogCommonService
   ) {
-    this.routeActive.queryParams.subscribe((params) => {});
+    this.routeActive.queryParams.subscribe((params) => { });
   }
   private navigationSubscription!: Subscription;
   ngOnDestroy(): void {
@@ -181,7 +187,7 @@ export class HumanResourceCreateComponent implements OnInit {
     this.navigationSubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) {
         if (!this._isNavigating) {
-          // this._isNavigating = true;
+          this._isNavigating = true;
           if (event.url !== '/login') {
             this.onCancel(event.url);
             this.router.navigate([], {
@@ -230,7 +236,7 @@ export class HumanResourceCreateComponent implements OnInit {
       options: {
         width: '5%',
         customCss: (obj: any) => {
-          return ['text-left'];
+          return ['text-left', 'mw-100'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -274,7 +280,7 @@ export class HumanResourceCreateComponent implements OnInit {
       options: {
         width: '5%',
         customCss: () => {
-          return ['text-left'];
+          return ['text-left', 'mw-100'];
         },
         customCssHeader: () => {
           return ['text-left'];
@@ -429,6 +435,7 @@ export class HumanResourceCreateComponent implements OnInit {
 
   getLstMerchant(firstSearch: boolean = false) {
     this.isSearch = true;
+    this.pageIndex = 1;
     let dataReq = {
       groupIdList: this.activeOrganization ? [this.organizationIdActive] : [],
       status: 'active',
@@ -437,7 +444,8 @@ export class HumanResourceCreateComponent implements OnInit {
     };
     this.searchOrganization = this.searchOrganization?.trim();
     let param = {
-      size: 1000,
+      page: this.pageIndex,
+      size: 10,
       keySearch: this.searchOrganization ? this.searchOrganization : null,
     };
     let buildParams = CommonUtils.buildParams(param);
@@ -446,6 +454,7 @@ export class HumanResourceCreateComponent implements OnInit {
       .subscribe(
         (res: any) => {
           if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
+            this.totalSub = res['data']['totalSub'];
             this.pointSales = res['data']['subInfo'];
             this.pointSales = res['data']['subInfo'].map((item: any) => ({
               ...item,
@@ -809,7 +818,7 @@ export class HumanResourceCreateComponent implements OnInit {
     this.formInfo.get('userPass')?.setValue(newPassword);
   }
 
-  copyPasswordExt(event: any){
+  copyPasswordExt(event: any) {
     console.log(event)
   }
 
@@ -894,57 +903,61 @@ export class HumanResourceCreateComponent implements OnInit {
     }
   }
   createHr() {
-    let params = this.formInfo.getRawValue();
-    if (params['dateOfBirth']) {
-      params['dateOfBirth'] = moment(params['dateOfBirth']).format(
-        'DD/MM/YYYY'
-      );
-    }
-    params['roleId'] = this.roleId;
-    params['organizationInfo'] = {
-      masterId:
-        this.pointSalesSelected.size > 0 || this.organizationSelected.length > 0
-          ? ''
-          : this.masterIdSelected,
-      merchantIds: Array.from(this.pointSalesSelected),
-      groupIds:
-        this.orgTypeInput == 1
-          ? this.pointSalesSelected.size > 0
-            ? []
-            : this.organizationSelected
-          : [],
-    };
-    this.api.post(HR_ENDPOINT.CREATE_HR, params).subscribe(
-      (res) => {
-        if (res['data']['emailChange']) {
-          this.isHaveEmail = true;
-        }
-        this.isSuccess = 1;
-        this._isNavigating = true;
-        this.doNextStep();
-      },
-      (error) => {
-        const errorData = error?.error || {};
-        switch (errorData.soaErrorCode) {
-          case 'USER_CREATION_ERROR_003':
-            this.formInfo.get('userName')!.setErrors({ userNameExist: true });
-            break;
-          case 'USER_CREATION_ERROR_004':
-            this.formInfo.get('emailChange')!.setErrors({ emailExist: true });
-            break;
-          case 'USER_CREATION_ERROR_005':
-            this.formInfo
-              .get('phoneNumber')!
-              .setErrors({ phoneNumberExist: true });
-            break;
-          default:
-            this.toast.showError(errorData?.soaErrorDesc);
-            this.isSuccess = 0;
-            this.doNextStep();
-            break;
-        }
+    const isVerify = CommonUtils.checkVerifyAccount(this.dialog, this.router, this.auth, this.api, this.dialogCommon);
+    if (isVerify) {
+      let params = this.formInfo.getRawValue();
+      if (params['dateOfBirth']) {
+        params['dateOfBirth'] = moment(params['dateOfBirth']).format(
+          'DD/MM/YYYY'
+        );
       }
-    );
+      params['roleId'] = this.roleId;
+      params['actionType'] = this.orgTypeInput == 2 ? this.actionType : undefined
+      params['organizationInfo'] = {
+        masterId:
+          this.selectedValue == 0 ? this.masterIdSelected
+            : undefined,
+        merchantIds: this.selectedValue == 2 ? this.actionType == "ALL" ? undefined : Array.from(this.pointSalesSelected) : undefined,
+        groupIds:
+          this.selectedValue == 1
+            ? this.organizationSelected
+            : undefined,
+      };
+      this.api.post(HR_ENDPOINT.CREATE_HR, params).subscribe(
+        (res) => {
+          if (res['data']['emailChange']) {
+            this.isHaveEmail = true;
+          }
+          this.isSuccess = 1;
+          this._isNavigating = true;
+          this.doNextStep();
+        },
+        (error) => {
+          const errorData = error?.error || {};
+          switch (errorData.soaErrorCode) {
+            case 'USER_CREATION_ERROR_003':
+              this.formInfo.get('userName')!.setErrors({ userNameExist: true });
+              break;
+            case 'USER_CREATION_ERROR_004':
+              this.formInfo.get('emailChange')!.setErrors({ emailExist: true });
+              break;
+            case 'USER_CREATION_ERROR_005':
+              this.formInfo
+                .get('phoneNumber')!
+                .setErrors({ phoneNumberExist: true });
+              break;
+            default:
+              this.toast.showError(errorData?.soaErrorDesc);
+              this.isSuccess = 0;
+              this.doNextStep();
+              break;
+          }
+        }
+      );
+    } else {
+      this._isNavigating = true;
+    }
+
   }
 
   onCancel(url?: string) {
@@ -968,6 +981,8 @@ export class HumanResourceCreateComponent implements OnInit {
         } else {
           this.router.navigate(['/hr']);
         }
+      }else{
+         this._isNavigating = false;
       }
     });
   }
@@ -1072,5 +1087,77 @@ export class HumanResourceCreateComponent implements OnInit {
       return true;
     }
     return false;
+  }
+
+  setActionType(data: boolean) {
+    if (data) {
+      this.actionType = "ALL"
+    } else {
+      this.actionType = ""
+    }
+  }
+
+  lazyLoadData(e: any) {
+    const tableViewHeight = e.target.offsetHeight
+    const tableScrollHeight = e.target.scrollHeight
+    const scrollLocation = e.target.scrollTop;
+
+    const buffer = 200;
+    const limit = tableScrollHeight - tableViewHeight - buffer;
+    if (scrollLocation > limit && this.isLoading) {
+      this.isLoading = false;
+      this.pageIndex++;
+      let dataReq = {
+        groupIdList: [] as number[],
+        status: 'active',
+        methodId: [],
+        mappingKey: '',
+      };
+      this.searchOrganization = this.searchOrganization?.trim();
+      let param = {
+        page: this.pageIndex,
+        size: 10,
+        keySearch: this.searchOrganization ? this.searchOrganization : null,
+      };
+      let buildParams = CommonUtils.buildParams(param);
+      this.api
+        .post(GROUP_ENDPOINT.GET_POINT_SALE, dataReq, buildParams)
+        .subscribe(
+          (res: any) => {
+            if (res['data']['subInfo'] && res['data']['subInfo'].length > 0) {
+              let dataGroup = res['data']['subInfo'].map((item: any) => ({
+                ...item,
+                formatAddress: fomatAddress([
+                  item.address,
+                  item.communeName,
+                  item.districtName,
+                  item.provinceName,
+                ]),
+              }));
+
+              if (this.actionType == "ALL") {
+                dataGroup.forEach((item: any) => {
+                  item.checked = true;
+                  this.pointSalesSelected.add(item?.merchantId);
+                });
+              } else {
+                if (this.pointSalesSelected.size > 0) {
+                  dataGroup.forEach((item: any) => {
+                    item.checked = this.pointSalesSelected.has(item.merchantId);
+                  });
+                  this.countSelectedPoint = this.pointSales.filter(
+                    (x: any) => x.checked
+                  ).length;
+                }
+              }
+              this.pointSales = this.pointSales.concat(dataGroup);
+              this.isLoading = true;
+
+            } else {
+              this.isLoading = false;
+            }
+          }
+        );
+    }
   }
 }
